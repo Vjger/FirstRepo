@@ -1,0 +1,14 @@
+***********************************************************************************************
+***  LEGENDA: <B> BASE - <I> INTRIGO - <P> PROSPERITA - <A> ALCHIMIA - <N> NUOVI ORIZZONTI  ***
+***********************************************************************************************
+
+TAVOLO n° 1
+Miniera<B> Villaggio<B> Fiera<B> Miglioria<B> Stanza segreta<I> Contrattazione<N> Cappella<B> Vigna<A> Taglialegna<B> Sotterraneo<B> 
+TAVOLO n° 2
+Sigillo reale<P> Fonderia<I> Ballo in maschera<I> Esploratore<B> Harem<I> Cantiere<P> Incastonare<P> Campo nomadi<N> Zecca<P> Burocrate<B> 
+TAVOLO n° 3
+Baraccopoli<I> Laboratorio<B> Fucina<B> Potenziamento<I> Officina<B> Galleria<N> Banca<P> Spia<B> Diplomatico<N> Barone<I> 
+TAVOLO n° 4
+Vescovo<P> Cava<P> Grande Salone<I> Truffatore<I> Mercante di spezie<N> Fossato<B> Laboratorio<B> Ladro gentiluomo<N> Tuttofare<N> Cancelliere<B> 
+TAVOLO n° 5
+Pedina<I> Cancelliere<B> Villaggio di frontiera<N> Pozzo dei desideri<I> Milizia<B> Commerciante<N> Giardini<B> Strega<B> Contrabbando<P> Miniera<B> 

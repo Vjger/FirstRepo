@@ -1,0 +1,8 @@
+********************************************************************************************************
+***  LEGENDA: <B> BASE - <I> INTRIGO - <S> SEASIDE - <P> PROSPERITA - <A> ALCHIMIA - <N> NUOVI ORIZZONTI
+********************************************************************************************************
+
+TAVOLO n° 1
+Recupero<S> Contrabbandieri<S> Vedetta<S> Borseggiatore<S> Stratega<S> Villaggio indigeno<S> Pescatore di perle<S> Faro<S> Bazar<S> Villaggio di pescatori<S> 
+TAVOLO n° 2
+Tesoro<S> Megera dei Mari<S> Nave Pirata<S> Avamposto<S> Rada<S> Embargo<S> Mappa del Tesoro<S> Navigatore<S> Carovana<S> Avventuriero<S> 

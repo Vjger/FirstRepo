@@ -1,0 +1,14 @@
+***********************************************************************************************
+***  LEGENDA: <B> BASE - <I> INTRIGO - <P> PROSPERITA - <A> ALCHIMIA - <N> NUOVI ORIZZONTI  ***
+***********************************************************************************************
+
+TAVOLO n° 1
+Strega<B> Villaggio di frontiera<N> Scout<I> Commerciante<N> Diplomatico<N> Stazione commerciale<I> Fiera<B> Trasmutazione<A> Contrabbando<P> Milizia<B> 
+TAVOLO n° 2
+Monumento<P> Cancelliere<B> Officina<B> Tirapiedi<I> Villaggio minerario<I> Fucina<B> Via della seta<N> Macchinazione<N> Mercato<B> Contrattazione<N> 
+TAVOLO n° 3
+Ballo in maschera<I> Soldo<P> Stanza segreta<I> Mercato<B> Tributo<I> Laboratorio<B> Fossato<B> Nascondiglio<P> Forziere<N> Fonderia<I> 
+TAVOLO n° 4
+Villaggio<B> Mercante<P> Grande Salone<I> Incastonare<P> Barone<I> Incrocio<N> Duchessa<N> Miglioria<B> Cancelliere<B> Sala del Consiglio<B> 
+TAVOLO n° 5
+Harem<I> Cortile di Campagna<I> Città<P> Maggiordomo<I> Spia<B> Banchetto<B> Usuraio<B> Tumulto<P> Cartografo<N> Pozzo dei desideri<I> 

@@ -1,0 +1,373 @@
+/* CSS Document */
+
+/*general*/
+
+body {
+/* 	font-family:'Exo', Verdana, Arial, Helvetica, sans-serif; */
+/* 	can't work properly due to string in header.php that must be changed into <link href='http://fonts.googleapis.com/css?family=Exo' rel='stylesheet' type='text/css'>' */
+	font-family: Tahoma, Verdana, Arial, Helvetica, sans-serif;
+	font-size: 14px; 
+	background: #1B0345 url(../images/bg.jpg) no-repeat top center;
+	margin: 0;
+	padding: 0;
+	color: #ffffff;
+}
+a img {
+	border: none;
+}
+.site_container {
+	width: 1150px;
+	margin: 0 auto;
+}
+.clearfloat { /* this class can be placed on a <br /> or empty block element as the final element following the last floated block (within the .container) if the footer is removed or taken out of the .container */
+	clear:both;
+	height:0;
+	font-size: 1px;
+	line-height: 0px;
+}
+/*HTML 5 support - Sets new HTML 5 tags to display:block so browsers know how to render the tags properly. */
+header, section, footer, aside, nav, article, figure {
+	display: block;
+}
+/*header*/
+#logo {
+	width:831px;
+	float:left;
+	height:120px;
+}
+#download {
+	width:319px;
+	float:left;
+	height:120px;
+	padding-bottom:15px;
+}
+header {
+	background: none;
+	width:831px;
+}
+/*content*/
+section {
+	margin-top:10px;
+}
+.content {
+	padding:0;
+	width: 831px;
+	float: left;
+}
+.content_inner {
+	padding-top:0px;
+	margin:25px 10px 10px 10px;
+	width: 820px;
+	float: right;
+	position:relative;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
+	border-radius: 15px;
+	border: 1px solid #2a2a2a;
+	/* Fallback for web browsers that doesn't support RGBa */
+    background: #d0e3b0;
+	height:448px;
+	min-height:448px;
+	color:#000
+
+}
+
+.fcontent {
+	padding:0;
+	width: 100%;
+	float: left;
+}
+.content_full {
+	padding-top:0px;
+	margin:25px 10px 10px 0px;
+	width: 939px;
+	float: left;
+	background: #d0e3b0;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
+	border-radius: 15px;
+	border: 1px solid #2a2a2a;
+	height:100%;
+	min-height:448px;
+	color:#000000;
+}
+
+#contents a:link {
+	color: #1a481f;
+	text-decoration: none;
+}
+#contents a:visited {
+	color: #1a481f;
+	text-decoration: none;
+}
+#contents a:hover, a:active, a:focus {
+	text-decoration: underline;
+}
+
+#faq_page a:link {
+	color: #1a481f;
+	text-decoration: none;
+}
+#faq_page a:visited {
+	color: #1a481f;
+	text-decoration: none;
+}
+#faq_page a:hover, a:active, a:focus {
+	text-decoration: underline;
+}
+/*extras*/
+.ss {
+	font-size:18px;
+	font-family: Tahoma, 'Oswald', sans-serif;
+	line-height:40px;
+}
+.extras_container {
+	width:831px;
+	float:right;
+}
+.extras {
+	float: left;
+	height:250px;
+	min-height:250px;
+	background: #000000;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
+	border-radius: 15px;
+	border: 1px solid #2a2a2a;
+	padding:0;
+	margin:0;
+	/* Fallback for web browsers that doesn't support RGBa */
+    background: rgb(0, 0, 0);
+	/* RGBa with 0.6 opacity */
+    background: rgba(0, 0, 0, 0.4);
+    /* For IE 5.5 - 7*/
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000);
+	/* For IE 8*/
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000)";
+}
+#server_status {
+	width:112px;
+	margin-right:10px;
+}
+#rating_1 {
+	width:342px;
+	margin-right:10px;
+}
+#rating_2 {
+	width:342px
+}
+/*side*/
+aside {
+	float: right;
+	background: none;
+	width:350px;
+	padding:10px 0;
+}
+.sidebar1 {
+	float: left;
+	width: 319px;
+	height:100%;
+	min-height:710px;
+	max-height:5000px;
+	background: #000000;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
+	border-radius: 15px;
+	border: 1px solid #2a2a2a;
+	padding:0;
+	margin-top:0;
+	/* Fallback for web browsers that doesn't support RGBa */
+    background: rgb(0, 0, 0);
+	/* RGBa with 0.6 opacity */
+    background: rgba(0, 0, 0, 0.4);
+    /* For IE 5.5 - 7*/
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000);
+	/* For IE 8*/
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000)";
+}
+.sidebar2 {
+	float: left;
+	width: 320px;
+	height:100%;
+	min-height:710px;
+	max-height:100%;
+	background: #000000;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
+	border-radius: 15px;
+	border: 1px solid #2a2a2a;
+	padding:0;
+	margin-top:0;
+	/* Fallback for web browsers that doesn't support RGBa */
+    background: rgb(0, 0, 0);
+	/* RGBa with 0.6 opacity */
+    background: rgba(0, 0, 0, 0.4);
+    /* For IE 5.5 - 7*/
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000);
+	/* For IE 8*/
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000)";
+}
+/*links*/
+a:link {
+	color: #ccffcc;
+	text-decoration: none;
+}
+a:visited {
+	color: #ccffcc;
+	text-decoration: none;
+}
+a:hover, a:active, a:focus {
+	text-decoration: underline;
+}
+/*menu*/
+.bc {
+	
+	display:block;
+	height:40px;
+	width: 100%;
+	background:#1a481f;
+	-webkit-border-top-left-radius: 15px;
+	-webkit-border-top-right-radius: 15px;
+	-moz-border-radius-topleft: 15px;
+	-moz-border-radius-topright: 15px;
+	border-top-left-radius: 15px;
+	border-top-right-radius: 15px;
+	margin-top:-3px;
+	text-align:center;
+}
+nav {
+	height: 40px;
+	min-height:40px;
+	margin-left:30px;
+}
+nav ul {
+	list-style: none;
+}
+nav ul li {
+	display:inline;
+	float:left;
+	font-size:14px;
+	font-family: Tahoma, 'Oswald', sans-serif;
+	font-weight: bold;
+	letter-spacing:2px;
+	text-transform:uppercase;
+	text-decoration:none;
+	padding:0 2px;
+	text-align:center;
+	line-height:40px;
+}
+.ttt {
+	padding:0 8px;
+}
+nav ul a, nav ul a:visited {
+	display: block;
+}
+nav ul a:hover {
+	color:#FFFFFF;
+	background-image: linear-gradient(bottom, rgb(34,115,30) 11%, rgb(69,148,56) 56%, rgb(97,179,84) 78%);
+	background-image: -o-linear-gradient(bottom, rgb(34,115,30) 11%, rgb(69,148,56) 56%, rgb(97,179,84) 78%);
+	background-image: -moz-linear-gradient(bottom, rgb(34,115,30) 11%, rgb(69,148,56) 56%, rgb(97,179,84) 78%);
+	background-image: -webkit-linear-gradient(bottom, rgb(34,115,30) 11%, rgb(69,148,56) 56%, rgb(97,179,84) 78%);
+	background-image: -ms-linear-gradient(bottom, rgb(34,115,30) 11%, rgb(69,148,56) 56%, rgb(97,179,84) 78%);
+	background-image: -webkit-gradient(  linear,  left bottom,  left top,  color-stop(0.11, rgb(34,115,30)),  color-stop(0.56, rgb(69,148,56)),  color-stop(0.78, rgb(97,179,84)) );
+}
+nav ul a.active {
+	color: #fefefe;
+}
+.help_menu {
+	width:100%;
+	font-family: Tahoma, 'Oswald', sans-serif;
+}
+ul.help_menu {
+	padding: 0;
+	margin: 0;
+	font-size: 1em;
+	line-height: 0.5em;
+	list-style: none;
+}
+ul.help_menu li {
+	list-style: none;
+}
+ul.help_menu li a {
+	line-height: 21px;
+	font-size: 16px;
+	padding: 10px 5px;
+	color: #fff;
+	display: block;
+	text-decoration: none;
+	font-weight: normal;
+	text-indent:20px
+}
+ul.help_menu li a:hover {
+	background-color:#1a481f;
+	color:white;
+	/* Fallback for web browsers that doesn't support RGBa */
+    background: rgb(0, 0, 0);
+	/* RGBa with 0.6 opacity */
+    background: rgba(0, 0, 0, 0.4);
+    /* For IE 5.5 - 7*/
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000);
+	/* For IE 8*/
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000)";
+}
+/*footer*/
+footer {
+	padding: 10px 0;
+	background: #000000;
+	-moz-border-radius: 15px;
+	border-radius: 15px;
+	-webkit-border-radius: 15px;
+	border: 1px solid #2a2a2a;
+	margin:0;
+	/* Fallback for web browsers that doesn't support RGBa */
+    background: rgb(0, 0, 0);
+	/* RGBa with 0.6 opacity */
+    background: rgba(0, 0, 0, 0.4);
+    /* For IE 5.5 - 7*/
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000);
+	/* For IE 8*/
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000)";
+	position: relative;/* this gives IE6 hasLayout to properly clear */
+	clear: both;
+}
+/*typography*/
+
+ul, ol, dl {
+	padding: 10;
+	margin: 0;
+}
+h1, h2, h3, h4, h5, h6, p {
+	margin: 11px 0;
+	padding-right: 15px;
+	padding-left: 15px;
+}
+h2 {
+	font-family: Tahoma, 'Oswald', sans-serif;
+	font-weight: bold;
+	letter-spacing:2px;
+}
+h3 {
+	font-family: Tahoma, 'Oswald', sans-serif;
+}
+.server#online {
+	color:#00CC66;
+	font-size:18px;
+	font-weight:bold
+}
+.Stile1 * {
+	font-family: Verdana, Geneva, sans-serif;
+	font-size:12px
+}
+r1_t1 {
+	padding:5px;
+	background-color:#006600;
+	-moz-border-radius: 15px;
+	border-radius: 15px;
+	-webkit-border-radius: 15px;
+	border: 1px solid #2a2a2a;
+}
+#tutorial img {
+	border:4px #1a481f solid;
+	padding:5px;
+	background:#fff
+}

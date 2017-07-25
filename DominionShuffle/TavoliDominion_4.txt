@@ -1,0 +1,14 @@
+***********************************************************************************************
+***  LEGENDA: <B> BASE - <I> INTRIGO - <P> PROSPERITA - <A> ALCHIMIA - <N> NUOVI ORIZZONTI  ***
+***********************************************************************************************
+
+TAVOLO n° 1
+Ciarlatano<P> Contabilità<P> Giardini<B> Sabotatore<I> Sala del Consiglio<B> Nascondiglio<P> Fiera<B> Divinazione<A> Famiglio<A> Cantiere<P> 
+TAVOLO n° 2
+Miglioria<B> Soldo<P> Sviluppo<N> Villaggio<B> Commerciante<N> Maggiordomo<I> Ladro<B> Ampliamento<P> Fonderia<I> Vescovo<P> 
+TAVOLO n° 3
+Cancelliere<B> Nobili<I> Ballo in maschera<I> Banchetto<B> Strada maestra<N> Giardini<B> Miniera<B> Sala del Trono<B> Apprendista<A> Stalla<N> 
+TAVOLO n° 4
+Sigillo reale<P> Usuraio<B> Stanza segreta<I> Mandarino<N> Carceriere<I> Strega<B> Spia<B> Oracolo<N> Cortile di Campagna<I> Duca<I> 
+TAVOLO n° 5
+Duchessa<N> Oasi<N> Incastonare<P> Fiera<B> Sotterraneo<B> Strega<B> Locanda<N> Burocrate<B> Grande Salone<I> Incrocio<N> 

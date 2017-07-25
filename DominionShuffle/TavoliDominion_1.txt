@@ -1,0 +1,54 @@
+***********************************************************************************************
+***  LEGENDA: <B> BASE - <I> INTRIGO - <P> PROSPERITA - <A> ALCHIMIA - <N> NUOVI ORIZZONTI  ***
+***********************************************************************************************
+
+TAVOLO n° 1
+Oro dello stolto<N> Maggiordomo<I> Mucchio<P> Spia<B> Ponte<I> Usuraio<B> Sotterraneo<B> Cancelliere<B> Giardini<B> Harem<I> 
+TAVOLO n° 2
+Infame Profitto<N> Cospiratori<I> Banca<P> Grande Salone<I> Erborista<A> Villaggio di frontiera<N> Villaggio minerario<I> Esploratore<B> Ballo in maschera<I> Commerciante<N> 
+TAVOLO n° 3
+Università<A> Miglioria<B> Fucina<B> Diplomatico<N> Sviluppo<N> Oasi<N> Pedina<I> Contabilità<P> Incrocio<N> Nascondiglio<P> 
+TAVOLO n° 4
+Ambulante<P> Nobili<I> Margravio<N> Battirame<I> Mandarino<N> Strega<B> Soldo<P> Barone<I> Corte<P> Contrabbando<P> 
+TAVOLO n° 5
+Incastonare<P> Banchetto<B> Potenziamento<I> Campo nomadi<N> Sala del Consiglio<B> Fucina<B> Fiera<B> Villaggio<B> Carceriere<I> Ciarlatano<P>
+
+
+TAVOLO n° 1
+Miniera<B> Villaggio<B> Fiera<B> Miglioria<B> Stanza segreta<I> Contrattazione<N> Cappella<B> Vigna<A> Taglialegna<B> Sotterraneo<B> 
+TAVOLO n° 2
+Sigillo reale<P> Fonderia<I> Ballo in maschera<I> Esploratore<B> Harem<I> Cantiere<P> Incastonare<P> Campo nomadi<N> Zecca<P> Burocrate<B> 
+TAVOLO n° 3
+Baraccopoli<I> Laboratorio<B> Fucina<B> Potenziamento<I> Officina<B> Galleria<N> Banca<P> Spia<B> Diplomatico<N> Barone<I> 
+TAVOLO n° 4
+Vescovo<P> Cava<P> Grande Salone<I> Truffatore<I> Mercante di spezie<N> Fossato<B> Laboratorio<B> Ladro gentiluomo<N> Tuttofare<N> Cancelliere<B> 
+TAVOLO n° 5
+Pedina<I> Cancelliere<B> Villaggio di frontiera<N> Pozzo dei desideri<I> Milizia<B> Commerciante<N> Giardini<B> Strega<B> Contrabbando<P> Miniera<B> 
+
+
+TAVOLO n° 1
+Strega<B> Villaggio di frontiera<N> Scout<I> Commerciante<N> Diplomatico<N> Stazione commerciale<I> Fiera<B> Trasmutazione<A> Contrabbando<P> Milizia<B> 
+TAVOLO n° 2
+Monumento<P> Cancelliere<B> Officina<B> Tirapiedi<I> Villaggio minerario<I> Fucina<B> Via della seta<N> Macchinazione<N> Mercato<B> Contrattazione<N> 
+TAVOLO n° 3
+Ballo in maschera<I> Soldo<P> Stanza segreta<I> Mercato<B> Tributo<I> Laboratorio<B> Fossato<B> Nascondiglio<P> Forziere<N> Fonderia<I> 
+TAVOLO n° 4
+Villaggio<B> Mercante<P> Grande Salone<I> Incastonare<P> Barone<I> Incrocio<N> Duchessa<N> Miglioria<B> Cancelliere<B> Sala del Consiglio<B> 
+TAVOLO n° 5
+Harem<I> Cortile di Campagna<I> Città<P> Maggiordomo<I> Spia<B> Banchetto<B> Usuraio<B> Tumulto<P> Cartografo<N> Pozzo dei desideri<I> 
+
+
+TAVOLO n° 1
+Ciarlatano<P> Contabilità<P> Giardini<B> Sabotatore<I> Sala del Consiglio<B> Nascondiglio<P> Fiera<B> Divinazione<A> Famiglio<A> Cantiere<P> 
+TAVOLO n° 2
+Miglioria<B> Soldo<P> Sviluppo<N> Villaggio<B> Commerciante<N> Maggiordomo<I> Ladro<B> Ampliamento<P> Fonderia<I> Vescovo<P> 
+TAVOLO n° 3
+Cancelliere<B> Nobili<I> Ballo in maschera<I> Banchetto<B> Strada maestra<N> Giardini<B> Miniera<B> Sala del Trono<B> Apprendista<A> Stalla<N> 
+TAVOLO n° 4
+Sigillo reale<P> Usuraio<B> Stanza segreta<I> Mandarino<N> Carceriere<I> Strega<B> Spia<B> Oracolo<N> Cortile di Campagna<I> Duca<I> 
+TAVOLO n° 5
+Duchessa<N> Oasi<N> Incastonare<P> Fiera<B> Sotterraneo<B> Strega<B> Locanda<N> Burocrate<B> Grande Salone<I> Incrocio<N> 
+
+
+FINALE
+Cortile di Campagna<I> Pozzo dei desideri<I> Sviluppo<N> Macchinazione<N> Contrabbando<P> Biblioteca<B> Fiera<B> Giardini<B> Spia<B> Villaggio di frontiera<N>  

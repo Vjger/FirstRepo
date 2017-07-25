@@ -1,0 +1,120 @@
+<!--
+<div id="download" style=" position:relative; left:-119px" align="left"><a href="download.php"><img src="images/download.png" alt="Download Client" height="119" width="319"></a></div>
+-->
+<div class="sidebar2">
+              <div class="bc" align="center"><span class="ss">Classifiche</span></div>
+            <style>
+.topnav {
+	width:100%;
+	font-family: 'Oswald', sans-serif;
+}
+
+ol.topnav {
+	padding: 0;
+	margin: 0;
+	font-size: 1em;
+	line-height: 0.5em;
+	list-style: none;
+}
+
+ol.topnav li {list-style: none;}
+
+ol.topnav li a {
+	line-height: 21px;
+	font-size: 14px;
+	padding: 10px 5px;
+	color: #fff;
+	display: block;
+	text-decoration: none;
+	font-weight: normal;
+	text-indent:10px
+}
+
+ol.topnav li a:hover {
+	background-color:#1a481f;
+	color:white;
+	/* Fallback for web browsers that doesn't support RGBa */
+    background: rgb(0, 0, 0);
+    /* RGBa with 0.6 opacity */
+    background: rgba(0, 0, 0, 0.4);
+    /* For IE 5.5 - 7*/
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000);
+    /* For IE 8*/
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000)";
+}
+
+ol.topnav ul {
+	margin: 0;
+	padding: 0;
+	display: none;
+}
+
+ol.topnav ul li {
+	margin: 0;
+	padding: 0;
+	clear: both;
+}
+
+ol.topnav ul li a {
+	padding-left: 20px;
+	font-size: 12px;
+	font-weight: normal;
+	outline:0;
+}
+
+ol.topnav ul li a:hover {
+	background-color:#00ae42;
+	color:#fff;
+	/* Fallback for web browsers that doesn't support RGBa */
+    background: rgb(0, 0, 0);
+    /* RGBa with 0.6 opacity */
+    background: rgba(0, 0, 0, 0.4);
+    /* For IE 5.5 - 7*/
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000);
+    /* For IE 8*/
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000)";
+}
+
+ol.topnav ul ul li a {
+	color:silver;
+	padding-left: 40px;
+}
+
+ol.topnav ul ul li a:hover {
+	background-color:#00ae42;
+	color:#fff;
+	/* Fallback for web browsers that doesn't support RGBa */
+    background: rgb(0, 0, 0);
+    /* RGBa with 0.6 opacity */
+    background: rgba(0, 0, 0, 0.4);
+    /* For IE 5.5 - 7*/
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000);
+    /* For IE 8*/
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000)";
+}
+
+ol.topnav span{
+	float:right;
+}
+</style>
+<script type="text/javascript" src="../js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="js/scriptbreaker-multiple-accordion-1.js"></script>
+<script language="JavaScript">
+
+$(document).ready(function() {
+	$(".topnav").accordion({
+		accordion:false,
+			speed: 300,
+		closedSign: '&#9660;',
+		openedSign: '&#9650;'
+	});
+});
+
+</script><div>
+                
+<ol class="topnav">
+  <li><a href="#">Challenge<span>▼</span></a>
+    <ul><li><a href="#">2014<span>▼</span></a><ul><li><a href="classifica_challenge.php?id=90">Settembre 2014</a></li>
+    </ul></li></ul>
+</ol>
+</div>

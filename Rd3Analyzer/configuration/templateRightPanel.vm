@@ -1,0 +1,14 @@
+<!--
+<div id="download" style=" position:relative; left:-119px" align="left"><a href="download.php"><img src="images/download.png" alt="Download Client" height="119" width="319"></a></div>
+-->
+<div class="sidebar2">
+              <div class="bc" align="center"><span class="ss">Classifiche</span></div>
+            <div>
+                
+
+    <ul>
+        #foreach( $classifica in $listaClassifiche )
+    		<li><a href="$dominio$classifica.url">$classifica.testo</a></li>
+		#end
+	</ul>
+</div>

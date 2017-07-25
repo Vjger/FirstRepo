@@ -1,0 +1,103 @@
+<project name="replayRD3" default="jar" basedir=".">
+
+	<dirname property="workspace.dir" file="${basedir}"/>
+	<property name="jdk.home" value="C:\Program Files\Java\jdk1.7.0_51\bin\javac.exe"/>
+
+	<echo message="**** Using jdk file ${jdk.home}"/>
+	<echo message="workspace.dir: ${workspace.dir}"/>
+	
+	<property name="ant.build.javac.source" value="1.6"/>
+	<property name="ant.build.javac.target" value="1.6"/>
+
+    <property name="save.dir"   value="C:\Users\mds\Desktop\ReplayRD3"/>
+    <property name="jar.dir"    value="${save.dir}"/>
+
+    <property name="main-class"  value="it.desimone.rd3analyzer.main.ReplayStarter"/>
+
+    <path id="classpathlib">
+        <fileset dir="${workspace.dir}/Rd3Analyzer/lib">
+        	<include name="jsoup-1.7.3.jar"/>
+        	<include name="velocity-1.7-dep.jar"/>
+        </fileset>
+    </path>
+	
+    <target name="clean">
+        <delete dir="${save.dir}"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="${save.dir}/classes"/>
+  	
+        <javac srcdir="${workspace.dir}\Rd3Analyzer\src"  destdir="${save.dir}/classes" classpathref="classpathlib" debug="on" fork="yes" executable="${jdk.home}">
+        	<exclude name="it\desimone\rd3analyzer\AnalizzatorePrestigious.java"/>
+        	<exclude name="it\desimone\rd3analyzer\RankingPrestigious.java"/>
+        	<exclude name="it\desimone\rd3analyzer\RD3Analyzer.java"/>
+        	<exclude name="it\desimone\rd3analyzer\StoricoClassifica.java"/>
+        	<exclude name="it\desimone\rd3analyzer\ThreadStatus.java"/>
+        	<exclude name="it\desimone\rd3analyzer\Torneo.java"/>
+        	<exclude name="it\desimone\rd3analyzer\database\*.java"/>
+        	<exclude name="it\desimone\rd3analyzer\main\Console.java"/>
+        	<exclude name="it\desimone\rd3analyzer\main\LoaderMassivoStorico.java"/>
+        	<exclude name="it\desimone\rd3analyzer\main\LoaderSchede.java"/>
+        	<exclude name="it\desimone\rd3analyzer\main\ShutdownHook.java"/>
+        	<exclude name="it\desimone\rd3analyzer\main\Starter.java"/>
+        	<exclude name="it\desimone\rd3analyzer\main\ThreadLoaderSchede.java"/>
+        	<exclude name="it\desimone\rd3analyzer\main\ThreadTorneoRanking.java"/>
+        	<exclude name="it\desimone\rd3analyzer\main\TorneoRanking.java"/>
+        	<exclude name="it\desimone\rd3analyzer\main\Console.java"/>
+        	<exclude name="it\desimone\rd3analyzer\ui\panels\examples\*.java"/>
+        </javac>  	
+    </target>
+
+    <target name="jar" depends="compile">
+        <mkdir dir="${jar.dir}"/>
+    	<copy todir="${jar.dir}/lib" verbose="true">	
+    	    <path id="classpathrun">
+    	        <fileset dir="${workspace.dir}/Rd3Analyzer/lib">
+    	        	<include name="jsoup-1.7.3.jar"/>
+    	        	<include name="velocity-1.7-dep.jar"/>
+    	        </fileset>
+    	    </path>
+    	</copy>
+    	<copy todir="${jar.dir}\configuration">
+    	    <filelist dir="${workspace.dir}\Rd3Analyzer\configuration" files="configuration.properties,loggerConfiguration.properties"/>
+    	</copy>
+    	<copy todir="${jar.dir}\resources">
+    	    <fileset dir="${workspace.dir}\Rd3Analyzer\resources"/>
+    	</copy>
+        <manifestclasspath property="jar.classpath" jarfile="${jar.dir}/${ant.project.name}.jar">
+        	<classpath>
+        	      <fileset dir="${jar.dir}/lib">
+        	        <include name="**/*.jar"/>
+        	      </fileset>
+        	</classpath>
+        </manifestclasspath>
+        <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${save.dir}/classes" update="true">    	
+            <manifest>
+                <attribute name="Main-Class" value="${main-class}"/>
+                <attribute name="Class-Path" value="${jar.classpath}"/> 
+            </manifest>
+        </jar>
+    	
+    	<echo file="${jar.dir}/RD3Replay.cmd" append="false">
+    		@echo on
+
+    		start javaw -jar replayRD3.jar
+    	</echo>
+    	<echo file="${jar.dir}/RD3Replay.sh" append="false">
+    		#!/bin/bash
+
+    		java -jar replayRD3.jar
+    	</echo>
+    </target>
+
+    <target name="run" depends="jar">
+        <java jar="${jar.dir}/${ant.project.name}.jar" fork="true" classpathref="classpathrun">
+        </java>
+    </target>
+
+    <target name="clean-build" depends="clean,jar"/>
+
+    <target name="main" depends="clean,run"/>
+	
+</project>

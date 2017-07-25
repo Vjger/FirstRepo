@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+Main-Class: it.desimone.risiko.torneo.batch.RadGester
+Class-Path: lib/commons-lang-2.4.jar lib/poi-3.7-20101029.jar lib/itextpdf-5.1.1.jar
