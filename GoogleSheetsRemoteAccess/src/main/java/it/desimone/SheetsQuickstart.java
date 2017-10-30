@@ -28,13 +28,15 @@ import com.google.api.services.sheets.v4.model.ValueRange;
 
 
 public class SheetsQuickstart {
+	private static final String PROJECT_LOCATION = "C:\\WORK\\WORKSPACES_ECLIPSE\\TEST_GIT\\FirstRepo\\GoogleSheetsRemoteAccess";
+	
     /** Application name. */
     private static final String APPLICATION_NAME =
         "Google Sheets API Java Quickstart";
 
     /** Directory to store user credentials for this application. */
     private static final java.io.File DATA_STORE_DIR = new java.io.File(
-        "C:\\WorkSpaces Eclipse\\RisikoWorkSpace\\GoogleSheetsRemoteAccess\\resources", ".credentials/sheets.googleapis.com-java-quickstart");
+    		PROJECT_LOCATION+"\\resources", ".credentials/sheets.googleapis.com-java-quickstart");
 
     /** Global instance of the {@link FileDataStoreFactory}. */
     private static FileDataStoreFactory DATA_STORE_FACTORY;
@@ -74,7 +76,7 @@ public class SheetsQuickstart {
      */
     public static Credential authorize() throws IOException {
         // Load client secrets.
-        InputStream in = new FileInputStream("C://WorkSpaces Eclipse//RisikoWorkSpace//GoogleSheetsRemoteAccess//resources//client_secret.json");
+        InputStream in = new FileInputStream(PROJECT_LOCATION+"/resources//client_secret.json");
             //SheetsQuickstart.class.getResourceAsStream("C://WorkSpaces Eclipse//RisikoWorkSpace//GoogleSheetsRemoteAccess//resources//client_secret.json");
         GoogleClientSecrets clientSecrets =
             GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
