@@ -639,7 +639,7 @@ public class Sorteggiatore {
 			ScorePlayer primoInClassifica = scores.get(0);
 			ScorePlayer secondoInClassifica = scores.get(1);
 			List<GiocatoreDTO> semifinalisti = new ArrayList<GiocatoreDTO>();
-			boolean primoConDuevittorieESolitario = primoInClassifica.getNumeroVittorie() == 2 && primoInClassifica.getPunteggio(false).compareTo(secondoInClassifica.getPunteggio(false)) == 1;
+			boolean primoConDuevittorieESolitario = primoInClassifica.getNumeroVittorie() == 2 && primoInClassifica.getPunteggioB(false).compareTo(secondoInClassifica.getPunteggioB(false)) == 1;
 			scores = excelAccess.getClassificaQualificazioniNazionale(true, false);
 			boolean primoNonRitirato = primoInClassifica.getGiocatore().equals(scores.get(0).getGiocatore());
 			if (!primoNonRitirato){
@@ -911,7 +911,7 @@ public class Sorteggiatore {
 		ScorePlayer primoInClassifica = scores.get(0);
 		ScorePlayer secondoInClassifica = scores.get(1);
 		List<GiocatoreDTO> semifinalisti = new ArrayList<GiocatoreDTO>();
-		boolean primoConDuevittorieESolitario = primoInClassifica.getNumeroVittorie() == 2 && primoInClassifica.getPunteggio(false).compareTo(secondoInClassifica.getPunteggio(false)) == 1;
+		boolean primoConDuevittorieESolitario = primoInClassifica.getNumeroVittorie() == 2 && primoInClassifica.getPunteggioB(false).compareTo(secondoInClassifica.getPunteggioB(false)) == 1;
 		scores = excelAccess.getClassificaQualificazioniNazionale(true, false);
 		boolean primoNonRitirato = primoInClassifica.getGiocatore().equals(scores.get(0).getGiocatore());
 		if (!primoNonRitirato){
@@ -971,8 +971,8 @@ public class Sorteggiatore {
 		ScorePlayer terzoInClassifica = scores.get(2);
 		List<GiocatoreDTO> semifinalistiPari = new ArrayList<GiocatoreDTO>();
 		List<GiocatoreDTO> semifinalistiDispari = new ArrayList<GiocatoreDTO>();
-		boolean primoConDuevittorieESolitario = primoInClassifica.getNumeroVittorie() == 2 && primoInClassifica.getPunteggio(false).compareTo(terzoInClassifica.getPunteggio(false)) == 1;
-		boolean secondoConDuevittorieESolitario = secondoInClassifica.getNumeroVittorie() == 2 && secondoInClassifica.getPunteggio(false).compareTo(terzoInClassifica.getPunteggio(false)) == 1;
+		boolean primoConDuevittorieESolitario = primoInClassifica.getNumeroVittorie() == 2 && primoInClassifica.getPunteggioB(false).compareTo(terzoInClassifica.getPunteggioB(false)) == 1;
+		boolean secondoConDuevittorieESolitario = secondoInClassifica.getNumeroVittorie() == 2 && secondoInClassifica.getPunteggioB(false).compareTo(terzoInClassifica.getPunteggioB(false)) == 1;
 		scores = excelAccess.getClassificaQualificazioniNazionale(true, false);
 		boolean primoNonRitirato = primoInClassifica.getGiocatore().equals(scores.get(0).getGiocatore());
 		boolean secondoNonRitirato = secondoInClassifica.getGiocatore().equals(scores.get(1).getGiocatore());

@@ -21,9 +21,10 @@ public class ClubLoader {
 	public final static ClubDTO HORUS_CLUB = new ClubDTO("LT","GAETA [Horus Club]");
 	public final static ClubDTO LABYRINTH = new ClubDTO("GE","GENOVA [Labyrinth]");
 	public final static ClubDTO LATINA_GIOCA = new ClubDTO("LT","LATINA [LatinaGioca]");
+	public final static ClubDTO LI_DRAGHI = new ClubDTO("TR","TERNI [Li Draghi]");
 	public final static ClubDTO EGADI = new ClubDTO("TP","MARSALA [Egadi]");
 	public final static ClubDTO MESSINA = new ClubDTO("ME","MESSINA [RisiKo! dello Stretto]");
-	public final static ClubDTO MILANO = new ClubDTO("MI","MILANO [RCU]");
+	public final static ClubDTO MILANO = new ClubDTO("MI","MILANO [RC]");
 	public final static ClubDTO IL_MAIALINO = new ClubDTO("MO","MODENA [Il Maialino]");
 	public final static ClubDTO MONZAMICI = new ClubDTO("MI","MONZA [Monzamici]");	
 	public final static ClubDTO RISIKOMANI = new ClubDTO("NA","NAPOLI [I RisiKo!..mani]");
@@ -46,6 +47,8 @@ public class ClubLoader {
 	public final static ClubDTO CAPALBIO = new ClubDTO("GR", "CAPALBIO [RCU]");
 	public final static ClubDTO AIRONI = new ClubDTO("VA", "GERENZANO [Aironi]");
 	public final static ClubDTO BORGO_PILA = new ClubDTO("GE", "GENOVA [Borgo Pila]");
+	public final static ClubDTO PANZER8 = new ClubDTO("BA", "BITONTO [Panzer8]");
+
 
 
 	static{

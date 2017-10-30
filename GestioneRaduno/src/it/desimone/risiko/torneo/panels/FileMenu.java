@@ -1,7 +1,6 @@
 package it.desimone.risiko.torneo.panels;
 
 import it.desimone.risiko.torneo.batch.ExcelAccess;
-import it.desimone.risiko.torneo.batch.ExcelAccessNew;
 import it.desimone.risiko.torneo.batch.RadGester;
 import it.desimone.risiko.torneo.dto.GiocatoreDTO;
 import it.desimone.risiko.torneo.dto.Partita;
