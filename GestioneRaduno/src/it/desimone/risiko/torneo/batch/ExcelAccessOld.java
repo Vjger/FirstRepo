@@ -1628,7 +1628,7 @@ public class ExcelAccessOld {
 		Partita result = null;
 		if (partite != null && giocatore != null){
 			for (Partita partita: partite){
-				if (partita != null && partita.haGiocato(giocatore)){
+				if (partita != null && partita.eAlTavolo(giocatore)){
 					result = partita;
 					break;
 				}

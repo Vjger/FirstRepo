@@ -735,7 +735,7 @@ public class GeneratoreTavoliNew {
 	private static Integer numeroPartecipazioniTavoloda(GiocatoreDTO giocatore, Partita[] partitePrecedenti, int numeroGiocatori){
 		Integer result = 0;
 		for (Partita partita: partitePrecedenti){
-			if (partita.haGiocato(giocatore) && partita.getNumeroGiocatori() == numeroGiocatori){
+			if (partita.eAlTavolo(giocatore) && partita.getNumeroGiocatori() == numeroGiocatori){
 				result++;
 			}
 		}
@@ -1043,7 +1043,7 @@ public class GeneratoreTavoliNew {
 			for (int i=0; i<giocatoriInConfronto.length-1 && !result; i++){
 				for (int j=i+1; j<giocatoriInConfronto.length && !result; j++){
 					for (Partita partitaPrimoTurno: partitePrimoTurno){
-						result = partitaPrimoTurno.haGiocato(giocatoriInConfronto[i]) && partitaPrimoTurno.haGiocato(giocatoriInConfronto[j]);
+						result = partitaPrimoTurno.eAlTavolo(giocatoriInConfronto[i]) && partitaPrimoTurno.eAlTavolo(giocatoriInConfronto[j]);
 						if (result) break;
 					}
 				}
@@ -1078,10 +1078,10 @@ public class GeneratoreTavoliNew {
 			boolean vincitore1 = false;
 			boolean vincitore2 = false;
 			for (Partita partitaPrecedente: partitePrecedenti){
-				if (partitaPrecedente.haGiocato(giocatore1)){
+				if (partitaPrecedente.eAlTavolo(giocatore1)){
 					vincitore1 = partitaPrecedente.isVincitore(giocatore1);
 				}
-				if (partitaPrecedente.haGiocato(giocatore2)){
+				if (partitaPrecedente.eAlTavolo(giocatore2)){
 					vincitore2 = partitaPrecedente.isVincitore(giocatore2);
 				}
 			}
@@ -1101,7 +1101,7 @@ public class GeneratoreTavoliNew {
 			for (int i=0; i<giocatoriInConfronto.length-1; i++){
 				for (int j=i+1; j<giocatoriInConfronto.length; j++){
 					for (Partita partitaPrecedente: partitePrecedenti){
-						if(partitaPrecedente.haGiocato(giocatoriInConfronto[i]) && partitaPrecedente.haGiocato(giocatoriInConfronto[j])){
+						if(partitaPrecedente.eAlTavolo(giocatoriInConfronto[i]) && partitaPrecedente.eAlTavolo(giocatoriInConfronto[j])){
 							result.add(giocatoriInConfronto[i]);
 							result.add(giocatoriInConfronto[j]);
 						}
@@ -1134,7 +1134,7 @@ public class GeneratoreTavoliNew {
 			for (int i=0; i<giocatoriInConfronto.length-1; i++){
 				for (int j=i+1; j<giocatoriInConfronto.length; j++){
 					for (Partita partitaPrecedente: partitePrecedenti){
-						if(partitaPrecedente.haGiocato(giocatoriInConfronto[i]) && partitaPrecedente.haGiocato(giocatoriInConfronto[j])){
+						if(partitaPrecedente.eAlTavolo(giocatoriInConfronto[i]) && partitaPrecedente.eAlTavolo(giocatoriInConfronto[j])){
 							result++;
 						}
 					}

@@ -56,7 +56,7 @@ public class ScoreRadunoComparator implements Comparator<ScorePlayer> {
 				result = -1;
 			}else if (turnoMassimoDisputato2 == numeroTurniDisputati){ //potrebbe essere la finale: verifico che entrambi siano nella stessa partita
 				Partita presuntaFinale = scorePlayer2.getPartite()[3];
-				if (presuntaFinale.haGiocato(scorePlayer1.getGiocatore())){//potrebbe essere la finale: ordino comunque in base alla posizione al tavolo
+				if (presuntaFinale.eAlTavolo(scorePlayer1.getGiocatore())){//potrebbe essere la finale: ordino comunque in base alla posizione al tavolo
 					int posizione2 = presuntaFinale.getPosizione(scorePlayer2.getGiocatore());
 					int posizione1 = presuntaFinale.getPosizione(scorePlayer1.getGiocatore());
 					if (posizione2 < posizione1){

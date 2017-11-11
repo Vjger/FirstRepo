@@ -1106,7 +1106,7 @@ public class ExcelAccess{
 		}
 		Collections.sort(scores, new ScoreQualificazioniNazionaleComparator());
 		Partita[] finale = loadPartite(4, false, TipoTorneo.MasterRisiko2015);
-		if (finale != null){
+		if (compreseSemifinali && finale != null){
 			int index = 0;
 			Partita finale1 = finale[0];
 			Partita finale2 = null;
@@ -1156,7 +1156,7 @@ public class ExcelAccess{
 		Partita result = null;
 		if (partite != null && giocatore != null){
 			for (Partita partita: partite){
-				if (partita != null && partita.haGiocato(giocatore)){
+				if (partita != null && partita.eAlTavolo(giocatore)){
 					result = partita;
 					break;
 				}
