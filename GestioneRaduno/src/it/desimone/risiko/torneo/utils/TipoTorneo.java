@@ -28,7 +28,7 @@ public enum TipoTorneo {
 		result.add(SantEufemia);
 		//result.add(RadunoNazionale_con_quarti);
 		result.add(MasterRisiko2016);
-		result.add(MasterRisiko2015);
+		//result.add(MasterRisiko2015);
 		result.add(OpenMaster);
 		result.add(Open);
 		result.add(TorneoGufo);

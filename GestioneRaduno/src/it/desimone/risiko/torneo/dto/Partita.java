@@ -193,7 +193,7 @@ public class Partita implements Cloneable{
 		return posizione;
 	}
 	
-	public boolean haGiocato(GiocatoreDTO giocatore){
+	public boolean eAlTavolo(GiocatoreDTO giocatore){
 		boolean result = tavolo.containsKey(giocatore);
 		return result;
 	}

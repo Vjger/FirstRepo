@@ -9,7 +9,7 @@
 	<property name="ant.build.javac.source" value="1.6"/>
 	<property name="ant.build.javac.target" value="1.6"/>
 
-    <property name="save.dir"   value="C:\Users\mds\Desktop\SorteggioTavoli 1.9.3"/>
+    <property name="save.dir"   value="C:\Users\mds\Desktop\SorteggioTavoli 1.9.4"/>
     <property name="jar.dir"    value="${save.dir}"/>
 
     <property name="main-class"  value="it.desimone.risiko.torneo.batch.RadGester"/>

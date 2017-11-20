@@ -1,5 +1,6 @@
 package it.desimone.risiko.torneo.batch;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -639,7 +640,7 @@ public class Sorteggiatore {
 			ScorePlayer primoInClassifica = scores.get(0);
 			ScorePlayer secondoInClassifica = scores.get(1);
 			List<GiocatoreDTO> semifinalisti = new ArrayList<GiocatoreDTO>();
-			boolean primoConDuevittorieESolitario = primoInClassifica.getNumeroVittorie() == 2 && primoInClassifica.getPunteggio(false).compareTo(secondoInClassifica.getPunteggio(false)) == 1;
+			boolean primoConDuevittorieESolitario = primoInClassifica.getNumeroVittorie() == 2 && primoInClassifica.getPunteggioB(false).compareTo(secondoInClassifica.getPunteggioB(false)) == 1;
 			scores = excelAccess.getClassificaQualificazioniNazionale(true, false);
 			boolean primoNonRitirato = primoInClassifica.getGiocatore().equals(scores.get(0).getGiocatore());
 			if (!primoNonRitirato){
@@ -795,6 +796,7 @@ public class Sorteggiatore {
 				partiteTurno = estrazioneDiSoloUnaFinale(excelAccess, semifinali);
 				break;
 			case 6:
+			case 7:
 			case 8:
 				partiteTurno = estrazioneDiDueFinali(excelAccess, semifinali);
 				break;
@@ -812,12 +814,14 @@ public class Sorteggiatore {
 	
 	
 	private static Partita[] estrazioneDiSoloUnaFinale(ExcelAccess excelAccess, Partita[] semifinali){
+		List<ScorePlayer> partecipanti = excelAccess.getClassificaQualificazioniNazionale(true, false);
 		Partita finale = new Partita();
 		finale.setNumeroGiocatori(4);
 		finale.setNumeroTavolo(1);
 		for (Partita semifinale: semifinali){
-			for (GiocatoreDTO semifinalista: semifinale.getGiocatori()){
-				if (semifinale.isVincitore(semifinalista)){
+			for (GiocatoreDTO semifinalista: semifinale.getGiocatoriOrdinatiPerPunteggio()){
+				if (TorneiUtils.isPartecipante(partecipanti, semifinalista)){
+					MyLogger.getLogger().info("Recuperato per la finale "+semifinalista+" dalla semifinale "+semifinale.getNumeroTavolo());
 					finale.addGiocatore(semifinalista, null);
 					break;
 				}
@@ -827,66 +831,160 @@ public class Sorteggiatore {
 			//c'è da aggiungere il finalista diretto
 			List<ScorePlayer> scores = excelAccess.getClassificaQualificazioniNazionale(false, false);
 			ScorePlayer primoInClassifica = scores.get(0);
-			scores = excelAccess.getClassificaQualificazioniNazionale(true, false);
-			boolean primoNonRitirato = primoInClassifica.getGiocatore().equals(scores.get(0).getGiocatore());
+			boolean primoNonRitirato = primoInClassifica.getGiocatore().equals(partecipanti.get(0).getGiocatore());
 			if (primoNonRitirato){
-				GiocatoreDTO giocatore = scores.get(0).getGiocatore();
+				GiocatoreDTO giocatore = partecipanti.get(0).getGiocatore();
+				MyLogger.getLogger().info("Qualificato direttamente per la finale "+giocatore);
 				finale.addGiocatore(giocatore, null);
-			}//altrimenti dovrebbe essere ripescato il miglior secondo tra i semifinalisti				
+			}
 		}
+		
+		//Potrebbe essere che la finale ancora non è completa perchè tutti i semifinalisti di una semifinale si sono ritirati
+		//oppure si è ritirato il finalista diretto: in tal caso va ripescato il miglior secondo (terzo o quarto) tra tutti i semifinalisti
+		if (finale.isNotComplete()){
+			List<GiocatoreDTO> giocatoriRecuperabiliOrdinati = TorneiUtils.listaDeiGiocatoriSconfittiOrdinataPerPosizioneAlTavoloEClassificaDopo2Partite(partecipanti, semifinali);
+			GiocatoreDTO semifinalistaRecuperato = null;
+			do{
+				semifinalistaRecuperato = getMigliorSemifinalista(finale, giocatoriRecuperabiliOrdinati);
+				if (semifinalistaRecuperato != null){
+					MyLogger.getLogger().info("Recuperato per la finale il semifinalista "+semifinalistaRecuperato);
+					finale.addGiocatore(semifinalistaRecuperato, null);
+				}
+			}while(finale.isNotComplete() && semifinalistaRecuperato != null);
+		}
+		
+		
 		Partita[] result = new Partita[]{finale};
 		MyLogger.getLogger().finest("Finale: "+finale);
 		return result;
 	}
 	
+	private static GiocatoreDTO getMigliorSemifinalista(Partita finale, List<GiocatoreDTO> giocatoriRecuperabiliOrdinati){
+		GiocatoreDTO migliorSemifinalista = null;
+		if (giocatoriRecuperabiliOrdinati != null){
+			for (GiocatoreDTO giocatoreRecuperabile: giocatoriRecuperabiliOrdinati){
+				if (!finale.eAlTavolo(giocatoreRecuperabile)){
+					migliorSemifinalista = giocatoreRecuperabile;
+					break;
+				}
+			}
+		}	
+		return migliorSemifinalista;
+	}
+	
 	private static Partita[] estrazioneDiDueFinali(ExcelAccess excelAccess, Partita[] semifinali){
+		List<ScorePlayer> partecipanti = excelAccess.getClassificaQualificazioniNazionale(true, false);
+		List<ScorePlayer> scores = excelAccess.getClassificaQualificazioniNazionale(false, false);
+		ScorePlayer primoInClassifica = scores.get(0);
+		boolean primoNonRitirato = primoInClassifica.getGiocatore().equals(partecipanti.get(0).getGiocatore());
+		
+		boolean secondoNonRitirato = true;
+		ScorePlayer secondoInClassifica = scores.get(1);
+		if (primoNonRitirato){
+			secondoNonRitirato = secondoInClassifica.getGiocatore().equals(partecipanti.get(1).getGiocatore());
+		}else{
+			secondoNonRitirato = secondoInClassifica.getGiocatore().equals(partecipanti.get(0).getGiocatore());
+		}
+		
+		Partita[] semifinaliDispari = null;
+		Partita[] semifinaliPari = null;
+		if (semifinali.length % 2 == 0){
+			semifinaliDispari = new Partita[semifinali.length / 2];
+			semifinaliPari = new Partita[semifinali.length / 2];
+		}else{ //vuol dire che sono 7. Uno dei due finalisti si è ritirato (oppure in futuro, secondo e terzo sono a pari merito)
+			if (!primoNonRitirato){
+				semifinaliDispari = new Partita[(semifinali.length / 2) + 1];
+				semifinaliPari = new Partita[semifinali.length / 2];
+			}else{
+				semifinaliPari = new Partita[(semifinali.length / 2) + 1];
+				semifinaliDispari = new Partita[semifinali.length / 2];
+			}
+		}
+
+		System.arraycopy(semifinali, 0, semifinaliDispari, 0, semifinaliDispari.length);
+		System.arraycopy(semifinali, semifinaliDispari.length, semifinaliPari, 0, semifinaliPari.length);
+		
 		Partita finaleDispari = new Partita();
 		finaleDispari.setNumeroGiocatori(4);
 		finaleDispari.setNumeroTavolo(1);
-		for (int i = 0; i < semifinali.length / 2; i++){
-			Partita semifinale = semifinali[i];
-			for (GiocatoreDTO semifinalista: semifinale.getGiocatori()){
-				if (semifinale.isVincitore(semifinalista)){
+		for (int i = 0; i < semifinaliDispari.length; i++){
+			Partita semifinale = semifinaliDispari[i];
+			for (GiocatoreDTO semifinalista: semifinale.getGiocatoriOrdinatiPerPunteggio()){
+				if (TorneiUtils.isPartecipante(partecipanti, semifinalista)){
+					MyLogger.getLogger().info("Recuperato per la finale dispari "+semifinalista+" dalla semifinale "+semifinale.getNumeroTavolo());
 					finaleDispari.addGiocatore(semifinalista, null);
 					break;
 				}
 			}
 		}
-		if (finaleDispari.isNotComplete()){
+
+		if (finaleDispari.isNotComplete() && semifinaliDispari.length < 4){
 			//c'è da aggiungere il finalista diretto
-			List<ScorePlayer> scores = excelAccess.getClassificaQualificazioniNazionale(false, false);
-			ScorePlayer primoInClassifica = scores.get(0);
-			scores = excelAccess.getClassificaQualificazioniNazionale(true, false);
-			boolean primoNonRitirato = primoInClassifica.getGiocatore().equals(scores.get(0).getGiocatore());
 			if (primoNonRitirato){
-				GiocatoreDTO giocatore = scores.get(0).getGiocatore();
+				GiocatoreDTO giocatore = partecipanti.get(0).getGiocatore();
+				MyLogger.getLogger().info("Qualificato direttamente per la finale dispari "+giocatore);
 				finaleDispari.addGiocatore(giocatore, null);
-			}//altrimenti dovrebbe essere ripescato il miglior secondo tra i semifinalisti				
+			}		
 		}
+		
+		
+		//Potrebbe essere che la finale ancora non è completa perchè tutti i semifinalisti di una semifinale si sono ritirati
+		//oppure si è ritirato il finalista diretto: in tal caso va ripescato il miglior secondo (terzo o quarto) tra tutti i semifinalisti
+		if (finaleDispari.isNotComplete()){
+			List<GiocatoreDTO> giocatoriRecuperabiliOrdinati = TorneiUtils.listaDeiGiocatoriSconfittiOrdinataPerPosizioneAlTavoloEClassificaDopo2Partite(partecipanti, semifinaliDispari);
+			GiocatoreDTO semifinalistaRecuperato = null;
+			do{
+				semifinalistaRecuperato = getMigliorSemifinalista(finaleDispari, giocatoriRecuperabiliOrdinati);
+				if (semifinalistaRecuperato != null){
+					MyLogger.getLogger().info("Recuperato per la finale dispari il semifinalista "+semifinalistaRecuperato);
+					finaleDispari.addGiocatore(semifinalistaRecuperato, null);
+				}
+			}while(finaleDispari.isNotComplete() && semifinalistaRecuperato != null);
+		}
+		
 		
 		Partita finalePari = new Partita();
 		finalePari.setNumeroGiocatori(4);
 		finalePari.setNumeroTavolo(1);
-		for (int i = semifinali.length / 2; i < semifinali.length; i++){
-			Partita semifinale = semifinali[i];
-			for (GiocatoreDTO semifinalista: semifinale.getGiocatori()){
-				if (semifinale.isVincitore(semifinalista)){
+		for (int i = 0; i < semifinaliPari.length; i++){
+			Partita semifinale = semifinaliPari[i];
+			for (GiocatoreDTO semifinalista: semifinale.getGiocatoriOrdinatiPerPunteggio()){
+				if (TorneiUtils.isPartecipante(partecipanti, semifinalista)){
+					MyLogger.getLogger().info("Recuperato per la finale pari "+semifinalista+" dalla semifinale "+semifinale.getNumeroTavolo());
 					finalePari.addGiocatore(semifinalista, null);
 					break;
 				}
 			}
 		}
-		if (finalePari.isNotComplete()){
+		if (finalePari.isNotComplete() && semifinaliPari.length < 4){
 			//c'è da aggiungere il finalista diretto
-			List<ScorePlayer> scores = excelAccess.getClassificaQualificazioniNazionale(false, false);
-			ScorePlayer secondoInClassifica = scores.get(1);
-			scores = excelAccess.getClassificaQualificazioniNazionale(true, false);
-			boolean secondoNonRitirato = secondoInClassifica.getGiocatore().equals(scores.get(1).getGiocatore());
 			if (secondoNonRitirato){
-				GiocatoreDTO giocatore = scores.get(1).getGiocatore();
-				finalePari.addGiocatore(giocatore, null);
-			}//altrimenti dovrebbe essere ripescato il miglior secondo tra i semifinalisti				
+				if (primoNonRitirato){
+					GiocatoreDTO giocatore = partecipanti.get(1).getGiocatore();
+					MyLogger.getLogger().info("Qualificato direttamente per la finale pari "+giocatore);
+					finalePari.addGiocatore(giocatore, null);
+				}else{
+					GiocatoreDTO giocatore = partecipanti.get(0).getGiocatore();
+					MyLogger.getLogger().info("Qualificato direttamente per la finale pari "+giocatore);
+					finalePari.addGiocatore(giocatore, null);
+				}
+			}		
 		}
+		
+		//Potrebbe essere che la finale ancora non è completa perchè tutti i semifinalisti di una semifinale si sono ritirati
+		//oppure si è ritirato il finalista diretto: in tal caso va ripescato il miglior secondo (terzo o quarto) tra tutti i semifinalisti
+		if (finalePari.isNotComplete()){
+			List<GiocatoreDTO> giocatoriRecuperabiliOrdinati = TorneiUtils.listaDeiGiocatoriSconfittiOrdinataPerPosizioneAlTavoloEClassificaDopo2Partite(partecipanti, semifinaliPari);
+			GiocatoreDTO semifinalistaRecuperato = null;
+			do{
+				semifinalistaRecuperato = getMigliorSemifinalista(finalePari, giocatoriRecuperabiliOrdinati);
+				if (semifinalistaRecuperato != null){
+					MyLogger.getLogger().info("Recuperato per la finale Pari il semifinalista "+semifinalistaRecuperato);
+					finalePari.addGiocatore(semifinalistaRecuperato, null);
+				}
+			}while(finalePari.isNotComplete() && semifinalistaRecuperato != null);
+		}
+		
 		Partita[] result = new Partita[]{finaleDispari, finalePari};
 		MyLogger.getLogger().finest("Finale Dispari: "+finaleDispari+"Finale Pari: "+finalePari);
 		return result;
@@ -911,7 +1009,7 @@ public class Sorteggiatore {
 		ScorePlayer primoInClassifica = scores.get(0);
 		ScorePlayer secondoInClassifica = scores.get(1);
 		List<GiocatoreDTO> semifinalisti = new ArrayList<GiocatoreDTO>();
-		boolean primoConDuevittorieESolitario = primoInClassifica.getNumeroVittorie() == 2 && primoInClassifica.getPunteggio(false).compareTo(secondoInClassifica.getPunteggio(false)) == 1;
+		boolean primoConDuevittorieESolitario = primoInClassifica.getNumeroVittorie() == 2 && primoInClassifica.getPunteggioB(false).compareTo(secondoInClassifica.getPunteggioB(false)) == 1;
 		scores = excelAccess.getClassificaQualificazioniNazionale(true, false);
 		boolean primoNonRitirato = primoInClassifica.getGiocatore().equals(scores.get(0).getGiocatore());
 		if (!primoNonRitirato){
@@ -971,25 +1069,111 @@ public class Sorteggiatore {
 		ScorePlayer terzoInClassifica = scores.get(2);
 		List<GiocatoreDTO> semifinalistiPari = new ArrayList<GiocatoreDTO>();
 		List<GiocatoreDTO> semifinalistiDispari = new ArrayList<GiocatoreDTO>();
-		boolean primoConDuevittorieESolitario = primoInClassifica.getNumeroVittorie() == 2 && primoInClassifica.getPunteggio(false).compareTo(terzoInClassifica.getPunteggio(false)) == 1;
-		boolean secondoConDuevittorieESolitario = secondoInClassifica.getNumeroVittorie() == 2 && secondoInClassifica.getPunteggio(false).compareTo(terzoInClassifica.getPunteggio(false)) == 1;
-		scores = excelAccess.getClassificaQualificazioniNazionale(true, false);
-		boolean primoNonRitirato = primoInClassifica.getGiocatore().equals(scores.get(0).getGiocatore());
-		boolean secondoNonRitirato = secondoInClassifica.getGiocatore().equals(scores.get(1).getGiocatore());
+		boolean primoConDuevittorieESolitario = primoInClassifica.getNumeroVittorie() == 2 && primoInClassifica.getPunteggioB(false).compareTo(terzoInClassifica.getPunteggioB(false)) == 1;
+		boolean secondoConDuevittorieESolitario = secondoInClassifica.getNumeroVittorie() == 2 && secondoInClassifica.getPunteggioB(false).compareTo(terzoInClassifica.getPunteggioB(false)) == 1;
+		List<ScorePlayer> partecipanti = excelAccess.getClassificaQualificazioniNazionale(true, false);
+		boolean primoNonRitirato = primoInClassifica.getGiocatore().equals(partecipanti.get(0).getGiocatore());
+		boolean secondoNonRitirato = true;
+		if (primoNonRitirato){
+			secondoNonRitirato = secondoInClassifica.getGiocatore().equals(partecipanti.get(1).getGiocatore());
+		}else{
+			secondoNonRitirato = secondoInClassifica.getGiocatore().equals(partecipanti.get(0).getGiocatore());
+		}
 		if (!primoNonRitirato){
-			MyLogger.getLogger().info("Il primo giocatore risulta ritirato: "+primoInClassifica+" adesso il primo è "+scores.get(0));
+			MyLogger.getLogger().info("Il primo giocatore risulta ritirato: "+primoInClassifica+" adesso il primo è "+partecipanti.get(0));
 		}
 		if (!secondoNonRitirato){
-			MyLogger.getLogger().info("Il secondo giocatore risulta ritirato: "+secondoInClassifica+" adesso il secondo è "+scores.get(1));
+			MyLogger.getLogger().info("Il secondo giocatore risulta ritirato: "+secondoInClassifica+" adesso il secondo è "+partecipanti.get(1));
 		}
+		
+//		if (primoConDuevittorieESolitario && primoNonRitirato && secondoConDuevittorieESolitario){
+//			MyLogger.getLogger().info("Tre semifinali per il torneo dispari");
+//			if (partecipanti.size() <= 25){
+//				MyLogger.getLogger().severe("Impossibile elaborare le semifinali; meno di 26 giocatori: "+partecipanti.size());
+//				throw new MyException("Impossibile elaborare le semifinali; meno di 26 giocatori: "+partecipanti.size());
+//			}
+//			for (int i = 2; i <=24; i+=2){
+//				GiocatoreDTO giocatore = partecipanti.get(i).getGiocatore();
+//				if (i <= 6){ //suddivisione in 4 fasce di 3 giocatori
+//					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA1);
+//				}else if (i > 6 && i<=12){
+//					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA2);
+//				}else if (i > 12 && i<=18){
+//					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA3);
+//				}else{
+//					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA4);
+//				}
+//				semifinalistiDispari.add(giocatore);
+//			}
+//		}else{
+//			MyLogger.getLogger().info("Quattro semifinali per il torneo dispari");
+//			if (partecipanti.size() <= 31){
+//				MyLogger.getLogger().severe("Impossibile elaborare le semifinali; meno di 32 giocatori: "+partecipanti.size());
+//				throw new MyException("Impossibile elaborare le semifinali; meno di 32 giocatori: "+partecipanti.size());
+//			}
+//			for (int i = 0; i < 32; i+=2){ //suddivisione in 4 fasce di 4 giocatori
+//				GiocatoreDTO giocatore = partecipanti.get(i).getGiocatore();
+//				if (i <= 6){
+//					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA1);
+//				}else if (i > 6 && i<=14){
+//					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA2);
+//				}else if (i > 14 && i<=22){
+//					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA3);
+//				}else{
+//					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA4);
+//				}
+//				semifinalistiDispari.add(giocatore);
+//			}
+//		}
+//		
+//		if (secondoConDuevittorieESolitario && secondoNonRitirato){
+//			MyLogger.getLogger().info("Tre semifinali per il torneo pari");
+//			if (partecipanti.size() <= 25){
+//				MyLogger.getLogger().severe("Impossibile elaborare le semifinali; meno di 26 giocatori: "+partecipanti.size());
+//				throw new MyException("Impossibile elaborare le semifinali; meno di 26 giocatori: "+partecipanti.size());
+//			}
+//			for (int i = 3; i <=25; i+=2){
+//				GiocatoreDTO giocatore = partecipanti.get(i).getGiocatore();
+//				if (i <= 7){ //suddivisione in 4 fasce di 3 giocatori
+//					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA1);
+//				}else if (i > 7 && i<=13){
+//					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA2);
+//				}else if (i > 13 && i<=19){
+//					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA3);
+//				}else{
+//					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA4);
+//				}
+//				semifinalistiPari.add(giocatore);
+//			}
+//		}else{
+//			MyLogger.getLogger().info("Quattro semifinali per il torneo pari");
+//			if (partecipanti.size() <= 31){
+//				MyLogger.getLogger().severe("Impossibile elaborare le semifinali; meno di 32 giocatori: "+partecipanti.size());
+//				throw new MyException("Impossibile elaborare le semifinali; meno di 32 giocatori: "+partecipanti.size());
+//			}
+//			for (int i = 1; i < 32; i+=2){ //suddivisione in 4 fasce di 4 giocatori
+//				GiocatoreDTO giocatore = partecipanti.get(i).getGiocatore();
+//				if (i <= 7){
+//					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA1);
+//				}else if (i > 7 && i<=15){
+//					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA2);
+//				}else if (i > 15 && i<=23){
+//					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA3);
+//				}else{
+//					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA4);
+//				}
+//				semifinalistiPari.add(giocatore);
+//			}
+//		}
+		
 		if (primoConDuevittorieESolitario && secondoConDuevittorieESolitario && primoNonRitirato && secondoNonRitirato){
-			MyLogger.getLogger().info("Coppia di Tre semifinali");
-			if (scores.size() <= 25){
-				MyLogger.getLogger().severe("Impossibile elaborare le semifinali; meno di 26 giocatori: "+scores.size());
-				throw new MyException("Impossibile elaborare le semifinali; meno di 26 giocatori: "+scores.size());
+			MyLogger.getLogger().info("Coppia di tre semifinali");
+			if (partecipanti.size() <= 25){
+				MyLogger.getLogger().severe("Impossibile elaborare le semifinali; meno di 26 giocatori: "+partecipanti.size());
+				throw new MyException("Impossibile elaborare le semifinali; meno di 26 giocatori: "+partecipanti.size());
 			}
 			for (int i = 2; i <=24; i+=2){
-				GiocatoreDTO giocatore = scores.get(i).getGiocatore();
+				GiocatoreDTO giocatore = partecipanti.get(i).getGiocatore();
 				if (i <= 6){ //suddivisione in 4 fasce di 3 giocatori
 					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA1);
 				}else if (i > 6 && i<=12){
@@ -1002,7 +1186,7 @@ public class Sorteggiatore {
 				semifinalistiDispari.add(giocatore);
 			}
 			for (int i = 3; i <=25; i+=2){
-				GiocatoreDTO giocatore = scores.get(i).getGiocatore();
+				GiocatoreDTO giocatore = partecipanti.get(i).getGiocatore();
 				if (i <= 7){ //suddivisione in 4 fasce di 3 giocatori
 					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA1);
 				}else if (i > 7 && i<=13){
@@ -1015,13 +1199,13 @@ public class Sorteggiatore {
 				semifinalistiPari.add(giocatore);
 			}
 		}else{
-			MyLogger.getLogger().info("Quattro semifinali");
-			if (scores.size() <= 31){
-				MyLogger.getLogger().severe("Impossibile elaborare le semifinali; meno di 32 giocatori: "+scores.size());
-				throw new MyException("Impossibile elaborare le semifinali; meno di 32 giocatori: "+scores.size());
+			MyLogger.getLogger().info("Coppia di quattro semifinali");
+			if (partecipanti.size() <= 31){
+				MyLogger.getLogger().severe("Impossibile elaborare le semifinali; meno di 32 giocatori: "+partecipanti.size());
+				throw new MyException("Impossibile elaborare le semifinali; meno di 32 giocatori: "+partecipanti.size());
 			}
 			for (int i = 0; i < 32; i+=2){ //suddivisione in 4 fasce di 4 giocatori
-				GiocatoreDTO giocatore = scores.get(i).getGiocatore();
+				GiocatoreDTO giocatore = partecipanti.get(i).getGiocatore();
 				if (i <= 6){
 					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA1);
 				}else if (i > 6 && i<=14){
@@ -1034,7 +1218,7 @@ public class Sorteggiatore {
 				semifinalistiDispari.add(giocatore);
 			}
 			for (int i = 1; i < 32; i+=2){ //suddivisione in 4 fasce di 4 giocatori
-				GiocatoreDTO giocatore = scores.get(i).getGiocatore();
+				GiocatoreDTO giocatore = partecipanti.get(i).getGiocatore();
 				if (i <= 7){
 					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA1);
 				}else if (i > 7 && i<=15){

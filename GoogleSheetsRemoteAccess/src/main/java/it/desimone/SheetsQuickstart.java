@@ -21,6 +21,7 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.BatchUpdateValuesRequest;
 import com.google.api.services.sheets.v4.model.BatchUpdateValuesResponse;
+import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
@@ -28,7 +29,8 @@ import com.google.api.services.sheets.v4.model.ValueRange;
 
 
 public class SheetsQuickstart {
-	private static final String PROJECT_LOCATION = "C:\\WORK\\WORKSPACES_ECLIPSE\\TEST_GIT\\FirstRepo\\GoogleSheetsRemoteAccess";
+	//private static final String PROJECT_LOCATION = "C:\\WORK\\WORKSPACES_ECLIPSE\\TEST_GIT\\FirstRepo\\GoogleSheetsRemoteAccess";
+	private static final String PROJECT_LOCATION = "C:\\GIT Repositories\\FirstRepo\\GoogleSheetsRemoteAccess\\";
 	
     /** Application name. */
     private static final String APPLICATION_NAME =
@@ -106,8 +108,32 @@ public class SheetsQuickstart {
                 .setApplicationName(APPLICATION_NAME)
                 .build();
     }
-
+    
     public static void main(String[] args) throws IOException {
+    	leggiGiocatori();
+    }
+
+    
+    private static void leggiGiocatori()throws IOException{
+    	//https://drive.google.com/file/d/1viGXLybtQRTeu4rOFII7hD7xsubMM15Z/view?usp=sharing
+    	
+        Sheets service = getSheetsService();
+        String spreadsheetId = "1pJcq1B3pKaAV2-IIKTgqYwv80wIZszWqpeF0Ml2npTU";
+        //String range = "Iscritti!B4:E56";
+        String range = "Iscritti!B:E";
+        
+        //spreadsheetId = "1C02AuY2mNAABS4OhL9EytZYCBSH6cArNa5HrXRxb37k";
+        //range = "Ranking!C5:C5";
+               
+        ValueRange response = service.spreadsheets().values().get(spreadsheetId, range).execute();
+        List<List<Object>> values = response.getValues();
+	      for (List row : values) {
+	        // Print columns A and E, which correspond to indices 0 and 4.
+	        System.out.println(row);
+	      }
+    }
+    
+    public static void testBase() throws IOException {
         // Build a new authorized API client service.
         Sheets service = getSheetsService();
 
