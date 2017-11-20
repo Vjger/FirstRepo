@@ -108,6 +108,7 @@ public class GDriveQuickStart {
 
         // Print the names and IDs for up to 10 files.
         FileList result = service.files().list()
+        	.setQ("\'0B-WU8eY52U1IcDZ1aV9oUzlndk0\' in parents")
              .setPageSize(10)
              .setFields("nextPageToken, files(id, name)")
              .execute();
@@ -118,6 +119,7 @@ public class GDriveQuickStart {
             System.out.println("Files:");
             for (File file : files) {
                 System.out.printf("%s (%s)\n", file.getName(), file.getId());
+                System.out.println(file.getParents());
             }
         }
     }
