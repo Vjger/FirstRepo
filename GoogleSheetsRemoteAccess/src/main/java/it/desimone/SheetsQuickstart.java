@@ -109,16 +109,25 @@ public class SheetsQuickstart {
                 .build();
     }
     
+    public static Sheets getSheetsService(Credential credential) throws IOException {
+
+        return new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
+                .setApplicationName(APPLICATION_NAME)
+                .build();
+    }
+    
+    
     public static void main(String[] args) throws IOException {
-    	leggiGiocatori();
+        Credential credential = authorize();
+    	leggiGiocatori(credential, "1pJcq1B3pKaAV2-IIKTgqYwv80wIZszWqpeF0Ml2npTU");
+    	leggiGiocatori(credential, "1zElBXO79cam7BR6w1uQRCB42W5tld5qHZtkCdql7BLs");
     }
 
     
-    private static void leggiGiocatori()throws IOException{
+    public static void leggiGiocatori(Credential credential, String spreadsheetId)throws IOException{
     	//https://drive.google.com/file/d/1viGXLybtQRTeu4rOFII7hD7xsubMM15Z/view?usp=sharing
     	
-        Sheets service = getSheetsService();
-        String spreadsheetId = "1pJcq1B3pKaAV2-IIKTgqYwv80wIZszWqpeF0Ml2npTU";
+        Sheets service = getSheetsService(authorize());
         //String range = "Iscritti!B4:E56";
         String range = "Iscritti!B:E";
         
