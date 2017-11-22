@@ -21,6 +21,7 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.BatchUpdateValuesRequest;
 import com.google.api.services.sheets.v4.model.BatchUpdateValuesResponse;
+import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
@@ -29,8 +30,8 @@ import com.google.api.services.sheets.v4.model.ValueRange;
 
 
 public class SheetsQuickstart {
-	//private static final String PROJECT_LOCATION = "C:\\WORK\\WORKSPACES_ECLIPSE\\TEST_GIT\\FirstRepo\\GoogleSheetsRemoteAccess";
-	private static final String PROJECT_LOCATION = "C:\\GIT Repositories\\FirstRepo\\GoogleSheetsRemoteAccess\\";
+	private static final String PROJECT_LOCATION = "C:\\WORK\\WORKSPACES_ECLIPSE\\TEST_GIT\\FirstRepo\\GoogleSheetsRemoteAccess";
+	//private static final String PROJECT_LOCATION = "C:\\GIT Repositories\\FirstRepo\\GoogleSheetsRemoteAccess\\";
 	
     /** Application name. */
     private static final String APPLICATION_NAME =
@@ -127,7 +128,7 @@ public class SheetsQuickstart {
     public static void leggiGiocatori(Credential credential, String spreadsheetId)throws IOException{
     	//https://drive.google.com/file/d/1viGXLybtQRTeu4rOFII7hD7xsubMM15Z/view?usp=sharing
     	
-        Sheets service = getSheetsService(authorize());
+        Sheets service = getSheetsService(credential);
         //String range = "Iscritti!B4:E56";
         String range = "Iscritti!B:E";
         
@@ -142,6 +143,17 @@ public class SheetsQuickstart {
 	      }
     }
     
+    public static void leggiSheets(Credential credential, String spreadsheetId)throws IOException{
+    
+        Sheets service = getSheetsService(credential);
+	    Spreadsheet response1= service.spreadsheets().get(spreadsheetId).setIncludeGridData (false).execute ();
+	
+	    List<Sheet> workSheetList = response1.getSheets();
+	
+	    for (Sheet sheet : workSheetList) {
+	        System.out.println(sheet.getProperties().getTitle());
+	    }
+    }
     public static void testBase() throws IOException {
         // Build a new authorized API client service.
         Sheets service = getSheetsService();

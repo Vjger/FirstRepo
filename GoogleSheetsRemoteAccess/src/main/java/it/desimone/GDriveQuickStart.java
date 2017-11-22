@@ -4,7 +4,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import com.google.api.client.auth.oauth2.Credential;
@@ -25,7 +27,8 @@ import com.google.api.services.drive.model.FileList;
 
 public class GDriveQuickStart {
 	
-	private static final String PROJECT_LOCATION = "C:\\GIT Repositories\\FirstRepo\\GoogleSheetsRemoteAccess\\";
+	//private static final String PROJECT_LOCATION = "C:\\GIT Repositories\\FirstRepo\\GoogleSheetsRemoteAccess\\";
+	private static final String PROJECT_LOCATION = "C:\\WORK\\WORKSPACES_ECLIPSE\\TEST_GIT\\FirstRepo\\GoogleSheetsRemoteAccess";
     /** Application name. */
     private static final String APPLICATION_NAME =
         "Drive API Java Quickstart";
@@ -51,7 +54,8 @@ public class GDriveQuickStart {
      * at ~/.credentials/drive-java-quickstart
      */
     private static final List<String> SCOPES =
-        Arrays.asList(DriveScopes.DRIVE_METADATA_READONLY);
+        //Arrays.asList(DriveScopes.DRIVE_METADATA_READONLY);
+    	Arrays.asList(DriveScopes.DRIVE); 
 
     static {
         try {
@@ -104,6 +108,7 @@ public class GDriveQuickStart {
     }
 
     public static void main(String[] args) throws IOException {
+    	//uploadFileIntoFolder();
     	extractReportByFolders();
     }
     
@@ -132,17 +137,7 @@ public class GDriveQuickStart {
         Credential credential = authorize();
         Drive service = getDriveService(credential);
 
-//        File fileMetadata = new File();
-//        fileMetadata.setName("photo.jpg");
-//        java.io.File filePath = new java.io.File("files/photo.jpg");
-//        FileContent mediaContent = new FileContent("image/jpeg", filePath);
-//        File file = service.files().create(fileMetadata, mediaContent)
-//            .setFields("id")
-//            .execute();
-//        System.out.println("File ID: " + file.getId());
 
-        
-        
         // Print the names and IDs for up to 10 files.
         FileList resultFolders = service.files().list()
         	.setQ("\'0B-WU8eY52U1IdDVqNTVkT2RWd2c\' in parents and mimeType = 'application/vnd.google-apps.folder'")
@@ -156,7 +151,7 @@ public class GDriveQuickStart {
             for (File folder : folders) {
                 System.out.printf("%s (%s)\n", folder.getName(), folder.getId());
                 FileList resultReports = service.files().list()
-                    	.setQ("\'"+folder.getId()+"\' in parents and mimeType = 'application/vnd.google-apps.spreadsheet'")
+                    	.setQ("\'"+folder.getId()+"\' in parents and mimeType != 'application/vnd.google-apps.folder' and trashed=false")
                          .setFields("files(id, name, mimeType, webContentLink)")
                          .execute();
                 List<File> reports = resultReports.getFiles();
@@ -166,17 +161,39 @@ public class GDriveQuickStart {
                     System.out.println("Files:");
                     for (File report : reports) {
                         System.out.printf("%s (%s)\n", report.getName(), report.getId());
-                        File newMetadata = new File();
-                        newMetadata.setMimeType("application/vnd.google-apps.spreadsheet");
-                        service.files().update(report.getId(), newMetadata).execute();
+                        //File newMetadata = new File();
+                        //newMetadata.setMimeType("application/vnd.google-apps.spreadsheet");
+                        //service.files().update(report.getId(), newMetadata).execute();
                         System.out.println(report.getMimeType());
                         System.out.println(report.getWebContentLink());
                         System.out.println(report.getProperties());
-                        //SheetsQuickstart.leggiGiocatori(credential, report.getId());
+                        if (report.getId().equals("1TDo3k3gB1ZIZoWIhRF9KS7R51shsY8atMLwNJv8vLPg")){
+                        	SheetsQuickstart.leggiSheets(credential, report.getId());
+                        }
                     }
                 }
             }
         }
     }
 
+    private static void uploadFileIntoFolder() throws IOException{
+        Credential credential = authorize();
+        Drive service = getDriveService(credential);
+
+        java.io.File filePath = new java.io.File("C:\\Users\\Marco De Simone\\Documents\\OWL\\2016-03-TORNEO-RISIKO-PAIOLO.xls");
+        
+        File fileMetadata = new File();
+        fileMetadata.setName(filePath.getName());
+        fileMetadata.setMimeType("application/vnd.google-apps.spreadsheet");
+        fileMetadata.setParents(Collections.singletonList("1oH4UxLXX0tAVa4Rw4svrc4ZmfDOOcAvn"));
+        
+
+        FileContent mediaContent = new FileContent("application/vnd.ms-excel", filePath);
+        File file = service.files().create(fileMetadata, mediaContent)
+            .setFields("id, parents")
+            .execute();
+        System.out.println("File ID: " + file.getId());
+
+    }
+    
 }
