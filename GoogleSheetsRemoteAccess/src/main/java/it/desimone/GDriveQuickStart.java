@@ -264,7 +264,7 @@ public class GDriveQuickStart {
         	if (driveFiles != null){
         		Drive.Files.List driveFilesList = service.files().list();
         		if (driveFilesList != null){
-        			driveFilesList = driveFilesList.setQ("\'"+folder.getId()+"\' in parents and name=\'"+reportName+"\'");
+        			driveFilesList = driveFilesList.setQ("\'"+folder.getId()+"\' in parents and name=\'"+reportName+"\'  and trashed=false");
         			FileList fileList = driveFilesList.execute();
         			if (fileList != null && fileList.getFiles() != null && !fileList.getFiles().isEmpty()){
         				fileId = fileList.getFiles().get(0).getId();
