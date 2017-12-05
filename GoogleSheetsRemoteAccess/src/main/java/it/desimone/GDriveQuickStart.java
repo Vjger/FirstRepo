@@ -27,6 +27,9 @@ import com.google.api.services.drive.model.FileList;
 
 public class GDriveQuickStart {
 	
+	private static java.io.File testExcel = new java.io.File("C:\\Users\\Marco De Simone\\Downloads\\ModuloTorneo.xls");
+
+	
 	//private static final String PROJECT_LOCATION = "C:\\GIT Repositories\\FirstRepo\\GoogleSheetsRemoteAccess\\";
 	private static final String PROJECT_LOCATION = "C:\\WORK\\WORKSPACES_ECLIPSE\\TEST_GIT\\FirstRepo\\GoogleSheetsRemoteAccess";
     /** Application name. */
@@ -109,7 +112,15 @@ public class GDriveQuickStart {
 
     public static void main(String[] args) throws IOException {
     	//uploadFileIntoFolder();
-    	extractReportByFolders();
+    	//extractReportByFolders();
+    	Credential credential = authorize();
+    	String parentFolderId = "1RCm2oUNm1weBqSErFAFBxsRHfKWDJJ9a";
+    	List<File> clubFolders = getClubFolders(credential, parentFolderId);
+    	System.out.println("Folder del club: "+clubFolders == null?"null":clubFolders.size());
+    	if (clubFolders != null){;
+    		File uploadedFile = uploadClubReport(credential, clubFolders, testExcel);
+    		System.out.println("Uploaded file by Id "+uploadedFile.getId());
+    	}
     }
     
     private static void testFileAndFolders() throws IOException{
@@ -140,7 +151,8 @@ public class GDriveQuickStart {
 
         // Print the names and IDs for up to 10 files.
         FileList resultFolders = service.files().list()
-        	.setQ("\'0B-WU8eY52U1IdDVqNTVkT2RWd2c\' in parents and mimeType = 'application/vnd.google-apps.folder'")
+        	//.setQ("\'0B-WU8eY52U1IdDVqNTVkT2RWd2c\' in parents and mimeType = 'application/vnd.google-apps.folder'")
+        	.setQ("\'1RCm2oUNm1weBqSErFAFBxsRHfKWDJJ9a\' in parents and mimeType = 'application/vnd.google-apps.folder' and sharedWithMe=true")
              //.setFields("files(id, name)")
              .execute();
         List<File> folders = resultFolders.getFiles();
@@ -196,4 +208,70 @@ public class GDriveQuickStart {
 
     }
     
+    public static List<File> getClubFolders(Credential credential, String parentFolderId) throws IOException{
+    	List<File> folders = null;
+        Drive service = getDriveService(credential);
+
+        if (service != null){
+        	Drive.Files driveFiles = service.files();
+        	if (driveFiles != null){
+        		Drive.Files.List driveFilesList = service.files().list();
+        		if (driveFilesList != null){
+        			driveFilesList = driveFilesList.setQ("\'"+parentFolderId+"\' in parents and mimeType = 'application/vnd.google-apps.folder' and sharedWithMe=true");
+        			FileList fileList = driveFilesList.execute();
+        			if (fileList != null){
+        				folders = fileList.getFiles();
+        			}
+        		}
+        	}
+        }
+
+        return folders;
+    }
+    
+    public static File uploadClubReport(Credential credential, List<File> clubFolders, java.io.File report) throws IOException{
+    	File uploadedFile = null;
+        Drive service = getDriveService(credential);
+        
+        if (clubFolders != null && !clubFolders.isEmpty()){
+        	for (File clubFolder: clubFolders){
+		        File fileMetadata = new File();
+		        fileMetadata.setName(report.getName());
+		        fileMetadata.setMimeType("application/vnd.google-apps.spreadsheet");   
+		        
+		        FileContent mediaContent = new FileContent("application/vnd.ms-excel", report);
+		        
+		        String fileId = fileExistsIntoFolder(credential, clubFolder, report.getName());
+		        
+	        	Drive.Files driveFiles = service.files();
+		        if (fileId != null){
+		        	uploadedFile = driveFiles.update(fileId, fileMetadata, mediaContent).setFields("id, parents").execute();		        	
+		        }else{	        
+			        fileMetadata.setParents(Collections.singletonList(clubFolder.getId()));
+		        	uploadedFile = driveFiles.create(fileMetadata, mediaContent).setFields("id, parents").execute();
+	        	}
+        	}
+        }
+        return uploadedFile;
+    }
+    
+    public static String fileExistsIntoFolder(Credential credential, File folder, String reportName) throws IOException{
+    	String fileId = null;
+    	Drive service = getDriveService(credential);
+    	
+        if (service != null){
+        	Drive.Files driveFiles = service.files();
+        	if (driveFiles != null){
+        		Drive.Files.List driveFilesList = service.files().list();
+        		if (driveFilesList != null){
+        			driveFilesList = driveFilesList.setQ("\'"+folder.getId()+"\' in parents and name=\'"+reportName+"\'");
+        			FileList fileList = driveFilesList.execute();
+        			if (fileList != null && fileList.getFiles() != null && !fileList.getFiles().isEmpty()){
+        				fileId = fileList.getFiles().get(0).getId();
+        			}
+        		}
+        	}
+        }
+    	return fileId;
+    }
 }
