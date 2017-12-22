@@ -152,6 +152,12 @@ public class SheetsQuickstart {
 	
 	    for (Sheet sheet : workSheetList) {
 	        System.out.println(sheet.getProperties().getTitle());
+	        ValueRange response = service.spreadsheets().values().get(spreadsheetId, sheet.getProperties().getTitle()).execute();
+	        List<List<Object>> values = response.getValues();
+		      for (List row : values) {
+		        // Print columns A and E, which correspond to indices 0 and 4.
+		        System.out.println(row);
+		      }
 	    }
     }
     public static void testBase() throws IOException {

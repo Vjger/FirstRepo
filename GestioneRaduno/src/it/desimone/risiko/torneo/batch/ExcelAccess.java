@@ -1165,6 +1165,13 @@ public class ExcelAccess{
 		return result;
 	}
 	
+	public void hideMailColumn(){
+		HSSFSheet schedaIscritti = foglioTorneo.getSheet(SCHEDA_ISCRITTI);
+		if (schedaIscritti != null){
+			schedaIscritti.setColumnHidden(2, true);
+		}
+	}
+	
 	public void closeFileExcel(){
 		if (pathFileExcel != null){
 			try{

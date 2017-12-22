@@ -4,7 +4,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -75,25 +74,28 @@ public class GDriveQuickStart {
      * @return an authorized Credential object.
      * @throws IOException
      */
-    public static Credential authorize() throws IOException {
-        // Load client secrets.
-        //InputStream in = GDriveQuickStart.class.getResourceAsStream("/client_secret.json");
-    	
-    	 InputStream in = new FileInputStream(PROJECT_LOCATION+"/resources//client_secret.json");
-        GoogleClientSecrets clientSecrets =
-            GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
+    public static Credential authorize()  {
+    	// Load client secrets.
+    	//InputStream in = GDriveQuickStart.class.getResourceAsStream("/client_secret.json");
 
-        // Build flow and trigger user authorization request.
-        GoogleAuthorizationCodeFlow flow =
-                new GoogleAuthorizationCodeFlow.Builder(
-                        HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
-                .setDataStoreFactory(DATA_STORE_FACTORY)
-                .setAccessType("offline")
-                .build();
-        Credential credential = new AuthorizationCodeInstalledApp(
-            flow, new LocalServerReceiver()).authorize("user");
-        System.out.println(
-                "Credentials saved to " + DATA_STORE_DIR.getAbsolutePath());
+    	Credential credential = null;
+
+    	try{
+    		InputStream in = new FileInputStream(PROJECT_LOCATION+"/resources//client_secret.json");
+    		GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
+
+    		// Build flow and trigger user authorization request.
+    		GoogleAuthorizationCodeFlow flow =
+    				new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
+    				.setDataStoreFactory(DATA_STORE_FACTORY)
+    				.setAccessType("offline")
+    				.build();
+    		credential = new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
+    		
+    		System.out.println("Credentials saved to " + DATA_STORE_DIR.getAbsolutePath());
+    	}catch(IOException ioe){
+    		System.err.println(ioe);
+    	}
         return credential;
     }
 
@@ -102,22 +104,25 @@ public class GDriveQuickStart {
      * @return an authorized Drive client service
      * @throws IOException
      */
-    public static Drive getDriveService(Credential credential) throws IOException {
+    public static Drive getDriveService(Credential credential)  {
         //Credential credential = authorize();
-        return new Drive.Builder(
-                HTTP_TRANSPORT, JSON_FACTORY, credential)
-                .setApplicationName(APPLICATION_NAME)
-                .build();
+        return new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).setApplicationName(APPLICATION_NAME).build();
     }
 
     public static void main(String[] args) throws IOException {
     	//uploadFileIntoFolder();
-    	//extractReportByFolders();
+//    	extractReportByFolders();
     	Credential credential = authorize();
     	String parentFolderId = "1RCm2oUNm1weBqSErFAFBxsRHfKWDJJ9a";
     	List<File> clubFolders = getClubFolders(credential, parentFolderId);
     	System.out.println("Folder del club: "+clubFolders == null?"null":clubFolders.size());
     	if (clubFolders != null){;
+
+//			ExcelAccess excelAccess = new ExcelAccess(testExcel);
+//			excelAccess.openFileExcel();
+//			excelAccess.hideMailColumn();
+//			excelAccess.closeFileExcel();
+    	
     		File uploadedFile = uploadClubReport(credential, clubFolders, testExcel);
     		System.out.println("Uploaded file by Id "+uploadedFile.getId());
     	}
@@ -179,9 +184,9 @@ public class GDriveQuickStart {
                         System.out.println(report.getMimeType());
                         System.out.println(report.getWebContentLink());
                         System.out.println(report.getProperties());
-                        if (report.getId().equals("1TDo3k3gB1ZIZoWIhRF9KS7R51shsY8atMLwNJv8vLPg")){
+                        //if (report.getId().equals("1TDo3k3gB1ZIZoWIhRF9KS7R51shsY8atMLwNJv8vLPg")){
                         	SheetsQuickstart.leggiSheets(credential, report.getId());
-                        }
+                        //}
                     }
                 }
             }
@@ -264,7 +269,7 @@ public class GDriveQuickStart {
         	if (driveFiles != null){
         		Drive.Files.List driveFilesList = service.files().list();
         		if (driveFilesList != null){
-        			driveFilesList = driveFilesList.setQ("\'"+folder.getId()+"\' in parents and name=\'"+reportName+"\'  and trashed=false");
+        			driveFilesList = driveFilesList.setQ("\'"+folder.getId()+"\' in parents and name=\'"+reportName+"\' and trashed=false");
         			FileList fileList = driveFilesList.execute();
         			if (fileList != null && fileList.getFiles() != null && !fileList.getFiles().isEmpty()){
         				fileId = fileList.getFiles().get(0).getId();
