@@ -21,6 +21,13 @@ private volatile static Properties properties = new Properties();
 		}
 	}
 	
+	public static String getRCUFolderId(){
+		String folderId = ((String)properties.get("rcuFolderId"));
+		if (folderId != null) folderId = folderId.trim();
+		MyLogger.getLogger().info("ID RCU Folder:<<"+folderId+">>");
+		return folderId;
+	}
+	
 	public static Integer getSogliaRadunoConQuarti(){
 		String soglia = ((String)properties.get("sogliaRadunoConQuarti"));
 		Integer result = 0;

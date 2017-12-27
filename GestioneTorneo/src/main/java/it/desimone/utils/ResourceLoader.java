@@ -24,7 +24,7 @@ public class ResourceLoader {
 		MyLogger.getLogger().finer("ROOT: "+ROOT);	
 		ZIPFILE = new File(ROOT+File.separator+"resources"+File.separator+ZIP_FILE_NAME);
 		if (!ZIPFILE.exists()){
-			MyLogger.getLogger().severe("Non è stato trovato il file "+ZIPFILE);
+			MyLogger.getLogger().severe("Non ï¿½ stato trovato il file "+ZIPFILE);
 		}
 	}
 	
@@ -32,6 +32,16 @@ public class ResourceLoader {
 	private static final String NOME_FILE_EXCEL = "ModuloTorneo.xls";
 	private static final String NOME_FILE_IMMAGINE_RISIKO = "image004_rid.png";
 	
+	private static final String googleClientSecret = "client_secret.json";
+	
+	
+	public static String googleClientSecretPath(){
+		return ROOT+File.separator+"resources"+File.separator+"google"+File.separator+googleClientSecret;
+	}
+	
+	public static File googleCredentials(){
+		return new java.io.File(ROOT+File.separator+"resources"+File.separator+"google", ".credentials/drive-java-quickstart");
+	}
 	
 	public File estraiManuale(){
 		File manuale = FileUtils.estraiDaZip(ZIPFILE, HELPFILE);
@@ -46,7 +56,7 @@ public class ResourceLoader {
 	public File estraiManualeByFS(){
 		File manuale = new File("./resources/"+HELPFILE);
 		if (!manuale.exists()){
-			MyLogger.getLogger().severe("Non è stato trovato il file "+manuale);
+			MyLogger.getLogger().severe("Non ï¿½ stato trovato il file "+manuale);
 			return null;
 		}
 		MyLogger.getLogger().finer("Manuale: "+manuale.getAbsolutePath());
@@ -111,7 +121,7 @@ public class ResourceLoader {
 			is.close();
 			out.close();
 		}else{
-			MyLogger.getLogger().severe("Non è stato trovato il file "+xlsOriginario);
+			MyLogger.getLogger().severe("Non ï¿½ stato trovato il file "+xlsOriginario);
 		}
 	}
 	
@@ -130,7 +140,7 @@ public class ResourceLoader {
 			is.close();
 			out.close();
 		}else{
-			MyLogger.getLogger().severe("Non è stato trovato il file "+xlsOriginario);
+			MyLogger.getLogger().severe("Non ï¿½ stato trovato il file "+xlsOriginario);
 		}
 	}
 	
@@ -189,7 +199,7 @@ public class ResourceLoader {
 			}
 			MyLogger.getLogger().finer("file immagine: "+(result==null?"0":result.length+" byte"));
 		}else{
-			MyLogger.getLogger().severe("Non è stato trovato il file "+immagineRisiko);
+			MyLogger.getLogger().severe("Non ï¿½ stato trovato il file "+immagineRisiko);
 		}
 		return result;
 	}
@@ -222,7 +232,7 @@ public class ResourceLoader {
 
 			MyLogger.getLogger().finer("file immagine: "+(result==null?"0":result.length+" byte"));
 		}else{
-			MyLogger.getLogger().severe("Non è stato trovato il file "+immagineRisiko);
+			MyLogger.getLogger().severe("Non ï¿½ stato trovato il file "+immagineRisiko);
 		}
 		return result;
 	}
@@ -234,7 +244,7 @@ public class ResourceLoader {
 			result = immagineRisiko.getPath();
 			MyLogger.getLogger().finer("file immagine: "+result);
 		}else{
-			MyLogger.getLogger().severe("Non è stato trovato il file "+immagineRisiko);
+			MyLogger.getLogger().severe("Non ï¿½ stato trovato il file "+immagineRisiko);
 		}
 		return result;
 	}
@@ -251,7 +261,7 @@ public class ResourceLoader {
 				MyLogger.getLogger().severe("Eccezione nel trasformare in url la URI "+uri+" del file "+immagineRisiko);
 			}
 		}else{
-			MyLogger.getLogger().severe("Non è stato trovato il file "+immagineRisiko);
+			MyLogger.getLogger().severe("Non ï¿½ stato trovato il file "+immagineRisiko);
 		}
 		return result;
 	}

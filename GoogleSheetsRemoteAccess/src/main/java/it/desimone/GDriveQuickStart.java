@@ -26,11 +26,11 @@ import com.google.api.services.drive.model.FileList;
 
 public class GDriveQuickStart {
 	
-	private static java.io.File testExcel = new java.io.File("C:\\Users\\Marco De Simone\\Downloads\\ModuloTorneo.xls");
+	private static java.io.File testExcel = new java.io.File("C:\\Users\\mds\\Downloads\\ModuloMasterVerona.xls");
 
 	
-	//private static final String PROJECT_LOCATION = "C:\\GIT Repositories\\FirstRepo\\GoogleSheetsRemoteAccess\\";
-	private static final String PROJECT_LOCATION = "C:\\WORK\\WORKSPACES_ECLIPSE\\TEST_GIT\\FirstRepo\\GoogleSheetsRemoteAccess";
+	private static final String PROJECT_LOCATION = "C:\\GIT Repositories\\FirstRepo\\GoogleSheetsRemoteAccess\\";
+	//private static final String PROJECT_LOCATION = "C:\\WORK\\WORKSPACES_ECLIPSE\\TEST_GIT\\FirstRepo\\GoogleSheetsRemoteAccess";
     /** Application name. */
     private static final String APPLICATION_NAME =
         "Drive API Java Quickstart";

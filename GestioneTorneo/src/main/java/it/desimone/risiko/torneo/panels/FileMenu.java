@@ -1,5 +1,6 @@
 package it.desimone.risiko.torneo.panels;
 
+import it.desimone.gdrive.GoogleDriveAccess;
 import it.desimone.risiko.torneo.batch.ExcelAccess;
 import it.desimone.risiko.torneo.batch.RadGester;
 import it.desimone.risiko.torneo.dto.GiocatoreDTO;
@@ -27,6 +28,7 @@ public class FileMenu extends JMenu {
 	private JMenuItem menuExportVbc = new JMenuItem("vB");
 	private JMenuItem menuExportHtml = new JMenuItem("Html");
 	private JMenuItem menuStampaFile= new JMenuItem("Stampa Report Risiko");
+	private JMenuItem menuPublishReport = new JMenuItem("Pubblica on line");
 	private JFileChooser fileChooser = new JFileChooser(".\\");
 	private File excelFile;
 	
@@ -72,6 +74,8 @@ public class FileMenu extends JMenu {
 		menuStampaFile.addActionListener(getStampaActionListener());
 		this.add(menuStampaFile);
 		
+		menuPublishReport.addActionListener(getPublishListener());
+		this.add(menuPublishReport);
 	}
 
 	private ActionListener getOpenActionListener(){
@@ -127,7 +131,7 @@ public class FileMenu extends JMenu {
 						}
 						writer.close();
 						excelAccess.closeFileExcel();
-						JOptionPane.showMessageDialog(null, "Esportazione conclusa: il file esportato è \n"+exportFileName, "Risultato Finale", JOptionPane.INFORMATION_MESSAGE);
+						JOptionPane.showMessageDialog(null, "Esportazione conclusa: il file esportato ï¿½ \n"+exportFileName, "Risultato Finale", JOptionPane.INFORMATION_MESSAGE);
 					}catch(Exception ex){
 						RadGester.writeException(ex);
 						JOptionPane.showMessageDialog(null, new TextException(ex),"Orrore!",JOptionPane.ERROR_MESSAGE);
@@ -165,7 +169,30 @@ public class FileMenu extends JMenu {
 							}
 						}
 						excelAccess.closeFileExcel();
-						JOptionPane.showMessageDialog(null, "Stampa conclusa: il file prodotto è \n"+stampaFileName, "Risultato Finale", JOptionPane.INFORMATION_MESSAGE);
+						JOptionPane.showMessageDialog(null, "Stampa conclusa: il file prodotto ï¿½ \n"+stampaFileName, "Risultato Finale", JOptionPane.INFORMATION_MESSAGE);
+					}catch(Exception ex){
+						RadGester.writeException(ex);
+						JOptionPane.showMessageDialog(null, new TextException(ex),"Orrore!",JOptionPane.ERROR_MESSAGE);
+					}
+				}
+			}
+		 };
+		return listExport;
+	}
+	
+	private ActionListener getPublishListener(){
+		 ActionListener listExport = new ActionListener(){
+			public void actionPerformed (ActionEvent e){
+				if (excelFile == null){
+					JOptionPane.showMessageDialog(null, "Selezionare il foglio Excel con le partite da pubblicare","Attenzione!",JOptionPane.INFORMATION_MESSAGE);
+				}else{
+					try{
+						String excelFileName = excelFile.getPath();
+	                    
+						GoogleDriveAccess googleDriveAccess = new GoogleDriveAccess();
+						googleDriveAccess.uploadReportOnAvailablesFolders(new File(excelFileName));
+						
+						JOptionPane.showMessageDialog(null, "Pubblicazione effettuata", "Risultato Finale", JOptionPane.INFORMATION_MESSAGE);
 					}catch(Exception ex){
 						RadGester.writeException(ex);
 						JOptionPane.showMessageDialog(null, new TextException(ex),"Orrore!",JOptionPane.ERROR_MESSAGE);
@@ -192,7 +219,7 @@ public class FileMenu extends JMenu {
 		for (int numero = 0; numero < partite.length; numero++){
 			int numeroTavolo = partite[numero].getNumeroTavolo();
 			int numeroGiocatori = partite[numero].getNumeroGiocatori();
-			buffer.append("<TR class=\"tr1\"><TD colspan=\""+numeroGiocatori*2+"\" align=\"center\">Turno n° "+numeroTurno+" - Tavolo n° "+numeroTavolo+"</TD></TR>");
+			buffer.append("<TR class=\"tr1\"><TD colspan=\""+numeroGiocatori*2+"\" align=\"center\">Turno nï¿½ "+numeroTurno+" - Tavolo nï¿½ "+numeroTavolo+"</TD></TR>");
 			buffer.append("<TR class=\"tr2\">");
 			for (GiocatoreDTO giocatore: partite[numero].getGiocatori()){
 				String nominativo = giocatore.getNome()+" "+giocatore.getCognome();
@@ -213,7 +240,7 @@ public class FileMenu extends JMenu {
 	
 	private String generavBcPartite(Partita[] partite, int numeroTurno){
 		StringBuilder buffer = new StringBuilder();
-		buffer.append("[FONT=Arial][SIZE=3][COLOR=Red][B]Turno n° "+numeroTurno+"[/B][/COLOR][/SIZE][/FONT]");
+		buffer.append("[FONT=Arial][SIZE=3][COLOR=Red][B]Turno nï¿½ "+numeroTurno+"[/B][/COLOR][/SIZE][/FONT]");
 		buffer.append("[TABLE]");
 		for (int numero = 0; numero < partite.length; numero++){
 			int numeroTavolo = partite[numero].getNumeroTavolo();
