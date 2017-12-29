@@ -1,7 +1,24 @@
 package it.desimone.risiko.torneo.panels;
 
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileWriter;
+import java.util.List;
+
+import javax.swing.JFileChooser;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
+
 import it.desimone.gdrive.GoogleDriveAccess;
 import it.desimone.risiko.torneo.batch.ExcelAccess;
+import it.desimone.risiko.torneo.batch.ExcelValidator;
+import it.desimone.risiko.torneo.batch.ExcelValidator.ExcelValidatorMessages;
 import it.desimone.risiko.torneo.batch.RadGester;
 import it.desimone.risiko.torneo.dto.GiocatoreDTO;
 import it.desimone.risiko.torneo.dto.Partita;
@@ -9,16 +26,6 @@ import it.desimone.risiko.torneo.utils.PdfUtils;
 import it.desimone.risiko.torneo.utils.TipoTorneo;
 import it.desimone.utils.MyException;
 import it.desimone.utils.TextException;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileWriter;
-
-import javax.swing.JFileChooser;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 
 public class FileMenu extends JMenu {
 	
@@ -187,12 +194,19 @@ public class FileMenu extends JMenu {
 					JOptionPane.showMessageDialog(null, "Selezionare il foglio Excel con le partite da pubblicare","Attenzione!",JOptionPane.INFORMATION_MESSAGE);
 				}else{
 					try{
-						String excelFileName = excelFile.getPath();
-	                    
-						GoogleDriveAccess googleDriveAccess = new GoogleDriveAccess();
-						googleDriveAccess.uploadReportOnAvailablesFolders(new File(excelFileName));
+						ExcelValidator excelValidator = new ExcelValidator(excelFile);
+						List<ExcelValidatorMessages> messaggiDiValidazione = excelValidator.validaFoglioExcel();
 						
-						JOptionPane.showMessageDialog(null, "Pubblicazione effettuata", "Risultato Finale", JOptionPane.INFORMATION_MESSAGE);
+						if (messaggiDiValidazione == null || messaggiDiValidazione.isEmpty()){				
+							String excelFileName = excelFile.getPath();
+		                    
+							GoogleDriveAccess googleDriveAccess = new GoogleDriveAccess();
+							googleDriveAccess.uploadReportOnAvailablesFolders(new File(excelFileName));
+							
+							JOptionPane.showMessageDialog(null, "Pubblicazione effettuata", "Risultato Finale", JOptionPane.INFORMATION_MESSAGE);
+						}else{
+							pubblicaErroriDiValidazione(messaggiDiValidazione);
+						}
 					}catch(Exception ex){
 						RadGester.writeException(ex);
 						JOptionPane.showMessageDialog(null, new TextException(ex),"Orrore!",JOptionPane.ERROR_MESSAGE);
@@ -203,6 +217,30 @@ public class FileMenu extends JMenu {
 		return listExport;
 	}
 
+	
+	private void pubblicaErroriDiValidazione(List<ExcelValidatorMessages> messaggiDiValidazione){
+		Object[] header = new String[]{"Scheda", "Messaggio di errore"};
+		
+		Object[][] rows = new String[messaggiDiValidazione.size()][2];
+		int indexRows = 0;
+		for (ExcelValidatorMessages excelValidatorMessages: messaggiDiValidazione){
+			rows[indexRows][0] = excelValidatorMessages.getSchedaDiRiferimento().name();
+			rows[indexRows][1] = excelValidatorMessages.getMessage();
+			indexRows++;
+		}
+		JTable errorTable = new JTable(rows, header);
+		//errorTable.setSize(400, 400);
+		errorTable.setPreferredSize(new Dimension(800, 500));
+		//errorTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		//errorTable.doLayout();
+		TableColumnModel jTableColumnModel = errorTable.getColumnModel();
+		TableColumn columnScheda = jTableColumnModel.getColumn(0);
+		columnScheda.setPreferredWidth(100);
+		TableColumn columnMessage = jTableColumnModel.getColumn(1);
+		columnMessage.setPreferredWidth(700);
+		JOptionPane.showMessageDialog(null, errorTable,"Foglio Excel non completo",JOptionPane.ERROR_MESSAGE);
+	}
+	
 	public File getExcelFile() {
 		return excelFile;
 	}

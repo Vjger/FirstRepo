@@ -11,14 +11,18 @@
   <url>http://maven.apache.org</url>
 
   <properties>
-<!--   
+ 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
- -->    
+
+ <!-- 
     <project.output>C:\Users\mds\Desktop\GestioneTorneo</project.output>
+     -->
+    <project.output>${user.home}\Desktop\GestioneTorneo</project.output>
   </properties>
 
 	<build> 
 		<plugins>
+		
 			<plugin>
 			    <groupId>org.apache.maven.plugins</groupId>
 			    <artifactId>maven-dependency-plugin</artifactId>
@@ -53,7 +57,7 @@
 			        </archive>
 			    </configuration>
 			</plugin>
-	
+	<!-- 
 			<plugin>
 			  <artifactId>maven-assembly-plugin</artifactId>
 			  <version>2.6</version>
@@ -65,20 +69,20 @@
 			  </configuration>
 			  <executions>
 			    <execution>
-			      <id>make-assembly</id> <!-- this is used for inheritance merges -->
-			      <phase>package</phase> <!-- append to the packaging phase. -->
+			      <id>make-assembly</id> <
+			      <phase>package</phase> 
 			      <goals>
-			        <goal>single</goal> <!-- goals == mojos -->
+			        <goal>single</goal> 
 			      </goals>
 			    </execution>
 			  </executions>
 			</plugin>
-
+ -->
 		
 			<plugin>
 		        <artifactId>maven-resources-plugin</artifactId>
 		        <version>3.0.2</version>
-		        <executions>
+		        <executions> 	        
 		          <execution>
 		            <id>copy-resources</id>
             
@@ -101,7 +105,7 @@
 		                  	<exclude>resources/*.pdf</exclude>
 		                  	<exclude>resources/*.xls</exclude>
 		                  </excludes>
-		                  <filtering>true</filtering>
+		                  <filtering>false</filtering>
 		                </resource>
 		                <resource>
 		                  <directory>target/</directory>
@@ -109,7 +113,7 @@
 		                  	<include>libs/</include>
 		                  	<include>*.jar</include>
 		                  </includes>
-		                  <filtering>true</filtering>
+		                  <filtering>false</filtering>
 		                </resource>
 		              </resources>              
 		            </configuration>            

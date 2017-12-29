@@ -19,6 +19,7 @@ public class GiocatoreDTO implements Comparable{
 	
 	private String nome;
 	private String cognome;
+	private String email;
 	private String nick;
 	private RegioneDTO regioneProvenienza;
 	private ClubDTO clubProvenienza;
@@ -60,6 +61,7 @@ public class GiocatoreDTO implements Comparable{
 		StringBuilder buffer = new StringBuilder();
 		buffer.append(nome+SEPARATOR);
 		buffer.append(cognome+SEPARATOR);
+		buffer.append(email+SEPARATOR);
 		buffer.append(nick!=null?nick:""+SEPARATOR);
 		buffer.append(regioneProvenienza+SEPARATOR);
 		buffer.append(clubProvenienza!=null?clubProvenienza:""+SEPARATOR);
@@ -84,6 +86,14 @@ public class GiocatoreDTO implements Comparable{
 
 	public void setCognome(String cognome) {
 		this.cognome = cognome;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public String getNick() {
