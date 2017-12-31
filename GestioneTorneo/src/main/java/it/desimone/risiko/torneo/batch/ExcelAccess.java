@@ -4,6 +4,7 @@ import it.desimone.risiko.torneo.dto.ClubDTO;
 import it.desimone.risiko.torneo.dto.GiocatoreDTO;
 import it.desimone.risiko.torneo.dto.Partita;
 import it.desimone.risiko.torneo.dto.RegioneDTO;
+import it.desimone.risiko.torneo.dto.SchedaClassifica;
 import it.desimone.risiko.torneo.dto.SchedaTorneo;
 import it.desimone.risiko.torneo.dto.ScorePlayer;
 import it.desimone.risiko.torneo.dto.ScorePlayerCampionatoGufo;
@@ -13,6 +14,7 @@ import it.desimone.risiko.torneo.dto.ScorePlayerQualificazioniNazionale;
 import it.desimone.risiko.torneo.dto.ScorePlayerRaduno;
 import it.desimone.risiko.torneo.dto.ScorePlayerTorneoBGL;
 import it.desimone.risiko.torneo.dto.ScorePlayerTorneoGufo;
+import it.desimone.risiko.torneo.dto.SchedaClassifica.RigaClassifica;
 import it.desimone.risiko.torneo.utils.ClubLoader;
 import it.desimone.risiko.torneo.utils.RegioniLoader;
 import it.desimone.risiko.torneo.utils.ScoreCampionatoComparator;
@@ -32,6 +34,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -41,13 +44,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
-
-
-
-
-
-
 
 
 //import org.apache.commons.lang.exception.NestableException;
@@ -77,17 +73,18 @@ public class ExcelAccess{
 	public static final String SCHEDA_ISCRITTI 		= "Iscritti";
 	public static final String SCHEDA_LOG 			= "Log";
 	public static final String SCHEDA_CLASSIFICA	= "Classifica";
-
+	public static final String SCHEDA_CLASSIFICA_RIDOTTA	= "Classifica Ridotta";
+	public static final String SCHEDA_TURNO_SUFFIX	= "° Turno";
 		
 	String pathFileExcel;
 	short posizioneId 			= 0;
 	short posizioneNome 		= 1;
 	short posizioneCognome 		= 2;
-	short posizioneEmail 		= 3;
-	short posizioneNick 		= 4;
-	short posizioneClub 		= 5;
-	short posizionePresenza 	= 6;
-	short posizioneRegione 		= 7;
+	short posizioneNick 		= 3;
+	short posizioneClub 		= 4;
+	short posizionePresenza 	= 5;
+	short posizioneRegione 		= 6;
+	short posizioneEmail 		= 7;
 
 	private HSSFWorkbook foglioTorneo;
 	private HSSFCellStyle styleCell;
@@ -182,7 +179,7 @@ public class ExcelAccess{
 			try{
 				giocatore = getGiocatoreFromRow(row);
 			}catch(Exception me){
-				throw new MyException(me,"Riga nÂ° "+(i+1)+" della scheda "+SCHEDA_ISCRITTI);
+				throw new MyException(me,"Riga n° "+(i+1)+" della scheda "+SCHEDA_ISCRITTI);
 			}
 			if (giocatore != null && giocatore.getId() != null && giocatore.getNome() != null && giocatore.getNome().length() >0){
 				if (!partecipanti || giocatore.getPresenteTorneo()){
@@ -206,7 +203,7 @@ public class ExcelAccess{
 			try{
 				giocatore = getGiocatoreFromRow(row);
 			}catch(Exception me){
-				throw new MyException(me,"Riga nÂ° "+(i+1)+" della scheda "+SCHEDA_ISCRITTI);
+				throw new MyException(me,"Riga n° "+(i+1)+" della scheda "+SCHEDA_ISCRITTI);
 			}
 			if (giocatore != null && giocatore.getId() != null && giocatore.getId().equals(id)){
 				return giocatore;
@@ -216,6 +213,9 @@ public class ExcelAccess{
 		return null;
 	}
 	
+	public boolean checkSheet(String nomeSheet){
+		return foglioTorneo.getSheet(nomeSheet) != null;
+	}
 	
 	public SchedaTorneo leggiSchedaTorneo(){
 		SchedaTorneo schedaTorneo = null;
@@ -246,20 +246,20 @@ public class ExcelAccess{
 			schedaTorneo.setSedeTorneo(sede);
 			schedaTorneo.setOrganizzatore(organizzatore);
 			schedaTorneo.setNomeTorneo(nomeTorneo);
-			schedaTorneo.setTorneoConcluso(torneoConcluso!=null && torneoConcluso.trim().equalsIgnoreCase("SI"));
+//			schedaTorneo.setTorneoConcluso(torneoConcluso!=null && torneoConcluso.trim().equalsIgnoreCase("SI"));
 			int numeroTurniInt = 0;
-			if (numeroTurni == null){
-				for (int numeroTurno = 1; numeroTurno <=30; numeroTurno++){
-					HSSFSheet sheetTurno = foglioTorneo.getSheet(getNomeTurno(numeroTurno));
-					if (sheetTurno != null){
-						HSSFCell cellaNumeroTurni = rowNumeroTurni.getCell((short)3);
-						cellaNumeroTurni.setCellValue(numeroTurno);
-					}else{
-						break;
-					}
-				}
-			}
-			numeroTurni = determinaValoreCella(rowNumeroTurni, (short)3);
+//			if (numeroTurni == null){
+//				for (int numeroTurno = 1; numeroTurno <=30; numeroTurno++){
+//					HSSFSheet sheetTurno = foglioTorneo.getSheet(getNomeTurno(numeroTurno));
+//					if (sheetTurno != null){
+//						HSSFCell cellaNumeroTurni = rowNumeroTurni.getCell((short)3);
+//						cellaNumeroTurni.setCellValue(numeroTurno);
+//					}else{
+//						break;
+//					}
+//				}
+//			}
+//			numeroTurni = determinaValoreCella(rowNumeroTurni, (short)3);
 			if (numeroTurni != null && numeroTurni.trim().length() > 0){
 				try{
 					numeroTurniInt = Integer.valueOf(numeroTurni.trim());
@@ -274,9 +274,63 @@ public class ExcelAccess{
 		return schedaTorneo;
 	}
 	
+	public SchedaClassifica leggiSchedaClassifica(){
+		SchedaClassifica schedaClassifica = null;
+		HSSFSheet sheet = foglioTorneo.getSheet(SCHEDA_CLASSIFICA_RIDOTTA);
+		if (sheet != null){
+			schedaClassifica = new SchedaClassifica();
+			//Integer nRows = sheet.getLastRowNum();
+			Iterator it = sheet.rowIterator();
+			it.next(); //Si salta la prima riga che è l'header
+			int numeroRiga = 1;
+			while (it.hasNext()){
+				numeroRiga++;
+				HSSFRow row = (HSSFRow) it.next();
+				String posizione = determinaValoreCella(row, (short)0);
+				String punteggio = determinaValoreCella(row, (short)1);
+				String id = determinaValoreCella(row, (short)4);
+				Integer posizioneInt = null;
+				BigDecimal punteggioB = null;
+				Integer idInt = null;
+				if (posizione != null){
+					try{
+						posizioneInt = Integer.valueOf(posizione);
+					}catch(Exception e){
+						MyLogger.getLogger().severe("Scheda "+SCHEDA_CLASSIFICA_RIDOTTA+":posizione non numerica alla riga "+numeroRiga);
+					}
+				}
+				if (punteggio != null){
+					try{
+						punteggioB = new BigDecimal(punteggio);
+					}catch(Exception e){
+						MyLogger.getLogger().severe("Scheda "+SCHEDA_CLASSIFICA_RIDOTTA+":punteggio non numerico alla riga "+numeroRiga);
+					}
+				}
+				if (id != null){
+					try{
+						idInt = Integer.valueOf(id);
+					}catch(Exception e){
+						MyLogger.getLogger().severe("Scheda "+SCHEDA_CLASSIFICA_RIDOTTA+":Id non numerico alla riga "+numeroRiga);
+					}
+				}
+				if (posizioneInt != null && idInt != null && punteggioB != null){
+					RigaClassifica rigaClassifica = new RigaClassifica();
+					rigaClassifica.setIdGiocatore(idInt);
+					rigaClassifica.setPosizioneGiocatore(posizioneInt);
+					rigaClassifica.setPunteggioFinaleGiocatore(punteggioB);
+					schedaClassifica.addRigaClassifica(rigaClassifica);
+				}
+			}
+		}
+		
+		return schedaClassifica;
+	}
+	
+	
 	private String determinaValoreCella(HSSFRow row, short posizioneCella){
 		if (row == null) return null;
 		HSSFCell cella   = row.getCell(posizioneCella);
+		if (cella == null) return null;
 		String result 		= "";
 		int tipoCella   = cella.getCellType();
 		if (tipoCella == Cell.CELL_TYPE_STRING){
@@ -636,8 +690,26 @@ public class ExcelAccess{
 		return loadPartite(getNomeTurno(numeroTurno), withGhost, tipoTorneo);
 	}
 	
+	public Set<GiocatoreDTO> getPartecipantiEffettivi(){
+		Set<GiocatoreDTO> partecipantiEffettivi = new HashSet<GiocatoreDTO>();
+		for(int numeroTurno = 1; ; numeroTurno++){
+			Partita[] partite = loadPartite(numeroTurno, true, null);
+			if (partite != null){
+				for (Partita partita: partite){
+					if (partita != null){
+						partecipantiEffettivi.addAll(partita.getGiocatori());
+					}
+				}
+			}else{
+				break;
+			}
+		}
+		return partecipantiEffettivi;
+	}
+	
+	
 	public static String getNomeTurno(int numeroTurno){
-		return numeroTurno+"Â° Turno";
+		return numeroTurno+SCHEDA_TURNO_SUFFIX;
 	}
 	private void setPartitaFromRow(Partita partita, HSSFRow row, List giocatori, boolean withGhost){
 		int numeroGiocatori = 0;
@@ -649,7 +721,7 @@ public class ExcelAccess{
 				try{
 					id 	= (short)cellId.getNumericCellValue();
 				}catch(Exception nfe){
-					throw new MyException(nfe,"Colonna ID ("+((j*3)+1)+"Â°) con valore non numerico");
+					throw new MyException(nfe,"Colonna ID ("+((j*3)+1)+"°) con valore non numerico");
 				}
 				if (id != null && id.intValue() != 0){
 					HSSFCell cellPunteggio = row.getCell((short)((j*3)+2));
@@ -718,15 +790,21 @@ public class ExcelAccess{
 		}
 	}
 	
-	public void scriviClassifica_new(TipoTorneo tipoTorneo){
-		scriviClassifica(tipoTorneo);
-		String sheetClassificaName = "Classifica_vera";
-		int index = foglioTorneo.getSheetIndex(sheetClassificaName);
+	public void scriviClassificaRidotta(TipoTorneo tipoTorneo){
+		if (!checkSheet(SCHEDA_CLASSIFICA)){
+			scriviClassifica(tipoTorneo);
+		}
+		int index = foglioTorneo.getSheetIndex(SCHEDA_CLASSIFICA_RIDOTTA);
 		if (index >=0){foglioTorneo.removeSheetAt(index);}
-		HSSFSheet schedaClassifica = foglioTorneo.cloneSheet(foglioTorneo.getSheetIndex(SCHEDA_CLASSIFICA));
-		System.out.println("schedaClassifica clonata: "+schedaClassifica.getSheetName());
-		int sheetIndex = foglioTorneo.getSheetIndex(schedaClassifica);
-		foglioTorneo.setSheetName(sheetIndex, sheetClassificaName);
+		HSSFSheet schedaClassificaRidotta = foglioTorneo.cloneSheet(foglioTorneo.getSheetIndex(SCHEDA_CLASSIFICA));
+		List<String> colonneDaTenere = Arrays.asList(new String[]{"Pos.", "Nome", "Cognome", "pt_tot", "id"});
+		keepOnlyColumnsWithHeaders(schedaClassificaRidotta, colonneDaTenere);
+		
+		for (int indiceCella = 0; indiceCella < 5; indiceCella++){
+			schedaClassificaRidotta.autoSizeColumn(indiceCella);
+		}
+		int sheetIndex = foglioTorneo.getSheetIndex(schedaClassificaRidotta);
+		foglioTorneo.setSheetName(sheetIndex, SCHEDA_CLASSIFICA_RIDOTTA);
 	}
 	
 	private void creaStiliClassifica(){
@@ -802,6 +880,7 @@ public class ExcelAccess{
 		}
 		HSSFCellUtil.createCell(intestazione,  indexCell++, "v_tot",styleIntestazione);
 		HSSFCellUtil.createCell(intestazione,  indexCell++, "pt_tot",styleIntestazione);
+		HSSFCellUtil.createCell(intestazione,  indexCell++, "id",styleIntestazione);
 		
 		List<ScorePlayer>scores = null;
 		switch (tipoTorneo) {
@@ -900,14 +979,113 @@ public class ExcelAccess{
 
 			HSSFCell id = rowScore.createCell((short)indexCell, HSSFCell.CELL_TYPE_NUMERIC);
 			id.setCellValue(giocatore.getId());
-			schedaClassifica.setColumnHidden((short)indexCell++,true);
+			id.setCellStyle(styleCellClass);
+			//schedaClassifica.setColumnHidden((short)indexCell++,true);
 		}
 		for (int indiceCella = 0; indiceCella < indexCell; indiceCella++){
 			schedaClassifica.autoSizeColumn(indiceCella);
 		}
 		foglioTorneo.setActiveSheet(foglioTorneo.getSheetIndex(SCHEDA_CLASSIFICA));
+		
+		scriviClassificaRidotta(tipoTorneo);
 	}
 	
+	
+	public void deleteColumn(HSSFSheet sheet, int columnToDelete) {
+		int maxColumn = 0;
+		for (int r = 0; r < sheet.getLastRowNum() + 1; r++) {
+			HSSFRow row = sheet.getRow(r);
+
+			// if no row exists here; then nothing to do; next!
+			if (row == null)
+				continue;
+
+			// if the row doesn't have this many columns then we are good; next!
+			int lastColumn = row.getLastCellNum();
+			if (lastColumn > maxColumn)
+				maxColumn = lastColumn;
+
+			if (lastColumn < columnToDelete)
+				continue;
+
+			for (int x = columnToDelete + 1; x < lastColumn + 1; x++) {
+				Cell oldCell = row.getCell(x - 1);
+				if (oldCell != null)
+					row.removeCell(oldCell);
+
+				Cell nextCell = row.getCell(x);
+				if (nextCell != null) {
+					Cell newCell = row.createCell(x - 1, nextCell.getCellType());
+					cloneCell(newCell, nextCell);
+				}
+			}
+		}
+	}
+
+	private void cloneCell(Cell cNew, Cell cOld) {
+		cNew.setCellComment(cOld.getCellComment());
+		cNew.setCellStyle(cOld.getCellStyle());
+
+		switch (cNew.getCellType()) {
+		case Cell.CELL_TYPE_BOOLEAN: {
+			cNew.setCellValue(cOld.getBooleanCellValue());
+			break;
+		}
+		case Cell.CELL_TYPE_NUMERIC: {
+			cNew.setCellValue(cOld.getNumericCellValue());
+			break;
+		}
+		case Cell.CELL_TYPE_STRING: {
+			cNew.setCellValue(cOld.getStringCellValue());
+			break;
+		}
+		case Cell.CELL_TYPE_ERROR: {
+			cNew.setCellValue(cOld.getErrorCellValue());
+			break;
+		}
+		case Cell.CELL_TYPE_FORMULA: {
+			cNew.setCellFormula(cOld.getCellFormula());
+			break;
+		}
+		}
+
+	}
+
+	public void keepOnlyColumnsWithHeaders(HSSFSheet sheet, List<String> columnHeaders) {
+		HSSFRow row = sheet.getRow(0);
+		if (row == null) {
+			return;
+		}
+
+		int lastColumn = row.getLastCellNum();
+
+		for (int x = lastColumn; x >= 0; x--) {
+			Cell headerCell = row.getCell(x);
+			if (headerCell != null && headerCell.getStringCellValue() != null
+					&& !columnHeaders.contains(headerCell.getStringCellValue())) {
+				deleteColumn(sheet, x);
+			}
+		}
+	}
+
+	public void deleteColumnsWithHeader(HSSFSheet sheet, String columnHeader) {
+		HSSFRow row = sheet.getRow(0);
+		if (row == null) {
+			return;
+		}
+
+		int lastColumn = row.getLastCellNum();
+
+		for (int x = lastColumn; x >= 0; x--) {
+			Cell headerCell = row.getCell(x);
+			if (headerCell != null
+					&& headerCell.getStringCellValue() != null
+					&& headerCell.getStringCellValue().equalsIgnoreCase(
+							columnHeader)) {
+				deleteColumn(sheet, x);
+			}
+		}
+	}
 	
 	public List<ScorePlayer> getClassificaRaduno(boolean partecipanti){
 		List<ScorePlayer> scores = new ArrayList<ScorePlayer>();
@@ -1235,6 +1413,18 @@ public class ExcelAccess{
 		if (schedaIscritti != null){
 			schedaIscritti.setColumnHidden(2, true);
 		}
+	}
+	
+	public String[] getSheetNames(){
+		String[] result = null;
+		int numberOfSheets = foglioTorneo.getNumberOfSheets();
+		if (numberOfSheets > 0){
+			result = new String[numberOfSheets];
+			for (int i = 0; i < numberOfSheets; i++){
+				result[i] = foglioTorneo.getSheetName(i);
+			}
+		}
+		return result;
 	}
 	
 	public void closeFileExcel(){
