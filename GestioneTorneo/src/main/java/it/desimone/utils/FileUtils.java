@@ -92,6 +92,34 @@ public class FileUtils {
     	return result;
     }
     
+    
+    public static InputStream estraiInputStreamDaZip(File file, String targetName){
+
+    	InputStream result = null;
+
+    	try {
+    		FileInputStream fis = new FileInputStream(file);
+    		ZipFile zipFile = new ZipFile(file);
+    		ZipInputStream zis = new ZipInputStream(fis);
+    		ZipEntry ze;
+    		while((ze=zis.getNextEntry())!=null){
+    			if (ze.getName().equals(targetName)){
+    				result = zipFile.getInputStream(ze);   				
+    				break;
+    			}
+    			zis.closeEntry();
+    		}
+    		zis.close();
+
+    	} catch (FileNotFoundException e) {
+    		e.printStackTrace();
+    	} catch (IOException e) {
+    		e.printStackTrace();
+    	}
+    	return result;
+    }
+    
+    
     public static void main (String[] args){
     	File zipFile = new File("C:\\Users\\Marco\\Desktop\\Risiko!\\Sorteggio Tavoli New\\GestioneRaduno.jar");
     	estraiDaZip(zipFile, null);

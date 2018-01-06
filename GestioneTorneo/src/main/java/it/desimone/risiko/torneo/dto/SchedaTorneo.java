@@ -8,10 +8,34 @@ public class SchedaTorneo {
 	private String sedeTorneo;
 	private String organizzatore;
 	private String nomeTorneo;
-	private boolean torneoConcluso;
+	private TipoTorneo tipoTorneo;
 	private int numeroTurni;
 	
 	private List<Date> dataTurni;
+	
+	public enum TipoTorneo{
+		RADUNO_NAZIONALE("Raduno Nazionale"), MASTER("Torneo Master"), OPEN("Torneo Open"), CAMPIONATO("Campionato Periodico");
+		TipoTorneo(String tipoTorneo){
+			this.tipoTorneo = tipoTorneo;
+		}
+		String tipoTorneo;
+		public String getTipoTorneo() {
+			return tipoTorneo;
+		}
+		public static TipoTorneo parseTipoTorneo(String tipologiaTorneo){
+			TipoTorneo result = null;
+			if (tipologiaTorneo != null){
+				TipoTorneo[] tipiTornei = TipoTorneo.values();
+				for (TipoTorneo torneo: tipiTornei){
+					if (torneo.getTipoTorneo().equalsIgnoreCase(tipologiaTorneo.trim())){
+						result = torneo;
+						break;
+					}
+				}
+			}
+			return result;
+		}
+	}
 
 	public String getSedeTorneo() {
 		return sedeTorneo;
@@ -37,12 +61,12 @@ public class SchedaTorneo {
 		this.nomeTorneo = nomeTorneo;
 	}
 
-	public boolean isTorneoConcluso() {
-		return torneoConcluso;
+	public TipoTorneo getTipoTorneo() {
+		return tipoTorneo;
 	}
 
-	public void setTorneoConcluso(boolean torneoConcluso) {
-		this.torneoConcluso = torneoConcluso;
+	public void setTipoTorneo(TipoTorneo tipoTorneo) {
+		this.tipoTorneo = tipoTorneo;
 	}
 
 	public int getNumeroTurni() {
@@ -63,9 +87,10 @@ public class SchedaTorneo {
 
 	@Override
 	public String toString() {
-		return "SchedaTorneo [sedeTorneo=" + sedeTorneo + ", organizzatore=" + organizzatore + ", nomeTorneo="
-				+ nomeTorneo + ", torneoConcluso=" + torneoConcluso + ", numeroTurni=" + numeroTurni + ", dataTurni="
-				+ dataTurni + "]";
+		return "SchedaTorneo [sedeTorneo=" + sedeTorneo + ", organizzatore="
+				+ organizzatore + ", nomeTorneo=" + nomeTorneo
+				+ ", tipoTorneo=" + tipoTorneo + ", numeroTurni=" + numeroTurni
+				+ ", dataTurni=" + dataTurni + "]";
 	}
 	
 	

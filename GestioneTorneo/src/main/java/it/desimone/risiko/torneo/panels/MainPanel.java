@@ -55,7 +55,7 @@ public class MainPanel extends JFrame implements ActionListener {
 	public MainPanel(){
 		MyLogger.getLogger().entering("MainPanel", "MainPanel");
 		
-		setTitle("GestioneRaduno "+ HelpMenu.VERSIONE);
+		setTitle("GestioneTorneo "+ HelpMenu.VERSIONE);
 
 		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (screen.width-WIDTH)/2;
@@ -109,6 +109,7 @@ public class MainPanel extends JFrame implements ActionListener {
 		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
 		 //setSize(95,95);
+		
 		MyLogger.getLogger().exiting("MainPanel", "MainPanel");
 	}
 	

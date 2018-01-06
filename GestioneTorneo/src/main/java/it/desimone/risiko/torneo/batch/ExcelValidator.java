@@ -85,7 +85,7 @@ public class ExcelValidator {
 	 * Controlli incrociati da fare:
 	 * 
 	 * 1) se esiste il turno x deve essere compilata la data nella scheda Torneo
-	 * 2) verificare che tutti i giocatori che hanno giocato almeno una partita siano in classifica
+	 * 2) verificare che tutti i giocatori che hanno giocato almeno una partita siano in classifica (però così non puoi squalificare)
 	 * 3) verificare che tutti i giocatori in classifica siano nella scheda iscritti
 	 * 4) Se sono dichiarati X turni ma se ne trovano Y dove Y > X è un errore
 	 * 
@@ -99,6 +99,60 @@ public class ExcelValidator {
 		SchedaTorneo schedaTorneo = excelAccess.leggiSchedaTorneo();
 		
 		String[] sheetNames = excelAccess.getSheetNames();
+		
+		if (schedaTorneo != null){
+			int numeroTurni = schedaTorneo.getNumeroTurni();
+			List<Date> dateTurni = schedaTorneo.getDataTurni();
+			if (sheetNames != null){
+				int counterNumeroTurni = 0;
+				for (String sheetName: sheetNames){
+					if (sheetName != null && sheetName.endsWith(ExcelAccess.SCHEDA_TURNO_SUFFIX)){
+						counterNumeroTurni++;
+						try{
+							String numeroTurno = sheetName.substring(0, sheetName.indexOf(ExcelAccess.SCHEDA_TURNO_SUFFIX));
+							if (numeroTurno != null){
+								numeroTurno = numeroTurno.trim();
+								Integer numeroTurnoInt = Integer.valueOf(numeroTurno);
+								if (numeroTurnoInt > numeroTurni){
+									result.add(new ExcelValidatorMessages(Scheda.TORNEO, "E' presente la scheda per il turno "+numeroTurnoInt+" ma il torneo prevede solo "+numeroTurni+" turni"));
+								}else{
+									if (dateTurni == null || dateTurni.isEmpty() || dateTurni.size() < numeroTurnoInt || dateTurni.get(numeroTurnoInt-1) == null){
+										result.add(new ExcelValidatorMessages(Scheda.TORNEO, "Non è stata indicata la data in cui è stato disputato il "+numeroTurnoInt+"° turno"));
+									}
+								}
+							}else{
+								result.add(new ExcelValidatorMessages(Scheda.TURNO,"Inizio dello sheet "+sheetName+" assente"));
+							}
+
+						}catch(Exception e){
+							result.add(new ExcelValidatorMessages(Scheda.TURNO,"Inizio dello sheet "+sheetName+" non numerico"));
+						}
+					}
+				}
+				if (counterNumeroTurni > numeroTurni){
+					result.add(new ExcelValidatorMessages(Scheda.TORNEO, "I turni dichiarati per questo Torneo ("+numeroTurni+") sono inferiori a quelli presenti sul foglio Torneo ("+counterNumeroTurni+")"));
+				}
+			}
+		}
+		
+		if (excelAccess.checkSheet(ExcelAccess.SCHEDA_CLASSIFICA_RIDOTTA)){
+			SchedaClassifica schedaClassifica = excelAccess.leggiSchedaClassifica();
+			List<RigaClassifica> giocatoriInClassifica = schedaClassifica.getClassifica();
+			if (giocatoriInClassifica != null && !giocatoriInClassifica.isEmpty()){
+				List<GiocatoreDTO> iscritti = excelAccess.getListaGiocatori(false);
+				GiocatoreDTO giocatore = new GiocatoreDTO();
+				for (RigaClassifica rigaClassifica: giocatoriInClassifica){
+					if (rigaClassifica != null){
+						if (rigaClassifica.getIdGiocatore() != null){
+							giocatore.setId(rigaClassifica.getIdGiocatore());
+							if (!iscritti.contains(giocatore)){
+								result.add(new ExcelValidatorMessages(Scheda.CLASSIFICA_RIDOTTA, "Il giocatore presente in classifica con l'ID "+rigaClassifica.getIdGiocatore()+" non è presente nella Scheda Iscritti"));
+							}
+						}
+					}
+				}
+			}
+		}
 		
 		excelAccess.closeFileExcel();
 		
@@ -120,25 +174,11 @@ public class ExcelValidator {
 			if (StringUtils.isNullOrEmpty(schedaTorneo.getNomeTorneo())){
 				result.add(new ExcelValidatorMessages(Scheda.TORNEO, "Non è stato indicato il nome del Torneo"));
 			}
+			if (schedaTorneo.getTipoTorneo() == null){
+				result.add(new ExcelValidatorMessages(Scheda.TORNEO, "Non è stata indicata una corretta tipologia di Torneo"));
+			}
 			if (schedaTorneo.getNumeroTurni() == 0){
-				result.add(new ExcelValidatorMessages(Scheda.TORNEO, "Non è stato indicato il numero di Turni disputati"));
-			}else{
-				List<Date> dateTurni = schedaTorneo.getDataTurni();
-				if (dateTurni == null || dateTurni.isEmpty()){
-					result.add(new ExcelValidatorMessages(Scheda.TORNEO, "Non sono stati indicate le date per i "+schedaTorneo.getNumeroTurni()+" turni disputati"));
-				}else{
-					for (int i = 1; i <=schedaTorneo.getNumeroTurni(); i++){
-						Date dataTurno = null;
-						try{
-							dataTurno = dateTurni.get(i-1);
-						}catch(IndexOutOfBoundsException iobe){
-							
-						}
-						if (dataTurno == null){
-							result.add(new ExcelValidatorMessages(Scheda.TORNEO, "Non è stata indicata la date in cui è stato disputato il "+i+"Â° turno"));		
-						}
-					}
-				}
+				result.add(new ExcelValidatorMessages(Scheda.TORNEO, "Non è stato indicato il numero di Turni previsti"));
 			}
 		}
 		
@@ -191,13 +231,48 @@ public class ExcelValidator {
 		List<ExcelValidatorMessages> result = new ArrayList<ExcelValidatorMessages>();
 		
 		excelAccess.openFileExcel();
+		boolean almenoUnTurno = false;
 		
 		for(int numeroTurno = 1; ; numeroTurno++){
 			Partita[] partite = excelAccess.loadPartite(numeroTurno, true, null);
 			if (partite != null){
+				almenoUnTurno = true;
+				for (Partita partita: partite){
+					if (partita.getPunteggioVincitore() == 0f){
+						result.add(new ExcelValidatorMessages(Scheda.TURNO, "Nella partita del tavolo "+partita.getNumeroTavolo()+" del Turno "+numeroTurno+" i punteggi dei giocatori non sono compilati"));
+					}
+				}
 			}else{
 				break;
 			}
+		}
+		if (!almenoUnTurno){
+			result.add(new ExcelValidatorMessages(Scheda.TURNO, "Non risulta presente nemmeno un turno di gioco: le schede Turno devono chiamarsi \"N° Turno\" (dove N è un numero)"));
+		}
+		
+		String[] sheetNames = excelAccess.getSheetNames();
+		
+		if (sheetNames != null){
+			int counterNumeroTurni = 0;
+			for (String sheetName: sheetNames){
+				if (sheetName != null && sheetName.endsWith(ExcelAccess.SCHEDA_TURNO_SUFFIX)){
+					try{
+						String numeroTurno = sheetName.substring(0, sheetName.indexOf(ExcelAccess.SCHEDA_TURNO_SUFFIX));
+						if (numeroTurno != null){
+							numeroTurno = numeroTurno.trim();
+							Integer.valueOf(numeroTurno);
+							counterNumeroTurni++;
+						}
+					}catch(Exception e){
+						result.add(new ExcelValidatorMessages(Scheda.TURNO,"Inizio dello sheet "+sheetName+" non numerico"));
+					}
+				}
+			}
+			if (counterNumeroTurni == 0){
+				result.add(new ExcelValidatorMessages(Scheda.TURNO, "Non risulta presente nemmeno un turno di gioco: le schede Turno devono chiamarsi \"N° Turno\" (dove N è un numero)"));
+			}
+		}else{
+			result.add(new ExcelValidatorMessages(Scheda.TURNO, "Non risulta presente nemmeno un turno di gioco: le schede Turno devono chiamarsi \"N° Turno\" (dove N è un numero)"));
 		}
 		
 		excelAccess.closeFileExcel();
@@ -221,10 +296,28 @@ public class ExcelValidator {
 		if (giocatoUltimoTurno && !excelAccess.checkSheet(ExcelAccess.SCHEDA_CLASSIFICA_RIDOTTA)){
 			result.add(new ExcelValidatorMessages(Scheda.CLASSIFICA_RIDOTTA, "Sheet "+ExcelAccess.SCHEDA_CLASSIFICA_RIDOTTA+" assente: obbligatoria perchè giocato l'ultimo turno"));
 		}else{
-			SchedaClassifica schedaClassifica = excelAccess.leggiSchedaClassifica();
-			List<RigaClassifica> giocatoriInClassifica = schedaClassifica.getClassifica();
-			if (giocatoriInClassifica == null || giocatoriInClassifica.isEmpty()){
-				result.add(new ExcelValidatorMessages(Scheda.CLASSIFICA_RIDOTTA, "Non ci sono giocatori in classifica"));
+			if (excelAccess.checkSheet(ExcelAccess.SCHEDA_CLASSIFICA_RIDOTTA)){
+				SchedaClassifica schedaClassifica = excelAccess.leggiSchedaClassifica();
+				List<RigaClassifica> giocatoriInClassifica = schedaClassifica.getClassifica();
+				if (giocatoriInClassifica == null || giocatoriInClassifica.isEmpty()){
+					result.add(new ExcelValidatorMessages(Scheda.CLASSIFICA_RIDOTTA, "Non ci sono giocatori in classifica"));
+				}else{
+					int counterRiga = 0;
+					for (RigaClassifica rigaClassifica: giocatoriInClassifica){
+						if (rigaClassifica != null){
+							counterRiga++;
+							if (rigaClassifica.getIdGiocatore() == null){
+								result.add(new ExcelValidatorMessages(Scheda.CLASSIFICA_RIDOTTA, "Non è indicato l'ID del giocatore nella 5° colonna della "+counterRiga+"° riga"));
+							}
+							if (rigaClassifica.getPosizioneGiocatore() == null){
+								result.add(new ExcelValidatorMessages(Scheda.CLASSIFICA_RIDOTTA, "Non è indicata la posizione del giocatore nella 1° colonna della "+counterRiga+"° riga"));
+							}
+							if (rigaClassifica.getPunteggioFinaleGiocatore() == null){
+								result.add(new ExcelValidatorMessages(Scheda.CLASSIFICA_RIDOTTA, "Non è indicato il punteggio finale del giocatore nella 4° colonna della "+counterRiga+"° riga"));
+							}
+						}
+					}
+				}
 			}
 		}
 		excelAccess.closeFileExcel();

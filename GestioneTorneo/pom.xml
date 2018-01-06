@@ -4,23 +4,24 @@
 
   <groupId>it.desimone</groupId>
   <artifactId>GestioneTorneo</artifactId>
-  <version>1.9.4-SNAPSHOT</version>
+  <version>2.0</version>
   <packaging>jar</packaging>
 
   <name>GestioneTorneo</name>
   <url>http://maven.apache.org</url>
 
   <properties>
- 
+ <!-- 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
+ -->
  <!-- 
     <project.output>C:\Users\mds\Desktop\GestioneTorneo</project.output>
      -->
-    <project.output>${user.home}\Desktop\GestioneTorneo</project.output>
+    <project.output>${user.home}\Desktop\GestioneTorneo ${version}</project.output>
   </properties>
 
 	<build> 
+		<finalName>${project.artifactId}</finalName>
 		<plugins>
 		
 			<plugin>
@@ -104,6 +105,8 @@
 		                  	<exclude>resources/*.png</exclude>
 		                  	<exclude>resources/*.pdf</exclude>
 		                  	<exclude>resources/*.xls</exclude>
+		                  	<exclude>resources/*.gitignore</exclude>
+		                  	<exclude>resources/google/.credentials/</exclude>
 		                  </excludes>
 		                  <filtering>false</filtering>
 		                </resource>
@@ -115,6 +118,10 @@
 		                  </includes>
 		                  <filtering>false</filtering>
 		                </resource>
+		                <resource>
+		                  <directory>scripts/</directory>
+		                  <filtering>false</filtering>
+		                </resource>		                
 		              </resources>              
 		            </configuration>            
 		          </execution>
@@ -124,13 +131,14 @@
 	</build>
 	
   <dependencies>
+<!--   
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
-    
+ -->    
     <dependency>
     	<groupId>org.apache.poi</groupId>
     	<artifactId>poi</artifactId>

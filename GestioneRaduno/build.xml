@@ -12,7 +12,7 @@
 <!-- 
     <property name="save.dir"   value="C:\Users\mds\Desktop\SorteggioTavoli 1.9.4"/>
      -->
-<property name="save.dir"   value="C:\Users\Marco De Simone\Desktop\SorteggioTavoli 1.9.4"/>
+<property name="save.dir"   value="${user.home}\Desktop\SorteggioTavoli 1.9.4"/>
 
     <property name="jar.dir"    value="${save.dir}"/>
 

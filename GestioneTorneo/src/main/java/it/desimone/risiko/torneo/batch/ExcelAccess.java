@@ -228,8 +228,8 @@ public class ExcelAccess{
 			String organizzatore = determinaValoreCella(rowOrganizzatore, (short)3);
 			HSSFRow rowNomeTorneo = sheet.getRow(3);
 			String nomeTorneo = determinaValoreCella(rowNomeTorneo, (short)3);
-			HSSFRow rowTorneoConcluso = sheet.getRow(4);
-			String torneoConcluso = determinaValoreCella(rowTorneoConcluso, (short)3);
+			HSSFRow rowTipoTorneo = sheet.getRow(4);
+			String tipologiaTorneo = determinaValoreCella(rowTipoTorneo, (short)3);
 			HSSFRow rowNumeroTurni = sheet.getRow(5);
 			String numeroTurni = determinaValoreCella(rowNumeroTurni, (short)3);
 			List<Date> dataTurni = new ArrayList<Date>();
@@ -246,23 +246,14 @@ public class ExcelAccess{
 			schedaTorneo.setSedeTorneo(sede);
 			schedaTorneo.setOrganizzatore(organizzatore);
 			schedaTorneo.setNomeTorneo(nomeTorneo);
-//			schedaTorneo.setTorneoConcluso(torneoConcluso!=null && torneoConcluso.trim().equalsIgnoreCase("SI"));
+
+			SchedaTorneo.TipoTorneo tipoTorneo = SchedaTorneo.TipoTorneo.parseTipoTorneo(tipologiaTorneo);
+			schedaTorneo.setTipoTorneo(tipoTorneo);
+			
 			int numeroTurniInt = 0;
-//			if (numeroTurni == null){
-//				for (int numeroTurno = 1; numeroTurno <=30; numeroTurno++){
-//					HSSFSheet sheetTurno = foglioTorneo.getSheet(getNomeTurno(numeroTurno));
-//					if (sheetTurno != null){
-//						HSSFCell cellaNumeroTurni = rowNumeroTurni.getCell((short)3);
-//						cellaNumeroTurni.setCellValue(numeroTurno);
-//					}else{
-//						break;
-//					}
-//				}
-//			}
-//			numeroTurni = determinaValoreCella(rowNumeroTurni, (short)3);
 			if (numeroTurni != null && numeroTurni.trim().length() > 0){
 				try{
-					numeroTurniInt = Integer.valueOf(numeroTurni.trim());
+					numeroTurniInt = (int) (Double.valueOf(numeroTurni.trim()) * 1);
 				}catch(Exception e){
 					MyLogger.getLogger().severe("Errore nel parsing della cella numero Turni: "+numeroTurni);
 				}
@@ -287,14 +278,14 @@ public class ExcelAccess{
 				numeroRiga++;
 				HSSFRow row = (HSSFRow) it.next();
 				String posizione = determinaValoreCella(row, (short)0);
-				String punteggio = determinaValoreCella(row, (short)1);
+				String punteggio = determinaValoreCella(row, (short)3);
 				String id = determinaValoreCella(row, (short)4);
 				Integer posizioneInt = null;
 				BigDecimal punteggioB = null;
 				Integer idInt = null;
 				if (posizione != null){
 					try{
-						posizioneInt = Integer.valueOf(posizione);
+						posizioneInt = Double.valueOf(posizione).intValue();
 					}catch(Exception e){
 						MyLogger.getLogger().severe("Scheda "+SCHEDA_CLASSIFICA_RIDOTTA+":posizione non numerica alla riga "+numeroRiga);
 					}
@@ -308,18 +299,18 @@ public class ExcelAccess{
 				}
 				if (id != null){
 					try{
-						idInt = Integer.valueOf(id);
+						idInt = Double.valueOf(id).intValue();
 					}catch(Exception e){
 						MyLogger.getLogger().severe("Scheda "+SCHEDA_CLASSIFICA_RIDOTTA+":Id non numerico alla riga "+numeroRiga);
 					}
 				}
-				if (posizioneInt != null && idInt != null && punteggioB != null){
+				//if (posizioneInt != null && idInt != null && punteggioB != null){
 					RigaClassifica rigaClassifica = new RigaClassifica();
 					rigaClassifica.setIdGiocatore(idInt);
 					rigaClassifica.setPosizioneGiocatore(posizioneInt);
 					rigaClassifica.setPunteggioFinaleGiocatore(punteggioB);
 					schedaClassifica.addRigaClassifica(rigaClassifica);
-				}
+				//}
 			}
 		}
 		
@@ -338,7 +329,7 @@ public class ExcelAccess{
 		}else if (tipoCella == Cell.CELL_TYPE_NUMERIC){
 			result			= Double.toString(cella.getNumericCellValue());
 		}else if (tipoCella != Cell.CELL_TYPE_BLANK){
-			MyLogger.getLogger().info("Impossibile leggere la cella della colonna in posizione "+posizioneCella+ " della riga "+ (row.getRowNum()+1)+" perchÃ¨ di tipo imprevisto: "+tipoCella);
+			MyLogger.getLogger().info("Impossibile leggere la cella della colonna in posizione "+posizioneCella+ " della riga "+ (row.getRowNum()+1)+" perchè di tipo imprevisto: "+tipoCella);
 		}
 		return result;
 	}
@@ -433,7 +424,7 @@ public class ExcelAccess{
 			HSSFRow rowIntestazione = schedaTurno.createRow(prossimaRiga);
 			HSSFCell cellIntestazione = rowIntestazione.createCell((short)0);
 			cellIntestazione.setCellStyle(styleIntestazione);
-			cellIntestazione.setCellValue("Tavolo NÂ°"+partita.getNumeroTavolo());
+			cellIntestazione.setCellValue("Tavolo N°"+partita.getNumeroTavolo());
 			Region region = new Region(prossimaRiga,(short)0,prossimaRiga,(short)(partita.getNumeroGiocatori()*3-1));
 			try {
 				HSSFRegionUtil.setBorderBottom(HSSFCellStyle.BORDER_THIN,region,schedaTurno,foglioTorneo);
@@ -729,7 +720,7 @@ public class ExcelAccess{
 					try{
 						punteggio = (float) cellPunteggio.getNumericCellValue();
 					}catch(Exception nfe){
-						throw new MyException(nfe,"Colonna Punteggio ("+((j*3)+2)+"Â°) con valore non numerico");
+						throw new MyException(nfe,"Colonna Punteggio ("+((j*3)+2)+"°) con valore non numerico");
 					}
 					GiocatoreDTO giocatore = new GiocatoreDTO();
 					giocatore.setId(id.intValue());
@@ -748,7 +739,7 @@ public class ExcelAccess{
 //							partita.setVincitore(giocatore);
 //						}
 					}else if (!giocatore.equals(GiocatoreDTO.FITTIZIO)){
-						throw new MyException("Nella lista dei giocatori non ï¿½ presente quello con indice "+id);
+						throw new MyException("Nella lista dei giocatori non è presente quello con indice "+id);
 					}
 				}
 			}
@@ -977,8 +968,8 @@ public class ExcelAccess{
 			}
 			punteggioCell.setCellValue(scorePlayer.getPunteggioB(false).doubleValue());
 
-			HSSFCell id = rowScore.createCell((short)indexCell, HSSFCell.CELL_TYPE_NUMERIC);
-			id.setCellValue(giocatore.getId());
+			HSSFCell id = rowScore.createCell((short)indexCell, HSSFCell.CELL_TYPE_STRING);
+			id.setCellValue(String.valueOf(giocatore.getId()));
 			id.setCellStyle(styleCellClass);
 			//schedaClassifica.setColumnHidden((short)indexCell++,true);
 		}

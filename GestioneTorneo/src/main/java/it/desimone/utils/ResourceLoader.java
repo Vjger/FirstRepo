@@ -24,7 +24,7 @@ public class ResourceLoader {
 		MyLogger.getLogger().finer("ROOT: "+ROOT);	
 		ZIPFILE = new File(ROOT+File.separator+"resources"+File.separator+ZIP_FILE_NAME);
 		if (!ZIPFILE.exists()){
-			MyLogger.getLogger().severe("Non ï¿½ stato trovato il file "+ZIPFILE);
+			MyLogger.getLogger().severe("Non è stato trovato il file "+ZIPFILE);
 		}
 	}
 	
@@ -35,12 +35,20 @@ public class ResourceLoader {
 	private static final String googleClientSecret = "client_secret.json";
 	
 	
+	public static String getLoadingIconPath(){
+		return ROOT+File.separator+"resources"+File.separator+"loadingconf.gif";
+	}
+	
 	public static String googleClientSecretPath(){
 		return ROOT+File.separator+"resources"+File.separator+"google"+File.separator+googleClientSecret;
 	}
 	
 	public static File googleCredentials(){
-		return new java.io.File(ROOT+File.separator+"resources"+File.separator+"google", ".credentials/drive-java-quickstart");
+		return new java.io.File(ROOT+File.separator+"resources"+File.separator+"google", ".credentials/RisiKo Data");
+	}
+	
+	public static InputStream googleAPIAccess(){
+		return FileUtils.estraiInputStreamDaZip(ZIPFILE, googleClientSecret);
 	}
 	
 	public File estraiManuale(){

@@ -1,5 +1,17 @@
 package it.desimone.risiko.torneo.panels;
 
+import it.desimone.gdrive.GoogleDrivePublisher;
+import it.desimone.risiko.torneo.batch.ExcelAccess;
+import it.desimone.risiko.torneo.batch.ExcelValidator;
+import it.desimone.risiko.torneo.batch.ExcelValidator.ExcelValidatorMessages;
+import it.desimone.risiko.torneo.batch.RadGester;
+import it.desimone.risiko.torneo.dto.GiocatoreDTO;
+import it.desimone.risiko.torneo.dto.Partita;
+import it.desimone.risiko.torneo.utils.PdfUtils;
+import it.desimone.risiko.torneo.utils.TipoTorneo;
+import it.desimone.utils.MyException;
+import it.desimone.utils.TextException;
+
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,21 +23,10 @@ import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-
-import it.desimone.gdrive.GoogleDriveAccess;
-import it.desimone.risiko.torneo.batch.ExcelAccess;
-import it.desimone.risiko.torneo.batch.ExcelValidator;
-import it.desimone.risiko.torneo.batch.ExcelValidator.ExcelValidatorMessages;
-import it.desimone.risiko.torneo.batch.RadGester;
-import it.desimone.risiko.torneo.dto.GiocatoreDTO;
-import it.desimone.risiko.torneo.dto.Partita;
-import it.desimone.risiko.torneo.utils.PdfUtils;
-import it.desimone.risiko.torneo.utils.TipoTorneo;
-import it.desimone.utils.MyException;
-import it.desimone.utils.TextException;
 
 public class FileMenu extends JMenu {
 	
@@ -138,7 +139,7 @@ public class FileMenu extends JMenu {
 						}
 						writer.close();
 						excelAccess.closeFileExcel();
-						JOptionPane.showMessageDialog(null, "Esportazione conclusa: il file esportato ï¿½ \n"+exportFileName, "Risultato Finale", JOptionPane.INFORMATION_MESSAGE);
+						JOptionPane.showMessageDialog(null, "Esportazione conclusa: il file esportato è \n"+exportFileName, "Risultato Finale", JOptionPane.INFORMATION_MESSAGE);
 					}catch(Exception ex){
 						RadGester.writeException(ex);
 						JOptionPane.showMessageDialog(null, new TextException(ex),"Orrore!",JOptionPane.ERROR_MESSAGE);
@@ -176,7 +177,7 @@ public class FileMenu extends JMenu {
 							}
 						}
 						excelAccess.closeFileExcel();
-						JOptionPane.showMessageDialog(null, "Stampa conclusa: il file prodotto ï¿½ \n"+stampaFileName, "Risultato Finale", JOptionPane.INFORMATION_MESSAGE);
+						JOptionPane.showMessageDialog(null, "Stampa conclusa: il file prodotto è \n"+stampaFileName, "Risultato Finale", JOptionPane.INFORMATION_MESSAGE);
 					}catch(Exception ex){
 						RadGester.writeException(ex);
 						JOptionPane.showMessageDialog(null, new TextException(ex),"Orrore!",JOptionPane.ERROR_MESSAGE);
@@ -197,13 +198,10 @@ public class FileMenu extends JMenu {
 						ExcelValidator excelValidator = new ExcelValidator(excelFile);
 						List<ExcelValidatorMessages> messaggiDiValidazione = excelValidator.validaFoglioExcel();
 						
-						if (messaggiDiValidazione == null || messaggiDiValidazione.isEmpty()){				
-							String excelFileName = excelFile.getPath();
-		                    
-							GoogleDriveAccess googleDriveAccess = new GoogleDriveAccess();
-							googleDriveAccess.uploadReportOnAvailablesFolders(new File(excelFileName));
-							
-							JOptionPane.showMessageDialog(null, "Pubblicazione effettuata", "Risultato Finale", JOptionPane.INFORMATION_MESSAGE);
+						if (messaggiDiValidazione == null || messaggiDiValidazione.isEmpty()){	
+							GoogleDrivePublisher googleDrivePublisher = new GoogleDrivePublisher(excelFile.getPath());
+							Thread t = new Thread(googleDrivePublisher);
+							t.start();							
 						}else{
 							pubblicaErroriDiValidazione(messaggiDiValidazione);
 						}
@@ -230,15 +228,18 @@ public class FileMenu extends JMenu {
 		}
 		JTable errorTable = new JTable(rows, header);
 		//errorTable.setSize(400, 400);
-		errorTable.setPreferredSize(new Dimension(800, 500));
+		errorTable.setPreferredSize(new Dimension(1000, 500));
 		//errorTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		//errorTable.doLayout();
 		TableColumnModel jTableColumnModel = errorTable.getColumnModel();
 		TableColumn columnScheda = jTableColumnModel.getColumn(0);
-		columnScheda.setPreferredWidth(100);
+		columnScheda.setPreferredWidth(150);
 		TableColumn columnMessage = jTableColumnModel.getColumn(1);
-		columnMessage.setPreferredWidth(700);
-		JOptionPane.showMessageDialog(null, errorTable,"Foglio Excel non completo",JOptionPane.ERROR_MESSAGE);
+		columnMessage.setPreferredWidth(850);
+		JScrollPane scrollPane = new JScrollPane(errorTable);
+		scrollPane.setPreferredSize(new Dimension(1000, 500));
+		errorTable.setFillsViewportHeight(true);
+		JOptionPane.showMessageDialog(null, scrollPane,"Foglio Excel non completo",JOptionPane.ERROR_MESSAGE);
 	}
 	
 	public File getExcelFile() {

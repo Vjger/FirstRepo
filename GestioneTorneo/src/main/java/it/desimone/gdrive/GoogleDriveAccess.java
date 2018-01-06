@@ -5,10 +5,10 @@ import it.desimone.utils.MyException;
 import it.desimone.utils.MyLogger;
 import it.desimone.utils.ResourceLoader;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,7 +35,7 @@ public class GoogleDriveAccess {
 	private Credential credential;
 
     /** Application name. */
-    private static final String APPLICATION_NAME = "Drive API Java Quickstart";
+    private static final String APPLICATION_NAME = "RisiKo! Data";
 
     /** Directory to store user credentials for this application. */
    
@@ -90,7 +90,8 @@ public class GoogleDriveAccess {
 
     	Credential credential = null;
 
-    		InputStream in = new FileInputStream(ResourceLoader.googleClientSecretPath());
+    		//InputStream in = new FileInputStream(ResourceLoader.googleClientSecretPath());
+    		InputStream in = ResourceLoader.googleAPIAccess();
     		GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 
     		// Build flow and trigger user authorization request.
@@ -116,7 +117,8 @@ public class GoogleDriveAccess {
         return new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).setApplicationName(APPLICATION_NAME).build();
     }
     
-    public void uploadReportOnAvailablesFolders(java.io.File excelReport){
+    public boolean uploadReportOnAvailablesFolders(java.io.File excelReport){
+    	boolean uploaded = false;
     	String parentFolderId = Configurator.getRCUFolderId();
     	
     	if (parentFolderId != null){
@@ -126,19 +128,24 @@ public class GoogleDriveAccess {
     				List<File> uploadedFiles = uploadClubReport(availableFolders, excelReport);
     				if (uploadedFiles != null){
     					MyLogger.getLogger().fine("Caricato il file "+excelReport.getName()+" in "+uploadedFiles.size()+" folder");
+    					uploaded = true;
     				}
     			}else{
-    				MyLogger.getLogger().severe("Non Ã¨ stato abilitato alcun folder di Google Drive alle credenziali in uso");
-    				throw new MyException("Non Ã¨ stato abilitato alcun folder di Google Drive alle credenziali in uso");
+    				MyLogger.getLogger().severe("Non è stato abilitato alcun folder di Google Drive alle credenziali in uso");
+    				throw new MyException("Non è stato abilitato alcun folder di Google Drive alle credenziali in uso");
     			}
+    		}catch(UnknownHostException uhe){
+    			MyLogger.getLogger().severe(uhe.getMessage());
+        		throw new MyException("Verificare la connessione Internet: "+uhe.getMessage());
     		}catch(IOException ioe){
     			MyLogger.getLogger().severe(ioe.getMessage());
         		throw new MyException(ioe);
     		}
     	}else{
-    		MyLogger.getLogger().severe("Non Ã¨ stato trovato l'ID del folder genitore di Google Drive");
-    		throw new MyException("Non Ã¨ stato trovato l'ID del folder genitore di Google Drive");
+    		MyLogger.getLogger().severe("Non è stato trovato l'ID del folder genitore di Google Drive");
+    		throw new MyException("Non è stato trovato l'ID del folder genitore di Google Drive");
     	}
+    	return uploaded;
     }
 
     private List<File> getClubFolders(String parentFolderId) throws IOException{
@@ -163,6 +170,7 @@ public class GoogleDriveAccess {
     }
     
     public List<File> uploadClubReport(List<File> clubFolders, java.io.File report) throws IOException{
+    	MyLogger.getLogger().fine("Elaborazione del file "+report.getName());
     	List<File> uploadedFiles = null;
         Drive service = getDriveService();
         
@@ -194,6 +202,7 @@ public class GoogleDriveAccess {
     }
     
     private String fileExistsIntoFolder(File folder, String reportName) throws IOException{
+    	MyLogger.getLogger().fine("Ricerca del file "+reportName+" nel folder "+folder.getName());
     	String fileId = null;
     	Drive service = getDriveService();
     	
