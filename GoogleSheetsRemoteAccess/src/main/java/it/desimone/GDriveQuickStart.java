@@ -13,6 +13,7 @@ import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInsta
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.FileContent;
 import com.google.api.client.http.HttpTransport;
@@ -91,8 +92,10 @@ public class GDriveQuickStart {
     				.setAccessType("offline")
     				.build();
     		credential = new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
-    		
+    		System.out.println("Credential Access Token: "+credential.getAccessToken());
     		System.out.println("Credentials saved to " + DATA_STORE_DIR.getAbsolutePath());
+    		
+    		System.out.println("Credential expires in "+credential.getExpiresInSeconds()+" seconds");
     	}catch(IOException ioe){
     		System.err.println(ioe);
     	}
@@ -114,8 +117,9 @@ public class GDriveQuickStart {
 //    	extractReportByFolders();
     	Credential credential = authorize();
     	String parentFolderId = "1RCm2oUNm1weBqSErFAFBxsRHfKWDJJ9a";
-    	List<File> clubFolders = getClubFolders(credential, parentFolderId);
-    	System.out.println("Folder del club: "+clubFolders == null?"null":clubFolders.size());
+    	String parentFolderIdStage = "1OremAjhDfjtIXhgWsq7lCAcnSBZKWGsF";
+    	List<File> clubFolders = getClubFolders(credential, parentFolderIdStage);
+    	System.out.println("Folder del club: "+(clubFolders == null?"null":clubFolders.size()));
     	if (clubFolders != null){;
 
 //			ExcelAccess excelAccess = new ExcelAccess(testExcel);
@@ -123,8 +127,8 @@ public class GDriveQuickStart {
 //			excelAccess.hideMailColumn();
 //			excelAccess.closeFileExcel();
     	
-    		File uploadedFile = uploadClubReport(credential, clubFolders, testExcel);
-    		System.out.println("Uploaded file by Id "+uploadedFile.getId());
+//    		File uploadedFile = uploadClubReport(credential, clubFolders, testExcel);
+//    		System.out.println("Uploaded file by Id "+uploadedFile.getId());
     	}
     }
     
@@ -223,9 +227,14 @@ public class GDriveQuickStart {
         		Drive.Files.List driveFilesList = service.files().list();
         		if (driveFilesList != null){
         			driveFilesList = driveFilesList.setQ("\'"+parentFolderId+"\' in parents and mimeType = 'application/vnd.google-apps.folder' and sharedWithMe=true");
-        			FileList fileList = driveFilesList.execute();
-        			if (fileList != null){
-        				folders = fileList.getFiles();
+        			//driveFilesList = driveFilesList.setQ("\'"+parentFolderId+"\' in parents and mimeType = 'application/vnd.google-apps.folder'");
+        			try{
+	        			FileList fileList = driveFilesList.execute();
+	        			if (fileList != null){
+	        				folders = fileList.getFiles();
+	        			}
+        			}catch(Exception e){
+        				e.printStackTrace();
         			}
         		}
         	}

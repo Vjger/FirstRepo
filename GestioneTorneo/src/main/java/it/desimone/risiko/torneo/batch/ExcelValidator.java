@@ -1,19 +1,18 @@
 package it.desimone.risiko.torneo.batch;
 
+import it.desimone.risiko.torneo.batch.ExcelValidator.ExcelValidatorMessages.Scheda;
+import it.desimone.risiko.torneo.dto.GiocatoreDTO;
+import it.desimone.risiko.torneo.dto.Partita;
+import it.desimone.risiko.torneo.dto.SchedaClassifica;
+import it.desimone.risiko.torneo.dto.SchedaClassifica.RigaClassifica;
+import it.desimone.risiko.torneo.dto.SchedaTorneo;
+import it.desimone.utils.StringUtils;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-
-import it.desimone.risiko.torneo.batch.ExcelValidator.ExcelValidatorMessages.Scheda;
-import it.desimone.risiko.torneo.dto.GiocatoreDTO;
-import it.desimone.risiko.torneo.dto.Partita;
-import it.desimone.risiko.torneo.dto.SchedaClassifica;
-import it.desimone.risiko.torneo.dto.SchedaTorneo;
-import it.desimone.risiko.torneo.dto.SchedaClassifica.RigaClassifica;
-import it.desimone.utils.MyLogger;
-import it.desimone.utils.StringUtils;
 
 public class ExcelValidator {
 

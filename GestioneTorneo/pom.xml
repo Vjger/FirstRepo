@@ -12,12 +12,13 @@
 
   <properties>
  <!-- 
+
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
  -->
- <!-- 
-    <project.output>C:\Users\mds\Desktop\GestioneTorneo</project.output>
-     -->
+
     <project.output>${user.home}\Desktop\GestioneTorneo ${version}</project.output>
+
   </properties>
 
 	<build> 
