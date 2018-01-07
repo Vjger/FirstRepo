@@ -5,6 +5,7 @@ import it.desimone.risiko.torneo.dto.GiocatoreDTO;
 import it.desimone.risiko.torneo.dto.Partita;
 import it.desimone.risiko.torneo.dto.RegioneDTO;
 import it.desimone.risiko.torneo.dto.SchedaClassifica;
+import it.desimone.risiko.torneo.dto.SchedaClassifica.RigaClassifica;
 import it.desimone.risiko.torneo.dto.SchedaTorneo;
 import it.desimone.risiko.torneo.dto.ScorePlayer;
 import it.desimone.risiko.torneo.dto.ScorePlayerCampionatoGufo;
@@ -14,7 +15,6 @@ import it.desimone.risiko.torneo.dto.ScorePlayerQualificazioniNazionale;
 import it.desimone.risiko.torneo.dto.ScorePlayerRaduno;
 import it.desimone.risiko.torneo.dto.ScorePlayerTorneoBGL;
 import it.desimone.risiko.torneo.dto.ScorePlayerTorneoGufo;
-import it.desimone.risiko.torneo.dto.SchedaClassifica.RigaClassifica;
 import it.desimone.risiko.torneo.utils.ClubLoader;
 import it.desimone.risiko.torneo.utils.RegioniLoader;
 import it.desimone.risiko.torneo.utils.ScoreCampionatoComparator;
@@ -45,27 +45,30 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-
-
-//import org.apache.commons.lang.exception.NestableException;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.hssf.usermodel.HSSFFont;
-import org.apache.poi.hssf.usermodel.HSSFRichTextString;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-//import org.apache.poi.hssf.usermodel.contrib.HSSFCellUtil;
-//import org.apache.poi.hssf.usermodel.contrib.HSSFRegionUtil;
-import org.apache.poi.hssf.util.HSSFCellUtil;
-import org.apache.poi.hssf.util.HSSFColor;
-import org.apache.poi.hssf.util.HSSFRegionUtil;
-import org.apache.poi.hssf.util.Region;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import org.apache.poi.ss.usermodel.Cell;
 
-public class ExcelAccess{
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.DataFormat;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.CellUtil;
+import org.apache.poi.ss.util.RegionUtil;
+
+
+public class ExcelAccessUniversal{
 
 	private final ClubLoader clubLoader = new ClubLoader();
 	private final RegioniLoader regioniLoader = new RegioniLoader();
@@ -87,20 +90,21 @@ public class ExcelAccess{
 	short posizioneRegione 		= 6;
 	short posizioneEmail 		= 7;
 
-	private HSSFWorkbook foglioTorneo;
-	private HSSFCellStyle styleCell;
-	private HSSFCellStyle styleCellPoints;
-	private HSSFCellStyle styleCellId;
-	private HSSFCellStyle styleIntestazione;
+	private Workbook foglioTorneo;
+	private CreationHelper creationHelper;
+	private CellStyle styleCell;
+	private CellStyle styleCellPoints;
+	private CellStyle styleCellId;
+	private CellStyle styleIntestazione;
 	
-	private HSSFCellStyle styleCellClassODD;
-	private HSSFCellStyle styleCellClassEVEN;
-	private HSSFCellStyle styleCellClassWinODD;
-	private HSSFCellStyle styleCellClassWinEVEN;
+	private CellStyle styleCellClassODD;
+	private CellStyle styleCellClassEVEN;
+	private CellStyle styleCellClassWinODD;
+	private CellStyle styleCellClassWinEVEN;
 	
 	private static short indiceFormatTreDecimali = -1;
 		
-	public ExcelAccess(File fileExcel){
+	public ExcelAccessUniversal(File fileExcel){
 		try {
 			pathFileExcel = fileExcel.getPath();
 		}finally{}
@@ -110,10 +114,9 @@ public class ExcelAccess{
 	public void openFileExcel(){
 		if (pathFileExcel != null){
 			try{
-				POIFSFileSystem fs = null;
-				fs = new POIFSFileSystem(new FileInputStream(pathFileExcel));
-				foglioTorneo = new HSSFWorkbook(fs);
-				HSSFDataFormat df = foglioTorneo.createDataFormat();
+				foglioTorneo = WorkbookFactory.create(new FileInputStream(pathFileExcel));
+				creationHelper = foglioTorneo.getCreationHelper();
+				DataFormat df = foglioTorneo.createDataFormat();
 				short formato = df.getFormat("0.000");
 				if (formato != -1){
 					indiceFormatTreDecimali = formato;
@@ -124,59 +127,61 @@ public class ExcelAccess{
 				throw new MyException("Non trovato il file Excel "+pathFileExcel+": "+fe.getMessage());
 			}catch(IOException ioe){
 				throw new MyException("Impossibile accedere al file Excel "+pathFileExcel+": "+ioe.getMessage());
+			}catch(InvalidFormatException ife){
+				throw new MyException("Formato non valido del file Excel "+pathFileExcel+": "+ife.getMessage());
 			}
 		}
 	}
 	
 	private void creaStili(){
 		styleCellId = foglioTorneo.createCellStyle();
-		styleCellId.setVerticalAlignment(HSSFCellStyle.VERTICAL_TOP);
+		styleCellId.setVerticalAlignment(VerticalAlignment.TOP);
 
 		styleCell = foglioTorneo.createCellStyle();
-		styleCell.setAlignment(HSSFCellStyle.ALIGN_LEFT);
-		HSSFFont font = foglioTorneo.createFont();
+		styleCell.setAlignment(HorizontalAlignment.LEFT);
+		Font font = foglioTorneo.createFont();
 		font.setFontName(HSSFFont.FONT_ARIAL);
-		font.setColor(HSSFColor.BLACK.index);
+		font.setColor(IndexedColors.BLACK.getIndex());
 		styleCell.setFont(font);
 		styleCell.setWrapText(true);
-		styleCell.setVerticalAlignment(HSSFCellStyle.VERTICAL_TOP);
-		styleCell.setFillForegroundColor(HSSFColor.LIGHT_ORANGE.index);
-		styleCell.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+		styleCell.setVerticalAlignment(VerticalAlignment.TOP);
+		styleCell.setFillForegroundColor(IndexedColors.LIGHT_ORANGE.getIndex());
+		styleCell.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 		
 		styleCellPoints = foglioTorneo.createCellStyle();
-		styleCellPoints.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
+		styleCellPoints.setAlignment(HorizontalAlignment.RIGHT);
 		styleCellPoints.setFont(font);
 		styleCellPoints.setWrapText(true);
-		styleCellPoints.setVerticalAlignment(HSSFCellStyle.VERTICAL_TOP);
-		styleCellPoints.setFillForegroundColor(HSSFColor.LIGHT_ORANGE.index);
-		styleCellPoints.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+		styleCellPoints.setVerticalAlignment(VerticalAlignment.TOP);
+		styleCellPoints.setFillForegroundColor(IndexedColors.LIGHT_ORANGE.getIndex());
+		styleCellPoints.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 		styleCellPoints.setLocked(false);
 		
 		styleIntestazione = foglioTorneo.createCellStyle();		
-		styleIntestazione.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-		styleIntestazione.setBorderBottom(HSSFCellStyle.BORDER_THICK);
-		styleIntestazione.setBorderTop(HSSFCellStyle.BORDER_THICK);
-		styleIntestazione.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-		styleIntestazione.setBorderRight(HSSFCellStyle.BORDER_THIN);
-		HSSFFont fontIntestazione = foglioTorneo.createFont();
-		font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+		styleIntestazione.setAlignment(HorizontalAlignment.CENTER);
+		styleIntestazione.setBorderBottom(BorderStyle.THICK);
+		styleIntestazione.setBorderTop(BorderStyle.THICK);
+		styleIntestazione.setBorderLeft(BorderStyle.THIN);
+		styleIntestazione.setBorderRight(BorderStyle.THIN);
+		Font fontIntestazione = foglioTorneo.createFont();
+		font.setBold(true);
 		styleIntestazione.setFont(fontIntestazione);
 		styleIntestazione.setWrapText(false);
-		styleIntestazione.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
-		styleIntestazione.setFillForegroundColor(HSSFColor.ORANGE.index);
-		styleIntestazione.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+		styleIntestazione.setVerticalAlignment(VerticalAlignment.CENTER);
+		styleIntestazione.setFillForegroundColor(IndexedColors.ORANGE.getIndex());
+		styleIntestazione.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 	}
 	
 	public List<GiocatoreDTO> getListaGiocatori(boolean partecipanti){
 		//List<GiocatoreDTO> listaGiocatori = new ArrayList<GiocatoreDTO>();
 		Set<GiocatoreDTO> listaGiocatori = new HashSet<GiocatoreDTO>();
-		HSSFSheet sheet = foglioTorneo.getSheet(SCHEDA_ISCRITTI);
+		Sheet sheet = foglioTorneo.getSheet(SCHEDA_ISCRITTI);
 		
 		//int ultimaRiga = sheet.getLastRowNum();
 		//System.out.println("Ultima riga: "+ultimaRiga);
 
 		for (int i = 3; i<=sheet.getLastRowNum(); i++){
-			HSSFRow row = sheet.getRow(i);
+			Row row = sheet.getRow(i);
 		//Iterator it = sheet.rowIterator();
 		//for (int i = 0; it.hasNext() ; i++){		
 			//HSSFRow row = (HSSFRow) it.next();
@@ -202,10 +207,10 @@ public class ExcelAccess{
 	}
 	
 	public GiocatoreDTO getGiocatore(Integer id){
-		HSSFSheet sheet = foglioTorneo.getSheet(SCHEDA_ISCRITTI);
+		Sheet sheet = foglioTorneo.getSheet(SCHEDA_ISCRITTI);
 		
 		for (int i = 3; i<sheet.getLastRowNum(); i++){
-			HSSFRow row = sheet.getRow(i);
+			Row row = sheet.getRow(i);
 			if (row != null){
 				GiocatoreDTO giocatore = null;
 				try{
@@ -228,24 +233,24 @@ public class ExcelAccess{
 	
 	public SchedaTorneo leggiSchedaTorneo(){
 		SchedaTorneo schedaTorneo = null;
-		HSSFSheet sheet = foglioTorneo.getSheet(SCHEDA_TORNEO);
+		Sheet sheet = foglioTorneo.getSheet(SCHEDA_TORNEO);
 		if (sheet != null){
 			schedaTorneo = new SchedaTorneo();
-			HSSFRow rowSede = sheet.getRow(1);
+			Row rowSede = sheet.getRow(1);
 			String sede = determinaValoreCella(rowSede, (short)3);
-			HSSFRow rowOrganizzatore = sheet.getRow(2);
+			Row rowOrganizzatore = sheet.getRow(2);
 			String organizzatore = determinaValoreCella(rowOrganizzatore, (short)3);
-			HSSFRow rowNomeTorneo = sheet.getRow(3);
+			Row rowNomeTorneo = sheet.getRow(3);
 			String nomeTorneo = determinaValoreCella(rowNomeTorneo, (short)3);
-			HSSFRow rowTipoTorneo = sheet.getRow(4);
+			Row rowTipoTorneo = sheet.getRow(4);
 			String tipologiaTorneo = determinaValoreCella(rowTipoTorneo, (short)3);
-			HSSFRow rowNumeroTurni = sheet.getRow(5);
+			Row rowNumeroTurni = sheet.getRow(5);
 			String numeroTurni = determinaValoreCella(rowNumeroTurni, (short)3);
 			List<Date> dataTurni = new ArrayList<Date>();
 			for (int indexDate = 6; indexDate <=35; indexDate++){
-				HSSFRow rowDataTurno = sheet.getRow(indexDate);
+				Row rowDataTurno = sheet.getRow(indexDate);
 				if (rowDataTurno != null){
-					HSSFCell cellaDataTurno   = rowDataTurno.getCell((short)3);
+					Cell cellaDataTurno   = rowDataTurno.getCell((short)3);
 					if (cellaDataTurno != null){
 						Date dataTurno = cellaDataTurno.getDateCellValue();
 						dataTurni.add(dataTurno);
@@ -276,7 +281,7 @@ public class ExcelAccess{
 	
 	public SchedaClassifica leggiSchedaClassifica(){
 		SchedaClassifica schedaClassifica = null;
-		HSSFSheet sheet = foglioTorneo.getSheet(SCHEDA_CLASSIFICA_RIDOTTA);
+		Sheet sheet = foglioTorneo.getSheet(SCHEDA_CLASSIFICA_RIDOTTA);
 		if (sheet != null){
 			schedaClassifica = new SchedaClassifica();
 			//Integer nRows = sheet.getLastRowNum();
@@ -285,7 +290,7 @@ public class ExcelAccess{
 			int numeroRiga = 1;
 			while (it.hasNext()){
 				numeroRiga++;
-				HSSFRow row = (HSSFRow) it.next();
+				Row row = (Row) it.next();
 				String posizione = determinaValoreCella(row, (short)0);
 				String punteggio = determinaValoreCella(row, (short)3);
 				String id = determinaValoreCella(row, (short)4);
@@ -327,9 +332,9 @@ public class ExcelAccess{
 	}
 	
 	
-	private String determinaValoreCella(HSSFRow row, short posizioneCella){
+	private String determinaValoreCella(Row row, short posizioneCella){
 		if (row == null) return null;
-		HSSFCell cella   = row.getCell(posizioneCella);
+		Cell cella   = row.getCell(posizioneCella);
 		if (cella == null) return null;
 		String result 		= "";
 		int tipoCella   = cella.getCellType();
@@ -343,7 +348,7 @@ public class ExcelAccess{
 		return result;
 	}
 	
-	private GiocatoreDTO getGiocatoreFromRow(HSSFRow row){
+	private GiocatoreDTO getGiocatoreFromRow(Row row){
 		GiocatoreDTO giocatore = new GiocatoreDTO();
 		Short id = null;
 		try{
@@ -397,8 +402,8 @@ public class ExcelAccess{
 		return giocatore;
 	}
 	
-	private HSSFSheet creaSchedaTurno(String nomeScheda, boolean hidden){
-		HSSFSheet result = foglioTorneo.getSheet(nomeScheda);
+	private Sheet creaSchedaTurno(String nomeScheda, boolean hidden){
+		Sheet result = foglioTorneo.getSheet(nomeScheda);
 		if (result == null){
 			result = foglioTorneo.createSheet(nomeScheda);
 			if (hidden){
@@ -430,120 +435,92 @@ public class ExcelAccess{
 	
 	public void scriviPartite(String nomeTurno, Partita partita){
 			//HSSFSheet schedaTurno = creaSchedaTurno(nomeTurno, true);
-			HSSFSheet schedaTurno = creaSchedaTurno(nomeTurno, true);
+			Sheet schedaTurno = creaSchedaTurno(nomeTurno, true);
 			int prossimaRiga = schedaTurno.getLastRowNum()+(schedaTurno.getLastRowNum()==0?0:1);
 			/* TEST quinta scheda */
 			//int prossimaRiga = schedaTurno.getLastRowNum()+1;
-			HSSFRow rowIntestazione = schedaTurno.createRow(prossimaRiga);
-			HSSFCell cellIntestazione = rowIntestazione.createCell((short)0);
+			Row rowIntestazione = schedaTurno.createRow(prossimaRiga);
+			Cell cellIntestazione = rowIntestazione.createCell((short)0);
 			cellIntestazione.setCellStyle(styleIntestazione);
 			cellIntestazione.setCellValue("Tavolo N°"+partita.getNumeroTavolo());
-			Region region = new Region(prossimaRiga,(short)0,prossimaRiga,(short)(partita.getNumeroGiocatori()*3-1));
+			CellRangeAddress region = new CellRangeAddress(prossimaRiga,prossimaRiga,(short)0,(short)(partita.getNumeroGiocatori()*3-1));
 			try {
-				HSSFRegionUtil.setBorderBottom(HSSFCellStyle.BORDER_THIN,region,schedaTurno,foglioTorneo);
-				HSSFRegionUtil.setBorderTop(HSSFCellStyle.BORDER_THIN,region,schedaTurno,foglioTorneo);
-				HSSFRegionUtil.setBorderLeft(HSSFCellStyle.BORDER_THIN,region,schedaTurno,foglioTorneo);
-				HSSFRegionUtil.setBorderRight(HSSFCellStyle.BORDER_THIN,region,schedaTurno,foglioTorneo);
+				RegionUtil.setBorderBottom(BorderStyle.THIN,region,schedaTurno);
+				RegionUtil.setBorderTop(BorderStyle.THIN,region,schedaTurno);
+				RegionUtil.setBorderLeft(BorderStyle.THIN,region,schedaTurno);
+				RegionUtil.setBorderRight(BorderStyle.THIN,region,schedaTurno);
 			} catch (/*Nestable*/Exception e) {
-				throw new MyException("Errore nell'utilizzo della classe HSSFRegionUtil: "+e.getMessage());
+				throw new MyException("Errore nell'utilizzo della classe RegionUtil: "+e.getMessage());
 			}
 			schedaTurno.addMergedRegion(region);
-			HSSFRow row = schedaTurno.createRow(prossimaRiga+1);
+			Row row = schedaTurno.createRow(prossimaRiga+1);
 			//row.setHeight((short)800);
 			short counterCell = 0;
-			HSSFSheet sheetIscritti = foglioTorneo.getSheet(SCHEDA_ISCRITTI);
+			Sheet sheetIscritti = foglioTorneo.getSheet(SCHEDA_ISCRITTI);
 			int numeroIscritti = sheetIscritti == null?0:sheetIscritti.getLastRowNum()+1;
 			for (GiocatoreDTO giocatore: partita.getGiocatori()){
-				HSSFCell cellId = row.createCell(counterCell++);
-				cellId.setCellType(HSSFCell.CELL_TYPE_NUMERIC);
+				Cell cellId = row.createCell(counterCell++);
+				cellId.setCellType(CellType.NUMERIC);
 				cellId.setCellValue(giocatore.getId());
 				cellId.setCellStyle(styleCellId);
-				HSSFCell cellNominativo = row.createCell(counterCell++);
+				Cell cellNominativo = row.createCell(counterCell++);
 				cellNominativo.setCellStyle(styleCell);
 				String nominativo = giocatore.getNome()+" "+giocatore.getCognome();
 				if (giocatore.getClubProvenienza() != null){
 					nominativo +="\n"+giocatore.getClubProvenienza();
 				}
-				cellNominativo.setCellValue(new HSSFRichTextString(nominativo));
-				HSSFCell cellPunteggio = row.createCell(counterCell++);
+				cellNominativo.setCellValue(creationHelper.createRichTextString(nominativo));
+				Cell cellPunteggio = row.createCell(counterCell++);
 				cellPunteggio.setCellStyle(styleCellPoints);
-				cellPunteggio.setCellType(HSSFCell.CELL_TYPE_NUMERIC);
+				cellPunteggio.setCellType(CellType.NUMERIC);
 				cellPunteggio.setCellValue(partita.getTavolo().get(giocatore));
 			}
 			//foglioTorneo.setActiveSheet(foglioTorneo.getSheetIndex(nomeTurno));
 		}
 
-
-	public void scriviHelp(String nomeTurno){
-		HSSFSheet schedaTurno = foglioTorneo.getSheet(nomeTurno);
-		int prossimaRiga = schedaTurno.getLastRowNum()+(schedaTurno.getLastRowNum()==0?0:1);
-
-		HSSFRow rowIntestazione = schedaTurno.createRow(prossimaRiga);
-		HSSFCell cellIntestazione = rowIntestazione.createCell((short)0);
-		//cellIntestazione.setCellStyle(styleIntestazione);
-		
-		StringBuilder buffer = new StringBuilder();
-		buffer.append("Per cambiare i tavoli serve cambiare gli ID che sono riportati nelle colonne A - D - G - J - M.");
-		buffer.append("\nQuindi, si deve scoprire quelle colonne e scrivere il nuovo ID (il nominativo si adeguerï¿½ di conseguenza) ");
-		buffer.append("\nSu OpenOffice le colonne nascoste si scoprono evidenziando l'intera scheda e poi con le voci di Menï¿½ Formato -> Colonne -> Mostra;");
-		buffer.append("\nsu Excel, evidenziando l'intera scheda e poi pulsante destro -> Scopri.");
-		
-		cellIntestazione.setCellValue(buffer.toString());
-		Region region = new Region(prossimaRiga,(short)0,prossimaRiga,(short)(14));
-		try {
-			HSSFRegionUtil.setBorderBottom(HSSFCellStyle.BORDER_THIN,region,schedaTurno,foglioTorneo);
-			HSSFRegionUtil.setBorderTop(HSSFCellStyle.BORDER_THIN,region,schedaTurno,foglioTorneo);
-			HSSFRegionUtil.setBorderLeft(HSSFCellStyle.BORDER_THIN,region,schedaTurno,foglioTorneo);
-			HSSFRegionUtil.setBorderRight(HSSFCellStyle.BORDER_THIN,region,schedaTurno,foglioTorneo);
-		} catch (/*Nestable*/Exception e) {
-			throw new MyException("Errore nell'utilizzo della classe HSSFRegionUtil: "+e.getMessage());
-		}
-		schedaTurno.addMergedRegion(region);
-	}
-	
 	public void scriviPartiteFaseFinaleQualificazioneRisiko(String nomeTurno, Partita partita){
-		HSSFSheet schedaTurno = creaSchedaTurno(nomeTurno, false);
+		Sheet schedaTurno = creaSchedaTurno(nomeTurno, false);
 		int prossimaRiga = schedaTurno.getLastRowNum()+(schedaTurno.getLastRowNum()==0?0:1);
 		/* TEST quinta scheda */
 		//int prossimaRiga = schedaTurno.getLastRowNum()+1;
-		HSSFRow rowIntestazione = schedaTurno.createRow(prossimaRiga);
-		HSSFCell cellIntestazione = rowIntestazione.createCell((short)0);
+		Row rowIntestazione = schedaTurno.createRow(prossimaRiga);
+		Cell cellIntestazione = rowIntestazione.createCell((short)0);
 		cellIntestazione.setCellStyle(styleIntestazione);
-		cellIntestazione.setCellValue("Tavolo NÂ°"+partita.getNumeroTavolo());
-		Region region = new Region(prossimaRiga,(short)0,prossimaRiga,(short)(partita.getNumeroGiocatori()*3-1));
+		cellIntestazione.setCellValue("Tavolo N°"+partita.getNumeroTavolo());
+		CellRangeAddress region = new CellRangeAddress(prossimaRiga,prossimaRiga,(short)0,(short)(partita.getNumeroGiocatori()*3-1));
 		try {
-			HSSFRegionUtil.setBorderBottom(HSSFCellStyle.BORDER_THIN,region,schedaTurno,foglioTorneo);
-			HSSFRegionUtil.setBorderTop(HSSFCellStyle.BORDER_THIN,region,schedaTurno,foglioTorneo);
-			HSSFRegionUtil.setBorderLeft(HSSFCellStyle.BORDER_THIN,region,schedaTurno,foglioTorneo);
-			HSSFRegionUtil.setBorderRight(HSSFCellStyle.BORDER_THIN,region,schedaTurno,foglioTorneo);
+			RegionUtil.setBorderBottom(BorderStyle.THIN,region,schedaTurno);
+			RegionUtil.setBorderTop(BorderStyle.THIN,region,schedaTurno);
+			RegionUtil.setBorderLeft(BorderStyle.THIN,region,schedaTurno);
+			RegionUtil.setBorderRight(BorderStyle.THIN,region,schedaTurno);
 		} catch (/*Nestable*/Exception e) {
-			throw new MyException("Errore nell'utilizzo della classe HSSFRegionUtil: "+e.getMessage());
+			throw new MyException("Errore nell'utilizzo della classe RegionUtil: "+e.getMessage());
 		}
 		schedaTurno.addMergedRegion(region);
-		HSSFRow row = schedaTurno.createRow(prossimaRiga+1);
+		Row row = schedaTurno.createRow(prossimaRiga+1);
 		short counterCell = 0;
-		HSSFSheet sheetIscritti = foglioTorneo.getSheet(SCHEDA_ISCRITTI);
+		Sheet sheetIscritti = foglioTorneo.getSheet(SCHEDA_ISCRITTI);
 		int numeroIscritti = sheetIscritti == null?0:sheetIscritti.getLastRowNum()+1;
 		for (GiocatoreDTO giocatore: partita.getGiocatori()){
-			HSSFCell cellId = row.createCell(counterCell++);
-			cellId.setCellType(HSSFCell.CELL_TYPE_NUMERIC);
+			Cell cellId = row.createCell(counterCell++);
+			cellId.setCellType(CellType.NUMERIC);
 			cellId.setCellValue(giocatore.getId());
 			cellId.setCellStyle(styleCellId);
-			HSSFCell cellNominativo = row.createCell(counterCell++);
+			Cell cellNominativo = row.createCell(counterCell++);
 			cellNominativo.setCellStyle(styleCell);
 			String nominativo = giocatore.getNome()+" "+giocatore.getCognome();
 			if (giocatore.getClubProvenienza() != null){
 				nominativo +="\n"+giocatore.getClubProvenienza();
 			}
-			char indiceColonnaId = trascodificaIndiceColonna(cellId.getCellNum());
+			char indiceColonnaId = trascodificaIndiceColonna(cellId.getColumnIndex());
 			int  indiceRigaId = prossimaRiga+2;
 			String formula = "VLOOKUP("+indiceColonnaId+indiceRigaId+",Iscritti!A4:E"+numeroIscritti+",2,FALSE) & \" \" & VLOOKUP("+indiceColonnaId+indiceRigaId+",Iscritti!A4:E"+numeroIscritti+",3,FALSE) & \" \" & CHAR(10) & VLOOKUP("+indiceColonnaId+indiceRigaId+",Iscritti!A4:E"+numeroIscritti+",5,FALSE)";
 			cellNominativo.setCellFormula(formula);
-			cellNominativo.setCellValue(new HSSFRichTextString(nominativo));
+			cellNominativo.setCellValue(creationHelper.createRichTextString(nominativo));
 
-			HSSFCell cellPunteggio = row.createCell(counterCell++);
+			Cell cellPunteggio = row.createCell(counterCell++);
 			cellPunteggio.setCellStyle(styleCell);
-			cellPunteggio.setCellType(HSSFCell.CELL_TYPE_NUMERIC);
+			cellPunteggio.setCellType(CellType.NUMERIC);
 			cellPunteggio.setCellValue(partita.getTavolo().get(giocatore));
 		}
 		foglioTorneo.setActiveSheet(foglioTorneo.getSheetIndex(nomeTurno));
@@ -641,7 +618,7 @@ public class ExcelAccess{
 		List<GiocatoreDTO> giocatori = getListaGiocatori(false);
 		Collections.sort(giocatori); //Serve perchï¿½ poi su di essa verrï¿½ fatta una binarySearch
 		Partita[] partite = null;
-		HSSFSheet schedaTurno = foglioTorneo.getSheet(nomeTurno);
+		Sheet schedaTurno = foglioTorneo.getSheet(nomeTurno);
 		if (schedaTurno != null){
 			/* Modificato dopo che nella quinta scheda misteriosamente la prima riga viene letta */
 			//partite = new Partita[schedaTurno.getLastRowNum()/2];
@@ -653,7 +630,7 @@ public class ExcelAccess{
 
 			for (int i=0; it.hasNext(); i++){
 				try{
-					HSSFRow row = (HSSFRow) it.next();
+					Row row = (Row) it.next();
 					if (i%2 == 0){
 						partite[i/2] = new Partita();
 						partite[i/2].setNumeroTavolo(i/2+1);
@@ -715,11 +692,11 @@ public class ExcelAccess{
 	public static String getNomeTurno(int numeroTurno){
 		return numeroTurno+SCHEDA_TURNO_SUFFIX;
 	}
-	private void setPartitaFromRow(Partita partita, HSSFRow row, List giocatori, boolean withGhost){
+	private void setPartitaFromRow(Partita partita, Row row, List giocatori, boolean withGhost){
 		int numeroGiocatori = 0;
 		int numeroTripletteCelle = 5; //row.getLastCellNum()/3;
 		for (int j=0; j<numeroTripletteCelle;j++){
-			HSSFCell cellId = row.getCell((short)(j*3));
+			Cell cellId = row.getCell((short)(j*3));
 			if (cellId != null){
 				Short id = null;
 				try{
@@ -728,7 +705,7 @@ public class ExcelAccess{
 					throw new MyException(nfe,"Colonna ID ("+((j*3)+1)+"°) con valore non numerico");
 				}
 				if (id != null && id.intValue() != 0){
-					HSSFCell cellPunteggio = row.getCell((short)((j*3)+2));
+					Cell cellPunteggio = row.getCell((short)((j*3)+2));
 					Float punteggio = null;
 					try{
 						punteggio = (float) cellPunteggio.getNumericCellValue();
@@ -762,34 +739,34 @@ public class ExcelAccess{
 	
 	
 	public void scriviLog(String log){
-		HSSFSheet logSheet = foglioTorneo.getSheet(SCHEDA_LOG);
+		Sheet logSheet = foglioTorneo.getSheet(SCHEDA_LOG);
 		if (logSheet == null){
 			logSheet = foglioTorneo.createSheet(SCHEDA_LOG);
 			logSheet.setColumnWidth((short)0,Short.MAX_VALUE);
 		}
-		HSSFRow rowLog = logSheet.createRow(logSheet.getLastRowNum()+1);
-		HSSFCell cellLog = rowLog.createCell((short)0);
+		Row rowLog = logSheet.createRow(logSheet.getLastRowNum()+1);
+		Cell cellLog = rowLog.createCell((short)0);
 		cellLog.setCellStyle(styleCell);
-		cellLog.setCellValue(new HSSFRichTextString(Calendar.getInstance().getTime()+" "+log));
+		cellLog.setCellValue(creationHelper.createRichTextString(Calendar.getInstance().getTime()+" "+log));
 	}
 	
 
 	public void scriviLog(List<String> log){
-		HSSFSheet logSheet = foglioTorneo.getSheet(SCHEDA_LOG);
+		Sheet logSheet = foglioTorneo.getSheet(SCHEDA_LOG);
 		if (logSheet == null){
 			logSheet = foglioTorneo.createSheet(SCHEDA_LOG);
 			logSheet.setColumnWidth((short)0,Short.MAX_VALUE);
 		}
 		if (log != null){
-			HSSFRow rowLog = logSheet.createRow(logSheet.getLastRowNum()+1);
-			HSSFCell cellLog = rowLog.createCell((short)0);
+			Row rowLog = logSheet.createRow(logSheet.getLastRowNum()+1);
+			Cell cellLog = rowLog.createCell((short)0);
 			cellLog.setCellStyle(styleCell);
-			cellLog.setCellValue(new HSSFRichTextString(Calendar.getInstance().getTime()+""));
+			cellLog.setCellValue(creationHelper.createRichTextString(Calendar.getInstance().getTime()+""));
 			for (String rigaLog: log){
 				rowLog = logSheet.createRow(logSheet.getLastRowNum()+1);
 				cellLog = rowLog.createCell((short)0);
 				cellLog.setCellStyle(styleCell);
-				cellLog.setCellValue(new HSSFRichTextString(rigaLog));
+				cellLog.setCellValue(creationHelper.createRichTextString(rigaLog));
 			}
 		}
 	}
@@ -800,7 +777,7 @@ public class ExcelAccess{
 		}
 		int index = foglioTorneo.getSheetIndex(SCHEDA_CLASSIFICA_RIDOTTA);
 		if (index >=0){foglioTorneo.removeSheetAt(index);}
-		HSSFSheet schedaClassificaRidotta = foglioTorneo.cloneSheet(foglioTorneo.getSheetIndex(SCHEDA_CLASSIFICA));
+		Sheet schedaClassificaRidotta = foglioTorneo.cloneSheet(foglioTorneo.getSheetIndex(SCHEDA_CLASSIFICA));
 		List<String> colonneDaTenere = Arrays.asList(new String[]{"Pos.", "Nome", "Cognome", "pt_tot", "id"});
 		keepOnlyColumnsWithHeaders(schedaClassificaRidotta, colonneDaTenere);
 		
@@ -814,23 +791,23 @@ public class ExcelAccess{
 	private void creaStiliClassifica(){
 		styleCellClassODD  = foglioTorneo.createCellStyle();
 		styleCellClassEVEN = foglioTorneo.createCellStyle();
-		styleCellClassODD.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
-		styleCellClassEVEN.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
-		styleCellClassODD.setFillForegroundColor(HSSFColor.YELLOW.index);
-		styleCellClassEVEN.setFillForegroundColor(HSSFColor.LIGHT_ORANGE.index);
-		HSSFFont font = foglioTorneo.createFont();
-		font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+		styleCellClassODD.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		styleCellClassEVEN.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		styleCellClassODD.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+		styleCellClassEVEN.setFillForegroundColor(IndexedColors.LIGHT_ORANGE.getIndex());
+		Font font = foglioTorneo.createFont();
+		font.setBold(true);
 		styleCellClassEVEN.setFont(font);
 		styleCellClassODD.setFont(font);
 
 		styleCellClassWinODD  = foglioTorneo.createCellStyle();
 		styleCellClassWinEVEN = foglioTorneo.createCellStyle();
-		styleCellClassWinODD.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
-		styleCellClassWinEVEN.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
-		styleCellClassWinODD.setFillForegroundColor(HSSFColor.YELLOW.index);
-		styleCellClassWinEVEN.setFillForegroundColor(HSSFColor.LIGHT_ORANGE.index);
-		styleCellClassWinODD.setFillForegroundColor(HSSFColor.LIGHT_GREEN.index);
-		styleCellClassWinEVEN.setFillForegroundColor(HSSFColor.LIGHT_GREEN.index);
+		styleCellClassWinODD.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		styleCellClassWinEVEN.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		styleCellClassWinODD.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+		styleCellClassWinEVEN.setFillForegroundColor(IndexedColors.LIGHT_ORANGE.getIndex());
+		styleCellClassWinODD.setFillForegroundColor(IndexedColors.LIGHT_GREEN.getIndex());
+		styleCellClassWinEVEN.setFillForegroundColor(IndexedColors.LIGHT_GREEN.getIndex());
 		styleCellClassWinEVEN.setFont(font);
 		styleCellClassWinODD.setFont(font);
 //		styleCellClassWinEVEN.setBorderTop((short)5);
@@ -858,33 +835,33 @@ public class ExcelAccess{
 			foglioTorneo.removeSheetAt(index);
 		}
 		creaStiliClassifica();
-		HSSFCellStyle styleCellClass, styleCellClassWin;
+		CellStyle styleCellClass, styleCellClassWin;
 		
-		HSSFSheet schedaClassifica = foglioTorneo.createSheet(SCHEDA_CLASSIFICA);
+		Sheet schedaClassifica = foglioTorneo.createSheet(SCHEDA_CLASSIFICA);
 
-		HSSFRow intestazione = schedaClassifica.createRow(0);
+		Row intestazione = schedaClassifica.createRow(0);
 		short indexCell = 0;
-		HSSFCellUtil.createCell(intestazione,  indexCell++, "Pos.",styleIntestazione);
-		HSSFCellUtil.createCell(intestazione,  indexCell++, "Nome",styleIntestazione);
-		HSSFCellUtil.createCell(intestazione,  indexCell++, "Cognome",styleIntestazione);
-		HSSFCellUtil.createCell(intestazione,  indexCell++, "Nick",styleIntestazione);
-		HSSFCellUtil.createCell(intestazione,  indexCell++, "Club o Famiglia",styleIntestazione);
+		CellUtil.createCell(intestazione,  indexCell++, "Pos.",styleIntestazione);
+		CellUtil.createCell(intestazione,  indexCell++, "Nome",styleIntestazione);
+		CellUtil.createCell(intestazione,  indexCell++, "Cognome",styleIntestazione);
+		CellUtil.createCell(intestazione,  indexCell++, "Nick",styleIntestazione);
+		CellUtil.createCell(intestazione,  indexCell++, "Club o Famiglia",styleIntestazione);
 		if (tipoTorneo != TipoTorneo.MasterRisiko2015 && tipoTorneo != TipoTorneo.MasterRisiko2016){
 			for (int i = 1; ; i++){
 				Partita[] partiteTurnoi = loadPartite(i,false,tipoTorneo);
 				if (partiteTurnoi == null){break;}
-				HSSFCellUtil.createCell(intestazione,  indexCell++, "pt"+i,styleIntestazione);
+				CellUtil.createCell(intestazione,  indexCell++, "pt"+i,styleIntestazione);
 			}
 		}else{
 			for (int i = 1; i <= 3; i++){
 				Partita[] partiteTurnoi = loadPartite(i,false,tipoTorneo);
 				if (partiteTurnoi == null){break;}
-				HSSFCellUtil.createCell(intestazione,  indexCell++, "pt"+i,styleIntestazione);
+				CellUtil.createCell(intestazione,  indexCell++, "pt"+i,styleIntestazione);
 			}
 		}
-		HSSFCellUtil.createCell(intestazione,  indexCell++, "v_tot",styleIntestazione);
-		HSSFCellUtil.createCell(intestazione,  indexCell++, "pt_tot",styleIntestazione);
-		HSSFCellUtil.createCell(intestazione,  indexCell++, "id",styleIntestazione);
+		CellUtil.createCell(intestazione,  indexCell++, "v_tot",styleIntestazione);
+		CellUtil.createCell(intestazione,  indexCell++, "pt_tot",styleIntestazione);
+		CellUtil.createCell(intestazione,  indexCell++, "id",styleIntestazione);
 		
 		List<ScorePlayer>scores = null;
 		switch (tipoTorneo) {
@@ -933,16 +910,16 @@ public class ExcelAccess{
 				styleCellClass = styleCellClassODD;
 				styleCellClassWin = styleCellClassWinODD;
 			}
-			HSSFRow rowScore = schedaClassifica.createRow(numeroRiga);
-			HSSFCellUtil.createCell(rowScore,  indexCell++, String.valueOf(position++), styleCellClass);
-			HSSFCellUtil.createCell(rowScore,  indexCell++, giocatore.getNome(), styleCellClass);
-			HSSFCellUtil.createCell(rowScore,  indexCell++, giocatore.getCognome(), styleCellClass);
-			HSSFCellUtil.createCell(rowScore,  indexCell++, giocatore.getNick(), styleCellClass);
-			HSSFCellUtil.createCell(rowScore,  indexCell++, giocatore.getClubProvenienza()!=null?giocatore.getClubProvenienza().getDenominazione():"", styleCellClass);
+			Row rowScore = schedaClassifica.createRow(numeroRiga);
+			CellUtil.createCell(rowScore,  indexCell++, String.valueOf(position++), styleCellClass);
+			CellUtil.createCell(rowScore,  indexCell++, giocatore.getNome(), styleCellClass);
+			CellUtil.createCell(rowScore,  indexCell++, giocatore.getCognome(), styleCellClass);
+			CellUtil.createCell(rowScore,  indexCell++, giocatore.getNick(), styleCellClass);
+			CellUtil.createCell(rowScore,  indexCell++, giocatore.getClubProvenienza()!=null?giocatore.getClubProvenienza().getDenominazione():"", styleCellClass);
 			for (Partita partita: scorePlayer.getPartite()){
-				HSSFCell punti	 	= rowScore.createCell((short)indexCell++, HSSFCell.CELL_TYPE_NUMERIC);
+				Cell punti	 	= rowScore.createCell((short)indexCell++, CellType.NUMERIC);
 				if ((tipoTorneo == TipoTorneo.MasterRisiko2015 || tipoTorneo == TipoTorneo.MasterRisiko2016) && indiceFormatTreDecimali != -1){
-					HSSFCellStyle cs = foglioTorneo.createCellStyle();
+					CellStyle cs = foglioTorneo.createCellStyle();
 					cs.cloneStyleFrom(styleCellClass);
 					cs.setDataFormat(indiceFormatTreDecimali);
 					punti.setCellStyle(cs);
@@ -952,7 +929,7 @@ public class ExcelAccess{
 				if(partita != null){
 					if(partita.isVincitore(giocatore)){
 						if ((tipoTorneo == TipoTorneo.MasterRisiko2015 || tipoTorneo == TipoTorneo.MasterRisiko2016) && indiceFormatTreDecimali != -1){
-							HSSFCellStyle cs = foglioTorneo.createCellStyle();
+							CellStyle cs = foglioTorneo.createCellStyle();
 							cs.cloneStyleFrom(styleCellClassWin);
 							cs.setDataFormat(indiceFormatTreDecimali);
 							punti.setCellStyle(cs);
@@ -964,15 +941,15 @@ public class ExcelAccess{
 					punti.setCellValue(puntid);
 				}				
 			}
-			HSSFCell totVittorieCell 	= rowScore.createCell((short)indexCell++, HSSFCell.CELL_TYPE_NUMERIC);
+			Cell totVittorieCell 	= rowScore.createCell((short)indexCell++, CellType.NUMERIC);
 			totVittorieCell.setCellStyle(styleCellClass);
 			totVittorieCell.setCellValue(scorePlayer.getNumeroVittorie());
 			
 			
-			HSSFCell punteggioCell 	= rowScore.createCell((short)indexCell++, HSSFCell.CELL_TYPE_NUMERIC);
+			Cell punteggioCell 	= rowScore.createCell((short)indexCell++, CellType.NUMERIC);
 
 			if ((tipoTorneo == TipoTorneo.MasterRisiko2015 || tipoTorneo == TipoTorneo.MasterRisiko2016) && indiceFormatTreDecimali != -1){
-				HSSFCellStyle cs = foglioTorneo.createCellStyle();
+				CellStyle cs = foglioTorneo.createCellStyle();
 				cs.cloneStyleFrom(styleCellClass);
 				cs.setDataFormat(indiceFormatTreDecimali);
 				punteggioCell.setCellStyle(cs);
@@ -981,7 +958,7 @@ public class ExcelAccess{
 			}
 			punteggioCell.setCellValue(scorePlayer.getPunteggioB(false).doubleValue());
 
-			HSSFCell id = rowScore.createCell((short)indexCell, HSSFCell.CELL_TYPE_STRING);
+			Cell id = rowScore.createCell((short)indexCell, CellType.STRING);
 			id.setCellValue(String.valueOf(giocatore.getId()));
 			id.setCellStyle(styleCellClass);
 			//schedaClassifica.setColumnHidden((short)indexCell++,true);
@@ -995,10 +972,10 @@ public class ExcelAccess{
 	}
 	
 	
-	public void deleteColumn(HSSFSheet sheet, int columnToDelete) {
+	public void deleteColumn(Sheet sheet, int columnToDelete) {
 		int maxColumn = 0;
 		for (int r = 0; r < sheet.getLastRowNum() + 1; r++) {
-			HSSFRow row = sheet.getRow(r);
+			Row row = sheet.getRow(r);
 
 			// if no row exists here; then nothing to do; next!
 			if (row == null)
@@ -1055,8 +1032,8 @@ public class ExcelAccess{
 
 	}
 
-	public void keepOnlyColumnsWithHeaders(HSSFSheet sheet, List<String> columnHeaders) {
-		HSSFRow row = sheet.getRow(0);
+	public void keepOnlyColumnsWithHeaders(Sheet sheet, List<String> columnHeaders) {
+		Row row = sheet.getRow(0);
 		if (row == null) {
 			return;
 		}
@@ -1072,8 +1049,8 @@ public class ExcelAccess{
 		}
 	}
 
-	public void deleteColumnsWithHeader(HSSFSheet sheet, String columnHeader) {
-		HSSFRow row = sheet.getRow(0);
+	public void deleteColumnsWithHeader(Sheet sheet, String columnHeader) {
+		Row row = sheet.getRow(0);
 		if (row == null) {
 			return;
 		}
@@ -1411,14 +1388,7 @@ public class ExcelAccess{
 		}
 		return result;
 	}
-	
-	public void hideMailColumn(){
-		HSSFSheet schedaIscritti = foglioTorneo.getSheet(SCHEDA_ISCRITTI);
-		if (schedaIscritti != null){
-			schedaIscritti.setColumnHidden(2, true);
-		}
-	}
-	
+		
 	public String[] getSheetNames(){
 		String[] result = null;
 		int numberOfSheets = foglioTorneo.getNumberOfSheets();
