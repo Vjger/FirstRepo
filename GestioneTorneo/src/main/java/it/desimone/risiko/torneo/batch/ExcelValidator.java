@@ -9,6 +9,8 @@ import it.desimone.risiko.torneo.dto.SchedaTorneo;
 import it.desimone.utils.StringUtils;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -41,6 +43,11 @@ public class ExcelValidator {
 		}
 		public enum Scheda{
 			TORNEO, ISCRITTI, TURNO, CLASSIFICA_RIDOTTA
+		}
+		@Override
+		public String toString() {
+			return "ExcelValidatorMessages [message=" + message
+					+ ", schedaDiRiferimento=" + schedaDiRiferimento + "]";
 		}
 	}
 	
@@ -116,7 +123,7 @@ public class ExcelValidator {
 									result.add(new ExcelValidatorMessages(Scheda.TORNEO, "E' presente la scheda per il turno "+numeroTurnoInt+" ma il torneo prevede solo "+numeroTurni+" turni"));
 								}else{
 									if (dateTurni == null || dateTurni.isEmpty() || dateTurni.size() < numeroTurnoInt || dateTurni.get(numeroTurnoInt-1) == null){
-										result.add(new ExcelValidatorMessages(Scheda.TORNEO, "Non è stata indicata la data in cui è stato disputato il "+numeroTurnoInt+"° turno"));
+										result.add(new ExcelValidatorMessages(Scheda.TORNEO, "Non è stata indicata o non è correttamente formattata la data in cui è stato disputato il "+numeroTurnoInt+"° turno"));
 									}
 								}
 							}else{
@@ -178,6 +185,23 @@ public class ExcelValidator {
 			}
 			if (schedaTorneo.getNumeroTurni() == 0){
 				result.add(new ExcelValidatorMessages(Scheda.TORNEO, "Non è stato indicato il numero di Turni previsti"));
+			}
+			List<Date> dateTurni = schedaTorneo.getDataTurni();
+			if (dateTurni != null && !dateTurni.isEmpty()){
+				DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+				Date turnoPrecedente = null;
+				for (Date dataTurno: dateTurni){
+					if (dataTurno != null){
+						if (turnoPrecedente == null){
+							turnoPrecedente = dataTurno;
+						}else{
+							if (dataTurno.before(turnoPrecedente)){
+								result.add(new ExcelValidatorMessages(Scheda.TORNEO, "Errata sequenza cronologica per le date dei turni: il turno del "+df.format(dataTurno)+" è precedente a quello del "+df.format(turnoPrecedente)));
+								turnoPrecedente = dataTurno;
+							}
+						}
+					}
+				}
 			}
 		}
 		

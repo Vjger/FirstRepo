@@ -252,8 +252,12 @@ public class ExcelAccess{
 				if (rowDataTurno != null){
 					Cell cellaDataTurno   = rowDataTurno.getCell((short)3);
 					if (cellaDataTurno != null){
+						try{
 						Date dataTurno = cellaDataTurno.getDateCellValue();
 						dataTurni.add(dataTurno);
+						}catch(IllegalStateException ise){
+							MyLogger.getLogger().severe("Errore nel parsing della data a riga "+(indexDate+1)+": "+ ise.getMessage());
+						}
 					}
 				}
 			}
