@@ -31,7 +31,7 @@
           <artifactId>maven-compiler-plugin</artifactId>
           <configuration>
           <excludes>
-            <exclude>src/main/java/it/desimone/risiko/torneo/batch/ExcelAccess.java</exclude>
+            <exclude>it/desimone/risiko/torneo/batch/ExcelAccessHSSF.java</exclude>
           </excludes>
           </configuration>
         </plugin>

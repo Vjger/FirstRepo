@@ -44,10 +44,10 @@ public class ExcelValidator {
 		}
 	}
 	
-	private ExcelAccessUniversal excelAccess;
+	private ExcelAccess excelAccess;
 	
 	public ExcelValidator(File excelFile){
-		this.excelAccess = new ExcelAccessUniversal(excelFile);
+		this.excelAccess = new ExcelAccess(excelFile);
 	}
 	
 	
