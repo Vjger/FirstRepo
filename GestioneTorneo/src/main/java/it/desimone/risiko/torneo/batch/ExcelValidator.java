@@ -339,7 +339,7 @@ public class ExcelValidator {
 				if (giocatoriInClassifica == null || giocatoriInClassifica.isEmpty()){
 					result.add(new ExcelValidatorMessages(Scheda.CLASSIFICA_RIDOTTA, "Non ci sono giocatori in classifica"));
 				}else{
-					int counterRiga = 0;
+					int counterRiga = 1;
 					for (RigaClassifica rigaClassifica: giocatoriInClassifica){
 						if (rigaClassifica != null){
 							counterRiga++;

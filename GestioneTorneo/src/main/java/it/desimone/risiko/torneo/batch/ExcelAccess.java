@@ -324,7 +324,7 @@ public class ExcelAccess{
 						MyLogger.getLogger().severe("Scheda "+SCHEDA_CLASSIFICA_RIDOTTA+":Id non numerico alla riga "+numeroRiga);
 					}
 				}
-				if (posizioneInt != null){
+				if (posizioneInt != null || punteggioB != null || idInt != null){
 					RigaClassifica rigaClassifica = new RigaClassifica();
 					rigaClassifica.setIdGiocatore(idInt);
 					rigaClassifica.setPosizioneGiocatore(posizioneInt);
@@ -361,6 +361,8 @@ public class ExcelAccess{
 			id 			= (short)row.getCell(posizioneId).getNumericCellValue();
 		}catch(NumberFormatException nfe){
 			throw new MyException(nfe,"Colonna ID con valore non numerico");
+		}catch(IllegalStateException ise){
+			throw new MyException(ise,"Colonna ID con valore non numerico");
 		}
 		
 		String nome = determinaValoreCella(row, posizioneNome);

@@ -14,9 +14,9 @@ public class ExcelValidatorTest {
 		
 		MyLogger.setConsoleLogLevel(Level.ALL);
 		
-		//File testFile = new File("C:\\Users\\mds\\Desktop\\TestPublish.xls");
+		File testFile = new File("C:\\Users\\mds\\Desktop\\TestPublish.xls");
 		
-		File testFile = new File("C:\\GIT Repositories\\FirstRepo\\GoogleSheetsRemoteAccess\\working\\download\\torneovalerio.xls");
+		//File testFile = new File("C:\\GIT Repositories\\FirstRepo\\GoogleSheetsRemoteAccess\\working\\download\\torneovalerio.xls");
 		
 		ExcelValidator excelValidator = new ExcelValidator(testFile);
 		
