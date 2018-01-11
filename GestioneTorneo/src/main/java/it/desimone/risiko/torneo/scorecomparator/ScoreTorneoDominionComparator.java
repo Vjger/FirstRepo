@@ -1,7 +1,7 @@
-package it.desimone.risiko.torneo.utils;
+package it.desimone.risiko.torneo.scorecomparator;
 
-import it.desimone.risiko.torneo.dto.ScorePlayer;
-import it.desimone.risiko.torneo.dto.ScorePlayerTorneoDominion;
+import it.desimone.risiko.torneo.scoreplayer.ScorePlayer;
+import it.desimone.risiko.torneo.scoreplayer.ScorePlayerTorneoDominion;
 
 import java.util.Comparator;
 

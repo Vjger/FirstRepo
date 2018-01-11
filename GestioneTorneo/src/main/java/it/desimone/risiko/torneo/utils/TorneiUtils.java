@@ -1,9 +1,8 @@
 package it.desimone.risiko.torneo.utils;
 
-import it.desimone.risiko.torneo.batch.ExcelAccess;
 import it.desimone.risiko.torneo.dto.GiocatoreDTO;
 import it.desimone.risiko.torneo.dto.Partita;
-import it.desimone.risiko.torneo.dto.ScorePlayer;
+import it.desimone.risiko.torneo.scoreplayer.ScorePlayer;
 import it.desimone.utils.MyException;
 import it.desimone.utils.MyLogger;
 
