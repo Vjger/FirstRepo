@@ -1,8 +1,11 @@
-package it.desimone.risiko.torneo.dto;
+package it.desimone.risiko.torneo.scoreplayer;
+
+import it.desimone.risiko.torneo.dto.GiocatoreDTO;
+import it.desimone.risiko.torneo.dto.Partita;
 
 import java.math.BigDecimal;
 
-public class ScorePlayerOpen implements ScorePlayer{
+public class ScorePlayerNazionaleRisiko implements ScorePlayer{
 
 	public static final Integer BONUS = 50; 
 	private static final BigDecimal BONUS_B = new BigDecimal(BONUS); 
@@ -15,7 +18,7 @@ public class ScorePlayerOpen implements ScorePlayer{
 	private GiocatoreDTO giocatore;
 	
 	private Partita[] partite;
-	public ScorePlayerOpen(GiocatoreDTO giocatore, Partita[] partite){
+	public ScorePlayerNazionaleRisiko(GiocatoreDTO giocatore, Partita[] partite){
 		this.giocatore = giocatore;
 		this.partite = new Partita[partite.length];
 		for (int i=0; i < partite.length; i++){
@@ -23,7 +26,7 @@ public class ScorePlayerOpen implements ScorePlayer{
 				this.partite[i] = partite[i];
 			}
 		}
-		for (Partita partita: partite){
+		for (Partita partita: this.partite){
 			trascodificaPunteggio(partita, giocatore);
 		}
 	}
@@ -77,20 +80,8 @@ public class ScorePlayerOpen implements ScorePlayer{
 		}else{
 			punteggioB = new BigDecimal(partita.getPunteggio(giocatore));
 			punteggioB = punteggioB.setScale(0,BigDecimal.ROUND_DOWN);
-			punteggio  = punteggioB.floatValue();
-			if (partita.getNumeroGiocatori() == 5){
-				if (partita.isVincitore(giocatore) && punteggio > 80f){
-					punteggio = 100f; //Per far sì che il punteggio massimo sia sempre 150
-					punteggioB = new BigDecimal(100);
-				}
-				if (punteggio != 100f){
-					punteggio = punteggio*1.25f;
-					punteggioB = punteggioB.multiply(UNO_V_25);
-				}
-			}else if (partita.getNumeroGiocatori() == 3){
-				punteggio = punteggio*0.75f;
-				punteggioB = punteggioB.multiply(ZERO_V_75);
-			}		
+			//punteggio  = punteggioB.floatValue();	
+			punteggio = partita.getPunteggio(giocatore);
 			if (partita.isVincitore(giocatore)){
 				numeroVittorie++;
 				if (partita.numeroVincitori() == 1){

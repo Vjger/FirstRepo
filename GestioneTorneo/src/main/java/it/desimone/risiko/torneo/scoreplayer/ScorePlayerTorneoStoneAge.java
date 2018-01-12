@@ -1,8 +1,10 @@
-package it.desimone.risiko.torneo.dto;
+package it.desimone.risiko.torneo.scoreplayer;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import it.desimone.risiko.torneo.dto.GiocatoreDTO;
+import it.desimone.risiko.torneo.dto.Partita;
 import it.desimone.utils.MyException;
 
 public class ScorePlayerTorneoStoneAge implements ScorePlayer{

@@ -1,33 +1,5 @@
 package it.desimone.risiko.torneo.batch;
 
-import it.desimone.risiko.torneo.dto.ClubDTO;
-import it.desimone.risiko.torneo.dto.GiocatoreDTO;
-import it.desimone.risiko.torneo.dto.Partita;
-import it.desimone.risiko.torneo.dto.RegioneDTO;
-import it.desimone.risiko.torneo.dto.SchedaClassifica;
-import it.desimone.risiko.torneo.dto.SchedaClassifica.RigaClassifica;
-import it.desimone.risiko.torneo.dto.SchedaTorneo;
-import it.desimone.risiko.torneo.dto.ScorePlayer;
-import it.desimone.risiko.torneo.dto.ScorePlayerCampionatoGufo;
-import it.desimone.risiko.torneo.dto.ScorePlayerNazionaleRisiko;
-import it.desimone.risiko.torneo.dto.ScorePlayerOpen;
-import it.desimone.risiko.torneo.dto.ScorePlayerQualificazioniNazionale;
-import it.desimone.risiko.torneo.dto.ScorePlayerRaduno;
-import it.desimone.risiko.torneo.dto.ScorePlayerTorneoBGL;
-import it.desimone.risiko.torneo.dto.ScorePlayerTorneoGufo;
-import it.desimone.risiko.torneo.utils.ClubLoader;
-import it.desimone.risiko.torneo.utils.RegioniLoader;
-import it.desimone.risiko.torneo.utils.ScoreCampionatoComparator;
-import it.desimone.risiko.torneo.utils.ScoreNazionaleRisikoComparator;
-import it.desimone.risiko.torneo.utils.ScoreQualificazioniNazionaleComparator;
-import it.desimone.risiko.torneo.utils.ScoreRadunoComparator;
-import it.desimone.risiko.torneo.utils.ScoreSemifinalistiRadunoComparator;
-import it.desimone.risiko.torneo.utils.ScoreTorneoOpenComparator;
-import it.desimone.risiko.torneo.utils.TipoTorneo;
-import it.desimone.risiko.torneo.utils.TorneiUtils;
-import it.desimone.utils.MyException;
-import it.desimone.utils.MyLogger;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -46,7 +18,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.poi.hssf.usermodel.HSSFFont;
-
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -66,6 +37,35 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellUtil;
 import org.apache.poi.ss.util.RegionUtil;
+
+import it.desimone.risiko.torneo.dto.ClubDTO;
+import it.desimone.risiko.torneo.dto.GiocatoreDTO;
+import it.desimone.risiko.torneo.dto.Partita;
+import it.desimone.risiko.torneo.dto.RegioneDTO;
+import it.desimone.risiko.torneo.dto.SchedaClassifica;
+import it.desimone.risiko.torneo.dto.SchedaClassifica.RigaClassifica;
+import it.desimone.risiko.torneo.dto.SchedaTorneo;
+import it.desimone.risiko.torneo.dto.SchedaTurno;
+import it.desimone.risiko.torneo.scorecomparator.ScoreCampionatoComparator;
+import it.desimone.risiko.torneo.scorecomparator.ScoreNazionaleRisikoComparator;
+import it.desimone.risiko.torneo.scorecomparator.ScoreQualificazioniNazionaleComparator;
+import it.desimone.risiko.torneo.scorecomparator.ScoreRadunoComparator;
+import it.desimone.risiko.torneo.scorecomparator.ScoreSemifinalistiRadunoComparator;
+import it.desimone.risiko.torneo.scorecomparator.ScoreTorneoOpenComparator;
+import it.desimone.risiko.torneo.scoreplayer.ScorePlayer;
+import it.desimone.risiko.torneo.scoreplayer.ScorePlayerCampionatoGufo;
+import it.desimone.risiko.torneo.scoreplayer.ScorePlayerNazionaleRisiko;
+import it.desimone.risiko.torneo.scoreplayer.ScorePlayerOpen;
+import it.desimone.risiko.torneo.scoreplayer.ScorePlayerQualificazioniNazionale;
+import it.desimone.risiko.torneo.scoreplayer.ScorePlayerRaduno;
+import it.desimone.risiko.torneo.scoreplayer.ScorePlayerTorneoBGL;
+import it.desimone.risiko.torneo.scoreplayer.ScorePlayerTorneoGufo;
+import it.desimone.risiko.torneo.utils.ClubLoader;
+import it.desimone.risiko.torneo.utils.RegioniLoader;
+import it.desimone.risiko.torneo.utils.TipoTorneo;
+import it.desimone.risiko.torneo.utils.TorneiUtils;
+import it.desimone.utils.MyException;
+import it.desimone.utils.MyLogger;
 
 
 public class ExcelAccess{
@@ -252,8 +252,12 @@ public class ExcelAccess{
 				if (rowDataTurno != null){
 					Cell cellaDataTurno   = rowDataTurno.getCell((short)3);
 					if (cellaDataTurno != null){
+						try{
 						Date dataTurno = cellaDataTurno.getDateCellValue();
 						dataTurni.add(dataTurno);
+						}catch(IllegalStateException ise){
+							MyLogger.getLogger().severe("Errore nel parsing della data a riga "+(indexDate+1)+": "+ ise.getMessage());
+						}
 					}
 				}
 			}
@@ -318,7 +322,7 @@ public class ExcelAccess{
 						MyLogger.getLogger().severe("Scheda "+SCHEDA_CLASSIFICA_RIDOTTA+":Id non numerico alla riga "+numeroRiga);
 					}
 				}
-				if (posizioneInt != null){
+				if (posizioneInt != null || punteggioB != null || idInt != null){
 					RigaClassifica rigaClassifica = new RigaClassifica();
 					rigaClassifica.setIdGiocatore(idInt);
 					rigaClassifica.setPosizioneGiocatore(posizioneInt);
@@ -355,6 +359,8 @@ public class ExcelAccess{
 			id 			= (short)row.getCell(posizioneId).getNumericCellValue();
 		}catch(NumberFormatException nfe){
 			throw new MyException(nfe,"Colonna ID con valore non numerico");
+		}catch(IllegalStateException ise){
+			throw new MyException(ise,"Colonna ID con valore non numerico");
 		}
 		
 		String nome = determinaValoreCella(row, posizioneNome);
@@ -612,6 +618,37 @@ public class ExcelAccess{
 		}
 		
 		return result;
+	}
+	
+	public List<SchedaTurno> leggiSchedeTurno(){
+		List<SchedaTurno> turni = null;
+		String[] sheetNames = getSheetNames();
+		
+		if (sheetNames != null){
+			for (String sheetName: sheetNames){
+				if (sheetName != null && sheetName.endsWith(ExcelAccess.SCHEDA_TURNO_SUFFIX)){
+					try{
+						String numeroTurno = sheetName.substring(0, sheetName.indexOf(ExcelAccess.SCHEDA_TURNO_SUFFIX));
+						if (numeroTurno != null){
+							numeroTurno = numeroTurno.trim();
+							Integer numeroTurnoInt = Integer.valueOf(numeroTurno);
+							Partita[] partite = loadPartite(numeroTurnoInt, true, null);
+							if (turni == null){
+								turni = new ArrayList<SchedaTurno>();
+							}
+							SchedaTurno schedaTurno = new SchedaTurno();
+							schedaTurno.setNumeroTurno(numeroTurnoInt);
+							schedaTurno.setPartite(partite);
+							turni.add(schedaTurno);
+						}
+					}catch(Exception e){
+						MyLogger.getLogger().severe("Errore nella lettura delle schede Turni: "+e.getMessage());
+						throw new MyException(e);
+					}
+				}
+			}
+		}
+		return turni;
 	}
 	
 	private Partita[] loadPartite(String nomeTurno, boolean withGhost, TipoTorneo tipoTorneo){

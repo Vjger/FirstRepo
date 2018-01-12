@@ -1,8 +1,8 @@
-package it.desimone.risiko.torneo.utils;
+package it.desimone.risiko.torneo.scorecomparator;
 
 import it.desimone.risiko.torneo.dto.GiocatoreDTO;
 import it.desimone.risiko.torneo.dto.Partita;
-import it.desimone.risiko.torneo.dto.ScorePlayer;
+import it.desimone.risiko.torneo.scoreplayer.ScorePlayer;
 import it.desimone.utils.MyException;
 
 import java.math.BigDecimal;

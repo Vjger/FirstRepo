@@ -1,4 +1,7 @@
-package it.desimone.risiko.torneo.dto;
+package it.desimone.risiko.torneo.scoreplayer;
+
+import it.desimone.risiko.torneo.dto.GiocatoreDTO;
+import it.desimone.risiko.torneo.dto.Partita;
 
 import java.math.BigDecimal;
 import java.util.Arrays;

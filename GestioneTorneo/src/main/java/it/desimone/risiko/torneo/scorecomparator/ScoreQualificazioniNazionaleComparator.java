@@ -1,9 +1,9 @@
-package it.desimone.risiko.torneo.utils;
+package it.desimone.risiko.torneo.scorecomparator;
 
 import it.desimone.risiko.torneo.dto.GiocatoreDTO;
 import it.desimone.risiko.torneo.dto.Partita;
-import it.desimone.risiko.torneo.dto.ScorePlayer;
-import it.desimone.risiko.torneo.dto.ScorePlayerQualificazioniNazionale;
+import it.desimone.risiko.torneo.scoreplayer.ScorePlayer;
+import it.desimone.risiko.torneo.scoreplayer.ScorePlayerQualificazioniNazionale;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

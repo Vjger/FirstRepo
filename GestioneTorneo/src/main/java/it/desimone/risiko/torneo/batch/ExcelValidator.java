@@ -1,6 +1,8 @@
 package it.desimone.risiko.torneo.batch;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,6 +14,7 @@ import it.desimone.risiko.torneo.dto.Partita;
 import it.desimone.risiko.torneo.dto.SchedaClassifica;
 import it.desimone.risiko.torneo.dto.SchedaClassifica.RigaClassifica;
 import it.desimone.risiko.torneo.dto.SchedaTorneo;
+import it.desimone.risiko.torneo.dto.SchedaTurno;
 import it.desimone.utils.StringUtils;
 
 public class ExcelValidator {
@@ -41,6 +44,11 @@ public class ExcelValidator {
 		}
 		public enum Scheda{
 			TORNEO, ISCRITTI, TURNO, CLASSIFICA_RIDOTTA
+		}
+		@Override
+		public String toString() {
+			return "ExcelValidatorMessages [message=" + message
+					+ ", schedaDiRiferimento=" + schedaDiRiferimento + "]";
 		}
 	}
 	
@@ -116,7 +124,7 @@ public class ExcelValidator {
 									result.add(new ExcelValidatorMessages(Scheda.TORNEO, "E' presente la scheda per il turno "+numeroTurnoInt+" ma il torneo prevede solo "+numeroTurni+" turni"));
 								}else{
 									if (dateTurni == null || dateTurni.isEmpty() || dateTurni.size() < numeroTurnoInt || dateTurni.get(numeroTurnoInt-1) == null){
-										result.add(new ExcelValidatorMessages(Scheda.TORNEO, "Non è stata indicata la data in cui è stato disputato il "+numeroTurnoInt+"° turno"));
+										result.add(new ExcelValidatorMessages(Scheda.TORNEO, "Non è stata indicata o non è correttamente formattata la data in cui è stato disputato il "+numeroTurnoInt+"° turno"));
 									}
 								}
 							}else{
@@ -179,6 +187,23 @@ public class ExcelValidator {
 			if (schedaTorneo.getNumeroTurni() == 0){
 				result.add(new ExcelValidatorMessages(Scheda.TORNEO, "Non è stato indicato il numero di Turni previsti"));
 			}
+			List<Date> dateTurni = schedaTorneo.getDataTurni();
+			if (dateTurni != null && !dateTurni.isEmpty()){
+				DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+				Date turnoPrecedente = null;
+				for (Date dataTurno: dateTurni){
+					if (dataTurno != null){
+						if (turnoPrecedente == null){
+							turnoPrecedente = dataTurno;
+						}else{
+							if (dataTurno.before(turnoPrecedente)){
+								result.add(new ExcelValidatorMessages(Scheda.TORNEO, "Errata sequenza cronologica per le date dei turni: il turno del "+df.format(dataTurno)+" è precedente a quello del "+df.format(turnoPrecedente)));
+								turnoPrecedente = dataTurno;
+							}
+						}
+					}
+				}
+			}
 		}
 		
 		
@@ -230,49 +255,62 @@ public class ExcelValidator {
 		List<ExcelValidatorMessages> result = new ArrayList<ExcelValidatorMessages>();
 		
 		excelAccess.openFileExcel();
-		boolean almenoUnTurno = false;
 		
-		for(int numeroTurno = 1; ; numeroTurno++){
-			Partita[] partite = excelAccess.loadPartite(numeroTurno, true, null);
-			if (partite != null){
-				almenoUnTurno = true;
-				for (Partita partita: partite){
-					if (partita.getPunteggioVincitore() == 0f){
-						result.add(new ExcelValidatorMessages(Scheda.TURNO, "Nella partita del tavolo "+partita.getNumeroTavolo()+" del Turno "+numeroTurno+" i punteggi dei giocatori non sono compilati"));
-					}
-				}
-			}else{
-				break;
-			}
-		}
+		List<SchedaTurno> schedeTurni = excelAccess.leggiSchedeTurno();
+		
+		boolean almenoUnTurno = schedeTurni != null && !schedeTurni.isEmpty();
+		
+//		for(int numeroTurno = 1; ; numeroTurno++){
+//			Partita[] partite = excelAccess.loadPartite(numeroTurno, true, null);
+//			if (partite != null){
+//				almenoUnTurno = true;
+//				for (Partita partita: partite){
+//					if (partita.getPunteggioVincitore() == 0f){
+//						result.add(new ExcelValidatorMessages(Scheda.TURNO, "Nella partita del tavolo "+partita.getNumeroTavolo()+" del Turno "+numeroTurno+" i punteggi dei giocatori non sono compilati"));
+//					}
+//				}
+//			}else{
+//				break;
+//			}
+//		}
 		if (!almenoUnTurno){
 			result.add(new ExcelValidatorMessages(Scheda.TURNO, "Non risulta presente nemmeno un turno di gioco: le schede Turno devono chiamarsi \"N° Turno\" (dove N è un numero)"));
-		}
-		
-		String[] sheetNames = excelAccess.getSheetNames();
-		
-		if (sheetNames != null){
-			int counterNumeroTurni = 0;
-			for (String sheetName: sheetNames){
-				if (sheetName != null && sheetName.endsWith(ExcelAccess.SCHEDA_TURNO_SUFFIX)){
-					try{
-						String numeroTurno = sheetName.substring(0, sheetName.indexOf(ExcelAccess.SCHEDA_TURNO_SUFFIX));
-						if (numeroTurno != null){
-							numeroTurno = numeroTurno.trim();
-							Integer.valueOf(numeroTurno);
-							counterNumeroTurni++;
-						}
-					}catch(Exception e){
-						result.add(new ExcelValidatorMessages(Scheda.TURNO,"Inizio dello sheet "+sheetName+" non numerico"));
-					}
+		}else{
+			for (SchedaTurno schedaTurno: schedeTurni){
+				if (schedaTurno.getNumeroTurno() == null){
+					result.add(new ExcelValidatorMessages(Scheda.TURNO, "E' presente un turno di gioco del quale non è stato possibile determinare il numero: le schede Turno devono chiamarsi \"N° Turno\" (dove N è un numero)"));
+				}
+				Partita[] partiteTurno = schedaTurno.getPartite();
+				if (partiteTurno == null || partiteTurno.length == 0){
+					result.add(new ExcelValidatorMessages(Scheda.TURNO, "Per la scheda del turno "+schedaTurno.getNumeroTurno()+" non sono presenti partite"));
 				}
 			}
-			if (counterNumeroTurni == 0){
-				result.add(new ExcelValidatorMessages(Scheda.TURNO, "Non risulta presente nemmeno un turno di gioco: le schede Turno devono chiamarsi \"N° Turno\" (dove N è un numero)"));
-			}
-		}else{
-			result.add(new ExcelValidatorMessages(Scheda.TURNO, "Non risulta presente nemmeno un turno di gioco: le schede Turno devono chiamarsi \"N° Turno\" (dove N è un numero)"));
 		}
+		
+//		String[] sheetNames = excelAccess.getSheetNames();
+//		
+//		if (sheetNames != null){
+//			int counterNumeroTurni = 0;
+//			for (String sheetName: sheetNames){
+//				if (sheetName != null && sheetName.endsWith(ExcelAccess.SCHEDA_TURNO_SUFFIX)){
+//					try{
+//						String numeroTurno = sheetName.substring(0, sheetName.indexOf(ExcelAccess.SCHEDA_TURNO_SUFFIX));
+//						if (numeroTurno != null){
+//							numeroTurno = numeroTurno.trim();
+//							Integer.valueOf(numeroTurno);
+//							counterNumeroTurni++;
+//						}
+//					}catch(Exception e){
+//						result.add(new ExcelValidatorMessages(Scheda.TURNO,"Inizio dello sheet "+sheetName+" non numerico"));
+//					}
+//				}
+//			}
+//			if (counterNumeroTurni == 0){
+//				result.add(new ExcelValidatorMessages(Scheda.TURNO, "Non risulta presente nemmeno un turno di gioco: le schede Turno devono chiamarsi \"N° Turno\" (dove N è un numero)"));
+//			}
+//		}else{
+//			result.add(new ExcelValidatorMessages(Scheda.TURNO, "Non risulta presente nemmeno un turno di gioco: le schede Turno devono chiamarsi \"N° Turno\" (dove N è un numero)"));
+//		}
 		
 		excelAccess.closeFileExcel();
 		
@@ -301,7 +339,7 @@ public class ExcelValidator {
 				if (giocatoriInClassifica == null || giocatoriInClassifica.isEmpty()){
 					result.add(new ExcelValidatorMessages(Scheda.CLASSIFICA_RIDOTTA, "Non ci sono giocatori in classifica"));
 				}else{
-					int counterRiga = 0;
+					int counterRiga = 1;
 					for (RigaClassifica rigaClassifica: giocatoriInClassifica){
 						if (rigaClassifica != null){
 							counterRiga++;

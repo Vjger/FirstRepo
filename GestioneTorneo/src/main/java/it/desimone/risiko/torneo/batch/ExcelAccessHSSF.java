@@ -65,7 +65,7 @@ import org.apache.poi.hssf.util.Region;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Cell;
 
-public class ExcelAccess{
+public class ExcelAccessHSSF {
 
 	private final ClubLoader clubLoader = new ClubLoader();
 	private final RegioniLoader regioniLoader = new RegioniLoader();
