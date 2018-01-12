@@ -1,5 +1,11 @@
 package it.desimone.risiko.torneo.batch;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
 import it.desimone.risiko.torneo.batch.ExcelValidator.ExcelValidatorMessages.Scheda;
 import it.desimone.risiko.torneo.dto.GiocatoreDTO;
 import it.desimone.risiko.torneo.dto.Partita;
@@ -7,12 +13,6 @@ import it.desimone.risiko.torneo.dto.SchedaClassifica;
 import it.desimone.risiko.torneo.dto.SchedaClassifica.RigaClassifica;
 import it.desimone.risiko.torneo.dto.SchedaTorneo;
 import it.desimone.utils.StringUtils;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
 
 public class ExcelValidator {
 
@@ -44,10 +44,10 @@ public class ExcelValidator {
 		}
 	}
 	
-	private ExcelAccessUniversal excelAccess;
+	private ExcelAccess excelAccess;
 	
 	public ExcelValidator(File excelFile){
-		this.excelAccess = new ExcelAccessUniversal(excelFile);
+		this.excelAccess = new ExcelAccess(excelFile);
 	}
 	
 	
