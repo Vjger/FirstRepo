@@ -1,36 +1,5 @@
 package it.desimone.risiko.torneo.batch;
 
-import it.desimone.risiko.torneo.batch.ExcelValidator.ExcelValidatorMessages;
-import it.desimone.risiko.torneo.batch.ExcelValidator.ExcelValidatorMessages.Scheda;
-import it.desimone.risiko.torneo.dto.ClubDTO;
-import it.desimone.risiko.torneo.dto.GiocatoreDTO;
-import it.desimone.risiko.torneo.dto.Partita;
-import it.desimone.risiko.torneo.dto.RegioneDTO;
-import it.desimone.risiko.torneo.dto.SchedaClassifica;
-import it.desimone.risiko.torneo.dto.SchedaClassifica.RigaClassifica;
-import it.desimone.risiko.torneo.dto.SchedaTorneo;
-import it.desimone.risiko.torneo.dto.SchedaTurno;
-import it.desimone.risiko.torneo.scorecomparator.ScoreCampionatoComparator;
-import it.desimone.risiko.torneo.scorecomparator.ScoreNazionaleRisikoComparator;
-import it.desimone.risiko.torneo.scorecomparator.ScoreQualificazioniNazionaleComparator;
-import it.desimone.risiko.torneo.scorecomparator.ScoreRadunoComparator;
-import it.desimone.risiko.torneo.scorecomparator.ScoreSemifinalistiRadunoComparator;
-import it.desimone.risiko.torneo.scorecomparator.ScoreTorneoOpenComparator;
-import it.desimone.risiko.torneo.scoreplayer.ScorePlayer;
-import it.desimone.risiko.torneo.scoreplayer.ScorePlayerCampionatoGufo;
-import it.desimone.risiko.torneo.scoreplayer.ScorePlayerNazionaleRisiko;
-import it.desimone.risiko.torneo.scoreplayer.ScorePlayerOpen;
-import it.desimone.risiko.torneo.scoreplayer.ScorePlayerQualificazioniNazionale;
-import it.desimone.risiko.torneo.scoreplayer.ScorePlayerRaduno;
-import it.desimone.risiko.torneo.scoreplayer.ScorePlayerTorneoBGL;
-import it.desimone.risiko.torneo.scoreplayer.ScorePlayerTorneoGufo;
-import it.desimone.risiko.torneo.utils.ClubLoader;
-import it.desimone.risiko.torneo.utils.RegioniLoader;
-import it.desimone.risiko.torneo.utils.TipoTorneo;
-import it.desimone.risiko.torneo.utils.TorneiUtils;
-import it.desimone.utils.MyException;
-import it.desimone.utils.MyLogger;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -68,6 +37,35 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellUtil;
 import org.apache.poi.ss.util.RegionUtil;
+
+import it.desimone.risiko.torneo.dto.ClubDTO;
+import it.desimone.risiko.torneo.dto.GiocatoreDTO;
+import it.desimone.risiko.torneo.dto.Partita;
+import it.desimone.risiko.torneo.dto.RegioneDTO;
+import it.desimone.risiko.torneo.dto.SchedaClassifica;
+import it.desimone.risiko.torneo.dto.SchedaClassifica.RigaClassifica;
+import it.desimone.risiko.torneo.dto.SchedaTorneo;
+import it.desimone.risiko.torneo.dto.SchedaTurno;
+import it.desimone.risiko.torneo.scorecomparator.ScoreCampionatoComparator;
+import it.desimone.risiko.torneo.scorecomparator.ScoreNazionaleRisikoComparator;
+import it.desimone.risiko.torneo.scorecomparator.ScoreQualificazioniNazionaleComparator;
+import it.desimone.risiko.torneo.scorecomparator.ScoreRadunoComparator;
+import it.desimone.risiko.torneo.scorecomparator.ScoreSemifinalistiRadunoComparator;
+import it.desimone.risiko.torneo.scorecomparator.ScoreTorneoOpenComparator;
+import it.desimone.risiko.torneo.scoreplayer.ScorePlayer;
+import it.desimone.risiko.torneo.scoreplayer.ScorePlayerCampionatoGufo;
+import it.desimone.risiko.torneo.scoreplayer.ScorePlayerNazionaleRisiko;
+import it.desimone.risiko.torneo.scoreplayer.ScorePlayerOpen;
+import it.desimone.risiko.torneo.scoreplayer.ScorePlayerQualificazioniNazionale;
+import it.desimone.risiko.torneo.scoreplayer.ScorePlayerRaduno;
+import it.desimone.risiko.torneo.scoreplayer.ScorePlayerTorneoBGL;
+import it.desimone.risiko.torneo.scoreplayer.ScorePlayerTorneoGufo;
+import it.desimone.risiko.torneo.utils.ClubLoader;
+import it.desimone.risiko.torneo.utils.RegioniLoader;
+import it.desimone.risiko.torneo.utils.TipoTorneo;
+import it.desimone.risiko.torneo.utils.TorneiUtils;
+import it.desimone.utils.MyException;
+import it.desimone.utils.MyLogger;
 
 
 public class ExcelAccess{
