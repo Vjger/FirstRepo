@@ -68,8 +68,7 @@ public class GoogleDriveAccess {
             HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
             DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);
         } catch (Throwable t) {
-            t.printStackTrace();
-            System.exit(1);
+    		MyLogger.getLogger().severe("Problema con l'accesso a Google: "+t);
         }
     }
 
@@ -78,7 +77,7 @@ public class GoogleDriveAccess {
 			this.credential = authorize();
 		} catch (IOException e) {
 			MyLogger.getLogger().severe("Credenziali errate per l'accesso a Google: "+e);
-			throw new MyException(e, "Credenziali errate per l'accesso a Google: verificare la presenza del file "+ResourceLoader.googleClientSecretPath());
+			throw new MyException(e, "Credenziali errate per l'accesso a Google");
 		}
     }
     

@@ -8,7 +8,7 @@ public class Torneo {
 	
 	private List<GiocatoreDTO> iscritti;
 	
-	private List<SchedaTurno> schedaTurno;
+	private List<SchedaTurno> schedeTurno;
 	
 	private SchedaClassifica schedaClassifica;
 
@@ -28,12 +28,12 @@ public class Torneo {
 		this.iscritti = iscritti;
 	}
 
-	public List<SchedaTurno> getSchedaTurno() {
-		return schedaTurno;
+	public List<SchedaTurno> getSchedeTurno() {
+		return schedeTurno;
 	}
 
-	public void setSchedaTurno(List<SchedaTurno> schedaTurno) {
-		this.schedaTurno = schedaTurno;
+	public void setSchedeTurno(List<SchedaTurno> schedeTurno) {
+		this.schedeTurno = schedeTurno;
 	}
 
 	public SchedaClassifica getSchedaClassifica() {

@@ -46,6 +46,7 @@ import it.desimone.risiko.torneo.dto.SchedaClassifica;
 import it.desimone.risiko.torneo.dto.SchedaClassifica.RigaClassifica;
 import it.desimone.risiko.torneo.dto.SchedaTorneo;
 import it.desimone.risiko.torneo.dto.SchedaTurno;
+import it.desimone.risiko.torneo.dto.Torneo;
 import it.desimone.risiko.torneo.scorecomparator.ScoreCampionatoComparator;
 import it.desimone.risiko.torneo.scorecomparator.ScoreNazionaleRisikoComparator;
 import it.desimone.risiko.torneo.scorecomparator.ScoreQualificazioniNazionaleComparator;
@@ -1436,6 +1437,28 @@ public class ExcelAccess{
 			}
 		}
 		return result;
+	}
+	
+	public Torneo elaboraTorneo(){
+		Torneo torneo = new Torneo();
+		
+		SchedaTorneo schedaTorneo = leggiSchedaTorneo();
+		List<GiocatoreDTO> partecipantiEffettivi = null;
+		Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi();
+		if (giocatori != null){
+			partecipantiEffettivi = new ArrayList<GiocatoreDTO>(giocatori);
+		}
+		
+		List<SchedaTurno> schedeTurno = leggiSchedeTurno();
+		
+		SchedaClassifica schedaClassifica = leggiSchedaClassifica();
+		
+		torneo.setSchedaTorneo(schedaTorneo);
+		torneo.setIscritti(partecipantiEffettivi);
+		torneo.setSchedeTurno(schedeTurno);
+		torneo.setSchedaClassifica(schedaClassifica);
+		
+		return torneo;
 	}
 	
 	public void closeFileExcel(){
