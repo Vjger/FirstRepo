@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,6 +25,10 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.sheets.v4.Sheets;
+import com.google.api.services.sheets.v4.model.BatchGetValuesResponse;
+import com.google.api.services.sheets.v4.model.Sheet;
+import com.google.api.services.sheets.v4.model.Spreadsheet;
+import com.google.api.services.sheets.v4.model.ValueRange;
 
 public class GoogleSheetsAccess {
 
@@ -105,5 +110,60 @@ public class GoogleSheetsAccess {
         return new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
                 .setApplicationName(APPLICATION_NAME)
                 .build();
+    }
+    
+    
+    public List<Sheet> elencoSheets(String spreadsheetId) throws IOException{
+        
+        Sheets service = getSheetsService();
+        
+        Sheets.Spreadsheets.Get spreadSheetsGet = service.spreadsheets().get(spreadsheetId);
+        
+        MyLogger.getLogger().info(spreadSheetsGet.getFields());
+        
+        spreadSheetsGet = spreadSheetsGet.setIncludeGridData(false);
+        
+        MyLogger.getLogger().info(spreadSheetsGet.getFields());
+        
+	    Spreadsheet response1= spreadSheetsGet.execute();
+	
+	    return response1.getSheets();
+    }
+    
+    
+    public List<List<Object>> leggiSheet(String spreadsheetId, String sheetName) throws IOException{
+        
+        Sheets service = getSheetsService();
+
+        Sheets.Spreadsheets.Values.Get spreadSheetsValuesGet = service.spreadsheets().values().get(spreadsheetId, sheetName);
+        MyLogger.getLogger().info(spreadSheetsValuesGet.getFields());
+        
+        ValueRange response = spreadSheetsValuesGet.execute();
+        return response.getValues();
+    }
+    
+    public List<List<Object>> leggiSheet(String spreadsheetId, List<String> ranges) throws IOException{
+        
+        Sheets service = getSheetsService();
+
+        Sheets.Spreadsheets.Values.BatchGet spreadSheetsValuesBatchGet = service.spreadsheets().values().batchGet(spreadsheetId).setRanges(ranges);
+        MyLogger.getLogger().info(spreadSheetsValuesBatchGet.getFields());
+        
+        BatchGetValuesResponse response = spreadSheetsValuesBatchGet.execute();
+        List<ValueRange> valueRanges = response.getValueRanges();
+        
+        List<List<Object>> result = null;
+        if (valueRanges != null && !valueRanges.isEmpty()){
+	        result = new ArrayList<List<Object>>();
+	        
+	        for (int i = 0; i < valueRanges.get(0).getValues().size(); i++){
+	        	List<Object> row = new ArrayList<Object>();
+		        for (ValueRange range: valueRanges){	        	
+		        	row.addAll(range.getValues().get(i));
+		        }
+		        result.add(row);
+	        }
+        }
+        return result;
     }
 }
