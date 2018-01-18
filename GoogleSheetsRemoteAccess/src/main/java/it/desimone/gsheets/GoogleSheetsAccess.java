@@ -1,10 +1,5 @@
 package it.desimone.gsheets;
 
-import it.desimone.ResourceWorking;
-import it.desimone.utils.MyException;
-import it.desimone.utils.MyLogger;
-import it.desimone.utils.ResourceLoader;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,10 +20,21 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.sheets.v4.Sheets;
+import com.google.api.services.sheets.v4.model.AppendValuesResponse;
+import com.google.api.services.sheets.v4.model.BatchGetValuesByDataFilterRequest;
+import com.google.api.services.sheets.v4.model.BatchGetValuesByDataFilterResponse;
 import com.google.api.services.sheets.v4.model.BatchGetValuesResponse;
+import com.google.api.services.sheets.v4.model.DataFilter;
+import com.google.api.services.sheets.v4.model.GridRange;
+import com.google.api.services.sheets.v4.model.MatchedValueRange;
 import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.google.api.services.sheets.v4.model.ValueRange;
+
+import it.desimone.ResourceWorking;
+import it.desimone.utils.MyException;
+import it.desimone.utils.MyLogger;
+import it.desimone.utils.ResourceLoader;
 
 public class GoogleSheetsAccess {
 
@@ -119,15 +125,17 @@ public class GoogleSheetsAccess {
         
         Sheets.Spreadsheets.Get spreadSheetsGet = service.spreadsheets().get(spreadsheetId);
         
-        MyLogger.getLogger().info(spreadSheetsGet.getFields());
-        
         spreadSheetsGet = spreadSheetsGet.setIncludeGridData(false);
         
-        MyLogger.getLogger().info(spreadSheetsGet.getFields());
-        
 	    Spreadsheet response1= spreadSheetsGet.execute();
+	    
+	    List<Sheet> sheets = response1.getSheets();
 	
-	    return response1.getSheets();
+	    for (Sheet sheet: sheets){
+	    	MyLogger.getLogger().info(sheet.getProperties().toPrettyString());
+	    }
+	    
+	    return sheets;
     }
     
     
@@ -165,5 +173,97 @@ public class GoogleSheetsAccess {
 	        }
         }
         return result;
+    }
+    
+    public List<List<Object>> findRow(String spreadsheetId, List<String> ranges) throws IOException{
+        
+        Sheets service = getSheetsService();
+
+        Sheets.Spreadsheets.Values spreadSheetValues = service.spreadsheets().values();
+        
+        BatchGetValuesByDataFilterRequest batchGetValuesByDataFilterRequest = new BatchGetValuesByDataFilterRequest();
+        DataFilter dataFilter = new DataFilter();
+        dataFilter.setA1Range(ranges.get(0));
+        List<DataFilter> dataFilters = new ArrayList<DataFilter>();
+        dataFilters.add(dataFilter);
+        batchGetValuesByDataFilterRequest.setDataFilters(dataFilters);
+        Sheets.Spreadsheets.Values.BatchGetByDataFilter batchGetByDataFilter = spreadSheetValues.batchGetByDataFilter(spreadsheetId, batchGetValuesByDataFilterRequest);
+               
+        BatchGetValuesByDataFilterResponse response = batchGetByDataFilter.execute();
+        List<MatchedValueRange> matchedValueRanges = response.getValueRanges();
+        
+        List<List<Object>> result = null;
+        if (matchedValueRanges != null && !matchedValueRanges.isEmpty()){
+	        result = new ArrayList<List<Object>>();
+        	for (MatchedValueRange matchedValueRange: matchedValueRanges){
+
+			        	List<Object> row = new ArrayList<Object>();
+       	
+				        	row.addAll(matchedValueRange.getValueRange().getValues());
+
+				        result.add(row);
+			        }
+        	}
+        return result;
+    }
+    
+    public List<List<Object>> findData(String spreadsheetId, Integer sheetId, Integer firstColumn, Integer lastColumn, Integer firstRow, Integer lastRow) throws IOException{
+        
+        Sheets service = getSheetsService();
+
+        Sheets.Spreadsheets.Values spreadSheetValues = service.spreadsheets().values();
+        
+        BatchGetValuesByDataFilterRequest batchGetValuesByDataFilterRequest = new BatchGetValuesByDataFilterRequest();
+        DataFilter dataFilter = new DataFilter();
+        GridRange gridRange = new GridRange();
+        gridRange.setSheetId(sheetId);
+        if (firstColumn != null)
+        	gridRange.setStartColumnIndex(firstColumn-1);
+        if (lastColumn != null)
+        	gridRange.setEndColumnIndex(lastColumn);
+        if (firstRow != null)
+        	gridRange.setStartRowIndex(firstRow-1);
+        if (lastRow != null)
+        	gridRange.setEndRowIndex(lastRow);
+        dataFilter.setGridRange(gridRange);
+        List<DataFilter> dataFilters = new ArrayList<DataFilter>();
+        dataFilters.add(dataFilter);
+        batchGetValuesByDataFilterRequest.setDataFilters(dataFilters);
+        Sheets.Spreadsheets.Values.BatchGetByDataFilter batchGetByDataFilter = spreadSheetValues.batchGetByDataFilter(spreadsheetId, batchGetValuesByDataFilterRequest);
+               
+        BatchGetValuesByDataFilterResponse response = batchGetByDataFilter.execute();
+        List<MatchedValueRange> matchedValueRanges = response.getValueRanges();
+        
+        List<List<Object>> result = null;
+        if (matchedValueRanges != null && !matchedValueRanges.isEmpty()){
+	        result = new ArrayList<List<Object>>();
+        	for (MatchedValueRange matchedValueRange: matchedValueRanges){
+
+			        	List<Object> row = new ArrayList<Object>();
+       	
+				        	row.addAll(matchedValueRange.getValueRange().getValues());
+
+				        result.add(row);
+			        }
+        	}
+        return result;
+    }
+    
+    public void appendDataToSheet(String spreadsheetId, String sheetName, List<List<Object>> data) throws IOException{
+        
+        Sheets service = getSheetsService();
+
+        ValueRange valueRange = new ValueRange();
+        valueRange.setRange(sheetName);
+        valueRange.setValues(data);
+        
+        Sheets.Spreadsheets.Values.Append spreadSheetsValuesAppend = service.spreadsheets().values().append(spreadsheetId, sheetName, valueRange);
+        
+        spreadSheetsValuesAppend = spreadSheetsValuesAppend.setValueInputOption("RAW"/*"USER_ENTERED"*/);
+
+        AppendValuesResponse response = spreadSheetsValuesAppend.execute();
+        
+        MyLogger.getLogger().fine(response.getUpdates().toPrettyString());
+
     }
 }
