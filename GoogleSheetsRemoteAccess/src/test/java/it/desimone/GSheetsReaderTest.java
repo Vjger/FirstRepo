@@ -23,10 +23,21 @@ public class GSheetsReaderTest {
 		consoleHandler.setLevel(Level.ALL);
 	    httpLogger.addHandler(consoleHandler);
 		
-	    testAppend();
+	    testDeleteRow();
 
 	}
 
+	private static void testDeleteRow() throws IOException{
+		GoogleSheetsAccess googleSheetsAccess = new GoogleSheetsAccess();
+		
+		String spreadsheetId = "18UrsEJb4_JkqZmaSQyVGtEVkc047DPvgfCK93uiUiMc";
+
+		//googleSheetsAccess.elencoSheets(spreadsheetId);
+		
+		googleSheetsAccess.deleteRow(spreadsheetId, 1910805432, 204);
+
+	}
+	
 	
 	private static void testAppend() throws IOException{
 		GoogleSheetsAccess googleSheetsAccess = new GoogleSheetsAccess();

@@ -1,11 +1,17 @@
 package it.desimone.gsheets;
 
+import it.desimone.ResourceWorking;
+import it.desimone.utils.MyException;
+import it.desimone.utils.MyLogger;
+import it.desimone.utils.ResourceLoader;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import com.google.api.client.auth.oauth2.Credential;
@@ -24,17 +30,17 @@ import com.google.api.services.sheets.v4.model.AppendValuesResponse;
 import com.google.api.services.sheets.v4.model.BatchGetValuesByDataFilterRequest;
 import com.google.api.services.sheets.v4.model.BatchGetValuesByDataFilterResponse;
 import com.google.api.services.sheets.v4.model.BatchGetValuesResponse;
+import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetRequest;
+import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetResponse;
 import com.google.api.services.sheets.v4.model.DataFilter;
+import com.google.api.services.sheets.v4.model.DeleteDimensionRequest;
+import com.google.api.services.sheets.v4.model.DimensionRange;
 import com.google.api.services.sheets.v4.model.GridRange;
 import com.google.api.services.sheets.v4.model.MatchedValueRange;
+import com.google.api.services.sheets.v4.model.Request;
 import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.google.api.services.sheets.v4.model.ValueRange;
-
-import it.desimone.ResourceWorking;
-import it.desimone.utils.MyException;
-import it.desimone.utils.MyLogger;
-import it.desimone.utils.ResourceLoader;
 
 public class GoogleSheetsAccess {
 
@@ -264,6 +270,31 @@ public class GoogleSheetsAccess {
         AppendValuesResponse response = spreadSheetsValuesAppend.execute();
         
         MyLogger.getLogger().fine(response.getUpdates().toPrettyString());
+
+    }
+    
+    
+    public void deleteRow(String spreadsheetId, Integer sheetId, Integer numRow) throws IOException{
+        
+        Sheets service = getSheetsService();
+
+        BatchUpdateSpreadsheetRequest batchUpdateSpreadsheetRequest = new BatchUpdateSpreadsheetRequest();
+        DeleteDimensionRequest deleteDimensionRequest = new DeleteDimensionRequest();
+        DimensionRange dimensionRange = new DimensionRange();
+        dimensionRange.setDimension("ROWS");
+        dimensionRange.setSheetId(sheetId);
+        dimensionRange.setStartIndex(numRow -1);
+        dimensionRange.setEndIndex(numRow);
+        deleteDimensionRequest.setRange(dimensionRange);
+        Request deleteRequest = new Request();
+        deleteRequest.setDeleteDimension(deleteDimensionRequest);
+        batchUpdateSpreadsheetRequest.setRequests(Collections.singletonList(deleteRequest));
+        
+        Sheets.Spreadsheets.BatchUpdate batchUpdate = service.spreadsheets().batchUpdate(spreadsheetId, batchUpdateSpreadsheetRequest);
+        
+        BatchUpdateSpreadsheetResponse response = batchUpdate.execute();
+        
+        MyLogger.getLogger().fine(response.getReplies().toString());
 
     }
 }
