@@ -1,10 +1,6 @@
 package it.desimone.gsheets;
 
-import it.desimone.ResourceWorking;
-import it.desimone.utils.MyException;
-import it.desimone.utils.MyLogger;
-import it.desimone.utils.ResourceLoader;
-
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +19,7 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.store.DataStoreFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.sheets.v4.Sheets;
@@ -42,6 +39,10 @@ import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
+import it.desimone.ResourceWorking;
+import it.desimone.utils.MyException;
+import it.desimone.utils.MyLogger;
+
 public class GoogleSheetsAccess {
 
 	private Credential credential;
@@ -51,10 +52,10 @@ public class GoogleSheetsAccess {
 
     /** Directory to store user credentials for this application. */
    
-    private static final java.io.File DATA_STORE_DIR = ResourceLoader.googleCredentials();
+    private static final java.io.File DATA_STORE_DIR = new File(System.getProperty("java.io.tmpdir")); //ResourceLoader.googleCredentials();
 
     /** Global instance of the {@link FileDataStoreFactory}. */
-    private static FileDataStoreFactory DATA_STORE_FACTORY;
+    private static DataStoreFactory DATA_STORE_FACTORY;
 
     /** Global instance of the JSON factory. */
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
@@ -105,6 +106,8 @@ public class GoogleSheetsAccess {
     		
     		GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 
+    		MyLogger.getLogger().info(clientSecrets.getDetails().toPrettyString());
+    		
     		// Build flow and trigger user authorization request.
     		GoogleAuthorizationCodeFlow flow =
     				new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
@@ -112,6 +115,8 @@ public class GoogleSheetsAccess {
     				.setAccessType("offline")
     				.build();
     		credential = new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
+    		
+    		MyLogger.getLogger().info(credential.getAccessToken()+" "+credential.getRefreshToken()+" "+credential.getExpirationTimeMilliseconds()+" "+credential.getExpiresInSeconds());
     		
     		MyLogger.getLogger().info("Credentials saved to " + DATA_STORE_DIR.getAbsolutePath());
 

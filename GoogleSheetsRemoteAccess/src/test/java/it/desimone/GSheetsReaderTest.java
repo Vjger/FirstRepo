@@ -1,8 +1,11 @@
 package it.desimone;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,9 +27,40 @@ public class GSheetsReaderTest {
 	    httpLogger.addHandler(consoleHandler);
 		
 	    testDeleteRow();
+	    //testDefaultTempDir();
 
 	}
 
+	
+	private static void testDefaultTempDir(){
+	    
+		Properties props = System.getProperties();
+		
+		Enumeration enu = props.propertyNames();
+		while (enu.hasMoreElements()) {
+			String key = (String)enu.nextElement();
+			System.out.println(key+" - "+props.getProperty(key));
+		}
+		try{
+
+    		//create a temp file
+    		File temp = File.createTempFile("temp-file-name", ".tmp");
+
+    		System.out.println("Temp file : " + temp.getAbsolutePath());
+
+		//Get tempropary file path
+    		String absolutePath = temp.getAbsolutePath();
+    		String tempFilePath = absolutePath.
+    		    substring(0,absolutePath.lastIndexOf(File.separator));
+
+    		System.out.println("Temp file path : " + tempFilePath);
+
+    	}catch(IOException e){
+
+    		e.printStackTrace();
+
+    	}
+	}
 	private static void testDeleteRow() throws IOException{
 		GoogleSheetsAccess googleSheetsAccess = new GoogleSheetsAccess();
 		
