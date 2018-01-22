@@ -247,8 +247,10 @@ public class ExcelAccess{
 			String tipologiaTorneo = determinaValoreCella(rowTipoTorneo, (short)3);
 			Row rowNumeroTurni = sheet.getRow(5);
 			String numeroTurni = determinaValoreCella(rowNumeroTurni, (short)3);
+			Row rowNote = sheet.getRow(6);
+			String note = determinaValoreCella(rowNote, (short)3);
 			List<Date> dataTurni = new ArrayList<Date>();
-			for (int indexDate = 6; indexDate <=35; indexDate++){
+			for (int indexDate = 7; indexDate <=36; indexDate++){
 				Row rowDataTurno = sheet.getRow(indexDate);
 				if (rowDataTurno != null){
 					Cell cellaDataTurno   = rowDataTurno.getCell((short)3);
@@ -279,6 +281,7 @@ public class ExcelAccess{
 			}
 			schedaTorneo.setNumeroTurni(numeroTurniInt);
 			schedaTorneo.setDataTurni(dataTurni);
+			schedaTorneo.setNote(note);
 		}
 		
 		return schedaTorneo;
@@ -347,6 +350,8 @@ public class ExcelAccess{
 			result 		    = cella.getRichStringCellValue().getString();
 		}else if (tipoCella == Cell.CELL_TYPE_NUMERIC){
 			result			= Double.toString(cella.getNumericCellValue());
+		}else if (tipoCella == Cell.CELL_TYPE_FORMULA){
+			result			= cella.getRichStringCellValue().getString();
 		}else if (tipoCella != Cell.CELL_TYPE_BLANK){
 			MyLogger.getLogger().info("Impossibile leggere la cella della colonna in posizione "+posizioneCella+ " della riga "+ (row.getRowNum()+1)+" perchè di tipo imprevisto: "+tipoCella);
 		}

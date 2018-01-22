@@ -10,6 +10,7 @@ public class SchedaTorneo {
 	private String nomeTorneo;
 	private TipoTorneo tipoTorneo;
 	private int numeroTurni;
+	private String note;
 	
 	private List<Date> dataTurni;
 	
@@ -83,6 +84,14 @@ public class SchedaTorneo {
 
 	public void setDataTurni(List<Date> dataTurni) {
 		this.dataTurni = dataTurni;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
 	}
 
 	@Override

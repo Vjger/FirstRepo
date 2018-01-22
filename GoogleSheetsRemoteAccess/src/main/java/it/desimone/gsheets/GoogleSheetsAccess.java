@@ -1,5 +1,10 @@
 package it.desimone.gsheets;
 
+import it.desimone.ResourceWorking;
+import it.desimone.gsheets.dto.SheetRow;
+import it.desimone.utils.MyException;
+import it.desimone.utils.MyLogger;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -29,6 +34,8 @@ import com.google.api.services.sheets.v4.model.BatchGetValuesByDataFilterRespons
 import com.google.api.services.sheets.v4.model.BatchGetValuesResponse;
 import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetRequest;
 import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetResponse;
+import com.google.api.services.sheets.v4.model.BatchUpdateValuesRequest;
+import com.google.api.services.sheets.v4.model.BatchUpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.DataFilter;
 import com.google.api.services.sheets.v4.model.DeleteDimensionRequest;
 import com.google.api.services.sheets.v4.model.DimensionRange;
@@ -39,12 +46,11 @@ import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
-import it.desimone.ResourceWorking;
-import it.desimone.utils.MyException;
-import it.desimone.utils.MyLogger;
-
 public class GoogleSheetsAccess {
 
+	private static final String USER_ENTERED = "USER_ENTERED";
+	private static final String RAW = "RAW";
+	
 	private Credential credential;
 
     /** Application name. */
@@ -270,7 +276,7 @@ public class GoogleSheetsAccess {
         
         Sheets.Spreadsheets.Values.Append spreadSheetsValuesAppend = service.spreadsheets().values().append(spreadsheetId, sheetName, valueRange);
         
-        spreadSheetsValuesAppend = spreadSheetsValuesAppend.setValueInputOption("RAW"/*"USER_ENTERED"*/);
+        spreadSheetsValuesAppend = spreadSheetsValuesAppend.setValueInputOption(USER_ENTERED);
 
         AppendValuesResponse response = spreadSheetsValuesAppend.execute();
         
@@ -301,5 +307,26 @@ public class GoogleSheetsAccess {
         
         MyLogger.getLogger().fine(response.getReplies().toString());
 
+    }
+    
+    public Integer updateRows(String spreadsheetId, String sheetName, List<SheetRow> rows, boolean userEntered) throws IOException{
+    	if (rows == null || rows.isEmpty()) return null;
+    	
+    	List<ValueRange> data = new ArrayList<ValueRange>();
+    	for (SheetRow row: rows){
+    		String range = sheetName+"!"+row.getSheetRow();
+    		List<List<Object>> values = new ArrayList<List<Object>>();
+    		values.add(row.getData());
+    		data.add(new ValueRange().setRange(range).setValues(values));
+    	}
+    	
+        Sheets service = getSheetsService();
+        String valueInputOption = userEntered?USER_ENTERED:RAW;
+    	BatchUpdateValuesRequest body = new BatchUpdateValuesRequest().setValueInputOption(valueInputOption).setData(data);
+    	BatchUpdateValuesResponse result = service.spreadsheets().values().batchUpdate(spreadsheetId, body).execute();
+
+    	MyLogger.getLogger().fine(result.toPrettyString());
+    	
+    	return result.getTotalUpdatedRows();
     }
 }
