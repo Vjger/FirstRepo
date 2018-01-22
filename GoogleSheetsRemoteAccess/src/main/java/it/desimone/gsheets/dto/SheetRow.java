@@ -10,5 +10,5 @@ public interface SheetRow {
 	public List<Object> getData();
 	public void setData(List<Object> data);
 	
-	
+	public List<Integer> keyCols();
 }

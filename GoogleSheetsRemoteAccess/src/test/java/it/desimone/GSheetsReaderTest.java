@@ -26,8 +26,9 @@ public class GSheetsReaderTest {
 		consoleHandler.setLevel(Level.ALL);
 	    httpLogger.addHandler(consoleHandler);
 		
-	    testDeleteRow();
+	    //testDeleteRow();
 	    //testDefaultTempDir();
+	    testLetture();
 
 	}
 
@@ -106,7 +107,7 @@ public class GSheetsReaderTest {
 		
 		List<String> ranges = new ArrayList<String>();
 		ranges.add(ExcelAccess.SCHEDA_CLASSIFICA_RIDOTTA+"!A2:A");
-		ranges.add(ExcelAccess.SCHEDA_CLASSIFICA_RIDOTTA+"!B2:E");
+		ranges.add(ExcelAccess.SCHEDA_CLASSIFICA_RIDOTTA+"!B2:B");
 		
 		List<List<Object>> rows2 = googleSheetsAccess.leggiSheet(spreadsheetId, ranges);
 		
@@ -116,7 +117,8 @@ public class GSheetsReaderTest {
 		
 		
 		List<String> filteredRanges = new ArrayList<String>();
-		filteredRanges.add(ExcelAccess.SCHEDA_CLASSIFICA_RIDOTTA);
+		filteredRanges.add(ExcelAccess.SCHEDA_CLASSIFICA_RIDOTTA+"!A2:A");
+		filteredRanges.add(ExcelAccess.SCHEDA_CLASSIFICA_RIDOTTA+"!B2:B");
 		
 		List<List<Object>> rows3 = googleSheetsAccess.findRow(spreadsheetId, filteredRanges);
 		

@@ -161,7 +161,6 @@ public class GoogleSheetsAccess {
         Sheets service = getSheetsService();
 
         Sheets.Spreadsheets.Values.Get spreadSheetsValuesGet = service.spreadsheets().values().get(spreadsheetId, sheetName);
-        MyLogger.getLogger().info(spreadSheetsValuesGet.getFields());
         
         ValueRange response = spreadSheetsValuesGet.execute();
         return response.getValues();
@@ -172,16 +171,18 @@ public class GoogleSheetsAccess {
         Sheets service = getSheetsService();
 
         Sheets.Spreadsheets.Values.BatchGet spreadSheetsValuesBatchGet = service.spreadsheets().values().batchGet(spreadsheetId).setRanges(ranges);
-        MyLogger.getLogger().info(spreadSheetsValuesBatchGet.getFields());
         
         BatchGetValuesResponse response = spreadSheetsValuesBatchGet.execute();
         List<ValueRange> valueRanges = response.getValueRanges();
+        
+    	MyLogger.getLogger().fine(valueRanges.toString());
         
         List<List<Object>> result = null;
         if (valueRanges != null && !valueRanges.isEmpty()){
 	        result = new ArrayList<List<Object>>();
 	        
 	        for (int i = 0; i < valueRanges.get(0).getValues().size(); i++){
+	        	
 	        	List<Object> row = new ArrayList<Object>();
 		        for (ValueRange range: valueRanges){	        	
 		        	row.addAll(range.getValues().get(i));
@@ -199,10 +200,13 @@ public class GoogleSheetsAccess {
         Sheets.Spreadsheets.Values spreadSheetValues = service.spreadsheets().values();
         
         BatchGetValuesByDataFilterRequest batchGetValuesByDataFilterRequest = new BatchGetValuesByDataFilterRequest();
-        DataFilter dataFilter = new DataFilter();
-        dataFilter.setA1Range(ranges.get(0));
+
         List<DataFilter> dataFilters = new ArrayList<DataFilter>();
-        dataFilters.add(dataFilter);
+        for (String range: ranges){
+            DataFilter dataFilter = new DataFilter();
+            dataFilter.setA1Range(range);
+        	dataFilters.add(dataFilter);
+        }
         batchGetValuesByDataFilterRequest.setDataFilters(dataFilters);
         Sheets.Spreadsheets.Values.BatchGetByDataFilter batchGetByDataFilter = spreadSheetValues.batchGetByDataFilter(spreadsheetId, batchGetValuesByDataFilterRequest);
                
