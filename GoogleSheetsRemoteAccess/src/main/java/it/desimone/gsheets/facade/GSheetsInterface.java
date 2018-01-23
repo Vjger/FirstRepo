@@ -35,9 +35,10 @@ public class GSheetsInterface {
 		List<String> ranges = null;
 		if (sheetName != null){
 			ranges = new ArrayList<String>();
-			if (keyColumns!= null && keyColumns.isEmpty()){
+			if (keyColumns!= null && !keyColumns.isEmpty()){
 				for (Integer keyColumn: keyColumns){
-					ranges.add(sheetName+"!"+toAlphabetic(keyColumn-1));
+					String columnLetter = toAlphabetic(keyColumn);
+					ranges.add(sheetName+"!"+columnLetter+":"+columnLetter);
 				}
 			}else{
 				ranges.add(sheetName);	
@@ -46,37 +47,32 @@ public class GSheetsInterface {
 		return ranges;
 	}
 	
-	public static SheetRow findSheetRow(String spreadSheetId, String sheetName, SheetRow sheetRow){
+	public static SheetRow findSheetRow(String spreadSheetId, String sheetName, SheetRow sheetRow, GoogleSheetsAccess googleSheetsAccess) throws IOException{
 		SheetRow result = null;
-		GoogleSheetsAccess googleSheetsAccess = new GoogleSheetsAccess();
 		
 		List<Integer> keyCols = sheetRow.keyCols();
 		
 		List<String> ranges = byKeyColumnsToRanges(sheetName, keyCols);
 		
-		try {
-			List<List<Object>> data = googleSheetsAccess.leggiSheet(spreadSheetId, ranges);
-			
-			List<Object> dataSheetRow = sheetRow.getData();
-			int indexRow = 0;
-			for (List<Object> row: data){
-				indexRow++;
-				boolean rowFound = true;
-				for (int i=0; i < keyCols.size(); i++){
-					rowFound = rowFound && row.get(i).equals(dataSheetRow.get(keyCols.get(i)));
-				}
-				if (rowFound){
-					sheetRow.setSheetRow(indexRow);
-					result = sheetRow;
-					break;
-				}
+		List<List<Object>> data = googleSheetsAccess.leggiSheet(spreadSheetId, ranges);
+		
+		List<Object> dataSheetRow = sheetRow.getData();
+		int indexRow = 0;
+		for (List<Object> row: data){
+			indexRow++;
+			boolean rowFound = true;
+			for (int i=0; i < keyCols.size(); i++){
+				Object elementoRigaRemota = row.get(i);
+				Object elementoRigaInCanna = dataSheetRow.get(keyCols.get(i));
+				rowFound = rowFound && elementoRigaInCanna.equals(elementoRigaRemota);
 			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			if (rowFound){
+				sheetRow.setSheetRow(indexRow);
+				result = sheetRow;
+				break;
+			}
 		}
-		
-		
+
 		return result;
 	}
 	

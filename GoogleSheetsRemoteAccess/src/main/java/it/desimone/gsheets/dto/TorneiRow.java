@@ -1,32 +1,36 @@
 package it.desimone.gsheets.dto;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class TorneiRow extends AbstractSheetRow {
 	
 	static class ColPosition{
-		public static final Integer ID_TORNEO 		= 1;
-		public static final Integer NOME_TORNEO 	= 2;
-		public static final Integer ORGANIZZATORE 	= 3;
-		public static final Integer SEDE 			= 4;
-		public static final Integer START_DATE 		= 5;
-		public static final Integer END_DATE 		= 6;
-		public static final Integer TIPO_TORNEO 	= 7;
-		public static final Integer NUMERO_TURNI 	= 8;
-		public static final Integer NOTE 			= 9;
+		//zero-based
+		public static final Integer ID_TORNEO 		= 0;
+		public static final Integer NOME_TORNEO 	= 1;
+		public static final Integer ORGANIZZATORE 	= 2;
+		public static final Integer SEDE 			= 3;
+		public static final Integer START_DATE 		= 4;
+		public static final Integer END_DATE 		= 5;
+		public static final Integer TIPO_TORNEO 	= 6;
+		public static final Integer NUMERO_TURNI 	= 7;
+		public static final Integer NOTE 			= 8;
+		public static final Integer UPDATE_TIME		= 9;
 	}
 	
 	private String idTorneo;
 	private String nomeTorneo;
 	private String organizzatore;
 	private String sede;
-	private Date startDate;
-	private Date endDate;
+	private String startDate;
+	private String endDate;
 	private String tipoTorneo;
 	private Integer numeroTurni;
 	private String note;
+	private String updateTime;
 
 	public String getIdTorneo() {
 		return idTorneo;
@@ -60,19 +64,19 @@ public class TorneiRow extends AbstractSheetRow {
 		this.sede = sede;
 	}
 
-	public Date getStartDate() {
+	public String getStartDate() {
 		return startDate;
 	}
 
-	public void setStartDate(Date startDate) {
+	public void setStartDate(String startDate) {
 		this.startDate = startDate;
 	}
 
-	public Date getEndDate() {
+	public String getEndDate() {
 		return endDate;
 	}
 
-	public void setEndDate(Date endDate) {
+	public void setEndDate(String endDate) {
 		this.endDate = endDate;
 	}
 
@@ -100,33 +104,43 @@ public class TorneiRow extends AbstractSheetRow {
 		this.note = note;
 	}
 
+	public String getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(String updateTime) {
+		this.updateTime = updateTime;
+	}
 
 	public List<Object> getData() {
-		List<Object> data = new ArrayList<Object>();
-		data.set(ColPosition.ID_TORNEO -1, idTorneo);
-		data.set(ColPosition.NOME_TORNEO -1, nomeTorneo);
-		data.set(ColPosition.SEDE -1, sede);
-		data.set(ColPosition.TIPO_TORNEO -1, tipoTorneo);
-		data.set(ColPosition.START_DATE -1, startDate);
-		data.set(ColPosition.END_DATE -1, endDate);
-		data.set(ColPosition.ORGANIZZATORE -1, organizzatore);
-		data.set(ColPosition.NUMERO_TURNI -1, numeroTurni);
-		data.set(ColPosition.NOTE -1, note);
+		List<Object> data = Arrays.asList(new Object[10]);
+		Collections.fill(data, "");
+		if (idTorneo != null) data.set(ColPosition.ID_TORNEO, idTorneo);
+		if (nomeTorneo != null) data.set(ColPosition.NOME_TORNEO, nomeTorneo);
+		if (sede != null) data.set(ColPosition.SEDE, sede);
+		if (tipoTorneo != null) data.set(ColPosition.TIPO_TORNEO, tipoTorneo);
+		if (startDate != null) data.set(ColPosition.START_DATE, startDate);
+		if (endDate != null) data.set(ColPosition.END_DATE, endDate);
+		if (organizzatore != null) data.set(ColPosition.ORGANIZZATORE, organizzatore);
+		if (numeroTurni != null) data.set(ColPosition.NUMERO_TURNI, numeroTurni);
+		if (note != null) data.set(ColPosition.NOTE, note);
+		if (updateTime != null) data.set(ColPosition.UPDATE_TIME, updateTime);
 		return data;
 	}
 
 	public void setData(List<Object> data) {
 		if (data == null || data.isEmpty()) return;
 		
-		idTorneo 		= (String) data.get(ColPosition.ID_TORNEO -1);
-		nomeTorneo 		= (String) data.get(ColPosition.NOME_TORNEO -1);
-		sede 			= (String) data.get(ColPosition.SEDE -1);
-		tipoTorneo 		= (String) data.get(ColPosition.TIPO_TORNEO -1);
-		startDate 		= (Date) data.get(ColPosition.START_DATE -1);
-		endDate 		= (Date) data.get(ColPosition.END_DATE -1);
-		organizzatore 	= (String) data.get(ColPosition.ORGANIZZATORE -1);
-		numeroTurni 	= (Integer) data.get(ColPosition.NUMERO_TURNI -1);
-		note 			= (String) data.get(ColPosition.NOTE -1);
+		idTorneo 		= (String) data.get(ColPosition.ID_TORNEO);
+		nomeTorneo 		= (String) data.get(ColPosition.NOME_TORNEO);
+		sede 			= (String) data.get(ColPosition.SEDE);
+		tipoTorneo 		= (String) data.get(ColPosition.TIPO_TORNEO);
+		startDate 		= (String) data.get(ColPosition.START_DATE);
+		endDate 		= (String) data.get(ColPosition.END_DATE);
+		organizzatore 	= (String) data.get(ColPosition.ORGANIZZATORE);
+		numeroTurni 	= (Integer) data.get(ColPosition.NUMERO_TURNI);
+		note 			= (String) data.get(ColPosition.NOTE);
+		updateTime		= (String) data.get(ColPosition.UPDATE_TIME);
 	}
 
 	public List<Integer> keyCols(){

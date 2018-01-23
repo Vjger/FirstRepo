@@ -34,11 +34,11 @@ public class GoogleDriveAccess {
 	private Credential credential;
 
     /** Application name. */
-    private static final String APPLICATION_NAME = "RisiKo! Data Elaboration";
+    private static final String APPLICATION_NAME = "RisiKo! Data Manager";
 
     /** Directory to store user credentials for this application. */
    
-    private static final java.io.File DATA_STORE_DIR = ResourceLoader.googleCredentials();
+    private static final java.io.File DATA_STORE_DIR = ResourceLoader.googleCredentials(); 
 
     /** Global instance of the {@link FileDataStoreFactory}. */
     private static FileDataStoreFactory DATA_STORE_FACTORY;

@@ -1,11 +1,5 @@
 package it.desimone.gsheets;
 
-import it.desimone.ResourceWorking;
-import it.desimone.gsheets.dto.SheetRow;
-import it.desimone.utils.MyException;
-import it.desimone.utils.MyLogger;
-
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,6 +40,12 @@ import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
+import it.desimone.ResourceWorking;
+import it.desimone.gsheets.dto.SheetRow;
+import it.desimone.utils.MyException;
+import it.desimone.utils.MyLogger;
+import it.desimone.utils.ResourceLoader;
+
 public class GoogleSheetsAccess {
 
 	private static final String USER_ENTERED = "USER_ENTERED";
@@ -58,7 +58,7 @@ public class GoogleSheetsAccess {
 
     /** Directory to store user credentials for this application. */
    
-    private static final java.io.File DATA_STORE_DIR = new File(System.getProperty("java.io.tmpdir")); //ResourceLoader.googleCredentials();
+    private static final java.io.File DATA_STORE_DIR = ResourceLoader.googleCredentials();
 
     /** Global instance of the {@link FileDataStoreFactory}. */
     private static DataStoreFactory DATA_STORE_FACTORY;
@@ -112,7 +112,7 @@ public class GoogleSheetsAccess {
     		
     		GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 
-    		MyLogger.getLogger().info(clientSecrets.getDetails().toPrettyString());
+    		//MyLogger.getLogger().info(clientSecrets.getDetails().toPrettyString());
     		
     		// Build flow and trigger user authorization request.
     		GoogleAuthorizationCodeFlow flow =
@@ -122,7 +122,7 @@ public class GoogleSheetsAccess {
     				.build();
     		credential = new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
     		
-    		MyLogger.getLogger().info(credential.getAccessToken()+" "+credential.getRefreshToken()+" "+credential.getExpirationTimeMilliseconds()+" "+credential.getExpiresInSeconds());
+    		//MyLogger.getLogger().info(credential.getAccessToken()+" "+credential.getRefreshToken()+" "+credential.getExpirationTimeMilliseconds()+" "+credential.getExpiresInSeconds());
     		
     		MyLogger.getLogger().info("Credentials saved to " + DATA_STORE_DIR.getAbsolutePath());
 
@@ -271,6 +271,8 @@ public class GoogleSheetsAccess {
     }
     
     public void appendDataToSheet(String spreadsheetId, String sheetName, List<List<Object>> data) throws IOException{
+    	
+    	MyLogger.getLogger().fine(data.toString());
         
         Sheets service = getSheetsService();
 
@@ -318,7 +320,7 @@ public class GoogleSheetsAccess {
     	
     	List<ValueRange> data = new ArrayList<ValueRange>();
     	for (SheetRow row: rows){
-    		String range = sheetName+"!"+row.getSheetRow();
+    		String range = sheetName+"!"+row.getSheetRow()+":"+row.getSheetRow();
     		List<List<Object>> values = new ArrayList<List<Object>>();
     		values.add(row.getData());
     		data.add(new ValueRange().setRange(range).setValues(values));

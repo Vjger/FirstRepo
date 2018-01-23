@@ -39,7 +39,7 @@ public class GoogleDriveAccess {
 
     /** Directory to store user credentials for this application. */
    
-    private static final java.io.File DATA_STORE_DIR = ResourceLoader.googleCredentials();
+    private static final java.io.File DATA_STORE_DIR = new java.io.File(System.getProperty("java.io.tmpdir"));
 
     /** Global instance of the {@link FileDataStoreFactory}. */
     private static FileDataStoreFactory DATA_STORE_FACTORY;

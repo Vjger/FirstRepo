@@ -2,7 +2,10 @@ package it.desimone;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
@@ -10,10 +13,12 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.google.api.services.sheets.v4.Sheets;
-
 import it.desimone.gsheets.GoogleSheetsAccess;
+import it.desimone.gsheets.dto.SheetRow;
+import it.desimone.gsheets.dto.TorneiRow;
+import it.desimone.gsheets.facade.GSheetsInterface;
 import it.desimone.risiko.torneo.batch.ExcelAccess;
+import it.desimone.risiko.torneo.dto.SchedaTorneo.TipoTorneo;
 import it.desimone.utils.MyLogger;
 
 public class GSheetsReaderTest {
@@ -26,10 +31,38 @@ public class GSheetsReaderTest {
 		consoleHandler.setLevel(Level.ALL);
 	    httpLogger.addHandler(consoleHandler);
 		
-	    //testDeleteRow();
-	    //testDefaultTempDir();
-	    testLetture();
+	    testInsertOrUpdateTorneo();
 
+	}
+	
+	private static void testInsertOrUpdateTorneo() throws IOException{
+		TorneiRow torneoRow = new TorneiRow();
+		
+		torneoRow.setNomeTorneo("Torneo di test");
+		torneoRow.setOrganizzatore("CASTELFRANCO VENETO [I Masnadieri]");
+		torneoRow.setSede("Comune di Castelfranco Veneto");
+		torneoRow.setNumeroTurni(3);
+		torneoRow.setStartDate("22/01/2018");
+		torneoRow.setEndDate(new SimpleDateFormat("dd/MM/yyyy").format(Calendar.getInstance().getTime()));
+		torneoRow.setIdTorneo("20180223 - CASTELFRANCO VENETO [I Masnadieri]");
+		torneoRow.setTipoTorneo(TipoTorneo.OPEN.getTipoTorneo());
+		torneoRow.setNote("Torneo di San Valentino");
+		torneoRow.setUpdateTime(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime()));
+		
+		GoogleSheetsAccess googleSheetsAccess = new GoogleSheetsAccess();
+		
+		String spreadSheetIdTornei = "1CsD-U3lpgBNHX0PgnRWwbGlKX6hcTtmrNKlqOdfwXtI";
+		String sheetNameTornei = "TORNEI";
+		SheetRow torneoRowFound = GSheetsInterface.findSheetRow(spreadSheetIdTornei, sheetNameTornei, torneoRow, googleSheetsAccess);
+		
+		if (torneoRowFound != null){
+			torneoRow.setSheetRow(torneoRowFound.getSheetRow());
+			List<SheetRow> rows = new ArrayList<SheetRow>();
+			rows.add(torneoRow);
+			googleSheetsAccess.updateRows(spreadSheetIdTornei, sheetNameTornei, rows, true);
+		}else{
+			googleSheetsAccess.appendDataToSheet(spreadSheetIdTornei, sheetNameTornei, Collections.singletonList(torneoRow.getData()));
+		}
 	}
 
 	
