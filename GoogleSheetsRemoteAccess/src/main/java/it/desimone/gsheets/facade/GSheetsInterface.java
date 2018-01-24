@@ -61,7 +61,7 @@ public class GSheetsInterface {
 		for (List<Object> row: data){
 			indexRow++;
 			boolean rowFound = true;
-			for (int i=0; i < keyCols.size(); i++){
+			for (int i=0; i < keyCols.size() && rowFound; i++){
 				Object elementoRigaRemota = row.get(i);
 				Object elementoRigaInCanna = dataSheetRow.get(keyCols.get(i));
 				rowFound = rowFound && elementoRigaInCanna.equals(elementoRigaRemota);
