@@ -48,7 +48,7 @@ public class AnagraficaGiocatoreRidottaRow extends AbstractSheetRow{
 	public void setData(List<Object> data) {
 		if (data == null || data.isEmpty()) return;
 		
-		id 				= (Integer) Integer.valueOf((String)data.get(ColPosition.ID));
+		id 				= Integer.valueOf((String)data.get(ColPosition.ID));
 		nome 			= (String) data.get(ColPosition.NOME);
 		cognome 		= (String) data.get(ColPosition.COGNOME);
 		email	 		= (String) data.get(ColPosition.E_MAIL);

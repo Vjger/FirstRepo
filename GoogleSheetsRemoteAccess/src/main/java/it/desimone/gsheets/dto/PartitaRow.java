@@ -11,6 +11,7 @@ public class PartitaRow extends AbstractSheetRow {
 	
 	private String idTorneo;
 	private Integer numeroTurno;
+	private String dataTurno;
 	private Integer numeroTavolo;
 	private Integer idGiocatore1;
 	private Double punteggioGiocatore1;
@@ -28,26 +29,28 @@ public class PartitaRow extends AbstractSheetRow {
 		//zero-based
 		public static final Integer ID_TORNEO 				= 0;
 		public static final Integer NUMERO_TURNO 			= 1;
-		public static final Integer NUMERO_TAVOLO 			= 2;
-		public static final Integer ID_GIOCATORE1			= 3;
-		public static final Integer PUNTEGGIO_GIOCATORE1 	= 4;
-		public static final Integer ID_GIOCATORE2			= 5;
-		public static final Integer PUNTEGGIO_GIOCATORE2 	= 6;
-		public static final Integer ID_GIOCATORE3			= 7;
-		public static final Integer PUNTEGGIO_GIOCATORE3 	= 8;
-		public static final Integer ID_GIOCATORE4			= 9;
-		public static final Integer PUNTEGGIO_GIOCATORE4 	= 10;
-		public static final Integer ID_GIOCATORE5			= 11;
-		public static final Integer PUNTEGGIO_GIOCATORE5 	= 12;
-		public static final Integer ID_GIOCATORE_VINCITORE	= 13;
+		public static final Integer DATA_TURNO 				= 2;
+		public static final Integer NUMERO_TAVOLO 			= 3;
+		public static final Integer ID_GIOCATORE1			= 4;
+		public static final Integer PUNTEGGIO_GIOCATORE1 	= 5;
+		public static final Integer ID_GIOCATORE2			= 6;
+		public static final Integer PUNTEGGIO_GIOCATORE2 	= 7;
+		public static final Integer ID_GIOCATORE3			= 8;
+		public static final Integer PUNTEGGIO_GIOCATORE3 	= 9;
+		public static final Integer ID_GIOCATORE4			= 10;
+		public static final Integer PUNTEGGIO_GIOCATORE4 	= 11;
+		public static final Integer ID_GIOCATORE5			= 12;
+		public static final Integer PUNTEGGIO_GIOCATORE5 	= 13;
+		public static final Integer ID_GIOCATORE_VINCITORE	= 14;
 
 	}
 	
 	public List<Object> getData() {
-		List<Object> data = Arrays.asList(new Object[14]);
+		List<Object> data = Arrays.asList(new Object[15]);
 		Collections.fill(data, "");
 		if (idTorneo != null) data.set(ColPosition.ID_TORNEO, idTorneo);
 		if (numeroTurno != null) data.set(ColPosition.NUMERO_TURNO, numeroTurno);
+		if (dataTurno != null) data.set(ColPosition.DATA_TURNO, dataTurno);
 		if (numeroTavolo != null) data.set(ColPosition.NUMERO_TAVOLO, numeroTavolo);
 		if (idGiocatore1 != null) data.set(ColPosition.ID_GIOCATORE1, idGiocatore1);
 		if (punteggioGiocatore1 != null) data.set(ColPosition.PUNTEGGIO_GIOCATORE1, punteggioGiocatore1);
@@ -67,17 +70,18 @@ public class PartitaRow extends AbstractSheetRow {
 		if (data == null || data.isEmpty()) return;
 		
 		idTorneo 			= (String) data.get(ColPosition.ID_TORNEO);
-		numeroTurno 		= (Integer) data.get(ColPosition.NUMERO_TURNO);
-		numeroTavolo 		= (Integer) data.get(ColPosition.NUMERO_TAVOLO);
-		idGiocatore1 		= (Integer) data.get(ColPosition.ID_GIOCATORE1);
+		numeroTurno 		= Integer.valueOf((String)data.get(ColPosition.NUMERO_TURNO));
+		dataTurno 			= (String) data.get(ColPosition.DATA_TURNO);
+		numeroTavolo 		= Integer.valueOf((String)data.get(ColPosition.NUMERO_TAVOLO));
+		idGiocatore1 		= Integer.valueOf((String)data.get(ColPosition.ID_GIOCATORE1));
 		punteggioGiocatore1 = (Double) data.get(ColPosition.PUNTEGGIO_GIOCATORE1);
-		idGiocatore1 		= (Integer) data.get(ColPosition.ID_GIOCATORE1);
+		idGiocatore2 		= Integer.valueOf((String)data.get(ColPosition.ID_GIOCATORE2));
 		punteggioGiocatore2 = (Double) data.get(ColPosition.PUNTEGGIO_GIOCATORE2);
-		idGiocatore3 		= (Integer) data.get(ColPosition.ID_GIOCATORE3);
+		idGiocatore3 		= Integer.valueOf((String)data.get(ColPosition.ID_GIOCATORE3));
 		punteggioGiocatore3 = (Double) data.get(ColPosition.PUNTEGGIO_GIOCATORE3);
-		idGiocatore4 		= (Integer) data.get(ColPosition.ID_GIOCATORE4);
+		idGiocatore4 		= Integer.valueOf((String)data.get(ColPosition.ID_GIOCATORE4));
 		punteggioGiocatore4 = (Double) data.get(ColPosition.PUNTEGGIO_GIOCATORE4);
-		idGiocatore5 		= (Integer) data.get(ColPosition.ID_GIOCATORE5);
+		idGiocatore5 		= Integer.valueOf((String)data.get(ColPosition.ID_GIOCATORE5));
 		punteggioGiocatore5 = (Double) data.get(ColPosition.PUNTEGGIO_GIOCATORE5);
 		idGiocatoreVincitore= (Integer) data.get(ColPosition.ID_GIOCATORE_VINCITORE);
 	}
@@ -200,6 +204,14 @@ public class PartitaRow extends AbstractSheetRow {
 
 	public void setIdGiocatoreVincitore(Integer idGiocatoreVincitore) {
 		this.idGiocatoreVincitore = idGiocatoreVincitore;
+	}
+
+	public String getDataTurno() {
+		return dataTurno;
+	}
+
+	public void setDataTurno(String dataTurno) {
+		this.dataTurno = dataTurno;
 	}
 	
 }

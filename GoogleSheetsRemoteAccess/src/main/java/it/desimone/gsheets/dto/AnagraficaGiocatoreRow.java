@@ -1,5 +1,7 @@
 package it.desimone.gsheets.dto;
 
+import it.desimone.gsheets.dto.AnagraficaGiocatoreRidottaRow.ColPosition;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -45,7 +47,7 @@ public class AnagraficaGiocatoreRow extends AbstractSheetRow{
 	public void setData(List<Object> data) {
 		if (data == null || data.isEmpty()) return;
 		
-		id 				= (Integer) data.get(ColPosition.ID);
+		id 				= Integer.valueOf((String)data.get(ColPosition.ID));
 		nome 			= (String) data.get(ColPosition.NOME);
 		cognome 		= (String) data.get(ColPosition.COGNOME);
 		ultimoClub 		= (String) data.get(ColPosition.ULTIMO_CLUB);
