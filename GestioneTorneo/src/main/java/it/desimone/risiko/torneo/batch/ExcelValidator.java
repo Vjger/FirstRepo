@@ -198,8 +198,8 @@ public class ExcelValidator {
 						}else{
 							if (dataTurno.before(turnoPrecedente)){
 								result.add(new ExcelValidatorMessages(Scheda.TORNEO, "Errata sequenza cronologica per le date dei turni: il turno del "+df.format(dataTurno)+" è precedente a quello del "+df.format(turnoPrecedente)));
-								turnoPrecedente = dataTurno;
 							}
+							turnoPrecedente = dataTurno;
 						}
 					}
 				}

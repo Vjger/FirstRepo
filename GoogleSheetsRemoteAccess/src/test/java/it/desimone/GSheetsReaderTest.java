@@ -14,6 +14,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import it.desimone.gsheets.GoogleSheetsAccess;
+import it.desimone.gsheets.dto.AnagraficaGiocatoreRidottaRow;
+import it.desimone.gsheets.dto.AnagraficaGiocatoreRow;
 import it.desimone.gsheets.dto.SheetRow;
 import it.desimone.gsheets.dto.TorneiRow;
 import it.desimone.gsheets.facade.GSheetsInterface;
@@ -31,8 +33,53 @@ public class GSheetsReaderTest {
 		consoleHandler.setLevel(Level.ALL);
 	    httpLogger.addHandler(consoleHandler);
 		
-	    testInsertOrUpdateTorneo();
-
+	    //testInsertOrUpdateTorneo();
+	    testInsertOrUpdateGiocatore();
+	}
+	
+	
+	private static void testInsertOrUpdateGiocatore() throws IOException{
+		AnagraficaGiocatoreRidottaRow anagraficaRidottaRow = new AnagraficaGiocatoreRidottaRow();
+		
+		anagraficaRidottaRow.setNome("Valerio");
+		anagraficaRidottaRow.setCognome("Mascagna");
+		anagraficaRidottaRow.setEmail("valerio.mascagna@gmail.com");
+		anagraficaRidottaRow.setUpdateTime(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime()));
+		
+		GoogleSheetsAccess googleSheetsAccess = new GoogleSheetsAccess();
+		
+		String spreadSheetIdAnagraficaRidotta = "1nPDrmKcgXJzRZhsEdHIEk_GV36P7AC29C8c9ay8lLHQ";
+		SheetRow anagraficaRowFound = GSheetsInterface.findSheetRow(spreadSheetIdAnagraficaRidotta, AnagraficaGiocatoreRidottaRow.SHEET_ANAGRAFICA_NAME, anagraficaRidottaRow, googleSheetsAccess);
+		
+		if (anagraficaRowFound == null){
+			Integer maxId = GSheetsInterface.findMaxIdAnagrafica(spreadSheetIdAnagraficaRidotta, googleSheetsAccess);
+			anagraficaRidottaRow.setId(maxId+1);
+			googleSheetsAccess.appendDataToSheet(spreadSheetIdAnagraficaRidotta, AnagraficaGiocatoreRidottaRow.SHEET_ANAGRAFICA_NAME, Collections.singletonList(anagraficaRidottaRow.getData()));
+		}else{
+			anagraficaRidottaRow = (AnagraficaGiocatoreRidottaRow) GSheetsInterface.findSheetRowByLineNumber(spreadSheetIdAnagraficaRidotta, AnagraficaGiocatoreRidottaRow.SHEET_ANAGRAFICA_NAME, anagraficaRidottaRow, googleSheetsAccess);
+		}
+		
+		AnagraficaGiocatoreRow anagraficaRow = new AnagraficaGiocatoreRow();
+		anagraficaRow.setId(anagraficaRidottaRow.getId());
+		anagraficaRow.setNome(anagraficaRidottaRow.getNome());
+		anagraficaRow.setCognome(anagraficaRidottaRow.getCognome());
+		anagraficaRow.setIdUltimoTorneo("20180223 - CASTELFRANCO VENETO [I Masnadieri]");
+		anagraficaRow.setUltimoClub("[MODENA] Il Maialino");
+		anagraficaRow.setUpdateTime(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime()));
+		
+		String spreadSheetIdTornei = "1CsD-U3lpgBNHX0PgnRWwbGlKX6hcTtmrNKlqOdfwXtI";
+		String sheetNameGiocatori = TorneiRow.SHEET_GIOCATORI_NAME;
+		SheetRow giocatoriRowFound = GSheetsInterface.findSheetRow(spreadSheetIdTornei, sheetNameGiocatori, anagraficaRow, googleSheetsAccess);
+		
+		if (giocatoriRowFound != null){
+			anagraficaRow.setSheetRow(giocatoriRowFound.getSheetRow());
+			List<SheetRow> rows = new ArrayList<SheetRow>();
+			rows.add(anagraficaRow);
+			googleSheetsAccess.updateRows(spreadSheetIdTornei, sheetNameGiocatori, rows, true);
+		}else{
+			googleSheetsAccess.appendDataToSheet(spreadSheetIdTornei, sheetNameGiocatori, Collections.singletonList(anagraficaRow.getData()));
+		}
+		
 	}
 	
 	private static void testInsertOrUpdateTorneo() throws IOException{

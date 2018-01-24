@@ -1,7 +1,5 @@
 package it.desimone.gsheets.dto;
 
-import it.desimone.gsheets.dto.TorneiRow.ColPosition;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,6 +7,8 @@ import java.util.List;
 
 public class PartitaRow extends AbstractSheetRow {
 
+	public static final String SHEET_PARTITE_NAME 	= "PARTITE";
+	
 	private String idTorneo;
 	private Integer numeroTurno;
 	private Integer numeroTavolo;

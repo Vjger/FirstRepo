@@ -42,7 +42,7 @@ public class GoogleDriveAccess {
     private static final java.io.File DATA_STORE_DIR = ResourceLoader.tempRisikoDataCredentials();
 
     /** Global instance of the {@link FileDataStoreFactory}. */
-    private static FileDataStoreFactory DATA_STORE_FACTORY;
+    private FileDataStoreFactory DATA_STORE_FACTORY;
 
     /** Global instance of the JSON factory. */
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
@@ -62,7 +62,7 @@ public class GoogleDriveAccess {
     static {
         try {
             HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-            DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);
+            //DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);
         } catch (Throwable t) {
     		MyLogger.getLogger().severe("Problema con l'accesso a Google: "+t);
         }
@@ -73,6 +73,7 @@ public class GoogleDriveAccess {
     		if (!DATA_STORE_DIR.exists()){
     			DATA_STORE_DIR.mkdir();
     		}
+    		DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);
 			this.credential = authorize();
 		} catch (IOException e) {
 			MyLogger.getLogger().severe("Credenziali errate per l'accesso a Google: "+e);

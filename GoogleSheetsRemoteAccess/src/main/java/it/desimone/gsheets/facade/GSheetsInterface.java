@@ -2,9 +2,11 @@ package it.desimone.gsheets.facade;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import it.desimone.gsheets.GoogleSheetsAccess;
+import it.desimone.gsheets.dto.AnagraficaGiocatoreRidottaRow;
 import it.desimone.gsheets.dto.SheetRow;
 
 public class GSheetsInterface {
@@ -64,7 +66,7 @@ public class GSheetsInterface {
 			for (int i=0; i < keyCols.size() && rowFound; i++){
 				Object elementoRigaRemota = row.get(i);
 				Object elementoRigaInCanna = dataSheetRow.get(keyCols.get(i));
-				rowFound = rowFound && elementoRigaInCanna.equals(elementoRigaRemota);
+				rowFound = rowFound && elementoRigaInCanna.toString().equalsIgnoreCase(elementoRigaRemota.toString());
 			}
 			if (rowFound){
 				sheetRow.setSheetRow(indexRow);
@@ -74,6 +76,30 @@ public class GSheetsInterface {
 		}
 
 		return result;
+	}
+	
+	public static SheetRow findSheetRowByLineNumber(String spreadSheetId, String sheetName, SheetRow sheetRow, GoogleSheetsAccess googleSheetsAccess) throws IOException{
+		SheetRow result = null;
+	
+		List<String> ranges = Collections.singletonList(sheetName+"!"+sheetRow.getSheetRow()+":"+sheetRow.getSheetRow());
+		
+		List<List<Object>> data = googleSheetsAccess.leggiSheet(spreadSheetId, ranges);
+		
+		if (data != null && !data.isEmpty()){
+			List<Object> sheetRowData = data.get(0);
+			sheetRow.setData(sheetRowData);
+			result = sheetRow;
+		}
+
+		return result;
+	}
+	
+	public static Integer findMaxIdAnagrafica(String spreadSheetId, GoogleSheetsAccess googleSheetsAccess) throws IOException{
+		List<String> ranges = Collections.singletonList(AnagraficaGiocatoreRidottaRow.SHEET_DATA_ANALYSIS_NAME+"!"+"B2");
+		
+		List<List<Object>> data = googleSheetsAccess.leggiSheet(spreadSheetId, ranges);
+
+		return (Integer) Integer.valueOf((String)data.get(0).get(0));
 	}
 	
 }

@@ -5,12 +5,14 @@ import java.util.Collections;
 import java.util.List;
 
 public class AnagraficaGiocatoreRow extends AbstractSheetRow{
+	
+	public static final String SHEET_GIOCATORI_NAME 	= "GIOCATORI";
 
 	private Integer id;
 	private String nome;
 	private String cognome;
 	private String ultimoClub;
-	private String idUltimoTorneo;
+	private String idTorneoProvenienza;
 	private String updateTime;
 	
 	static class ColPosition{
@@ -19,7 +21,7 @@ public class AnagraficaGiocatoreRow extends AbstractSheetRow{
 		public static final Integer NOME 				= 1;
 		public static final Integer COGNOME 			= 2;
 		public static final Integer ULTIMO_CLUB 		= 3;
-		public static final Integer ID_ULTIMO_TORNEO 	= 4;
+		public static final Integer ID_TORNEO_PROVENIENZA 	= 4;
 		public static final Integer UPDATE_TIME 		= 5;
 	}
 	
@@ -35,7 +37,7 @@ public class AnagraficaGiocatoreRow extends AbstractSheetRow{
 		if (nome != null) data.set(ColPosition.NOME, nome);
 		if (cognome != null) data.set(ColPosition.COGNOME, cognome);
 		if (ultimoClub != null) data.set(ColPosition.ULTIMO_CLUB, ultimoClub);
-		if (idUltimoTorneo != null) data.set(ColPosition.ID_ULTIMO_TORNEO, idUltimoTorneo);
+		if (idTorneoProvenienza != null) data.set(ColPosition.ID_TORNEO_PROVENIENZA, idTorneoProvenienza);
 		if (updateTime != null) data.set(ColPosition.UPDATE_TIME, updateTime);
 		return data;
 	}
@@ -47,7 +49,7 @@ public class AnagraficaGiocatoreRow extends AbstractSheetRow{
 		nome 			= (String) data.get(ColPosition.NOME);
 		cognome 		= (String) data.get(ColPosition.COGNOME);
 		ultimoClub 		= (String) data.get(ColPosition.ULTIMO_CLUB);
-		idUltimoTorneo 	= (String) data.get(ColPosition.ID_ULTIMO_TORNEO);
+		idTorneoProvenienza 	= (String) data.get(ColPosition.ID_TORNEO_PROVENIENZA);
 		updateTime		= (String) data.get(ColPosition.UPDATE_TIME);
 	}
 
@@ -93,12 +95,12 @@ public class AnagraficaGiocatoreRow extends AbstractSheetRow{
 
 
 	public String getIdUltimoTorneo() {
-		return idUltimoTorneo;
+		return idTorneoProvenienza;
 	}
 
 
 	public void setIdUltimoTorneo(String idUltimoTorneo) {
-		this.idUltimoTorneo = idUltimoTorneo;
+		this.idTorneoProvenienza = idUltimoTorneo;
 	}
 
 

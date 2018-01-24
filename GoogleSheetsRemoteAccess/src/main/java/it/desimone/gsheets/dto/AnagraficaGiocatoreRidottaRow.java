@@ -5,9 +5,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import it.desimone.gsheets.dto.TorneiRow.ColPosition;
-
 public class AnagraficaGiocatoreRidottaRow extends AbstractSheetRow{
+	
+	public static final String SHEET_ANAGRAFICA_NAME 	= "ANAGRAFICA";
+	public static final String SHEET_DATA_ANALYSIS_NAME = "DATA_ANALYSIS";
 
 	private Integer id;
 	private String nome;
@@ -21,7 +22,7 @@ public class AnagraficaGiocatoreRidottaRow extends AbstractSheetRow{
 		public static final Integer NOME 				= 1;
 		public static final Integer COGNOME 			= 2;
 		public static final Integer E_MAIL		 		= 3;
-		public static final Integer UPDATE_TIME 		= 5;
+		public static final Integer UPDATE_TIME 		= 4;
 	}
 	
 	
@@ -47,7 +48,7 @@ public class AnagraficaGiocatoreRidottaRow extends AbstractSheetRow{
 	public void setData(List<Object> data) {
 		if (data == null || data.isEmpty()) return;
 		
-		id 				= (Integer) data.get(ColPosition.ID);
+		id 				= (Integer) Integer.valueOf((String)data.get(ColPosition.ID));
 		nome 			= (String) data.get(ColPosition.NOME);
 		cognome 		= (String) data.get(ColPosition.COGNOME);
 		email	 		= (String) data.get(ColPosition.E_MAIL);
@@ -85,12 +86,12 @@ public class AnagraficaGiocatoreRidottaRow extends AbstractSheetRow{
 	}
 
 
-	public String getUltimoClub() {
+	public String getEmail() {
 		return email;
 	}
 
 
-	public void setUltimoClub(String email) {
+	public void setEmail(String email) {
 		this.email = email;
 	}
 

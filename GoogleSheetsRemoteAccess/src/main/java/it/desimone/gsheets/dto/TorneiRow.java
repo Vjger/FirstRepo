@@ -7,6 +7,9 @@ import java.util.List;
 
 public class TorneiRow extends AbstractSheetRow {
 	
+	public static final String SHEET_TORNEI_NAME 	= "TORNEI";
+	public static final String SHEET_GIOCATORI_NAME = "GIOCATORI";
+	
 	static class ColPosition{
 		//zero-based
 		public static final Integer ID_TORNEO 		= 0;
