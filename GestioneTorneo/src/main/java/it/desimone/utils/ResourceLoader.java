@@ -47,6 +47,10 @@ public class ResourceLoader {
 		return new java.io.File(ROOT+File.separator+"resources"+File.separator+"google", ".credentials/RisiKo Data");
 	}
 	
+	public static File tempRisikoDataCredentials(){
+		return new java.io.File(System.getProperty("java.io.tmpdir")+File.separator+"googleapiprojects", ".credentials/RisiKo Data");
+	}
+	
 	public static InputStream googleAPIAccess(){
 		return FileUtils.estraiInputStreamDaZip(ZIPFILE, googleClientSecret);
 	}

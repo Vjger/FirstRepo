@@ -22,6 +22,10 @@ public class GoogleDrivePublisher implements Runnable {
 		this.excelFileNameToPublish = excelFileNameToPublish;
 	}
 
+	public static void resetCredentials(){
+		GoogleDriveAccess.resetGoogleAccess();
+	}
+	
 	public void run() {
 		JLabel label = new JLabel(new ImageIcon(ResourceLoader.getLoadingIconPath()));
 		label.setVisible(true);

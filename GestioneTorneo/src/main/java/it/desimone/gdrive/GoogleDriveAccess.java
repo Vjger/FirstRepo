@@ -39,7 +39,7 @@ public class GoogleDriveAccess {
 
     /** Directory to store user credentials for this application. */
    
-    private static final java.io.File DATA_STORE_DIR = new java.io.File(System.getProperty("java.io.tmpdir"));
+    private static final java.io.File DATA_STORE_DIR = ResourceLoader.tempRisikoDataCredentials();
 
     /** Global instance of the {@link FileDataStoreFactory}. */
     private static FileDataStoreFactory DATA_STORE_FACTORY;
@@ -64,18 +64,31 @@ public class GoogleDriveAccess {
             HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
             DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);
         } catch (Throwable t) {
-            t.printStackTrace();
-            System.exit(1);
+    		MyLogger.getLogger().severe("Problema con l'accesso a Google: "+t);
         }
     }
 
     public GoogleDriveAccess(){
     	try {
+    		if (!DATA_STORE_DIR.exists()){
+    			DATA_STORE_DIR.mkdir();
+    		}
 			this.credential = authorize();
 		} catch (IOException e) {
 			MyLogger.getLogger().severe("Credenziali errate per l'accesso a Google: "+e);
 			throw new MyException(e, "Credenziali errate per l'accesso a Google: verificare la presenza del file "+ResourceLoader.googleClientSecretPath());
 		}
+    }
+    
+    
+    public static void resetGoogleAccess(){
+    	java.io.File[] credenziali = DATA_STORE_DIR.listFiles();
+    	if (credenziali != null && credenziali.length > 0){
+    		for (java.io.File cred: credenziali){
+    			boolean resetted = cred.delete();
+    			MyLogger.getLogger().finest("Credenziali resettate da "+DATA_STORE_DIR.getAbsolutePath()+" - "+cred.getName()+": "+resetted);
+    		}
+    	}
     }
     
     

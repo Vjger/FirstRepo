@@ -36,7 +36,9 @@ public class FileMenu extends JMenu {
 	private JMenuItem menuExportVbc = new JMenuItem("vB");
 	private JMenuItem menuExportHtml = new JMenuItem("Html");
 	private JMenuItem menuStampaFile= new JMenuItem("Stampa Report Risiko");
-	private JMenuItem menuPublishReport = new JMenuItem("Pubblica on line");
+	private JMenu menuPublishOnline = new JMenu("Pubblica on line");
+	private JMenuItem menuPublishReport = new JMenuItem("Pubblica");
+	private JMenuItem menuResetCredentials = new JMenuItem("Reset credenziali Google");
 	private JFileChooser fileChooser = new JFileChooser(".\\");
 	private File excelFile;
 	
@@ -83,7 +85,10 @@ public class FileMenu extends JMenu {
 		this.add(menuStampaFile);
 		
 		menuPublishReport.addActionListener(getPublishListener());
-		this.add(menuPublishReport);
+		menuPublishOnline.add(menuPublishReport);
+		menuResetCredentials.addActionListener(getResetCredentialsListener());
+		menuPublishOnline.add(menuResetCredentials);
+		this.add(menuPublishOnline);
 	}
 
 	private ActionListener getOpenActionListener(){
@@ -210,6 +215,16 @@ public class FileMenu extends JMenu {
 						JOptionPane.showMessageDialog(null, new TextException(ex),"Orrore!",JOptionPane.ERROR_MESSAGE);
 					}
 				}
+			}
+		 };
+		return listExport;
+	}
+
+	private ActionListener getResetCredentialsListener(){
+		 ActionListener listExport = new ActionListener(){
+			public void actionPerformed (ActionEvent e){
+				GoogleDrivePublisher.resetCredentials();
+				JOptionPane.showMessageDialog(null, "Reset effettuato", "Risultato Finale", JOptionPane.INFORMATION_MESSAGE);
 			}
 		 };
 		return listExport;
