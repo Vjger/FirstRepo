@@ -152,5 +152,5 @@ public class TorneiRow extends AbstractSheetRow {
 		keyCols.add(ColPosition.START_DATE);
 		return keyCols;
 	}
-	
+
 }

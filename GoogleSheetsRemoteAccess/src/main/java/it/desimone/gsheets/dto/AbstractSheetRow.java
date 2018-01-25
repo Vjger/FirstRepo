@@ -19,4 +19,8 @@ public abstract class AbstractSheetRow implements SheetRow {
 	public void setData(List<Object> data) {
 		this.data = data;
 	}
+	
+	public Object clone() throws CloneNotSupportedException{
+		return super.clone();
+	}
 }

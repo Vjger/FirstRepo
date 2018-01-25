@@ -291,7 +291,36 @@ public class GoogleSheetsAccess {
     }
     
     
-    public void deleteRow(String spreadsheetId, Integer sheetId, Integer numRow) throws IOException{
+    public void deleteRow(String spreadsheetId, String sheetName, Integer numRow) throws IOException{
+    	Integer sheetId = getSheetIdBySheetName(spreadsheetId, sheetName);
+    	
+    	if (sheetId != null){
+    		deleteRow(spreadsheetId, sheetId, numRow);
+    	}
+    }
+    
+    private Integer getSheetIdBySheetName(String spreadsheetId, String sheetName)  throws IOException{
+    	Integer sheetId = null;
+    	
+        Sheets service = getSheetsService();
+        
+        Sheets.Spreadsheets.Get spreadSheetsGet = service.spreadsheets().get(spreadsheetId);
+        
+        spreadSheetsGet = spreadSheetsGet.setRanges(Collections.singletonList(sheetName));
+        
+	    Spreadsheet response = spreadSheetsGet.execute();
+	    
+	    List<Sheet> sheets = response.getSheets();
+	    
+	    if (sheets != null && !sheets.isEmpty()){
+	    	sheetId = sheets.get(0).getProperties().getSheetId();
+	    }
+	    
+	    return sheetId;
+	}
+
+
+	public void deleteRow(String spreadsheetId, Integer sheetId, Integer numRow) throws IOException{
         
         Sheets service = getSheetsService();
 

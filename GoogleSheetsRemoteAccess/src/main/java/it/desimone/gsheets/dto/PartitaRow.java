@@ -25,7 +25,7 @@ public class PartitaRow extends AbstractSheetRow {
 	private Double punteggioGiocatore5;
 	private Integer idGiocatoreVincitore;
 	
-	static class ColPosition{
+	public static class ColPosition{
 		//zero-based
 		public static final Integer ID_TORNEO 				= 0;
 		public static final Integer NUMERO_TURNO 			= 1;

@@ -1,14 +1,11 @@
 package it.desimone;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.Properties;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,6 +13,7 @@ import java.util.logging.Logger;
 import it.desimone.gsheets.GoogleSheetsAccess;
 import it.desimone.gsheets.dto.AnagraficaGiocatoreRidottaRow;
 import it.desimone.gsheets.dto.AnagraficaGiocatoreRow;
+import it.desimone.gsheets.dto.PartitaRow;
 import it.desimone.gsheets.dto.SheetRow;
 import it.desimone.gsheets.dto.TorneiRow;
 import it.desimone.gsheets.facade.GSheetsInterface;
@@ -34,7 +32,8 @@ public class GSheetsReaderTest {
 	    httpLogger.addHandler(consoleHandler);
 		
 	    //testInsertOrUpdateTorneo();
-	    testInsertOrUpdateGiocatore();
+	    //testInsertOrUpdateGiocatore();
+	    testDeleteAndInsertPartita();
 	}
 	
 	
@@ -49,7 +48,7 @@ public class GSheetsReaderTest {
 		GoogleSheetsAccess googleSheetsAccess = new GoogleSheetsAccess();
 		
 		String spreadSheetIdAnagraficaRidotta = "1nPDrmKcgXJzRZhsEdHIEk_GV36P7AC29C8c9ay8lLHQ";
-		SheetRow anagraficaRowFound = GSheetsInterface.findSheetRow(spreadSheetIdAnagraficaRidotta, AnagraficaGiocatoreRidottaRow.SHEET_ANAGRAFICA_NAME, anagraficaRidottaRow, googleSheetsAccess);
+		SheetRow anagraficaRowFound = GSheetsInterface.findSheetRowByKey(spreadSheetIdAnagraficaRidotta, AnagraficaGiocatoreRidottaRow.SHEET_ANAGRAFICA_NAME, anagraficaRidottaRow, googleSheetsAccess);
 		
 		if (anagraficaRowFound == null){
 			Integer maxId = GSheetsInterface.findMaxIdAnagrafica(spreadSheetIdAnagraficaRidotta, googleSheetsAccess);
@@ -69,7 +68,7 @@ public class GSheetsReaderTest {
 		
 		String spreadSheetIdTornei = "1CsD-U3lpgBNHX0PgnRWwbGlKX6hcTtmrNKlqOdfwXtI";
 		String sheetNameGiocatori = TorneiRow.SHEET_GIOCATORI_NAME;
-		SheetRow giocatoriRowFound = GSheetsInterface.findSheetRow(spreadSheetIdTornei, sheetNameGiocatori, anagraficaRow, googleSheetsAccess);
+		SheetRow giocatoriRowFound = GSheetsInterface.findSheetRowByKey(spreadSheetIdTornei, sheetNameGiocatori, anagraficaRow, googleSheetsAccess);
 		
 		if (giocatoriRowFound != null){
 			anagraficaRow.setSheetRow(giocatoriRowFound.getSheetRow());
@@ -81,6 +80,42 @@ public class GSheetsReaderTest {
 		}
 		
 	}
+
+	
+	private static void testDeleteAndInsertPartita() throws IOException{
+		PartitaRow partitaRow = new PartitaRow();
+		partitaRow.setDataTurno("26/01/2018");
+		partitaRow.setIdTorneo("20180223 - CASTELFRANCO VENETO [I Masnadieri]");
+		partitaRow.setNumeroTurno(1);
+		partitaRow.setNumeroTavolo(1);
+		partitaRow.setIdGiocatore1(1);
+		partitaRow.setPunteggioGiocatore1(44D);
+		partitaRow.setIdGiocatore2(2);
+		partitaRow.setPunteggioGiocatore2(43D);
+		partitaRow.setIdGiocatore3(3);
+		partitaRow.setPunteggioGiocatore3(42D);
+		partitaRow.setIdGiocatore4(4);
+		partitaRow.setPunteggioGiocatore4(41D);
+		partitaRow.setIdGiocatore5(5);
+		partitaRow.setPunteggioGiocatore5(40D);
+		partitaRow.setIdGiocatoreVincitore(1);
+		
+		GoogleSheetsAccess googleSheetsAccess = new GoogleSheetsAccess();
+		
+		String spreadSheetIdTornei = "1CsD-U3lpgBNHX0PgnRWwbGlKX6hcTtmrNKlqOdfwXtI";
+		String sheetNamePartite = PartitaRow.SHEET_PARTITE_NAME;
+		List<SheetRow> partiteRowFound = GSheetsInterface.findSheetRowsByCols(spreadSheetIdTornei, sheetNamePartite, partitaRow, googleSheetsAccess, PartitaRow.ColPosition.ID_TORNEO);
+		
+		if (partiteRowFound != null && !partiteRowFound.isEmpty()){
+			for (SheetRow row: partiteRowFound){
+				googleSheetsAccess.deleteRow(spreadSheetIdTornei, sheetNamePartite, row.getSheetRow());
+			}
+		}
+		
+		googleSheetsAccess.appendDataToSheet(spreadSheetIdTornei, sheetNamePartite, Collections.singletonList(partitaRow.getData()));
+	}
+
+	
 	
 	private static void testInsertOrUpdateTorneo() throws IOException{
 		TorneiRow torneoRow = new TorneiRow();
@@ -99,8 +134,8 @@ public class GSheetsReaderTest {
 		GoogleSheetsAccess googleSheetsAccess = new GoogleSheetsAccess();
 		
 		String spreadSheetIdTornei = "1CsD-U3lpgBNHX0PgnRWwbGlKX6hcTtmrNKlqOdfwXtI";
-		String sheetNameTornei = "TORNEI";
-		SheetRow torneoRowFound = GSheetsInterface.findSheetRow(spreadSheetIdTornei, sheetNameTornei, torneoRow, googleSheetsAccess);
+		String sheetNameTornei = TorneiRow.SHEET_TORNEI_NAME;
+		SheetRow torneoRowFound = GSheetsInterface.findSheetRowByKey(spreadSheetIdTornei, sheetNameTornei, torneoRow, googleSheetsAccess);
 		
 		if (torneoRowFound != null){
 			torneoRow.setSheetRow(torneoRowFound.getSheetRow());
@@ -112,36 +147,7 @@ public class GSheetsReaderTest {
 		}
 	}
 
-	
-	private static void testDefaultTempDir(){
-	    
-		Properties props = System.getProperties();
-		
-		Enumeration enu = props.propertyNames();
-		while (enu.hasMoreElements()) {
-			String key = (String)enu.nextElement();
-			System.out.println(key+" - "+props.getProperty(key));
-		}
-		try{
 
-    		//create a temp file
-    		File temp = File.createTempFile("temp-file-name", ".tmp");
-
-    		System.out.println("Temp file : " + temp.getAbsolutePath());
-
-		//Get tempropary file path
-    		String absolutePath = temp.getAbsolutePath();
-    		String tempFilePath = absolutePath.
-    		    substring(0,absolutePath.lastIndexOf(File.separator));
-
-    		System.out.println("Temp file path : " + tempFilePath);
-
-    	}catch(IOException e){
-
-    		e.printStackTrace();
-
-    	}
-	}
 	private static void testDeleteRow() throws IOException{
 		GoogleSheetsAccess googleSheetsAccess = new GoogleSheetsAccess();
 		
