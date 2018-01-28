@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import it.desimone.gsheets.GoogleSheetsAccess;
 import it.desimone.gsheets.dto.AnagraficaGiocatoreRidottaRow;
 import it.desimone.gsheets.dto.AnagraficaGiocatoreRow;
+import it.desimone.gsheets.dto.ClassificheRow;
 import it.desimone.gsheets.dto.PartitaRow;
 import it.desimone.gsheets.dto.SheetRow;
 import it.desimone.gsheets.dto.TorneiRow;
@@ -33,7 +34,8 @@ public class GSheetsReaderTest {
 		
 	    //testInsertOrUpdateTorneo();
 	    //testInsertOrUpdateGiocatore();
-	    testDeleteAndInsertPartita();
+	    //testDeleteAndInsertPartita();
+	    testDeleteAndInsertClassifica();
 	}
 	
 	
@@ -45,17 +47,16 @@ public class GSheetsReaderTest {
 		anagraficaRidottaRow.setEmail("valerio.mascagna@gmail.com");
 		anagraficaRidottaRow.setUpdateTime(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime()));
 		
-		GoogleSheetsAccess googleSheetsAccess = new GoogleSheetsAccess();
-		
 		String spreadSheetIdAnagraficaRidotta = "1nPDrmKcgXJzRZhsEdHIEk_GV36P7AC29C8c9ay8lLHQ";
-		SheetRow anagraficaRowFound = GSheetsInterface.findSheetRowByKey(spreadSheetIdAnagraficaRidotta, AnagraficaGiocatoreRidottaRow.SHEET_ANAGRAFICA_NAME, anagraficaRidottaRow, googleSheetsAccess);
+		SheetRow anagraficaRowFound = GSheetsInterface.findSheetRowByKey(spreadSheetIdAnagraficaRidotta, AnagraficaGiocatoreRidottaRow.SHEET_ANAGRAFICA_NAME, anagraficaRidottaRow);
 		
+		GoogleSheetsAccess googleSheetsAccess = new GoogleSheetsAccess();
 		if (anagraficaRowFound == null){
-			Integer maxId = GSheetsInterface.findMaxIdAnagrafica(spreadSheetIdAnagraficaRidotta, googleSheetsAccess);
+			Integer maxId = GSheetsInterface.findMaxIdAnagrafica(spreadSheetIdAnagraficaRidotta);
 			anagraficaRidottaRow.setId(maxId+1);
-			googleSheetsAccess.appendDataToSheet(spreadSheetIdAnagraficaRidotta, AnagraficaGiocatoreRidottaRow.SHEET_ANAGRAFICA_NAME, Collections.singletonList(anagraficaRidottaRow.getData()));
+			GSheetsInterface.appendRows(spreadSheetIdAnagraficaRidotta, AnagraficaGiocatoreRidottaRow.SHEET_ANAGRAFICA_NAME, Collections.singletonList((SheetRow)anagraficaRidottaRow));
 		}else{
-			anagraficaRidottaRow = (AnagraficaGiocatoreRidottaRow) GSheetsInterface.findSheetRowByLineNumber(spreadSheetIdAnagraficaRidotta, AnagraficaGiocatoreRidottaRow.SHEET_ANAGRAFICA_NAME, anagraficaRidottaRow, googleSheetsAccess);
+			anagraficaRidottaRow = (AnagraficaGiocatoreRidottaRow) GSheetsInterface.findSheetRowByLineNumber(spreadSheetIdAnagraficaRidotta, AnagraficaGiocatoreRidottaRow.SHEET_ANAGRAFICA_NAME, anagraficaRidottaRow);
 		}
 		
 		AnagraficaGiocatoreRow anagraficaRow = new AnagraficaGiocatoreRow();
@@ -68,7 +69,7 @@ public class GSheetsReaderTest {
 		
 		String spreadSheetIdTornei = "1CsD-U3lpgBNHX0PgnRWwbGlKX6hcTtmrNKlqOdfwXtI";
 		String sheetNameGiocatori = TorneiRow.SHEET_GIOCATORI_NAME;
-		SheetRow giocatoriRowFound = GSheetsInterface.findSheetRowByKey(spreadSheetIdTornei, sheetNameGiocatori, anagraficaRow, googleSheetsAccess);
+		SheetRow giocatoriRowFound = GSheetsInterface.findSheetRowByKey(spreadSheetIdTornei, sheetNameGiocatori, anagraficaRow);
 		
 		if (giocatoriRowFound != null){
 			anagraficaRow.setSheetRow(giocatoriRowFound.getSheetRow());
@@ -76,11 +77,36 @@ public class GSheetsReaderTest {
 			rows.add(anagraficaRow);
 			googleSheetsAccess.updateRows(spreadSheetIdTornei, sheetNameGiocatori, rows, true);
 		}else{
-			googleSheetsAccess.appendDataToSheet(spreadSheetIdTornei, sheetNameGiocatori, Collections.singletonList(anagraficaRow.getData()));
+			GSheetsInterface.appendRows(spreadSheetIdTornei, sheetNameGiocatori, Collections.singletonList((SheetRow)anagraficaRow));
 		}
 		
 	}
 
+	
+	private static void testDeleteAndInsertClassifica() throws IOException{
+		ClassificheRow classificheRow = new ClassificheRow();
+		classificheRow.setIdTorneo("20180223 - CASTELFRANCO VENETO [I Masnadieri]");
+		classificheRow.setClubGiocatore("ROMA [Il Gufo]");
+		classificheRow.setIdGiocatore(1);
+		classificheRow.setPosizione(10);
+		classificheRow.setNumeroVittorie(2);
+		classificheRow.setPartiteGiocate(5);
+		classificheRow.setPunti(257D);
+		classificheRow.setUpdateTime(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime()));
+		
+		String spreadSheetIdTornei = "1CsD-U3lpgBNHX0PgnRWwbGlKX6hcTtmrNKlqOdfwXtI";
+		String sheetNameClassifiche = ClassificheRow.SHEET_CLASSIFICHE;
+		List<SheetRow> classificheRowFound = GSheetsInterface.findSheetRowsByCols(spreadSheetIdTornei, sheetNameClassifiche, classificheRow, ClassificheRow.ColPosition.ID_TORNEO);
+
+		if (classificheRowFound != null && !classificheRowFound.isEmpty()){
+			for (SheetRow row: classificheRowFound){
+				GSheetsInterface.deleteRow(spreadSheetIdTornei, sheetNameClassifiche, row);
+			}
+		}
+		
+		GSheetsInterface.appendRows(spreadSheetIdTornei, sheetNameClassifiche, Collections.singletonList((SheetRow)classificheRow));
+	}
+	
 	
 	private static void testDeleteAndInsertPartita() throws IOException{
 		PartitaRow partitaRow = new PartitaRow();
@@ -89,7 +115,7 @@ public class GSheetsReaderTest {
 		partitaRow.setNumeroTurno(1);
 		partitaRow.setNumeroTavolo(1);
 		partitaRow.setIdGiocatore1(1);
-		partitaRow.setPunteggioGiocatore1(44D);
+		partitaRow.setPunteggioGiocatore1(45D);
 		partitaRow.setIdGiocatore2(2);
 		partitaRow.setPunteggioGiocatore2(43D);
 		partitaRow.setIdGiocatore3(3);
@@ -100,19 +126,17 @@ public class GSheetsReaderTest {
 		partitaRow.setPunteggioGiocatore5(40D);
 		partitaRow.setIdGiocatoreVincitore(1);
 		
-		GoogleSheetsAccess googleSheetsAccess = new GoogleSheetsAccess();
-		
 		String spreadSheetIdTornei = "1CsD-U3lpgBNHX0PgnRWwbGlKX6hcTtmrNKlqOdfwXtI";
 		String sheetNamePartite = PartitaRow.SHEET_PARTITE_NAME;
-		List<SheetRow> partiteRowFound = GSheetsInterface.findSheetRowsByCols(spreadSheetIdTornei, sheetNamePartite, partitaRow, googleSheetsAccess, PartitaRow.ColPosition.ID_TORNEO);
-		
+		List<SheetRow> partiteRowFound = GSheetsInterface.findSheetRowsByCols(spreadSheetIdTornei, sheetNamePartite, partitaRow, PartitaRow.ColPosition.ID_TORNEO);
+
 		if (partiteRowFound != null && !partiteRowFound.isEmpty()){
 			for (SheetRow row: partiteRowFound){
-				googleSheetsAccess.deleteRow(spreadSheetIdTornei, sheetNamePartite, row.getSheetRow());
+				GSheetsInterface.deleteRow(spreadSheetIdTornei, sheetNamePartite, row);
 			}
 		}
 		
-		googleSheetsAccess.appendDataToSheet(spreadSheetIdTornei, sheetNamePartite, Collections.singletonList(partitaRow.getData()));
+		GSheetsInterface.appendRows(spreadSheetIdTornei, sheetNamePartite, Collections.singletonList((SheetRow)partitaRow));
 	}
 
 	
@@ -131,11 +155,11 @@ public class GSheetsReaderTest {
 		torneoRow.setNote("Torneo di San Valentino");
 		torneoRow.setUpdateTime(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime()));
 		
-		GoogleSheetsAccess googleSheetsAccess = new GoogleSheetsAccess();
-		
 		String spreadSheetIdTornei = "1CsD-U3lpgBNHX0PgnRWwbGlKX6hcTtmrNKlqOdfwXtI";
 		String sheetNameTornei = TorneiRow.SHEET_TORNEI_NAME;
-		SheetRow torneoRowFound = GSheetsInterface.findSheetRowByKey(spreadSheetIdTornei, sheetNameTornei, torneoRow, googleSheetsAccess);
+		SheetRow torneoRowFound = GSheetsInterface.findSheetRowByKey(spreadSheetIdTornei, sheetNameTornei, torneoRow);
+		
+		GoogleSheetsAccess googleSheetsAccess = new GoogleSheetsAccess();
 		
 		if (torneoRowFound != null){
 			torneoRow.setSheetRow(torneoRowFound.getSheetRow());
@@ -143,7 +167,7 @@ public class GSheetsReaderTest {
 			rows.add(torneoRow);
 			googleSheetsAccess.updateRows(spreadSheetIdTornei, sheetNameTornei, rows, true);
 		}else{
-			googleSheetsAccess.appendDataToSheet(spreadSheetIdTornei, sheetNameTornei, Collections.singletonList(torneoRow.getData()));
+			GSheetsInterface.appendRows(spreadSheetIdTornei, sheetNameTornei, Collections.singletonList((SheetRow)torneoRow));
 		}
 	}
 

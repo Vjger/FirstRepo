@@ -12,14 +12,16 @@ import it.desimone.gsheets.dto.SheetRow;
 
 public class GSheetsInterface {
 
+	private static GoogleSheetsAccess googleSheetAccess;
 	
-	public static void main(String s[]){
-		System.out.println(toAlphabetic(0));
-		System.out.println(toAlphabetic(1));
-		System.out.println(toAlphabetic(27));
+	public static GoogleSheetsAccess getGoogleSheetsInstance(){
+		if (googleSheetAccess == null){
+			googleSheetAccess = new GoogleSheetsAccess();
+		}
+		return googleSheetAccess;
 	}
 	
-	public static String toAlphabetic(int i) {
+	private static String toAlphabetic(int i) {
 	    if( i<0 ) {
 	        return "-"+toAlphabetic(-i-1);
 	    }
@@ -51,12 +53,12 @@ public class GSheetsInterface {
 	}
 	
 	
-	public static List<SheetRow> findSheetRowsByCols(String spreadSheetId, String sheetName, SheetRow sheetRow, GoogleSheetsAccess googleSheetsAccess, Integer... searchCols) throws IOException{
+	public static List<SheetRow> findSheetRowsByCols(String spreadSheetId, String sheetName, SheetRow sheetRow, Integer... searchCols) throws IOException{
 		List<SheetRow> result = null;
 			
 		List<String> ranges = byKeyColumnsToRanges(sheetName, Arrays.asList(searchCols));
 		
-		List<List<Object>> data = googleSheetsAccess.leggiSheet(spreadSheetId, ranges);
+		List<List<Object>> data = getGoogleSheetsInstance().leggiSheet(spreadSheetId, ranges);
 		
 		List<Object> dataSheetRow = sheetRow.getData();
 		int indexRow = 0;
@@ -88,14 +90,14 @@ public class GSheetsInterface {
 	}
 	
 	
-	public static SheetRow findSheetRowByKey(String spreadSheetId, String sheetName, SheetRow sheetRow, GoogleSheetsAccess googleSheetsAccess) throws IOException{
+	public static SheetRow findSheetRowByKey(String spreadSheetId, String sheetName, SheetRow sheetRow) throws IOException{
 		SheetRow result = null;
 		
 		List<Integer> keyCols = sheetRow.keyCols();
 		
 		List<String> ranges = byKeyColumnsToRanges(sheetName, keyCols);
 		
-		List<List<Object>> data = googleSheetsAccess.leggiSheet(spreadSheetId, ranges);
+		List<List<Object>> data = getGoogleSheetsInstance().leggiSheet(spreadSheetId, ranges);
 		
 		List<Object> dataSheetRow = sheetRow.getData();
 		int indexRow = 0;
@@ -117,12 +119,12 @@ public class GSheetsInterface {
 		return result;
 	}
 	
-	public static SheetRow findSheetRowByLineNumber(String spreadSheetId, String sheetName, SheetRow sheetRow, GoogleSheetsAccess googleSheetsAccess) throws IOException{
+	public static SheetRow findSheetRowByLineNumber(String spreadSheetId, String sheetName, SheetRow sheetRow) throws IOException{
 		SheetRow result = null;
 	
 		List<String> ranges = Collections.singletonList(sheetName+"!"+sheetRow.getSheetRow()+":"+sheetRow.getSheetRow());
 		
-		List<List<Object>> data = googleSheetsAccess.leggiSheet(spreadSheetId, ranges);
+		List<List<Object>> data = getGoogleSheetsInstance().leggiSheet(spreadSheetId, ranges);
 		
 		if (data != null && !data.isEmpty()){
 			List<Object> sheetRowData = data.get(0);
@@ -133,15 +135,27 @@ public class GSheetsInterface {
 		return result;
 	}
 	
-	public static void deleteRow(String spreadSheetId, String sheetName, SheetRow sheetRow, GoogleSheetsAccess googleSheetsAccess) throws IOException{
-		googleSheetsAccess.deleteRow(spreadSheetId, sheetName, sheetRow.getSheetRow());
+	public static void deleteRow(String spreadSheetId, String sheetName, SheetRow sheetRow) throws IOException{
+		getGoogleSheetsInstance().deleteRow(spreadSheetId, sheetName, sheetRow.getSheetRow());
+	}
+	
+	public static void appendRows(String spreadSheetId, String sheetName, List<SheetRow> sheetRows) throws IOException{
+	
+		if (sheetRows != null && !sheetRows.isEmpty()){
+			List<List<Object>> rowData = new ArrayList<List<Object>>();
+			for (SheetRow row: sheetRows){
+				rowData.add(row.getData());
+			}
+			getGoogleSheetsInstance().appendDataToSheet(spreadSheetId, sheetName, rowData);
+		}
 	}
 	
 	
-	public static Integer findMaxIdAnagrafica(String spreadSheetId, GoogleSheetsAccess googleSheetsAccess) throws IOException{
+	
+	public static Integer findMaxIdAnagrafica(String spreadSheetId) throws IOException{
 		List<String> ranges = Collections.singletonList(AnagraficaGiocatoreRidottaRow.SHEET_DATA_ANALYSIS_NAME+"!"+"B2");
 		
-		List<List<Object>> data = googleSheetsAccess.leggiSheet(spreadSheetId, ranges);
+		List<List<Object>> data = getGoogleSheetsInstance().leggiSheet(spreadSheetId, ranges);
 
 		return (Integer) Integer.valueOf((String)data.get(0).get(0));
 	}
