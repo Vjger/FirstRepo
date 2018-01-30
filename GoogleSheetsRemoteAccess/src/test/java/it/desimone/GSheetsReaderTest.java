@@ -32,10 +32,10 @@ public class GSheetsReaderTest {
 		consoleHandler.setLevel(Level.ALL);
 	    httpLogger.addHandler(consoleHandler);
 		
-	    //testInsertOrUpdateTorneo();
+	    testInsertOrUpdateTorneo();
 	    //testInsertOrUpdateGiocatore();
 	    //testDeleteAndInsertPartita();
-	    testDeleteAndInsertClassifica();
+	    //testDeleteAndInsertClassifica();
 	}
 	
 	
@@ -50,7 +50,6 @@ public class GSheetsReaderTest {
 		String spreadSheetIdAnagraficaRidotta = "1nPDrmKcgXJzRZhsEdHIEk_GV36P7AC29C8c9ay8lLHQ";
 		SheetRow anagraficaRowFound = GSheetsInterface.findSheetRowByKey(spreadSheetIdAnagraficaRidotta, AnagraficaGiocatoreRidottaRow.SHEET_ANAGRAFICA_NAME, anagraficaRidottaRow);
 		
-		GoogleSheetsAccess googleSheetsAccess = new GoogleSheetsAccess();
 		if (anagraficaRowFound == null){
 			Integer maxId = GSheetsInterface.findMaxIdAnagrafica(spreadSheetIdAnagraficaRidotta);
 			anagraficaRidottaRow.setId(maxId+1);
@@ -75,7 +74,7 @@ public class GSheetsReaderTest {
 			anagraficaRow.setSheetRow(giocatoriRowFound.getSheetRow());
 			List<SheetRow> rows = new ArrayList<SheetRow>();
 			rows.add(anagraficaRow);
-			googleSheetsAccess.updateRows(spreadSheetIdTornei, sheetNameGiocatori, rows, true);
+			GSheetsInterface.updateRows(spreadSheetIdTornei, sheetNameGiocatori, rows, true);
 		}else{
 			GSheetsInterface.appendRows(spreadSheetIdTornei, sheetNameGiocatori, Collections.singletonList((SheetRow)anagraficaRow));
 		}
@@ -147,7 +146,9 @@ public class GSheetsReaderTest {
 		torneoRow.setNomeTorneo("Torneo di test");
 		torneoRow.setOrganizzatore("CASTELFRANCO VENETO [I Masnadieri]");
 		torneoRow.setSede("Comune di Castelfranco Veneto");
-		torneoRow.setNumeroTurni(3);
+		torneoRow.setNumeroTurni(4);
+		torneoRow.setNumeroPartecipanti(100);
+		torneoRow.setNumeroTavoli(55);
 		torneoRow.setStartDate("22/01/2018");
 		torneoRow.setEndDate(new SimpleDateFormat("dd/MM/yyyy").format(Calendar.getInstance().getTime()));
 		torneoRow.setIdTorneo("20180223 - CASTELFRANCO VENETO [I Masnadieri]");
@@ -159,13 +160,11 @@ public class GSheetsReaderTest {
 		String sheetNameTornei = TorneiRow.SHEET_TORNEI_NAME;
 		SheetRow torneoRowFound = GSheetsInterface.findSheetRowByKey(spreadSheetIdTornei, sheetNameTornei, torneoRow);
 		
-		GoogleSheetsAccess googleSheetsAccess = new GoogleSheetsAccess();
-		
 		if (torneoRowFound != null){
 			torneoRow.setSheetRow(torneoRowFound.getSheetRow());
 			List<SheetRow> rows = new ArrayList<SheetRow>();
 			rows.add(torneoRow);
-			googleSheetsAccess.updateRows(spreadSheetIdTornei, sheetNameTornei, rows, true);
+			GSheetsInterface.updateRows(spreadSheetIdTornei, sheetNameTornei, rows, true);
 		}else{
 			GSheetsInterface.appendRows(spreadSheetIdTornei, sheetNameTornei, Collections.singletonList((SheetRow)torneoRow));
 		}

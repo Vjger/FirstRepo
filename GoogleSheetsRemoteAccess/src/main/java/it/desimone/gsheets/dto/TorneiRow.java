@@ -20,8 +20,10 @@ public class TorneiRow extends AbstractSheetRow {
 		public static final Integer END_DATE 		= 5;
 		public static final Integer TIPO_TORNEO 	= 6;
 		public static final Integer NUMERO_TURNI 	= 7;
-		public static final Integer NOTE 			= 8;
-		public static final Integer UPDATE_TIME		= 9;
+		public static final Integer NUMERO_PARTECIPANTI 	= 8;
+		public static final Integer NUMERO_TAVOLI 	= 9;
+		public static final Integer NOTE 			= 10;
+		public static final Integer UPDATE_TIME		= 11;
 	}
 	
 	private String idTorneo;
@@ -32,6 +34,8 @@ public class TorneiRow extends AbstractSheetRow {
 	private String endDate;
 	private String tipoTorneo;
 	private Integer numeroTurni;
+	private Integer numeroPartecipanti;
+	private Integer numeroTavoli;
 	private String note;
 	private String updateTime;
 
@@ -99,6 +103,22 @@ public class TorneiRow extends AbstractSheetRow {
 		this.numeroTurni = numeroTurni;
 	}
 
+	public Integer getNumeroPartecipanti() {
+		return numeroPartecipanti;
+	}
+
+	public void setNumeroPartecipanti(Integer numeroPartecipanti) {
+		this.numeroPartecipanti = numeroPartecipanti;
+	}
+
+	public Integer getNumeroTavoli() {
+		return numeroTavoli;
+	}
+
+	public void setNumeroTavoli(Integer numeroTavoli) {
+		this.numeroTavoli = numeroTavoli;
+	}
+
 	public String getNote() {
 		return note;
 	}
@@ -116,7 +136,7 @@ public class TorneiRow extends AbstractSheetRow {
 	}
 
 	public List<Object> getData() {
-		List<Object> data = Arrays.asList(new Object[10]);
+		List<Object> data = Arrays.asList(new Object[12]);
 		Collections.fill(data, "");
 		if (idTorneo != null) data.set(ColPosition.ID_TORNEO, idTorneo);
 		if (nomeTorneo != null) data.set(ColPosition.NOME_TORNEO, nomeTorneo);
@@ -126,6 +146,8 @@ public class TorneiRow extends AbstractSheetRow {
 		if (endDate != null) data.set(ColPosition.END_DATE, endDate);
 		if (organizzatore != null) data.set(ColPosition.ORGANIZZATORE, organizzatore);
 		if (numeroTurni != null) data.set(ColPosition.NUMERO_TURNI, numeroTurni);
+		if (numeroPartecipanti != null) data.set(ColPosition.NUMERO_PARTECIPANTI, numeroPartecipanti);
+		if (numeroTavoli != null) data.set(ColPosition.NUMERO_TAVOLI, numeroTavoli);
 		if (note != null) data.set(ColPosition.NOTE, note);
 		if (updateTime != null) data.set(ColPosition.UPDATE_TIME, updateTime);
 		return data;
@@ -142,6 +164,8 @@ public class TorneiRow extends AbstractSheetRow {
 		endDate 		= (String) data.get(ColPosition.END_DATE);
 		organizzatore 	= (String) data.get(ColPosition.ORGANIZZATORE);
 		numeroTurni 	= (Integer) data.get(ColPosition.NUMERO_TURNI);
+		numeroPartecipanti 	= (Integer) data.get(ColPosition.NUMERO_PARTECIPANTI);
+		numeroTavoli 	= (Integer) data.get(ColPosition.NUMERO_TAVOLI);
 		note 			= (String) data.get(ColPosition.NOTE);
 		updateTime		= (String) data.get(ColPosition.UPDATE_TIME);
 	}

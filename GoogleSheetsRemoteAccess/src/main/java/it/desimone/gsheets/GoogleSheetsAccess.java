@@ -344,17 +344,8 @@ public class GoogleSheetsAccess {
 
     }
     
-    public Integer updateRows(String spreadsheetId, String sheetName, List<SheetRow> rows, boolean userEntered) throws IOException{
-    	if (rows == null || rows.isEmpty()) return null;
-    	
-    	List<ValueRange> data = new ArrayList<ValueRange>();
-    	for (SheetRow row: rows){
-    		String range = sheetName+"!"+row.getSheetRow()+":"+row.getSheetRow();
-    		List<List<Object>> values = new ArrayList<List<Object>>();
-    		values.add(row.getData());
-    		data.add(new ValueRange().setRange(range).setValues(values));
-    	}
-    	
+    public Integer updateRows(String spreadsheetId, String sheetName, List<ValueRange> data, boolean userEntered) throws IOException{
+   	
         Sheets service = getSheetsService();
         String valueInputOption = userEntered?USER_ENTERED:RAW;
     	BatchUpdateValuesRequest body = new BatchUpdateValuesRequest().setValueInputOption(valueInputOption).setData(data);

@@ -1,7 +1,5 @@
 package it.desimone.gsheets.dto;
 
-import it.desimone.gsheets.dto.AnagraficaGiocatoreRidottaRow.ColPosition;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;

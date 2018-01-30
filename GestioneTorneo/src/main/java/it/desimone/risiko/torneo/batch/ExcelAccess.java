@@ -1459,7 +1459,7 @@ public class ExcelAccess{
 		SchedaClassifica schedaClassifica = leggiSchedaClassifica();
 		
 		torneo.setSchedaTorneo(schedaTorneo);
-		torneo.setIscritti(partecipantiEffettivi);
+		torneo.setPartecipanti(partecipantiEffettivi);
 		torneo.setSchedeTurno(schedeTurno);
 		torneo.setSchedaClassifica(schedaClassifica);
 		
