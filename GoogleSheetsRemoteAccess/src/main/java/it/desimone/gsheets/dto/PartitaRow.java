@@ -24,6 +24,12 @@ public class PartitaRow extends AbstractSheetRow {
 	private Integer idGiocatore5;
 	private Double punteggioGiocatore5;
 	private Integer idGiocatoreVincitore;
+	private String nominativoVincitore;
+	private String nominativoGiocatore1;
+	private String nominativoGiocatore2;
+	private String nominativoGiocatore3;
+	private String nominativoGiocatore4;
+	private String nominativoGiocatore5;
 	
 	public static class ColPosition{
 		//zero-based
@@ -31,22 +37,29 @@ public class PartitaRow extends AbstractSheetRow {
 		public static final Integer NUMERO_TURNO 			= 1;
 		public static final Integer DATA_TURNO 				= 2;
 		public static final Integer NUMERO_TAVOLO 			= 3;
-		public static final Integer ID_GIOCATORE1			= 4;
-		public static final Integer PUNTEGGIO_GIOCATORE1 	= 5;
-		public static final Integer ID_GIOCATORE2			= 6;
-		public static final Integer PUNTEGGIO_GIOCATORE2 	= 7;
-		public static final Integer ID_GIOCATORE3			= 8;
-		public static final Integer PUNTEGGIO_GIOCATORE3 	= 9;
-		public static final Integer ID_GIOCATORE4			= 10;
-		public static final Integer PUNTEGGIO_GIOCATORE4 	= 11;
-		public static final Integer ID_GIOCATORE5			= 12;
-		public static final Integer PUNTEGGIO_GIOCATORE5 	= 13;
-		public static final Integer ID_GIOCATORE_VINCITORE	= 14;
+		public static final Integer ID_GIOCATORE_VINCITORE	= 4;
+		public static final Integer NOMINATIVO_VINCITORE	= 5;
+		public static final Integer ID_GIOCATORE1			= 6;
+		public static final Integer NOMINATIVO_GIOCATORE1	= 7;
+		public static final Integer PUNTEGGIO_GIOCATORE1 	= 8;
+		public static final Integer ID_GIOCATORE2			= 9;
+		public static final Integer NOMINATIVO_GIOCATORE2	= 10;
+		public static final Integer PUNTEGGIO_GIOCATORE2 	= 11;
+		public static final Integer ID_GIOCATORE3			= 12;
+		public static final Integer NOMINATIVO_GIOCATORE3	= 13;
+		public static final Integer PUNTEGGIO_GIOCATORE3 	= 14;
+		public static final Integer ID_GIOCATORE4			= 15;
+		public static final Integer NOMINATIVO_GIOCATORE4	= 16;
+		public static final Integer PUNTEGGIO_GIOCATORE4 	= 17;
+		public static final Integer ID_GIOCATORE5			= 18;
+		public static final Integer NOMINATIVO_GIOCATORE5	= 19;
+		public static final Integer PUNTEGGIO_GIOCATORE5 	= 20;
+
 
 	}
 	
 	public List<Object> getData() {
-		List<Object> data = Arrays.asList(new Object[15]);
+		List<Object> data = Arrays.asList(new Object[21]);
 		Collections.fill(data, "");
 		if (idTorneo != null) data.set(ColPosition.ID_TORNEO, idTorneo);
 		if (numeroTurno != null) data.set(ColPosition.NUMERO_TURNO, numeroTurno);
@@ -63,6 +76,12 @@ public class PartitaRow extends AbstractSheetRow {
 		if (idGiocatore5 != null) data.set(ColPosition.ID_GIOCATORE5, idGiocatore5);
 		if (punteggioGiocatore5 != null) data.set(ColPosition.PUNTEGGIO_GIOCATORE5, punteggioGiocatore5);
 		if (idGiocatoreVincitore != null) data.set(ColPosition.ID_GIOCATORE_VINCITORE, idGiocatoreVincitore);
+		if (nominativoGiocatore1 != null) data.set(ColPosition.NOMINATIVO_GIOCATORE1, nominativoGiocatore1);
+		if (nominativoGiocatore2 != null) data.set(ColPosition.NOMINATIVO_GIOCATORE2, nominativoGiocatore2);
+		if (nominativoGiocatore3 != null) data.set(ColPosition.NOMINATIVO_GIOCATORE3, nominativoGiocatore3);
+		if (nominativoGiocatore4 != null) data.set(ColPosition.NOMINATIVO_GIOCATORE4, nominativoGiocatore4);
+		if (nominativoGiocatore5 != null) data.set(ColPosition.NOMINATIVO_GIOCATORE5, nominativoGiocatore5);
+		if (nominativoVincitore != null) data.set(ColPosition.NOMINATIVO_VINCITORE, nominativoVincitore);
 		return data;
 	}
 
@@ -124,6 +143,7 @@ public class PartitaRow extends AbstractSheetRow {
 
 	public void setIdGiocatore1(Integer idGiocatore1) {
 		this.idGiocatore1 = idGiocatore1;
+		this.nominativoGiocatore1 = getGiocatoreCellById(idGiocatore1);
 	}
 
 	public Double getPunteggioGiocatore1() {
@@ -140,6 +160,7 @@ public class PartitaRow extends AbstractSheetRow {
 
 	public void setIdGiocatore2(Integer idGiocatore2) {
 		this.idGiocatore2 = idGiocatore2;
+		this.nominativoGiocatore2 = getGiocatoreCellById(idGiocatore2);
 	}
 
 	public Double getPunteggioGiocatore2() {
@@ -156,6 +177,7 @@ public class PartitaRow extends AbstractSheetRow {
 
 	public void setIdGiocatore3(Integer idGiocatore3) {
 		this.idGiocatore3 = idGiocatore3;
+		this.nominativoGiocatore3 = getGiocatoreCellById(idGiocatore3);
 	}
 
 	public Double getPunteggioGiocatore3() {
@@ -172,6 +194,7 @@ public class PartitaRow extends AbstractSheetRow {
 
 	public void setIdGiocatore4(Integer idGiocatore4) {
 		this.idGiocatore4 = idGiocatore4;
+		this.nominativoGiocatore4 = getGiocatoreCellById(idGiocatore4);
 	}
 
 	public Double getPunteggioGiocatore4() {
@@ -188,6 +211,7 @@ public class PartitaRow extends AbstractSheetRow {
 
 	public void setIdGiocatore5(Integer idGiocatore5) {
 		this.idGiocatore5 = idGiocatore5;
+		this.nominativoGiocatore5 = getGiocatoreCellById(idGiocatore5);
 	}
 
 	public Double getPunteggioGiocatore5() {
@@ -204,6 +228,7 @@ public class PartitaRow extends AbstractSheetRow {
 
 	public void setIdGiocatoreVincitore(Integer idGiocatoreVincitore) {
 		this.idGiocatoreVincitore = idGiocatoreVincitore;
+		this.nominativoVincitore = getGiocatoreCellById(idGiocatoreVincitore);
 	}
 
 	public String getDataTurno() {
@@ -214,4 +239,27 @@ public class PartitaRow extends AbstractSheetRow {
 		this.dataTurno = dataTurno;
 	}
 	
+	private static String getGiocatoreCellById(Integer id){
+		StringBuilder buffer = new StringBuilder();
+		buffer.append("=CONCATENATE(");
+		buffer.append("CERCA.VERT(");
+		buffer.append(id);
+		buffer.append(";");
+		buffer.append(AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME);
+		buffer.append("!A:E; 2; FALSE);");
+		buffer.append("\" \";");
+		buffer.append("CERCA.VERT(");
+		buffer.append(id);
+		buffer.append(";");
+		buffer.append(AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME);
+		buffer.append("!A:E; 3; FALSE);");
+		buffer.append("\" \";");
+		buffer.append("CERCA.VERT(");
+		buffer.append(id);
+		buffer.append(";");
+		buffer.append(AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME);
+		buffer.append("!A:E; 4; FALSE);");
+		buffer.append(")");
+		return buffer.toString();
+	}
 }

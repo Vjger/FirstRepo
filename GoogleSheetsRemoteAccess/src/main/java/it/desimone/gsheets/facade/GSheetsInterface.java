@@ -6,15 +6,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import com.google.api.services.sheets.v4.Sheets;
-import com.google.api.services.sheets.v4.model.BatchUpdateValuesRequest;
-import com.google.api.services.sheets.v4.model.BatchUpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
 import it.desimone.gsheets.GoogleSheetsAccess;
 import it.desimone.gsheets.dto.AnagraficaGiocatoreRidottaRow;
 import it.desimone.gsheets.dto.SheetRow;
-import it.desimone.utils.MyLogger;
 
 public class GSheetsInterface {
 

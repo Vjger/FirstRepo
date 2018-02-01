@@ -32,8 +32,8 @@ public class GSheetsReaderTest {
 		consoleHandler.setLevel(Level.ALL);
 	    httpLogger.addHandler(consoleHandler);
 		
-	    testInsertOrUpdateTorneo();
-	    //testInsertOrUpdateGiocatore();
+	    //testInsertOrUpdateTorneo();
+	    testInsertOrUpdateGiocatore();
 	    //testDeleteAndInsertPartita();
 	    //testDeleteAndInsertClassifica();
 	}
@@ -42,9 +42,9 @@ public class GSheetsReaderTest {
 	private static void testInsertOrUpdateGiocatore() throws IOException{
 		AnagraficaGiocatoreRidottaRow anagraficaRidottaRow = new AnagraficaGiocatoreRidottaRow();
 		
-		anagraficaRidottaRow.setNome("Valerio");
-		anagraficaRidottaRow.setCognome("Mascagna");
-		anagraficaRidottaRow.setEmail("valerio.mascagna@gmail.com");
+		anagraficaRidottaRow.setNome("Marco");
+		anagraficaRidottaRow.setCognome("De Simone");
+		anagraficaRidottaRow.setEmail("vjger69@gmail.com");
 		anagraficaRidottaRow.setUpdateTime(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime()));
 		
 		String spreadSheetIdAnagraficaRidotta = "1nPDrmKcgXJzRZhsEdHIEk_GV36P7AC29C8c9ay8lLHQ";
@@ -63,7 +63,7 @@ public class GSheetsReaderTest {
 		anagraficaRow.setNome(anagraficaRidottaRow.getNome());
 		anagraficaRow.setCognome(anagraficaRidottaRow.getCognome());
 		anagraficaRow.setIdUltimoTorneo("20180223 - CASTELFRANCO VENETO [I Masnadieri]");
-		anagraficaRow.setUltimoClub("[MODENA] Il Maialino");
+		anagraficaRow.setUltimoClub("[ROMA] Il Gufo");
 		anagraficaRow.setUpdateTime(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime()));
 		
 		String spreadSheetIdTornei = "1CsD-U3lpgBNHX0PgnRWwbGlKX6hcTtmrNKlqOdfwXtI";
