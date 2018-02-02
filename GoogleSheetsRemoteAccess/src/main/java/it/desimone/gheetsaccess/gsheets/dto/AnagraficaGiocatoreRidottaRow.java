@@ -1,4 +1,4 @@
-package it.desimone.gsheets.dto;
+package it.desimone.gheetsaccess.gsheets.dto;
 
 import java.util.ArrayList;
 import java.util.Arrays;

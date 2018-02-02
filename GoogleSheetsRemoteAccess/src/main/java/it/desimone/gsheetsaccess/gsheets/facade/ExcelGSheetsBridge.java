@@ -1,4 +1,4 @@
-package it.desimone.gsheets.facade;
+package it.desimone.gsheetsaccess.gsheets.facade;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -8,12 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import it.desimone.gsheets.dto.AnagraficaGiocatoreRidottaRow;
-import it.desimone.gsheets.dto.AnagraficaGiocatoreRow;
-import it.desimone.gsheets.dto.ClassificheRow;
-import it.desimone.gsheets.dto.PartitaRow;
-import it.desimone.gsheets.dto.SheetRow;
-import it.desimone.gsheets.dto.TorneiRow;
+import it.desimone.gheetsaccess.gsheets.dto.AnagraficaGiocatoreRidottaRow;
+import it.desimone.gheetsaccess.gsheets.dto.AnagraficaGiocatoreRow;
+import it.desimone.gheetsaccess.gsheets.dto.ClassificheRow;
+import it.desimone.gheetsaccess.gsheets.dto.PartitaRow;
+import it.desimone.gheetsaccess.gsheets.dto.SheetRow;
+import it.desimone.gheetsaccess.gsheets.dto.TorneiRow;
 import it.desimone.risiko.torneo.dto.GiocatoreDTO;
 import it.desimone.risiko.torneo.dto.Partita;
 import it.desimone.risiko.torneo.dto.SchedaTorneo;
@@ -60,6 +60,7 @@ public class ExcelGSheetsBridge {
 			}
 			torneiRow.setNumeroTavoli(numeroPartite);
 		}
+		torneiRow.setFilename(torneo.getFilename());
 		torneiRow.setUpdateTime(dfUpdateTime.format(new Date()));
 		return torneiRow;
 	}

@@ -1,4 +1,4 @@
-package it.desimone.gsheets.dto;
+package it.desimone.gheetsaccess.gsheets.dto;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,7 +8,6 @@ import java.util.List;
 public class TorneiRow extends AbstractSheetRow {
 	
 	public static final String SHEET_TORNEI_NAME 	= "TORNEI";
-	public static final String SHEET_GIOCATORI_NAME = "GIOCATORI";
 	
 	static class ColPosition{
 		//zero-based
@@ -23,7 +22,8 @@ public class TorneiRow extends AbstractSheetRow {
 		public static final Integer NUMERO_PARTECIPANTI 	= 8;
 		public static final Integer NUMERO_TAVOLI 	= 9;
 		public static final Integer NOTE 			= 10;
-		public static final Integer UPDATE_TIME		= 11;
+		public static final Integer NOME_FILE 		= 11;
+		public static final Integer UPDATE_TIME		= 12;
 	}
 	
 	private String idTorneo;
@@ -37,6 +37,7 @@ public class TorneiRow extends AbstractSheetRow {
 	private Integer numeroPartecipanti;
 	private Integer numeroTavoli;
 	private String note;
+	private String filename;
 	private String updateTime;
 
 	public String getIdTorneo() {
@@ -127,6 +128,14 @@ public class TorneiRow extends AbstractSheetRow {
 		this.note = note;
 	}
 
+	public String getFilename() {
+		return filename;
+	}
+
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
+
 	public String getUpdateTime() {
 		return updateTime;
 	}
@@ -136,7 +145,7 @@ public class TorneiRow extends AbstractSheetRow {
 	}
 
 	public List<Object> getData() {
-		List<Object> data = Arrays.asList(new Object[12]);
+		List<Object> data = Arrays.asList(new Object[13]);
 		Collections.fill(data, "");
 		if (idTorneo != null) data.set(ColPosition.ID_TORNEO, idTorneo);
 		if (nomeTorneo != null) data.set(ColPosition.NOME_TORNEO, nomeTorneo);
@@ -149,6 +158,7 @@ public class TorneiRow extends AbstractSheetRow {
 		if (numeroPartecipanti != null) data.set(ColPosition.NUMERO_PARTECIPANTI, numeroPartecipanti);
 		if (numeroTavoli != null) data.set(ColPosition.NUMERO_TAVOLI, numeroTavoli);
 		if (note != null) data.set(ColPosition.NOTE, note);
+		if (filename != null) data.set(ColPosition.NOME_FILE, filename);
 		if (updateTime != null) data.set(ColPosition.UPDATE_TIME, updateTime);
 		return data;
 	}
@@ -167,6 +177,7 @@ public class TorneiRow extends AbstractSheetRow {
 		numeroPartecipanti 	= (Integer) data.get(ColPosition.NUMERO_PARTECIPANTI);
 		numeroTavoli 	= (Integer) data.get(ColPosition.NUMERO_TAVOLI);
 		note 			= (String) data.get(ColPosition.NOTE);
+		filename		= (String) data.get(ColPosition.NOME_FILE);
 		updateTime		= (String) data.get(ColPosition.UPDATE_TIME);
 	}
 

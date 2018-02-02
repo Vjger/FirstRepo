@@ -1,4 +1,4 @@
-package it.desimone.gdrive.file;
+package it.desimone.gsheetsaccess.gdrive.file;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -10,23 +10,21 @@ import com.google.api.services.drive.model.FileList;
 import com.google.api.services.drive.model.Permission;
 import com.google.api.services.drive.model.PermissionList;
 
-import it.desimone.ResourceWorking;
-import it.desimone.gsheets.GoogleDriveAccess;
+import it.desimone.gsheetsaccess.common.Configurator;
+import it.desimone.gsheetsaccess.common.ResourceWorking;
+import it.desimone.gsheetsaccess.gsheets.GoogleDriveAccess;
 import it.desimone.utils.MyException;
 import it.desimone.utils.MyLogger;
 
 public class GDriveDownloader {
 
-	public static void main(String[] args) {
-
-	}
 	
-	private static List<ReportDriveData> downloadReport(){
+	public static List<ReportDriveData> downloadReport(){
 		List<ReportDriveData> result = new ArrayList<ReportDriveData>();
 		
 		GoogleDriveAccess googleDriveAccess = new GoogleDriveAccess();
 
-    	String parentFolderId = ResourceWorking.RCU_FOLDER_ID;
+    	String parentFolderId = Configurator.getRCUFolderId();
     	
     	if (parentFolderId != null){
     		try{
@@ -54,7 +52,7 @@ public class GDriveDownloader {
     							ReportDriveData reportDriveData = new ReportDriveData();
     							reportDriveData.setParentFolderId(folder.getId());
     							reportDriveData.setIdGoogleDrive(file.getId());
-    							reportDriveData.setIdGoogleDrive(file.getName());
+    							reportDriveData.setFileName(file.getName());
     							reportDriveData.setEmailContacts(emailAddresses);
     							result.add(reportDriveData);
     						}

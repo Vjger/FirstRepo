@@ -1,4 +1,4 @@
-package it.desimone.gsheets;
+package it.desimone.gsheetsaccess.gsheets;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -40,8 +40,8 @@ import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
-import it.desimone.ResourceWorking;
-import it.desimone.gsheets.dto.SheetRow;
+import it.desimone.gheetsaccess.gsheets.dto.SheetRow;
+import it.desimone.gsheetsaccess.common.ResourceWorking;
 import it.desimone.utils.MyException;
 import it.desimone.utils.MyLogger;
 import it.desimone.utils.ResourceLoader;

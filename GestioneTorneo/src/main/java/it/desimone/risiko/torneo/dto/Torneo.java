@@ -3,6 +3,8 @@ package it.desimone.risiko.torneo.dto;
 import java.util.List;
 
 public class Torneo {
+	
+	private String filename;
 
 	private SchedaTorneo schedaTorneo;
 	
@@ -11,6 +13,14 @@ public class Torneo {
 	private List<SchedaTurno> schedeTurno;
 	
 	private SchedaClassifica schedaClassifica;
+	
+	public String getFilename() {
+		return filename;
+	}
+
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
 
 	public SchedaTorneo getSchedaTorneo() {
 		return schedaTorneo;

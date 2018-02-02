@@ -1,4 +1,4 @@
-package it.desimone;
+package it.desimone.gsheetsaccess;
 
 import java.io.FileInputStream;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package it.desimone.gdrive.file;
+package it.desimone.gsheetsaccess.gdrive.file;
 
 import java.util.List;
 

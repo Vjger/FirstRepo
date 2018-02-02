@@ -1,6 +1,4 @@
-package it.desimone.gsheets.dto;
-
-import it.desimone.gsheets.dto.PartitaRow.ColPosition;
+package it.desimone.gheetsaccess.gsheets.dto;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,18 +11,20 @@ public class ClassificheRow extends AbstractSheetRow {
 	
 	public static class ColPosition{
 		//zero-based
-		public static final Integer ID_TORNEO 		= 0;
-		public static final Integer ID_GIOCATORE 	= 1;
-		public static final Integer CLUB_GIOCATORE 	= 2;
-		public static final Integer POSIZIONE 		= 3;
-		public static final Integer PUNTI 			= 4;
-		public static final Integer NUMERO_VITTORIE = 5;
-		public static final Integer PARTITE_GIOCATE = 6;
-		public static final Integer UPDATE_TIME		= 7;
+		public static final Integer ID_TORNEO 				= 0;
+		public static final Integer ID_GIOCATORE 			= 1;
+		public static final Integer NOMINATIVO_GIOCATORE 	= 2;
+		public static final Integer CLUB_GIOCATORE 			= 3;
+		public static final Integer POSIZIONE 				= 4;
+		public static final Integer PUNTI 					= 5;
+		public static final Integer NUMERO_VITTORIE 		= 6;
+		public static final Integer PARTITE_GIOCATE 		= 7;
+		public static final Integer UPDATE_TIME				= 8;
 	}
 	
 	private String idTorneo;
 	private Integer idGiocatore;
+	private String nominativoGiocatore;
 	private String clubGiocatore;
 	private Integer posizione;
 	private Double punti;
@@ -46,6 +46,15 @@ public class ClassificheRow extends AbstractSheetRow {
 
 	public void setIdGiocatore(Integer idGiocatore) {
 		this.idGiocatore = idGiocatore;
+		this.nominativoGiocatore = getGiocatoreCellById(idGiocatore);
+	}
+
+	public String getNominativoGiocatore() {
+		return nominativoGiocatore;
+	}
+
+	public void setNominativoGiocatore(String nominativoGiocatore) {
+		this.nominativoGiocatore = nominativoGiocatore;
 	}
 
 	public String getClubGiocatore() {
@@ -96,11 +105,30 @@ public class ClassificheRow extends AbstractSheetRow {
 		this.updateTime = updateTime;
 	}
 
+	private static String getGiocatoreCellById(Integer id){
+		StringBuilder buffer = new StringBuilder();
+		buffer.append("=CONCATENATE(");
+		buffer.append("CERCA.VERT(");
+		buffer.append(id);
+		buffer.append(";");
+		buffer.append(AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME);
+		buffer.append("!A:E; 2; FALSE);");
+		buffer.append("\" \";");
+		buffer.append("CERCA.VERT(");
+		buffer.append(id);
+		buffer.append(";");
+		buffer.append(AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME);
+		buffer.append("!A:E; 3; FALSE);");
+		buffer.append(")");
+		return buffer.toString();
+	}
+	
 	public List<Object> getData() {
-		List<Object> data = Arrays.asList(new Object[8]);
+		List<Object> data = Arrays.asList(new Object[9]);
 		Collections.fill(data, "");
 		if (idTorneo != null) data.set(ColPosition.ID_TORNEO, idTorneo);
 		if (idGiocatore != null) data.set(ColPosition.ID_GIOCATORE, idGiocatore);
+		if (nominativoGiocatore != null) data.set(ColPosition.NOMINATIVO_GIOCATORE, nominativoGiocatore);
 		if (clubGiocatore != null) data.set(ColPosition.CLUB_GIOCATORE, clubGiocatore);
 		if (posizione != null) data.set(ColPosition.POSIZIONE, posizione);
 		if (punti != null) data.set(ColPosition.PUNTI, punti);

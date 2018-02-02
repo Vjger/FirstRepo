@@ -10,7 +10,8 @@ import com.google.api.services.drive.model.FileList;
 import com.google.api.services.drive.model.Permission;
 import com.google.api.services.drive.model.PermissionList;
 
-import it.desimone.gsheets.GoogleDriveAccess;
+import it.desimone.gsheetsaccess.common.Configurator;
+import it.desimone.gsheetsaccess.gsheets.GoogleDriveAccess;
 import it.desimone.utils.MyException;
 import it.desimone.utils.MyLogger;
 
@@ -21,7 +22,7 @@ public class GDriveDownloadTest {
 		
 		GoogleDriveAccess googleDriveAccess = new GoogleDriveAccess();
 
-    	String parentFolderId = ResourceWorking.RCU_FOLDER_ID;
+    	String parentFolderId = Configurator.getRCUFolderId();
     	
     	if (parentFolderId != null){
     		try{

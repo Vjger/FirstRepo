@@ -1,4 +1,4 @@
-package it.desimone.gsheets;
+package it.desimone.gsheetsaccess.gsheets;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -24,7 +24,7 @@ import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import com.google.api.services.drive.model.PermissionList;
 
-import it.desimone.ResourceWorking;
+import it.desimone.gsheetsaccess.common.ResourceWorking;
 import it.desimone.utils.MyException;
 import it.desimone.utils.MyLogger;
 import it.desimone.utils.ResourceLoader;

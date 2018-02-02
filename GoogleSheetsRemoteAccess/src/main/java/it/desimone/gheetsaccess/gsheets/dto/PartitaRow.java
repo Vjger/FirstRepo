@@ -1,4 +1,4 @@
-package it.desimone.gsheets.dto;
+package it.desimone.gheetsaccess.gsheets.dto;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -253,7 +253,7 @@ public class PartitaRow extends AbstractSheetRow {
 		buffer.append(";");
 		buffer.append(AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME);
 		buffer.append("!A:E; 3; FALSE);");
-		buffer.append("\" \";");
+		buffer.append("\" - \";");
 		buffer.append("CERCA.VERT(");
 		buffer.append(id);
 		buffer.append(";");

@@ -1,4 +1,4 @@
-package it.desimone;
+package it.desimone.gsheetsaccess.common;
 
 import it.desimone.utils.MyLogger;
 
@@ -7,8 +7,6 @@ import java.io.File;
 public class ResourceWorking {
 	
 	public static final String ROOT;
-	
-	public static final String RCU_FOLDER_ID = "1OremAjhDfjtIXhgWsq7lCAcnSBZKWGsF";
 	
 	static{
 		ROOT = new File("").getAbsolutePath();

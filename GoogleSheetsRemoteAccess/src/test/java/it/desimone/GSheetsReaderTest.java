@@ -10,14 +10,14 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import it.desimone.gsheets.GoogleSheetsAccess;
-import it.desimone.gsheets.dto.AnagraficaGiocatoreRidottaRow;
-import it.desimone.gsheets.dto.AnagraficaGiocatoreRow;
-import it.desimone.gsheets.dto.ClassificheRow;
-import it.desimone.gsheets.dto.PartitaRow;
-import it.desimone.gsheets.dto.SheetRow;
-import it.desimone.gsheets.dto.TorneiRow;
-import it.desimone.gsheets.facade.GSheetsInterface;
+import it.desimone.gheetsaccess.gsheets.dto.AnagraficaGiocatoreRidottaRow;
+import it.desimone.gheetsaccess.gsheets.dto.AnagraficaGiocatoreRow;
+import it.desimone.gheetsaccess.gsheets.dto.ClassificheRow;
+import it.desimone.gheetsaccess.gsheets.dto.PartitaRow;
+import it.desimone.gheetsaccess.gsheets.dto.SheetRow;
+import it.desimone.gheetsaccess.gsheets.dto.TorneiRow;
+import it.desimone.gsheetsaccess.gsheets.GoogleSheetsAccess;
+import it.desimone.gsheetsaccess.gsheets.facade.GSheetsInterface;
 import it.desimone.risiko.torneo.batch.ExcelAccess;
 import it.desimone.risiko.torneo.dto.SchedaTorneo.TipoTorneo;
 import it.desimone.utils.MyLogger;
@@ -33,9 +33,9 @@ public class GSheetsReaderTest {
 	    httpLogger.addHandler(consoleHandler);
 		
 	    //testInsertOrUpdateTorneo();
-	    testInsertOrUpdateGiocatore();
+	    //testInsertOrUpdateGiocatore();
 	    //testDeleteAndInsertPartita();
-	    //testDeleteAndInsertClassifica();
+	    testDeleteAndInsertClassifica();
 	}
 	
 	
@@ -67,7 +67,7 @@ public class GSheetsReaderTest {
 		anagraficaRow.setUpdateTime(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime()));
 		
 		String spreadSheetIdTornei = "1CsD-U3lpgBNHX0PgnRWwbGlKX6hcTtmrNKlqOdfwXtI";
-		String sheetNameGiocatori = TorneiRow.SHEET_GIOCATORI_NAME;
+		String sheetNameGiocatori = AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME;
 		SheetRow giocatoriRowFound = GSheetsInterface.findSheetRowByKey(spreadSheetIdTornei, sheetNameGiocatori, anagraficaRow);
 		
 		if (giocatoriRowFound != null){
@@ -154,6 +154,7 @@ public class GSheetsReaderTest {
 		torneoRow.setIdTorneo("20180223 - CASTELFRANCO VENETO [I Masnadieri]");
 		torneoRow.setTipoTorneo(TipoTorneo.OPEN.getTipoTorneo());
 		torneoRow.setNote("Torneo di San Valentino");
+		torneoRow.setFilename("Torneotest.xls");
 		torneoRow.setUpdateTime(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime()));
 		
 		String spreadSheetIdTornei = "1CsD-U3lpgBNHX0PgnRWwbGlKX6hcTtmrNKlqOdfwXtI";

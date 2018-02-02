@@ -1,4 +1,4 @@
-package it.desimone.gsheets.facade;
+package it.desimone.gsheetsaccess.gsheets.facade;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,9 +8,9 @@ import java.util.List;
 
 import com.google.api.services.sheets.v4.model.ValueRange;
 
-import it.desimone.gsheets.GoogleSheetsAccess;
-import it.desimone.gsheets.dto.AnagraficaGiocatoreRidottaRow;
-import it.desimone.gsheets.dto.SheetRow;
+import it.desimone.gheetsaccess.gsheets.dto.AnagraficaGiocatoreRidottaRow;
+import it.desimone.gheetsaccess.gsheets.dto.SheetRow;
+import it.desimone.gsheetsaccess.gsheets.GoogleSheetsAccess;
 
 public class GSheetsInterface {
 
