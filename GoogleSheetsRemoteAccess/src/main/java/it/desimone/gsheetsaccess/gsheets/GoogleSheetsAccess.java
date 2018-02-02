@@ -32,6 +32,7 @@ import com.google.api.services.sheets.v4.model.BatchUpdateValuesRequest;
 import com.google.api.services.sheets.v4.model.BatchUpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.DataFilter;
 import com.google.api.services.sheets.v4.model.DeleteDimensionRequest;
+import com.google.api.services.sheets.v4.model.DeleteRangeRequest;
 import com.google.api.services.sheets.v4.model.DimensionRange;
 import com.google.api.services.sheets.v4.model.GridRange;
 import com.google.api.services.sheets.v4.model.MatchedValueRange;
@@ -299,6 +300,14 @@ public class GoogleSheetsAccess {
     	}
     }
     
+    public void deleteRows(String spreadsheetId, String sheetName, List<Integer> numRows) throws IOException{
+    	Integer sheetId = getSheetIdBySheetName(spreadsheetId, sheetName);
+    	
+    	if (sheetId != null){
+    		deleteRows(spreadsheetId, sheetId, numRows);
+    	}
+    }
+    
     private Integer getSheetIdBySheetName(String spreadsheetId, String sheetName)  throws IOException{
     	Integer sheetId = null;
     	
@@ -335,6 +344,47 @@ public class GoogleSheetsAccess {
         Request deleteRequest = new Request();
         deleteRequest.setDeleteDimension(deleteDimensionRequest);
         batchUpdateSpreadsheetRequest.setRequests(Collections.singletonList(deleteRequest));
+        
+        Sheets.Spreadsheets.BatchUpdate batchUpdate = service.spreadsheets().batchUpdate(spreadsheetId, batchUpdateSpreadsheetRequest);
+        
+        BatchUpdateSpreadsheetResponse response = batchUpdate.execute();
+        
+        MyLogger.getLogger().fine(response.getReplies().toString());
+
+    }
+	
+	public void deleteRows(String spreadsheetId, Integer sheetId, List<Integer> numRows) throws IOException{
+        if (numRows == null || numRows.isEmpty()){return;}
+		
+        Sheets service = getSheetsService();
+
+        BatchUpdateSpreadsheetRequest batchUpdateSpreadsheetRequest = new BatchUpdateSpreadsheetRequest();
+
+        List<Request> deleteRequests = new ArrayList<Request>();
+        for (Integer numRow: numRows){
+	        DeleteDimensionRequest deleteDimensionRequest = new DeleteDimensionRequest();
+	        DimensionRange dimensionRange = new DimensionRange();
+	        dimensionRange.setDimension("ROWS");
+	        dimensionRange.setSheetId(sheetId);
+	        dimensionRange.setStartIndex(numRow-1);
+	        dimensionRange.setEndIndex(numRow);
+	        deleteDimensionRequest.setRange(dimensionRange);
+	        
+	        DeleteRangeRequest deleteRangeRequest = new DeleteRangeRequest();
+	        deleteRangeRequest.setShiftDimension("ROWS");
+	        GridRange gridRange = new GridRange();
+	        gridRange.setSheetId(sheetId);
+	        gridRange.setStartRowIndex(numRow-1);
+	        gridRange.setEndRowIndex(numRow);
+	        deleteRangeRequest.setRange(gridRange);
+	        
+	        Request deleteRequest = new Request();
+	        deleteRequest.setDeleteDimension(deleteDimensionRequest);
+	        //deleteRequest.setDeleteRange(deleteRangeRequest);
+	        deleteRequests.add(deleteRequest);
+        }
+        batchUpdateSpreadsheetRequest.setRequests(deleteRequests);
+        batchUpdateSpreadsheetRequest.setIncludeSpreadsheetInResponse(true);
         
         Sheets.Spreadsheets.BatchUpdate batchUpdate = service.spreadsheets().batchUpdate(spreadsheetId, batchUpdateSpreadsheetRequest);
         

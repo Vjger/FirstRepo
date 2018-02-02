@@ -141,6 +141,14 @@ public class GSheetsInterface {
 		getGoogleSheetsInstance().deleteRow(spreadSheetId, sheetName, sheetRow.getSheetRow());
 	}
 	
+	public static void deleteRows(String spreadSheetId, String sheetName, List<SheetRow> sheetRows) throws IOException{
+		List<Integer> numRows = new ArrayList<Integer>();
+		for (SheetRow row: sheetRows){
+			numRows.add(row.getSheetRow());
+		}
+		getGoogleSheetsInstance().deleteRows(spreadSheetId, sheetName, numRows);
+	}
+	
 	public static void appendRows(String spreadSheetId, String sheetName, List<SheetRow> sheetRows) throws IOException{
 	
 		if (sheetRows != null && !sheetRows.isEmpty()){

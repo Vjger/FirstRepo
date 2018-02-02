@@ -5,6 +5,7 @@ import java.util.List;
 public class ReportDriveData {
 
 	private String parentFolderId;
+	private String parentFolderName;
 	private String idGoogleDrive;
 	private String fileName;
 	private List<String> emailContacts;
@@ -13,6 +14,12 @@ public class ReportDriveData {
 	}
 	public void setParentFolderId(String parentFolderId) {
 		this.parentFolderId = parentFolderId;
+	}
+	public String getParentFolderName() {
+		return parentFolderName;
+	}
+	public void setParentFolderName(String parentFolderName) {
+		this.parentFolderName = parentFolderName;
 	}
 	public String getIdGoogleDrive() {
 		return idGoogleDrive;
@@ -32,5 +39,10 @@ public class ReportDriveData {
 	public void setEmailContacts(List<String> emailContacts) {
 		this.emailContacts = emailContacts;
 	}
-	
+	@Override
+	public String toString() {
+		return "ReportDriveData [parentFolderId=" + parentFolderId + ", parentFolderName=" + parentFolderName
+				+ ", idGoogleDrive=" + idGoogleDrive + ", fileName=" + fileName + "]";
+	}
+
 }

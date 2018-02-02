@@ -34,15 +34,16 @@ public class ExcelGSheetsBridge {
 		}
 		SchedaTorneo schedaTorneo = torneo.getSchedaTorneo();
 		TorneiRow torneiRow = new TorneiRow();
-		String idTorneo = obtainIdTorneo(schedaTorneo.getOrganizzatore(), schedaTorneo.getDataTurni());
+		List<Date> dateTurni = schedaTorneo.getDataTurni();
+		String idTorneo = obtainIdTorneo(schedaTorneo.getOrganizzatore(), dateTurni);
 		torneiRow.setIdTorneo(idTorneo);
 		torneiRow.setNomeTorneo(schedaTorneo.getNomeTorneo());
 		torneiRow.setOrganizzatore(schedaTorneo.getOrganizzatore());
 		torneiRow.setSede(schedaTorneo.getSedeTorneo());
 		torneiRow.setTipoTorneo(schedaTorneo.getTipoTorneo().getTipoTorneo());
-		if (schedaTorneo.getDataTurni() != null && !schedaTorneo.getDataTurni().isEmpty()){
-			Date dataInizioTorneo = schedaTorneo.getDataTurni().get(0);
-			Date dataFineTorneo = schedaTorneo.getDataTurni().get(schedaTorneo.getDataTurni().size()-1);
+		if (dateTurni != null && !dateTurni.isEmpty()){
+			Date dataInizioTorneo = dateTurni.get(0);
+			Date dataFineTorneo = dateTurni.get(dateTurni.size()-1);
 			torneiRow.setStartDate(dfDateTorneo.format(dataInizioTorneo));
 			torneiRow.setEndDate(dfDateTorneo.format(dataFineTorneo));
 		}
@@ -104,19 +105,21 @@ public class ExcelGSheetsBridge {
 		return result;
 	}
 	
-	public static List<PartitaRow> getPartiteRowByTorneo(Torneo torneo, Map<Integer, Integer> idPlayersMap){
-		if (torneo == null || torneo.getSchedeTurno() == null || torneo.getSchedeTurno().isEmpty()){
+	public static List<SheetRow> getPartiteRowByTorneo(Torneo torneo, Map<Integer, Integer> idPlayersMap){
+		if (torneo == null || torneo.getSchedeTurno() == null || torneo.getSchedeTurno().isEmpty() || idPlayersMap.isEmpty()){
 			return null;
 		}
 
-		List<PartitaRow> result = new ArrayList<PartitaRow>();
+		List<SheetRow> result = new ArrayList<SheetRow>();
 		List<SchedaTurno> schedeTurno = torneo.getSchedeTurno();
+		String idTorneo = obtainIdTorneo(torneo.getSchedaTorneo().getOrganizzatore(), torneo.getSchedaTorneo().getDataTurni());
 		for (SchedaTurno schedaTurno: schedeTurno){
 			Integer numeroTurno = schedaTurno.getNumeroTurno();
 			Partita[] partite = schedaTurno.getPartite();
 			if (partite != null){
 				for (Partita partita: partite){
 					PartitaRow partitaRow = new PartitaRow();
+					partitaRow.setIdTorneo(idTorneo);
 					partitaRow.setNumeroTurno(numeroTurno);
 					String dataTurno = getDataTurno(torneo, numeroTurno);
 					partitaRow.setDataTurno(dataTurno);
@@ -147,6 +150,7 @@ public class ExcelGSheetsBridge {
 						}
 						index++;
 					}
+					result.add(partitaRow);
 				}
 			}
 		}
@@ -175,12 +179,12 @@ public class ExcelGSheetsBridge {
 	}
 	
 	
-	public static List<ClassificheRow> getClassificaRowsByTorneo(Torneo torneo, Map<Integer, Integer> idPlayersMap, List<PartitaRow> partiteRow){
+	public static List<SheetRow> getClassificaRowsByTorneo(Torneo torneo, Map<Integer, Integer> idPlayersMap, List<SheetRow> partiteRow){
 		if (torneo == null || torneo.getSchedaClassifica() == null || torneo.getSchedaClassifica().getClassifica() == null || torneo.getSchedaClassifica().getClassifica().isEmpty()){
 			return null;
 		}
 
-		List<ClassificheRow> result = new ArrayList<ClassificheRow>();
+		List<SheetRow> result = new ArrayList<SheetRow>();
 		List<RigaClassifica> righeClassifica = torneo.getSchedaClassifica().getClassifica();
 		String idTorneo = obtainIdTorneo(torneo.getSchedaTorneo().getOrganizzatore(), torneo.getSchedaTorneo().getDataTurni());
 		Date now = new Date();
@@ -195,14 +199,17 @@ public class ExcelGSheetsBridge {
 			Integer[] counters = countPartiteByPlayer(indexGiocatore, partiteRow);
 			classificheRow.setPartiteGiocate(counters[0]);
 			classificheRow.setNumeroVittorie(counters[1]);
+			
+			result.add(classificheRow);
 		}
 		
 		return result;
 	}
 	
-	private static Integer[] countPartiteByPlayer(Integer idGiocatore, List<PartitaRow> partiteRow) {
+	private static Integer[] countPartiteByPlayer(Integer idGiocatore, List<SheetRow> partiteRow) {
 		Integer[] result = new Integer[]{0,0};
-		for (PartitaRow partitaRow: partiteRow){
+		for (SheetRow sheetRow: partiteRow){
+			PartitaRow partitaRow = (PartitaRow) sheetRow;
 			if (idGiocatore.equals(partitaRow.getIdGiocatoreVincitore())){
 				result[1]++;
 			}

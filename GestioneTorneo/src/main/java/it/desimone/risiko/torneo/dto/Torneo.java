@@ -54,4 +54,24 @@ public class Torneo {
 		this.schedaClassifica = schedaClassifica;
 	}
 	
+	public boolean isConcluso(){
+		boolean result = false;
+		if (schedaTorneo != null && schedeTurno != null && !schedeTurno.isEmpty()){
+			int numeroTurni = schedaTorneo.getNumeroTurni();
+			if (numeroTurni > 0){
+				for (SchedaTurno schedaTurno: schedeTurno){
+					if (schedaTurno.getNumeroTurno() != null && schedaTurno.getNumeroTurno().equals(numeroTurni)){
+						result = true;
+						break;
+					}
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	public String toString(){
+		return filename;
+	}
 }
