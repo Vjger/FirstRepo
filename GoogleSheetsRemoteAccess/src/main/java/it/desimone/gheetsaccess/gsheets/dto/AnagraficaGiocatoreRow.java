@@ -1,6 +1,5 @@
 package it.desimone.gheetsaccess.gsheets.dto;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,14 +24,16 @@ public class AnagraficaGiocatoreRow extends AbstractSheetRow{
 		public static final Integer UPDATE_TIME 		= 5;
 	}
 	
+	public Integer getDataSize() {
+		return 7;
+	}
 	
 	public List<Integer> keyCols() {
 		return Collections.singletonList(ColPosition.ID);
 	}
 
 	public List<Object> getData() {
-		List<Object> data = Arrays.asList(new Object[6]);
-		Collections.fill(data, "");
+		super.getData();
 		if (id != null) data.set(ColPosition.ID, id);
 		if (nome != null) data.set(ColPosition.NOME, nome.trim());
 		if (cognome != null) data.set(ColPosition.COGNOME, cognome.trim());
@@ -44,7 +45,7 @@ public class AnagraficaGiocatoreRow extends AbstractSheetRow{
 
 	public void setData(List<Object> data) {
 		if (data == null || data.isEmpty()) return;
-		
+		super.setData(data);
 		id 				= Integer.valueOf((String)data.get(ColPosition.ID));
 		nome 			= (String) data.get(ColPosition.NOME);
 		cognome 		= (String) data.get(ColPosition.COGNOME);

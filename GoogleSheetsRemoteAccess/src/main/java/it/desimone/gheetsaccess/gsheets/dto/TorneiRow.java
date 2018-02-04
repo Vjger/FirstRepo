@@ -1,8 +1,6 @@
 package it.desimone.gheetsaccess.gsheets.dto;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class TorneiRow extends AbstractSheetRow {
@@ -24,6 +22,10 @@ public class TorneiRow extends AbstractSheetRow {
 		public static final Integer NOTE 			= 10;
 		public static final Integer NOME_FILE 		= 11;
 		public static final Integer UPDATE_TIME		= 12;
+	}
+	
+	public Integer getDataSize() {
+		return 14;
 	}
 	
 	private String idTorneo;
@@ -145,8 +147,7 @@ public class TorneiRow extends AbstractSheetRow {
 	}
 
 	public List<Object> getData() {
-		List<Object> data = Arrays.asList(new Object[13]);
-		Collections.fill(data, "");
+		super.getData();
 		if (idTorneo != null) data.set(ColPosition.ID_TORNEO, idTorneo.trim());
 		if (nomeTorneo != null) data.set(ColPosition.NOME_TORNEO, nomeTorneo.trim());
 		if (sede != null) data.set(ColPosition.SEDE, sede.trim());
@@ -165,7 +166,7 @@ public class TorneiRow extends AbstractSheetRow {
 
 	public void setData(List<Object> data) {
 		if (data == null || data.isEmpty()) return;
-		
+		super.setData(data);
 		idTorneo 		= (String) data.get(ColPosition.ID_TORNEO);
 		nomeTorneo 		= (String) data.get(ColPosition.NOME_TORNEO);
 		sede 			= (String) data.get(ColPosition.SEDE);

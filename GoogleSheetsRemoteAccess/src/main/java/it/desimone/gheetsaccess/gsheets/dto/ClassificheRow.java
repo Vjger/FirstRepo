@@ -1,8 +1,6 @@
 package it.desimone.gheetsaccess.gsheets.dto;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class ClassificheRow extends AbstractSheetRow {
@@ -22,6 +20,10 @@ public class ClassificheRow extends AbstractSheetRow {
 		public static final Integer UPDATE_TIME				= 8;
 	}
 	
+	public Integer getDataSize() {
+		return 10;
+	}
+
 	private String idTorneo;
 	private Integer idGiocatore;
 	private String nominativoGiocatore;
@@ -47,6 +49,7 @@ public class ClassificheRow extends AbstractSheetRow {
 	public void setIdGiocatore(Integer idGiocatore) {
 		this.idGiocatore = idGiocatore;
 		this.nominativoGiocatore = getGiocatoreCellById(idGiocatore);
+		this.clubGiocatore = getClubGiocatoreCellById(idGiocatore);
 	}
 
 	public String getNominativoGiocatore() {
@@ -112,20 +115,28 @@ public class ClassificheRow extends AbstractSheetRow {
 		buffer.append(id);
 		buffer.append(";");
 		buffer.append(AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME);
-		buffer.append("!A:E; 2; FALSE);");
+		buffer.append("!A:E; "+(AnagraficaGiocatoreRow.ColPosition.NOME+1)+"; FALSE);");
 		buffer.append("\" \";");
 		buffer.append("CERCA.VERT(");
 		buffer.append(id);
 		buffer.append(";");
 		buffer.append(AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME);
-		buffer.append("!A:E; 3; FALSE);");
+		buffer.append("!A:E; "+(AnagraficaGiocatoreRow.ColPosition.COGNOME+1)+"; FALSE);");
 		buffer.append(")");
+		return buffer.toString();
+	}
+	private static String getClubGiocatoreCellById(Integer id){
+		StringBuilder buffer = new StringBuilder();
+		buffer.append("=CERCA.VERT(");
+		buffer.append(id);
+		buffer.append(";");
+		buffer.append(AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME);
+		buffer.append("!A:E; "+(AnagraficaGiocatoreRow.ColPosition.ULTIMO_CLUB+1)+"; FALSE)");
 		return buffer.toString();
 	}
 	
 	public List<Object> getData() {
-		List<Object> data = Arrays.asList(new Object[9]);
-		Collections.fill(data, "");
+		super.getData();
 		if (idTorneo != null) data.set(ColPosition.ID_TORNEO, idTorneo.trim());
 		if (idGiocatore != null) data.set(ColPosition.ID_GIOCATORE, idGiocatore);
 		if (nominativoGiocatore != null) data.set(ColPosition.NOMINATIVO_GIOCATORE, nominativoGiocatore);
@@ -140,7 +151,7 @@ public class ClassificheRow extends AbstractSheetRow {
 
 	public void setData(List<Object> data) {
 		if (data == null || data.isEmpty()) return;
-		
+		super.setData(data);
 		idTorneo 		= (String) data.get(ColPosition.ID_TORNEO);
 		idGiocatore 	= Integer.valueOf((String)data.get(ColPosition.ID_GIOCATORE));
 		clubGiocatore 	= (String) data.get(ColPosition.CLUB_GIOCATORE);

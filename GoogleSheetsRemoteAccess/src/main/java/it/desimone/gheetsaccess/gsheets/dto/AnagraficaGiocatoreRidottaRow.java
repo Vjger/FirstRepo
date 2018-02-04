@@ -25,6 +25,9 @@ public class AnagraficaGiocatoreRidottaRow extends AbstractSheetRow{
 		public static final Integer UPDATE_TIME 		= 4;
 	}
 	
+	public Integer getDataSize() {
+		return 6;
+	}
 	
 	public List<Integer> keyCols() {
 		List<Integer> keyCols = new ArrayList<Integer>();
@@ -35,8 +38,7 @@ public class AnagraficaGiocatoreRidottaRow extends AbstractSheetRow{
 	}
 
 	public List<Object> getData() {
-		List<Object> data = Arrays.asList(new Object[5]);
-		Collections.fill(data, "");
+		super.getData();
 		if (id != null) data.set(ColPosition.ID, id);
 		if (nome != null) data.set(ColPosition.NOME, nome.trim());
 		if (cognome != null) data.set(ColPosition.COGNOME, cognome.trim());
@@ -47,7 +49,7 @@ public class AnagraficaGiocatoreRidottaRow extends AbstractSheetRow{
 
 	public void setData(List<Object> data) {
 		if (data == null || data.isEmpty()) return;
-		
+		super.setData(data);
 		id 				= Integer.valueOf((String)data.get(ColPosition.ID));
 		nome 			= (String) data.get(ColPosition.NOME);
 		cognome 		= (String) data.get(ColPosition.COGNOME);

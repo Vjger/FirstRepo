@@ -51,12 +51,14 @@ public class ReportPublisher {
 						//TODO Manda negli scarti sia in remoto che in locale e avvisa per mail						
 					}catch(Exception e){
 						MyLogger.getLogger().severe("Errore di pubblicazione del report "+reportDriveData+"\n"+e.getMessage());
+						e.printStackTrace();
 						//Avvisa per mail solo risiko.it
 					}
 				}
 			}
 		}catch(Exception e){
 			MyLogger.getLogger().severe("Errore di accesso a google drive "+e.getMessage());
+			e.printStackTrace();
 			//Avvisa per mail solo risiko.it
 		}
 	}
@@ -77,7 +79,7 @@ public class ReportPublisher {
 		SheetRow torneoRowFound = GSheetsInterface.findSheetRowByKey(spreadSheetIdTornei, sheetNameTornei, torneoRow);
 		
 		if (torneoRowFound != null){
-			torneoRow.setSheetRow(torneoRowFound.getSheetRow());
+			torneoRow.setSheetRowNumber(torneoRowFound.getSheetRowNumber());
 			List<SheetRow> rows = new ArrayList<SheetRow>();
 			rows.add(torneoRow);
 			GSheetsInterface.updateRows(spreadSheetIdTornei, sheetNameTornei, rows, true);
@@ -123,7 +125,7 @@ public class ReportPublisher {
 				SheetRow giocatoriRowFound = GSheetsInterface.findSheetRowByKey(spreadSheetIdTornei, sheetNameGiocatori, anagraficaGiocatoreRow);
 				
 				if (giocatoriRowFound != null){
-					anagraficaGiocatoreRow.setSheetRow(giocatoriRowFound.getSheetRow());
+					anagraficaGiocatoreRow.setSheetRowNumber(giocatoriRowFound.getSheetRowNumber());
 					anagraficheDaAggiornare.add(anagraficaGiocatoreRow);
 //					List<SheetRow> rows = new ArrayList<SheetRow>();
 //					rows.add(anagraficaGiocatoreRow);

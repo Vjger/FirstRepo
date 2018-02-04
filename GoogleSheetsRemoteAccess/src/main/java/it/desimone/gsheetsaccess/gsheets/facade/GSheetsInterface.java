@@ -80,7 +80,7 @@ public class GSheetsInterface {
 				SheetRow sRow;
 				try {
 					sRow = (SheetRow) sheetRow.clone();
-					sRow.setSheetRow(indexRow);
+					sRow.setSheetRowNumber(indexRow);
 					result.add(sRow);
 				} catch (CloneNotSupportedException e) {
 					// TODO Auto-generated catch block
@@ -113,7 +113,7 @@ public class GSheetsInterface {
 				rowFound = rowFound && elementoRigaInCanna.toString().trim().equalsIgnoreCase(elementoRigaRemota.toString().trim());
 			}
 			if (rowFound){
-				sheetRow.setSheetRow(indexRow);
+				sheetRow.setSheetRowNumber(indexRow);
 				result = sheetRow;
 				break;
 			}
@@ -151,7 +151,7 @@ public class GSheetsInterface {
 	public static SheetRow findSheetRowByLineNumber(String spreadSheetId, String sheetName, SheetRow sheetRow) throws IOException{
 		SheetRow result = null;
 	
-		List<String> ranges = Collections.singletonList(sheetName+"!"+sheetRow.getSheetRow()+":"+sheetRow.getSheetRow());
+		List<String> ranges = Collections.singletonList(sheetName+"!"+sheetRow.getSheetRowNumber()+":"+sheetRow.getSheetRowNumber());
 		
 		List<List<Object>> data = getGoogleSheetsInstance().leggiSheet(spreadSheetId, ranges);
 		
@@ -165,13 +165,13 @@ public class GSheetsInterface {
 	}
 	
 	public static void deleteRow(String spreadSheetId, String sheetName, SheetRow sheetRow) throws IOException{
-		getGoogleSheetsInstance().deleteRow(spreadSheetId, sheetName, sheetRow.getSheetRow());
+		getGoogleSheetsInstance().deleteRow(spreadSheetId, sheetName, sheetRow.getSheetRowNumber());
 	}
 	
 	public static void deleteRows(String spreadSheetId, String sheetName, List<SheetRow> sheetRows) throws IOException{
 		List<Integer> numRows = new ArrayList<Integer>();
 		for (SheetRow row: sheetRows){
-			numRows.add(row.getSheetRow());
+			numRows.add(row.getSheetRowNumber());
 		}
 		getGoogleSheetsInstance().deleteRows(spreadSheetId, sheetName, numRows);
 	}
@@ -217,7 +217,7 @@ public class GSheetsInterface {
     	
     	List<ValueRange> data = new ArrayList<ValueRange>();
     	for (SheetRow row: rows){
-    		String range = sheetName+"!"+row.getSheetRow()+":"+row.getSheetRow();
+    		String range = sheetName+"!"+row.getSheetRowNumber()+":"+row.getSheetRowNumber();
     		List<List<Object>> values = new ArrayList<List<Object>>();
     		values.add(row.getData());
     		data.add(new ValueRange().setRange(range).setValues(values));

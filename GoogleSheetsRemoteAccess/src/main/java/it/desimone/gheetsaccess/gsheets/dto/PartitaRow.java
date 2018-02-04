@@ -54,13 +54,14 @@ public class PartitaRow extends AbstractSheetRow {
 		public static final Integer ID_GIOCATORE5			= 18;
 		public static final Integer NOMINATIVO_GIOCATORE5	= 19;
 		public static final Integer PUNTEGGIO_GIOCATORE5 	= 20;
-
-
+	}
+	
+	public Integer getDataSize() {
+		return 22;
 	}
 	
 	public List<Object> getData() {
-		List<Object> data = Arrays.asList(new Object[21]);
-		Collections.fill(data, "");
+		super.getData();
 		if (idTorneo != null) data.set(ColPosition.ID_TORNEO, idTorneo.trim());
 		if (numeroTurno != null) data.set(ColPosition.NUMERO_TURNO, numeroTurno);
 		if (dataTurno != null) data.set(ColPosition.DATA_TURNO, dataTurno.trim());
@@ -87,7 +88,7 @@ public class PartitaRow extends AbstractSheetRow {
 
 	public void setData(List<Object> data) {
 		if (data == null || data.isEmpty()) return;
-		
+		super.setData(data);
 		idTorneo 			= (String) data.get(ColPosition.ID_TORNEO);
 		numeroTurno 		= Integer.valueOf((String)data.get(ColPosition.NUMERO_TURNO));
 		dataTurno 			= (String) data.get(ColPosition.DATA_TURNO);
@@ -246,20 +247,21 @@ public class PartitaRow extends AbstractSheetRow {
 		buffer.append(id);
 		buffer.append(";");
 		buffer.append(AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME);
-		buffer.append("!A:E; 2; FALSE);");
+		buffer.append("!A:E; "+(AnagraficaGiocatoreRow.ColPosition.NOME+1)+"; FALSE);");
 		buffer.append("\" \";");
 		buffer.append("CERCA.VERT(");
 		buffer.append(id);
 		buffer.append(";");
 		buffer.append(AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME);
-		buffer.append("!A:E; 3; FALSE);");
+		buffer.append("!A:E; "+(AnagraficaGiocatoreRow.ColPosition.COGNOME+1)+"; FALSE);");
 		buffer.append("\" - \";");
 		buffer.append("CERCA.VERT(");
 		buffer.append(id);
 		buffer.append(";");
 		buffer.append(AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME);
-		buffer.append("!A:E; 4; FALSE);");
+		buffer.append("!A:E; "+(AnagraficaGiocatoreRow.ColPosition.ULTIMO_CLUB+1)+"; FALSE);");
 		buffer.append(")");
 		return buffer.toString();
 	}
+
 }

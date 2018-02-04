@@ -71,7 +71,7 @@ public class GSheetsReaderTest {
 		SheetRow giocatoriRowFound = GSheetsInterface.findSheetRowByKey(spreadSheetIdTornei, sheetNameGiocatori, anagraficaRow);
 		
 		if (giocatoriRowFound != null){
-			anagraficaRow.setSheetRow(giocatoriRowFound.getSheetRow());
+			anagraficaRow.setSheetRowNumber(giocatoriRowFound.getSheetRowNumber());
 			List<SheetRow> rows = new ArrayList<SheetRow>();
 			rows.add(anagraficaRow);
 			GSheetsInterface.updateRows(spreadSheetIdTornei, sheetNameGiocatori, rows, true);
@@ -114,7 +114,7 @@ public class GSheetsReaderTest {
 		SheetRow giocatoriRowFound = GSheetsInterface.findSheetRowByKey(spreadSheetIdTornei, sheetNameGiocatori, anagraficaRow);
 		
 		if (giocatoriRowFound != null){
-			anagraficaRow.setSheetRow(giocatoriRowFound.getSheetRow());
+			anagraficaRow.setSheetRowNumber(giocatoriRowFound.getSheetRowNumber());
 			List<SheetRow> rows = new ArrayList<SheetRow>();
 			rows.add(anagraficaRow);
 			GSheetsInterface.updateRows(spreadSheetIdTornei, sheetNameGiocatori, rows, true);
@@ -205,7 +205,7 @@ public class GSheetsReaderTest {
 		SheetRow torneoRowFound = GSheetsInterface.findSheetRowByKey(spreadSheetIdTornei, sheetNameTornei, torneoRow);
 		
 		if (torneoRowFound != null){
-			torneoRow.setSheetRow(torneoRowFound.getSheetRow());
+			torneoRow.setSheetRowNumber(torneoRowFound.getSheetRowNumber());
 			List<SheetRow> rows = new ArrayList<SheetRow>();
 			rows.add(torneoRow);
 			GSheetsInterface.updateRows(spreadSheetIdTornei, sheetNameTornei, rows, true);
