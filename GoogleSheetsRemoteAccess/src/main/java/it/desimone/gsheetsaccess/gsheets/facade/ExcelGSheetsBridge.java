@@ -35,7 +35,7 @@ public class ExcelGSheetsBridge {
 		SchedaTorneo schedaTorneo = torneo.getSchedaTorneo();
 		TorneiRow torneiRow = new TorneiRow();
 		List<Date> dateTurni = schedaTorneo.getDataTurni();
-		String idTorneo = obtainIdTorneo(schedaTorneo.getOrganizzatore(), dateTurni);
+		String idTorneo = obtainIdTorneo(torneo);
 		torneiRow.setIdTorneo(idTorneo);
 		torneiRow.setNomeTorneo(schedaTorneo.getNomeTorneo());
 		torneiRow.setOrganizzatore(schedaTorneo.getOrganizzatore());
@@ -66,8 +66,10 @@ public class ExcelGSheetsBridge {
 		return torneiRow;
 	}
 	
-	private static String obtainIdTorneo(String organizzatore, List<Date> dateTurni){
+	public static String obtainIdTorneo(Torneo torneo){
 		String result = null;
+		String organizzatore = torneo.getSchedaTorneo().getOrganizzatore();
+		List<Date> dateTurni = torneo.getSchedaTorneo().getDataTurni();
 		if (organizzatore != null && dateTurni != null && !dateTurni.isEmpty()){
 			result = dfIdTorneo.format(dateTurni.get(0))+" - "+organizzatore;
 		}
@@ -81,8 +83,7 @@ public class ExcelGSheetsBridge {
 		List<GiocatoreDTO> partecipanti = torneo.getPartecipanti();
 		SheetRow[][] result = new SheetRow[partecipanti.size()][2];
 		
-		SchedaTorneo schedaTorneo = torneo.getSchedaTorneo();
-		String idTorneo = obtainIdTorneo(schedaTorneo.getOrganizzatore(), schedaTorneo.getDataTurni());
+		String idTorneo = obtainIdTorneo(torneo);
 		Date now = new Date();
 		for (int index = 0; index < partecipanti.size(); index++){
 			GiocatoreDTO giocatore = partecipanti.get(index);
@@ -112,7 +113,7 @@ public class ExcelGSheetsBridge {
 
 		List<SheetRow> result = new ArrayList<SheetRow>();
 		List<SchedaTurno> schedeTurno = torneo.getSchedeTurno();
-		String idTorneo = obtainIdTorneo(torneo.getSchedaTorneo().getOrganizzatore(), torneo.getSchedaTorneo().getDataTurni());
+		String idTorneo = obtainIdTorneo(torneo);
 		for (SchedaTurno schedaTurno: schedeTurno){
 			Integer numeroTurno = schedaTurno.getNumeroTurno();
 			Partita[] partite = schedaTurno.getPartite();
@@ -186,7 +187,7 @@ public class ExcelGSheetsBridge {
 
 		List<SheetRow> result = new ArrayList<SheetRow>();
 		List<RigaClassifica> righeClassifica = torneo.getSchedaClassifica().getClassifica();
-		String idTorneo = obtainIdTorneo(torneo.getSchedaTorneo().getOrganizzatore(), torneo.getSchedaTorneo().getDataTurni());
+		String idTorneo = obtainIdTorneo(torneo);
 		Date now = new Date();
 		for (RigaClassifica rigaClassifica: righeClassifica){
 			int indexGiocatore = getIndexByMap(idPlayersMap, rigaClassifica.getIdGiocatore());

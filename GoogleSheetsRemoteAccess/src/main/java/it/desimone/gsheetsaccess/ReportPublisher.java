@@ -164,18 +164,17 @@ public class ReportPublisher {
 		String spreadSheetIdTornei = Configurator.getTorneiSheetId();
 		String sheetNamePartite = PartitaRow.SHEET_PARTITE_NAME;
 		
-		//TODO LA CANCELLAZIONE VA FATTA A PRESCINDERE DAL FATTO CHE CI SIANO O NO PARTITE DA INSERIRE
-		//INOLTRE, ANDRA' FATTO UN LOOP CERCA/CANCELLA PERCHè OGNI VOLTA CHE CANCELLI IL NUMERO RIGA SKIPPA (ANCHE QUANDO PASSI TUTTO INSIEME)
+		//Basta un oggetto: tanto l'id del torneo è sempre lo stesso.
+		PartitaRow partitaRowDiRicerca = new PartitaRow();
+		partitaRowDiRicerca.setIdTorneo(ExcelGSheetsBridge.obtainIdTorneo(torneo));
+		List<SheetRow> partiteRowFound = GSheetsInterface.findSheetRowsByCols(spreadSheetIdTornei, sheetNamePartite, partitaRowDiRicerca, PartitaRow.ColPosition.ID_TORNEO);
+
+		if (partiteRowFound != null && !partiteRowFound.isEmpty()){
+			MyLogger.getLogger().info("Cancellazione di "+partiteRowFound.size()+" partite del torneo "+torneo);
+			GSheetsInterface.deleteRows(spreadSheetIdTornei, sheetNamePartite, partiteRowFound);
+		}
 		
 		if (partiteRow != null && !partiteRow.isEmpty()){
-			//Basta un oggetto: tanto l'id del torneo è sempre lo stesso.
-			List<SheetRow> partiteRowFound = GSheetsInterface.findSheetRowsByCols(spreadSheetIdTornei, sheetNamePartite, partiteRow.get(0), PartitaRow.ColPosition.ID_TORNEO);
-	
-			if (partiteRowFound != null && !partiteRowFound.isEmpty()){
-				MyLogger.getLogger().info("Cancellazione di "+partiteRowFound.size()+" partite del torneo "+torneo);
-				GSheetsInterface.deleteRows(spreadSheetIdTornei, sheetNamePartite, partiteRowFound);
-			}
-			
 			MyLogger.getLogger().info("Inserimento di "+partiteRow.size()+" partite del torneo "+torneo);
 			GSheetsInterface.appendRows(spreadSheetIdTornei, sheetNamePartite, partiteRow);
 		}
@@ -188,16 +187,16 @@ public class ReportPublisher {
 		String spreadSheetIdTornei = Configurator.getTorneiSheetId();
 		String sheetNameClassifiche = ClassificheRow.SHEET_CLASSIFICHE;
 		
-		//TODO LA CANCELLAZIONE VA FATTA A PRESCINDERE DAL FATTO CHE CI SIANO O NO PARTITE DA INSERIRE
-		//INOLTRE, ANDRA' FATTO UN LOOP CERCA/CANCELLA PERCHè OGNI VOLTA CHE CANCELLI IL NUMERO RIGA SKIPPA (ANCHE QUANDO PASSI TUTTO INSIEME)
+		ClassificheRow classificheRowDiRicerca = new ClassificheRow();
+		classificheRowDiRicerca.setIdTorneo(ExcelGSheetsBridge.obtainIdTorneo(torneo));
+		List<SheetRow> classificheRowFound = GSheetsInterface.findSheetRowsByCols(spreadSheetIdTornei, sheetNameClassifiche, classificheRowDiRicerca, ClassificheRow.ColPosition.ID_TORNEO);
+		
+		if (classificheRowFound != null && !classificheRowFound.isEmpty()){
+			MyLogger.getLogger().info("Cancellazione di "+classificheRowFound.size()+" giocatori in classifica del torneo "+torneo);
+			GSheetsInterface.deleteRows(spreadSheetIdTornei, sheetNameClassifiche, classificheRowFound);
+		}
 		
 		if (classificaRows != null && !classificaRows.isEmpty()){
-			List<SheetRow> classificheRowFound = GSheetsInterface.findSheetRowsByCols(spreadSheetIdTornei, sheetNameClassifiche, classificaRows.get(0), ClassificheRow.ColPosition.ID_TORNEO);
-	
-			if (classificheRowFound != null && !classificheRowFound.isEmpty()){
-				MyLogger.getLogger().info("Cancellazione di "+classificheRowFound.size()+" giocatori in classifica del torneo "+torneo);
-				GSheetsInterface.deleteRows(spreadSheetIdTornei, sheetNameClassifiche, classificheRowFound);
-			}
 			if (torneo.isConcluso()){
 				MyLogger.getLogger().info("Inserimento di "+classificaRows.size()+" giocatori in classifica del torneo "+torneo);
 				GSheetsInterface.appendRows(spreadSheetIdTornei, sheetNameClassifiche, classificaRows);
