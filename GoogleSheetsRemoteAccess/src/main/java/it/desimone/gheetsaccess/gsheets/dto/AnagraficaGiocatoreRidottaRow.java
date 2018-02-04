@@ -38,9 +38,9 @@ public class AnagraficaGiocatoreRidottaRow extends AbstractSheetRow{
 		List<Object> data = Arrays.asList(new Object[5]);
 		Collections.fill(data, "");
 		if (id != null) data.set(ColPosition.ID, id);
-		if (nome != null) data.set(ColPosition.NOME, nome);
-		if (cognome != null) data.set(ColPosition.COGNOME, cognome);
-		if (email != null) data.set(ColPosition.E_MAIL, email);
+		if (nome != null) data.set(ColPosition.NOME, nome.trim());
+		if (cognome != null) data.set(ColPosition.COGNOME, cognome.trim());
+		if (email != null) data.set(ColPosition.E_MAIL, email.trim());
 		if (updateTime != null) data.set(ColPosition.UPDATE_TIME, updateTime);
 		return data;
 	}

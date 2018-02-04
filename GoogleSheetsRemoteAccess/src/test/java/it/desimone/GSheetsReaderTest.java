@@ -33,9 +33,9 @@ public class GSheetsReaderTest {
 	    httpLogger.addHandler(consoleHandler);
 		
 	    //testInsertOrUpdateTorneo();
-	    //testInsertOrUpdateGiocatore();
+	    testInsertOrUpdateGiocatore2();
 	    //testDeleteAndInsertPartita();
-	    testDeleteAndInsertClassifica();
+	    //testDeleteAndInsertClassifica();
 	}
 	
 	
@@ -55,7 +55,50 @@ public class GSheetsReaderTest {
 			anagraficaRidottaRow.setId(maxId+1);
 			GSheetsInterface.appendRows(spreadSheetIdAnagraficaRidotta, AnagraficaGiocatoreRidottaRow.SHEET_ANAGRAFICA_NAME, Collections.singletonList((SheetRow)anagraficaRidottaRow));
 		}else{
-			anagraficaRidottaRow = (AnagraficaGiocatoreRidottaRow) GSheetsInterface.findSheetRowByLineNumber(spreadSheetIdAnagraficaRidotta, AnagraficaGiocatoreRidottaRow.SHEET_ANAGRAFICA_NAME, anagraficaRidottaRow);
+			anagraficaRidottaRow = (AnagraficaGiocatoreRidottaRow) GSheetsInterface.findSheetRowByLineNumber(spreadSheetIdAnagraficaRidotta, AnagraficaGiocatoreRidottaRow.SHEET_ANAGRAFICA_NAME, anagraficaRowFound);
+		}
+		
+		AnagraficaGiocatoreRow anagraficaRow = new AnagraficaGiocatoreRow();
+		anagraficaRow.setId(anagraficaRidottaRow.getId());
+		anagraficaRow.setNome(anagraficaRidottaRow.getNome());
+		anagraficaRow.setCognome(anagraficaRidottaRow.getCognome());
+		anagraficaRow.setIdUltimoTorneo("20180223 - CASTELFRANCO VENETO [I Masnadieri]");
+		anagraficaRow.setUltimoClub("[ROMA] Il Gufo");
+		anagraficaRow.setUpdateTime(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime()));
+		
+		String spreadSheetIdTornei = "1CsD-U3lpgBNHX0PgnRWwbGlKX6hcTtmrNKlqOdfwXtI";
+		String sheetNameGiocatori = AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME;
+		SheetRow giocatoriRowFound = GSheetsInterface.findSheetRowByKey(spreadSheetIdTornei, sheetNameGiocatori, anagraficaRow);
+		
+		if (giocatoriRowFound != null){
+			anagraficaRow.setSheetRow(giocatoriRowFound.getSheetRow());
+			List<SheetRow> rows = new ArrayList<SheetRow>();
+			rows.add(anagraficaRow);
+			GSheetsInterface.updateRows(spreadSheetIdTornei, sheetNameGiocatori, rows, true);
+		}else{
+			GSheetsInterface.appendRows(spreadSheetIdTornei, sheetNameGiocatori, Collections.singletonList((SheetRow)anagraficaRow));
+		}
+		
+	}
+	
+	private static void testInsertOrUpdateGiocatore2() throws IOException{
+		AnagraficaGiocatoreRidottaRow anagraficaRidottaRow = new AnagraficaGiocatoreRidottaRow();
+		
+		anagraficaRidottaRow.setNome("Marco");
+		anagraficaRidottaRow.setCognome("De Simonex");
+		anagraficaRidottaRow.setEmail("vjger69@gmail.com");
+		anagraficaRidottaRow.setUpdateTime(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime()));
+		
+		String spreadSheetIdAnagraficaRidotta = "1nPDrmKcgXJzRZhsEdHIEk_GV36P7AC29C8c9ay8lLHQ";
+		
+		SheetRow anagraficaRowFound = GSheetsInterface.findSheetRowByKey2(spreadSheetIdAnagraficaRidotta, AnagraficaGiocatoreRidottaRow.SHEET_ANAGRAFICA_NAME, anagraficaRidottaRow);
+		
+		if (anagraficaRowFound == null){
+			Integer maxId = GSheetsInterface.findMaxIdAnagrafica(spreadSheetIdAnagraficaRidotta);
+			anagraficaRidottaRow.setId(maxId+1);
+			GSheetsInterface.appendRows(spreadSheetIdAnagraficaRidotta, AnagraficaGiocatoreRidottaRow.SHEET_ANAGRAFICA_NAME, Collections.singletonList((SheetRow)anagraficaRidottaRow));
+		}else{
+			anagraficaRidottaRow = (AnagraficaGiocatoreRidottaRow) anagraficaRowFound;
 		}
 		
 		AnagraficaGiocatoreRow anagraficaRow = new AnagraficaGiocatoreRow();

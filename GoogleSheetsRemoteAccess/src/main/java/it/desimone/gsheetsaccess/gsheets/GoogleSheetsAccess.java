@@ -1,5 +1,10 @@
 package it.desimone.gsheetsaccess.gsheets;
 
+import it.desimone.gsheetsaccess.common.ResourceWorking;
+import it.desimone.utils.MyException;
+import it.desimone.utils.MyLogger;
+import it.desimone.utils.ResourceLoader;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,12 +45,6 @@ import com.google.api.services.sheets.v4.model.Request;
 import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.google.api.services.sheets.v4.model.ValueRange;
-
-import it.desimone.gheetsaccess.gsheets.dto.SheetRow;
-import it.desimone.gsheetsaccess.common.ResourceWorking;
-import it.desimone.utils.MyException;
-import it.desimone.utils.MyLogger;
-import it.desimone.utils.ResourceLoader;
 
 public class GoogleSheetsAccess {
 
@@ -356,6 +355,8 @@ public class GoogleSheetsAccess {
 	public void deleteRows(String spreadsheetId, Integer sheetId, List<Integer> numRows) throws IOException{
         if (numRows == null || numRows.isEmpty()){return;}
 		
+        Collections.sort(numRows, Collections.reverseOrder());
+        
         Sheets service = getSheetsService();
 
         BatchUpdateSpreadsheetRequest batchUpdateSpreadsheetRequest = new BatchUpdateSpreadsheetRequest();

@@ -34,10 +34,10 @@ public class AnagraficaGiocatoreRow extends AbstractSheetRow{
 		List<Object> data = Arrays.asList(new Object[6]);
 		Collections.fill(data, "");
 		if (id != null) data.set(ColPosition.ID, id);
-		if (nome != null) data.set(ColPosition.NOME, nome);
-		if (cognome != null) data.set(ColPosition.COGNOME, cognome);
-		if (ultimoClub != null) data.set(ColPosition.ULTIMO_CLUB, ultimoClub);
-		if (idTorneoProvenienza != null) data.set(ColPosition.ID_TORNEO_PROVENIENZA, idTorneoProvenienza);
+		if (nome != null) data.set(ColPosition.NOME, nome.trim());
+		if (cognome != null) data.set(ColPosition.COGNOME, cognome.trim());
+		if (ultimoClub != null) data.set(ColPosition.ULTIMO_CLUB, ultimoClub.trim());
+		if (idTorneoProvenienza != null) data.set(ColPosition.ID_TORNEO_PROVENIENZA, idTorneoProvenienza.trim());
 		if (updateTime != null) data.set(ColPosition.UPDATE_TIME, updateTime);
 		return data;
 	}

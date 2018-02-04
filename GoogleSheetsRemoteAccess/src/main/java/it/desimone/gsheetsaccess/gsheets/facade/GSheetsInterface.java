@@ -11,6 +11,7 @@ import com.google.api.services.sheets.v4.model.ValueRange;
 import it.desimone.gheetsaccess.gsheets.dto.AnagraficaGiocatoreRidottaRow;
 import it.desimone.gheetsaccess.gsheets.dto.SheetRow;
 import it.desimone.gsheetsaccess.gsheets.GoogleSheetsAccess;
+import it.desimone.utils.MyLogger;
 
 public class GSheetsInterface {
 
@@ -70,7 +71,7 @@ public class GSheetsInterface {
 			for (int i=0; i < searchCols.length && rowFound; i++){
 				Object elementoRigaRemota = row.get(i);
 				Object elementoRigaInCanna = dataSheetRow.get(searchCols[i]);
-				rowFound = rowFound && elementoRigaInCanna.toString().equalsIgnoreCase(elementoRigaRemota.toString());
+				rowFound = rowFound && elementoRigaInCanna.toString().trim().equalsIgnoreCase(elementoRigaRemota.toString().trim());
 			}
 			if (rowFound){
 				if (result == null){
@@ -109,7 +110,7 @@ public class GSheetsInterface {
 			for (int i=0; i < keyCols.size() && rowFound; i++){
 				Object elementoRigaRemota = row.get(i);
 				Object elementoRigaInCanna = dataSheetRow.get(keyCols.get(i));
-				rowFound = rowFound && elementoRigaInCanna.toString().equalsIgnoreCase(elementoRigaRemota.toString());
+				rowFound = rowFound && elementoRigaInCanna.toString().trim().equalsIgnoreCase(elementoRigaRemota.toString().trim());
 			}
 			if (rowFound){
 				sheetRow.setSheetRow(indexRow);
@@ -117,6 +118,32 @@ public class GSheetsInterface {
 				break;
 			}
 		}
+
+		return result;
+	}
+	
+	public static SheetRow findSheetRowByKey2(String spreadSheetId, String sheetName, AnagraficaGiocatoreRidottaRow sheetRow) throws IOException{
+		SheetRow result = null;
+
+    	List<ValueRange> data = new ArrayList<ValueRange>();
+
+    	String sheetNameDataAnalysis = AnagraficaGiocatoreRidottaRow.SHEET_DATA_ANALYSIS_NAME;
+    	
+		String rangeNome = sheetNameDataAnalysis+"!B4:E4";
+		List<List<Object>> values = new ArrayList<List<Object>>();
+		List<Object> rigaChiave = Arrays.asList(new Object[]{sheetRow.getNome(), sheetRow.getCognome(), sheetRow.getEmail()});
+		values.add(rigaChiave);
+		data.add(new ValueRange().setRange(rangeNome).setValues(values));
+    	
+    	Integer updatedRows = getGoogleSheetsInstance().updateRows(spreadSheetId, sheetNameDataAnalysis, data, true);
+		
+    	Integer idAnagraficaTrovata = findIdAnagraficaVerificato(spreadSheetId);
+		
+    	if (idAnagraficaTrovata != null){
+    		MyLogger.getLogger().info(idAnagraficaTrovata.toString());
+    		sheetRow.setId(idAnagraficaTrovata);
+    		result = sheetRow;
+    	}
 
 		return result;
 	}
@@ -166,6 +193,23 @@ public class GSheetsInterface {
 		List<List<Object>> data = getGoogleSheetsInstance().leggiSheet(spreadSheetId, ranges);
 
 		return (Integer) Integer.valueOf((String)data.get(0).get(0));
+	}
+	
+	public static Integer findIdAnagraficaVerificato(String spreadSheetId) throws IOException{
+		Integer result = null;
+		List<String> ranges = Collections.singletonList(AnagraficaGiocatoreRidottaRow.SHEET_DATA_ANALYSIS_NAME+"!"+"B5");
+		
+		List<List<Object>> data = getGoogleSheetsInstance().leggiSheet(spreadSheetId, ranges);
+
+		if (data != null && !data.isEmpty() && data.get(0) != null && !data.get(0).isEmpty()){
+			String value = (String)data.get(0).get(0);
+			try{
+				result = Integer.valueOf((String)data.get(0).get(0));
+			}catch(NumberFormatException ne){
+				MyLogger.getLogger().info("Not found: "+value);
+			}
+		}
+		return result;
 	}
 	
     public static Integer updateRows(String spreadsheetId, String sheetName, List<SheetRow> rows, boolean userEntered) throws IOException{

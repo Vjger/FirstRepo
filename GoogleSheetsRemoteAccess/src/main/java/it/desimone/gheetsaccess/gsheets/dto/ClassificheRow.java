@@ -126,10 +126,10 @@ public class ClassificheRow extends AbstractSheetRow {
 	public List<Object> getData() {
 		List<Object> data = Arrays.asList(new Object[9]);
 		Collections.fill(data, "");
-		if (idTorneo != null) data.set(ColPosition.ID_TORNEO, idTorneo);
+		if (idTorneo != null) data.set(ColPosition.ID_TORNEO, idTorneo.trim());
 		if (idGiocatore != null) data.set(ColPosition.ID_GIOCATORE, idGiocatore);
 		if (nominativoGiocatore != null) data.set(ColPosition.NOMINATIVO_GIOCATORE, nominativoGiocatore);
-		if (clubGiocatore != null) data.set(ColPosition.CLUB_GIOCATORE, clubGiocatore);
+		if (clubGiocatore != null) data.set(ColPosition.CLUB_GIOCATORE, clubGiocatore.trim());
 		if (posizione != null) data.set(ColPosition.POSIZIONE, posizione);
 		if (punti != null) data.set(ColPosition.PUNTI, punti);
 		if (numeroVittorie != null) data.set(ColPosition.NUMERO_VITTORIE, numeroVittorie);

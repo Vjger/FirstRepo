@@ -1,15 +1,5 @@
 package it.desimone.gsheetsaccess;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-
 import it.desimone.gheetsaccess.gsheets.dto.AnagraficaGiocatoreRidottaRow;
 import it.desimone.gheetsaccess.gsheets.dto.AnagraficaGiocatoreRow;
 import it.desimone.gheetsaccess.gsheets.dto.ClassificheRow;
@@ -25,7 +15,16 @@ import it.desimone.gsheetsaccess.gsheets.facade.ExcelGSheetsBridge;
 import it.desimone.gsheetsaccess.gsheets.facade.GSheetsInterface;
 import it.desimone.risiko.torneo.dto.GiocatoreDTO;
 import it.desimone.risiko.torneo.dto.Torneo;
+import it.desimone.utils.MyException;
 import it.desimone.utils.MyLogger;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
 
 public class ReportPublisher {
 
@@ -47,6 +46,9 @@ public class ReportPublisher {
 					}catch(ExcelValidationException eve){
 						MyLogger.getLogger().severe("Errore di validazione del report "+reportDriveData+"\n"+eve.getMessages().toString());
 						//TODO Manda negli scarti sia in remoto che in locale e avvisa per mail
+					}catch(MyException me){
+						MyLogger.getLogger().severe("Errore di validazione del report "+reportDriveData+"\n"+me.getMessage());
+						//TODO Manda negli scarti sia in remoto che in locale e avvisa per mail						
 					}catch(Exception e){
 						MyLogger.getLogger().severe("Errore di pubblicazione del report "+reportDriveData+"\n"+e.getMessage());
 						//Avvisa per mail solo risiko.it

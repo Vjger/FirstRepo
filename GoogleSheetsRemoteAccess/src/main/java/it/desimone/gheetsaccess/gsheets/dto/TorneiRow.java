@@ -147,18 +147,18 @@ public class TorneiRow extends AbstractSheetRow {
 	public List<Object> getData() {
 		List<Object> data = Arrays.asList(new Object[13]);
 		Collections.fill(data, "");
-		if (idTorneo != null) data.set(ColPosition.ID_TORNEO, idTorneo);
-		if (nomeTorneo != null) data.set(ColPosition.NOME_TORNEO, nomeTorneo);
-		if (sede != null) data.set(ColPosition.SEDE, sede);
-		if (tipoTorneo != null) data.set(ColPosition.TIPO_TORNEO, tipoTorneo);
-		if (startDate != null) data.set(ColPosition.START_DATE, startDate);
-		if (endDate != null) data.set(ColPosition.END_DATE, endDate);
-		if (organizzatore != null) data.set(ColPosition.ORGANIZZATORE, organizzatore);
+		if (idTorneo != null) data.set(ColPosition.ID_TORNEO, idTorneo.trim());
+		if (nomeTorneo != null) data.set(ColPosition.NOME_TORNEO, nomeTorneo.trim());
+		if (sede != null) data.set(ColPosition.SEDE, sede.trim());
+		if (tipoTorneo != null) data.set(ColPosition.TIPO_TORNEO, tipoTorneo.trim());
+		if (startDate != null) data.set(ColPosition.START_DATE, startDate.trim());
+		if (endDate != null) data.set(ColPosition.END_DATE, endDate.trim());
+		if (organizzatore != null) data.set(ColPosition.ORGANIZZATORE, organizzatore.trim());
 		if (numeroTurni != null) data.set(ColPosition.NUMERO_TURNI, numeroTurni);
 		if (numeroPartecipanti != null) data.set(ColPosition.NUMERO_PARTECIPANTI, numeroPartecipanti);
 		if (numeroTavoli != null) data.set(ColPosition.NUMERO_TAVOLI, numeroTavoli);
-		if (note != null) data.set(ColPosition.NOTE, note);
-		if (filename != null) data.set(ColPosition.NOME_FILE, filename);
+		if (note != null) data.set(ColPosition.NOTE, note.trim());
+		if (filename != null) data.set(ColPosition.NOME_FILE, filename.trim());
 		if (updateTime != null) data.set(ColPosition.UPDATE_TIME, updateTime);
 		return data;
 	}

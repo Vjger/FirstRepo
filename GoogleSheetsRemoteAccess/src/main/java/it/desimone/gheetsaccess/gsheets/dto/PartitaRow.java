@@ -61,9 +61,9 @@ public class PartitaRow extends AbstractSheetRow {
 	public List<Object> getData() {
 		List<Object> data = Arrays.asList(new Object[21]);
 		Collections.fill(data, "");
-		if (idTorneo != null) data.set(ColPosition.ID_TORNEO, idTorneo);
+		if (idTorneo != null) data.set(ColPosition.ID_TORNEO, idTorneo.trim());
 		if (numeroTurno != null) data.set(ColPosition.NUMERO_TURNO, numeroTurno);
-		if (dataTurno != null) data.set(ColPosition.DATA_TURNO, dataTurno);
+		if (dataTurno != null) data.set(ColPosition.DATA_TURNO, dataTurno.trim());
 		if (numeroTavolo != null) data.set(ColPosition.NUMERO_TAVOLO, numeroTavolo);
 		if (idGiocatore1 != null) data.set(ColPosition.ID_GIOCATORE1, idGiocatore1);
 		if (punteggioGiocatore1 != null) data.set(ColPosition.PUNTEGGIO_GIOCATORE1, punteggioGiocatore1);

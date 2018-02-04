@@ -1,13 +1,5 @@
 package it.desimone.risiko.torneo.batch;
 
-import java.io.File;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
 import it.desimone.risiko.torneo.batch.ExcelValidator.ExcelValidatorMessages.Scheda;
 import it.desimone.risiko.torneo.dto.GiocatoreDTO;
 import it.desimone.risiko.torneo.dto.Partita;
@@ -15,7 +7,17 @@ import it.desimone.risiko.torneo.dto.SchedaClassifica;
 import it.desimone.risiko.torneo.dto.SchedaClassifica.RigaClassifica;
 import it.desimone.risiko.torneo.dto.SchedaTorneo;
 import it.desimone.risiko.torneo.dto.SchedaTurno;
+import it.desimone.utils.MyException;
+import it.desimone.utils.MyLogger;
 import it.desimone.utils.StringUtils;
+
+import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 public class ExcelValidator {
 
@@ -62,6 +64,7 @@ public class ExcelValidator {
 	public List<ExcelValidatorMessages> validaFoglioExcel(){
 		List<ExcelValidatorMessages> result = new ArrayList<ExcelValidatorMessages>();
 		
+		try{
 			List<ExcelValidatorMessages> validazioniSchedaTorneo = validaSchedaTorneo();
 			if (validazioniSchedaTorneo != null){
 				result.addAll(validazioniSchedaTorneo);
@@ -84,6 +87,11 @@ public class ExcelValidator {
 			if (validazioniIncrociate != null){
 				result.addAll(validazioniIncrociate);
 			}
+		}catch(MyException me){
+			MyLogger.getLogger().severe(me.getMessage());
+			ExcelValidatorMessages excelValidatorMessages = new ExcelValidatorMessages(null, me.getMessage());
+			result.add(excelValidatorMessages);
+		}
 
 		return result;
 	}
