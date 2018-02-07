@@ -16,6 +16,7 @@ import it.desimone.gheetsaccess.gsheets.dto.ClassificheRow;
 import it.desimone.gheetsaccess.gsheets.dto.PartitaRow;
 import it.desimone.gheetsaccess.gsheets.dto.SheetRow;
 import it.desimone.gheetsaccess.gsheets.dto.TorneiRow;
+import it.desimone.gsheetsaccess.common.Configurator;
 import it.desimone.gsheetsaccess.gsheets.GoogleSheetsAccess;
 import it.desimone.gsheetsaccess.gsheets.facade.GSheetsInterface;
 import it.desimone.risiko.torneo.batch.ExcelAccess;
@@ -33,13 +34,15 @@ public class GSheetsReaderTest {
 	    httpLogger.addHandler(consoleHandler);
 		
 	    //testInsertOrUpdateTorneo();
-	    testInsertOrUpdateGiocatore2();
+	    //testInsertOrUpdateGiocatore2();
 	    //testDeleteAndInsertPartita();
 	    //testDeleteAndInsertClassifica();
+	    testDeleteAndInsertPartita2();
 	}
 	
 	
 	private static void testInsertOrUpdateGiocatore() throws IOException{
+		
 		AnagraficaGiocatoreRidottaRow anagraficaRidottaRow = new AnagraficaGiocatoreRidottaRow();
 		
 		anagraficaRidottaRow.setNome("Marco");
@@ -82,44 +85,64 @@ public class GSheetsReaderTest {
 	}
 	
 	private static void testInsertOrUpdateGiocatore2() throws IOException{
-		AnagraficaGiocatoreRidottaRow anagraficaRidottaRow = new AnagraficaGiocatoreRidottaRow();
+		String spreadSheetIdAnagraficaRidotta 	= Configurator.getAnagraficaRidottaSheetId();
+		String spreadSheetIdTornei 				= Configurator.getTorneiSheetId();
+		String sheetNameAnagraficaRidotta 		= AnagraficaGiocatoreRidottaRow.SHEET_ANAGRAFICA_NAME;
+		String sheetNameGiocatori 				= AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME;
 		
-		anagraficaRidottaRow.setNome("Marco");
-		anagraficaRidottaRow.setCognome("De Simonex");
-		anagraficaRidottaRow.setEmail("vjger69@gmail.com");
-		anagraficaRidottaRow.setUpdateTime(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime()));
+		List<SheetRow> anagraficheRidotteDaAggiungere = new ArrayList<SheetRow>();
+		List<SheetRow> anagraficheDaAggiungere = new ArrayList<SheetRow>();
+		List<SheetRow> anagraficheDaAggiornare = new ArrayList<SheetRow>();
 		
-		String spreadSheetIdAnagraficaRidotta = "1nPDrmKcgXJzRZhsEdHIEk_GV36P7AC29C8c9ay8lLHQ";
+		String updateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime());
+		AnagraficaGiocatoreRidottaRow anagraficaRidottaRow1 = new AnagraficaGiocatoreRidottaRow();
+		anagraficaRidottaRow1.setNome("Marco");
+		anagraficaRidottaRow1.setCognome("De Simone");
+		anagraficaRidottaRow1.setEmail("vjger69@gmail.com");
+		anagraficaRidottaRow1.setUpdateTime(updateTime);
 		
-		SheetRow anagraficaRowFound = GSheetsInterface.findSheetRowByKey2(spreadSheetIdAnagraficaRidotta, AnagraficaGiocatoreRidottaRow.SHEET_ANAGRAFICA_NAME, anagraficaRidottaRow);
+		AnagraficaGiocatoreRidottaRow anagraficaRidottaRow2 = new AnagraficaGiocatoreRidottaRow();
+		anagraficaRidottaRow2.setNome("Marco");
+		anagraficaRidottaRow2.setCognome("De Simone");
+		anagraficaRidottaRow2.setEmail("vjger69@gmail.com");
+		anagraficaRidottaRow2.setUpdateTime(updateTime);
 		
-		if (anagraficaRowFound == null){
+		List<AnagraficaGiocatoreRidottaRow> anagraficheDaVerificare = new ArrayList<AnagraficaGiocatoreRidottaRow>();
+		anagraficheDaVerificare.add(anagraficaRidottaRow1);
+		anagraficheDaVerificare.add(anagraficaRidottaRow2);
+		
+		List<AnagraficaGiocatoreRidottaRow> anagraficaRowFound = GSheetsInterface.findAnagraficheRidotteByKey(spreadSheetIdAnagraficaRidotta, AnagraficaGiocatoreRidottaRow.SHEET_ANAGRAFICA_NAME, anagraficheDaVerificare);
+		
+		if (anagraficaRowFound != null){
 			Integer maxId = GSheetsInterface.findMaxIdAnagrafica(spreadSheetIdAnagraficaRidotta);
-			anagraficaRidottaRow.setId(maxId+1);
-			GSheetsInterface.appendRows(spreadSheetIdAnagraficaRidotta, AnagraficaGiocatoreRidottaRow.SHEET_ANAGRAFICA_NAME, Collections.singletonList((SheetRow)anagraficaRidottaRow));
-		}else{
-			anagraficaRidottaRow = (AnagraficaGiocatoreRidottaRow) anagraficaRowFound;
+			for (AnagraficaGiocatoreRidottaRow anagraficaGiocatoreRidottaRow: anagraficaRowFound){
+				AnagraficaGiocatoreRow anagraficaGiocatoreRow = new AnagraficaGiocatoreRow(anagraficaGiocatoreRidottaRow);
+				anagraficaGiocatoreRow.setIdUltimoTorneo("20180126 - ROMA [Il Gufo]");
+				anagraficaGiocatoreRow.setUltimoClub("ROMA [Il Gufo]");
+				anagraficaGiocatoreRow.setUpdateTime(updateTime);
+				if (anagraficaGiocatoreRidottaRow.getId() == null){
+					anagraficaGiocatoreRidottaRow.setId(maxId+1);
+					anagraficheRidotteDaAggiungere.add(anagraficaGiocatoreRidottaRow);
+					anagraficaGiocatoreRow.setId(maxId+1);
+					anagraficheDaAggiungere.add(anagraficaGiocatoreRow);
+				}else{
+					anagraficheDaAggiornare.add(anagraficaGiocatoreRow);
+				}
+			}
 		}
 		
-		AnagraficaGiocatoreRow anagraficaRow = new AnagraficaGiocatoreRow();
-		anagraficaRow.setId(anagraficaRidottaRow.getId());
-		anagraficaRow.setNome(anagraficaRidottaRow.getNome());
-		anagraficaRow.setCognome(anagraficaRidottaRow.getCognome());
-		anagraficaRow.setIdUltimoTorneo("20180223 - CASTELFRANCO VENETO [I Masnadieri]");
-		anagraficaRow.setUltimoClub("[ROMA] Il Gufo");
-		anagraficaRow.setUpdateTime(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime()));
-		
-		String spreadSheetIdTornei = "1CsD-U3lpgBNHX0PgnRWwbGlKX6hcTtmrNKlqOdfwXtI";
-		String sheetNameGiocatori = AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME;
-		SheetRow giocatoriRowFound = GSheetsInterface.findSheetRowByKey(spreadSheetIdTornei, sheetNameGiocatori, anagraficaRow);
-		
-		if (giocatoriRowFound != null){
-			anagraficaRow.setSheetRowNumber(giocatoriRowFound.getSheetRowNumber());
-			List<SheetRow> rows = new ArrayList<SheetRow>();
-			rows.add(anagraficaRow);
-			GSheetsInterface.updateRows(spreadSheetIdTornei, sheetNameGiocatori, rows, true);
-		}else{
-			GSheetsInterface.appendRows(spreadSheetIdTornei, sheetNameGiocatori, Collections.singletonList((SheetRow)anagraficaRow));
+		if (!anagraficheRidotteDaAggiungere.isEmpty()){
+			GSheetsInterface.appendRows(spreadSheetIdAnagraficaRidotta, sheetNameAnagraficaRidotta, anagraficheRidotteDaAggiungere);
+			MyLogger.getLogger().info("Aggiunte "+anagraficheRidotteDaAggiungere.size()+" anagrafiche ridotte");
+		}
+		if (!anagraficheDaAggiornare.isEmpty()){
+			List<SheetRow> anagraficheDaAggiornareRowFound = GSheetsInterface.findAnagraficheByKey(spreadSheetIdTornei, AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME, anagraficheDaAggiornare);
+			GSheetsInterface.updateRows(spreadSheetIdTornei, sheetNameGiocatori, anagraficheDaAggiornareRowFound, true);
+			MyLogger.getLogger().info("Aggiornate "+anagraficheDaAggiornare.size()+" anagrafiche");
+		}
+		if (!anagraficheDaAggiungere.isEmpty()){
+			GSheetsInterface.appendRows(spreadSheetIdTornei, sheetNameGiocatori, anagraficheDaAggiungere);
+			MyLogger.getLogger().info("Aggiunte "+anagraficheDaAggiungere.size()+" anagrafiche");
 		}
 		
 	}
@@ -181,6 +204,34 @@ public class GSheetsReaderTest {
 		GSheetsInterface.appendRows(spreadSheetIdTornei, sheetNamePartite, Collections.singletonList((SheetRow)partitaRow));
 	}
 
+	private static void testDeleteAndInsertPartita2() throws IOException{
+		PartitaRow partitaRow = new PartitaRow();
+		partitaRow.setDataTurno("26/01/2018");
+		partitaRow.setIdTorneo("20180125 - MODENA [Il Maialino]");
+		partitaRow.setNumeroTurno(1);
+		partitaRow.setNumeroTavolo(1);
+		partitaRow.setIdGiocatore1(1);
+		partitaRow.setPunteggioGiocatore1(45D);
+		partitaRow.setIdGiocatore2(2);
+		partitaRow.setPunteggioGiocatore2(43D);
+		partitaRow.setIdGiocatore3(3);
+		partitaRow.setPunteggioGiocatore3(42D);
+		partitaRow.setIdGiocatore4(4);
+		partitaRow.setPunteggioGiocatore4(41D);
+		partitaRow.setIdGiocatore5(5);
+		partitaRow.setPunteggioGiocatore5(40D);
+		partitaRow.setIdGiocatoreVincitore(1);
+		
+		String spreadSheetIdTornei = Configurator.getTorneiSheetId();
+		String sheetNamePartite = PartitaRow.SHEET_PARTITE_NAME;
+		List<Integer> partiteRowFound = GSheetsInterface.findNumPartiteRowsByCols(spreadSheetIdTornei, sheetNamePartite, partitaRow);
+
+		if (partiteRowFound != null && !partiteRowFound.isEmpty()){
+			GSheetsInterface.deleteRowsByNumRow(spreadSheetIdTornei, sheetNamePartite, partiteRowFound);
+		}
+		
+		GSheetsInterface.appendRows(spreadSheetIdTornei, sheetNamePartite, Collections.singletonList((SheetRow)partitaRow));
+	}
 	
 	
 	private static void testInsertOrUpdateTorneo() throws IOException{

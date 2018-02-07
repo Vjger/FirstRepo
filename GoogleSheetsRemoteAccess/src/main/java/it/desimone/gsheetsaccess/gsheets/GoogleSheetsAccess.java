@@ -28,6 +28,8 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.AppendValuesResponse;
+import com.google.api.services.sheets.v4.model.BatchClearValuesRequest;
+import com.google.api.services.sheets.v4.model.BatchClearValuesResponse;
 import com.google.api.services.sheets.v4.model.BatchGetValuesByDataFilterRequest;
 import com.google.api.services.sheets.v4.model.BatchGetValuesByDataFilterResponse;
 import com.google.api.services.sheets.v4.model.BatchGetValuesResponse;
@@ -181,13 +183,15 @@ public class GoogleSheetsAccess {
         if (valueRanges != null && !valueRanges.isEmpty()){
 	        result = new ArrayList<List<Object>>();
 	        
-	        for (int i = 0; i < valueRanges.get(0).getValues().size(); i++){
-	        	
-	        	List<Object> row = new ArrayList<Object>();
-		        for (ValueRange range: valueRanges){	        	
-		        	row.addAll(range.getValues().get(i));
+	        if (valueRanges.get(0).getValues() != null){
+		        for (int i = 0; i < valueRanges.get(0).getValues().size(); i++){
+		        	
+		        	List<Object> row = new ArrayList<Object>();
+			        for (ValueRange range: valueRanges){	        	
+			        	row.addAll(range.getValues().get(i));
+			        }
+			        result.add(row);
 		        }
-		        result.add(row);
 	        }
         }
         return result;
@@ -405,5 +409,17 @@ public class GoogleSheetsAccess {
     	MyLogger.getLogger().fine(result.toPrettyString());
     	
     	return result.getTotalUpdatedRows();
+    }
+    
+    public void clearRows(String spreadsheetId, List<String> range) throws IOException{
+       	
+        Sheets service = getSheetsService();
+		
+		BatchClearValuesRequest batchClearValuesRequest = new BatchClearValuesRequest();
+		batchClearValuesRequest.setRanges(range);
+		Sheets.Spreadsheets.Values.BatchClear batchClear = service.spreadsheets().values().batchClear(spreadsheetId, batchClearValuesRequest);
+		BatchClearValuesResponse response = batchClear.execute();
+
+    	MyLogger.getLogger().fine(response.toPrettyString());
     }
 }

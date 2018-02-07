@@ -237,7 +237,9 @@ public class FileMenu extends JMenu {
 		Object[][] rows = new String[messaggiDiValidazione.size()][2];
 		int indexRows = 0;
 		for (ExcelValidatorMessages excelValidatorMessages: messaggiDiValidazione){
-			rows[indexRows][0] = excelValidatorMessages.getSchedaDiRiferimento().name();
+			if (excelValidatorMessages.getSchedaDiRiferimento() != null){
+				rows[indexRows][0] = excelValidatorMessages.getSchedaDiRiferimento().name();
+			}
 			rows[indexRows][1] = excelValidatorMessages.getMessage();
 			indexRows++;
 		}

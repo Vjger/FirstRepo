@@ -1,8 +1,6 @@
 package it.desimone.gheetsaccess.gsheets.dto;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class AnagraficaGiocatoreRidottaRow extends AbstractSheetRow{

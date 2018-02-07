@@ -24,6 +24,14 @@ public class AnagraficaGiocatoreRow extends AbstractSheetRow{
 		public static final Integer UPDATE_TIME 		= 5;
 	}
 	
+	public AnagraficaGiocatoreRow(){}
+	
+	public AnagraficaGiocatoreRow(AnagraficaGiocatoreRidottaRow anagraficaGiocatoreRidottaRow){
+		this.id = anagraficaGiocatoreRidottaRow.getId();
+		this.nome = anagraficaGiocatoreRidottaRow.getNome();
+		this.cognome = anagraficaGiocatoreRidottaRow.getCognome();
+	}
+	
 	public Integer getDataSize() {
 		return 7;
 	}

@@ -4,6 +4,8 @@ import java.util.List;
 
 public interface SheetRow extends Cloneable{
 
+	public Integer getSheetRowNumberColPosition();
+	
 	public Integer getSheetRowNumber();
 	public void setSheetRowNumber(Integer sheetRowNumber);
 	

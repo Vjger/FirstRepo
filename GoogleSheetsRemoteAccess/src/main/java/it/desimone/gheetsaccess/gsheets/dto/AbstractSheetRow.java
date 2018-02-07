@@ -6,6 +6,8 @@ import java.util.List;
 
 public abstract class AbstractSheetRow implements SheetRow {
 
+	public static final String SHEET_DATA_ANALYSIS_NAME = "DATA_ANALYSIS";
+	
 	protected Integer sheetRowNumber;
 	protected List<Object> data;
 	
@@ -17,12 +19,12 @@ public abstract class AbstractSheetRow implements SheetRow {
 	}
 	public List<Object> getData() {
 		initializeData(getDataSize());
-		data.set(data.size()-1, "=row()");
+		data.set(getSheetRowNumberColPosition(), "=row()");
 		return data;
 	}
 	public void setData(List<Object> data) {
 		this.data = data;
-		sheetRowNumber = Integer.valueOf((String)data.get(data.size()-1));
+		sheetRowNumber = Integer.valueOf((String)data.get(getSheetRowNumberColPosition()));
 	}
 	
 	public Object clone() throws CloneNotSupportedException{
@@ -32,5 +34,9 @@ public abstract class AbstractSheetRow implements SheetRow {
 	protected void initializeData(Integer dimArray){
 		data = Arrays.asList(new Object[dimArray]);
 		Collections.fill(data, "");
+	}
+	
+	public Integer getSheetRowNumberColPosition(){
+		return getDataSize()-1;
 	}
 }
