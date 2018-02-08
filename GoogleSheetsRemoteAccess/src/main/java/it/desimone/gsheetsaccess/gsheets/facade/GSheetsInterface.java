@@ -3,8 +3,10 @@ package it.desimone.gsheetsaccess.gsheets.facade;
 import it.desimone.gheetsaccess.gsheets.dto.AbstractSheetRow;
 import it.desimone.gheetsaccess.gsheets.dto.AnagraficaGiocatoreRidottaRow;
 import it.desimone.gheetsaccess.gsheets.dto.AnagraficaGiocatoreRow;
+import it.desimone.gheetsaccess.gsheets.dto.ClassificheRow;
 import it.desimone.gheetsaccess.gsheets.dto.PartitaRow;
 import it.desimone.gheetsaccess.gsheets.dto.SheetRow;
+import it.desimone.gheetsaccess.gsheets.dto.TorneiRow;
 import it.desimone.gsheetsaccess.gsheets.GoogleSheetsAccess;
 import it.desimone.utils.MyLogger;
 
@@ -105,16 +107,39 @@ public class GSheetsInterface {
 	}
 	
 	
-	public static List<Integer> findNumPartiteRowsByCols(String spreadSheetId, String sheetName, SheetRow sheetRow) throws IOException{
+	public static Integer findNumTorneoRowByIdTorneo(String spreadSheetId, String sheetName, SheetRow sheetRow) throws IOException{
+		Integer result = null;
+		String query = getQueryTorneo(((TorneiRow) sheetRow).getIdTorneo());
+		List<Integer> numRows = findNumRowsByIdTorneo(spreadSheetId, sheetName, sheetRow, query);
+		if (numRows != null){
+			result = numRows.get(0);
+		}
+		return result;
+	}
+	
+	public static List<Integer> findNumPartiteRowsByIdTorneo(String spreadSheetId, String sheetName, SheetRow sheetRow) throws IOException{
+		String query = getQueryPartiteTorneo(((PartitaRow) sheetRow).getIdTorneo());
+		List<Integer> numRows = findNumRowsByIdTorneo(spreadSheetId, sheetName, sheetRow, query);
+		return numRows;
+	}
+	
+	public static List<Integer> findClassificaRowsByIdTorneo(String spreadSheetId, String sheetName, SheetRow sheetRow) throws IOException{
+		String query = getQueryClassificaTorneo(((ClassificheRow) sheetRow).getIdTorneo());
+		List<Integer> numRows = findNumRowsByIdTorneo(spreadSheetId, sheetName, sheetRow, query);
+		return numRows;
+	}
+	
+	
+	private static List<Integer> findNumRowsByIdTorneo(String spreadSheetId, String sheetName, SheetRow sheetRow, String query) throws IOException{
     	List<ValueRange> data = new ArrayList<ValueRange>();
 
     	String sheetNameDataAnalysis = AbstractSheetRow.SHEET_DATA_ANALYSIS_NAME;
     	
 		List<List<Object>> values = new ArrayList<List<Object>>();
-    	int indexStartingRow = 1;
+
 		String rangeRicerca = sheetNameDataAnalysis+"!A1:A1";
 
-		List<Object> rigaFormula = Arrays.asList(new Object[]{getQueryPartiteTorneo(((PartitaRow) sheetRow).getIdTorneo())});
+		List<Object> rigaFormula = Arrays.asList(new Object[]{query});
 		values.add(rigaFormula);
 		
 		data.add(new ValueRange().setRange(rangeRicerca).setValues(values));
@@ -231,7 +256,7 @@ public class GSheetsInterface {
     	}
 		data.add(new ValueRange().setRange(rangeRicerca).setValues(values));
     	Integer updatedRows = getGoogleSheetsInstance().updateRows(spreadSheetId, sheetNameDataAnalysis, data, true);
-		String columnLetterNumRows = toAlphabetic(sheetRows.get(0).getSheetRowNumberColPosition());
+		String columnLetterNumRows = toAlphabetic(sheetRows.get(0).getSheetRowNumberColPosition()+1);
 		List<String> ranges = Collections.singletonList(AbstractSheetRow.SHEET_DATA_ANALYSIS_NAME+"!"+columnLetterNumRows+indexStartingRow+":"+columnLetterNumRows+(indexStartingRow+sheetRows.size()-1));
 		
 		List<List<Object>> queryResponses = getGoogleSheetsInstance().leggiSheet(spreadSheetId, ranges);
@@ -253,6 +278,28 @@ public class GSheetsInterface {
 		getGoogleSheetsInstance().clearRows(spreadSheetId, Collections.singletonList(rangeRicerca));
 		
 		return sheetRows;
+	}
+	
+	private static String getQueryTorneo(String idTorneo){
+		StringBuilder buffer = new StringBuilder();
+		buffer.append("=FILTER(");
+		buffer.append(TorneiRow.SHEET_TORNEI_NAME + "!A2:");
+		buffer.append(toAlphabetic(new TorneiRow().getDataSize() -1)+";");
+		buffer.append(TorneiRow.SHEET_TORNEI_NAME + "!A2:A = ");
+		buffer.append("\""+idTorneo+"\"");
+		buffer.append(")");
+		return buffer.toString();
+	}
+	
+	private static String getQueryClassificaTorneo(String idTorneo){
+		StringBuilder buffer = new StringBuilder();
+		buffer.append("=FILTER(");
+		buffer.append(ClassificheRow.SHEET_CLASSIFICHE + "!A2:");
+		buffer.append(toAlphabetic(new ClassificheRow().getDataSize() -1)+";");
+		buffer.append(ClassificheRow.SHEET_CLASSIFICHE + "!A2:A = ");
+		buffer.append("\""+idTorneo+"\"");
+		buffer.append(")");
+		return buffer.toString();
 	}
 	
 	private static String getQueryPartiteTorneo(String idTorneo){

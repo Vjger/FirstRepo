@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-public class ReportPublisher {
+public class ReportPublisherLegacy {
 
 	public static void main(String[] args) {
 		MyLogger.setConsoleLogLevel(Level.ALL);
@@ -76,10 +76,10 @@ public class ReportPublisher {
 		
 		String spreadSheetIdTornei = Configurator.getTorneiSheetId();
 		String sheetNameTornei = TorneiRow.SHEET_TORNEI_NAME;
-		Integer torneoRowFound = GSheetsInterface.findNumTorneoRowByIdTorneo(spreadSheetIdTornei, sheetNameTornei, torneoRow);
+		SheetRow torneoRowFound = GSheetsInterface.findSheetRowByKey(spreadSheetIdTornei, sheetNameTornei, torneoRow);
 		
 		if (torneoRowFound != null){
-			torneoRow.setSheetRowNumber(torneoRowFound);
+			torneoRow.setSheetRowNumber(torneoRowFound.getSheetRowNumber());
 			List<SheetRow> rows = new ArrayList<SheetRow>();
 			rows.add(torneoRow);
 			GSheetsInterface.updateRows(spreadSheetIdTornei, sheetNameTornei, rows, true);
@@ -105,40 +105,47 @@ public class ReportPublisher {
 			List<SheetRow> anagraficheDaAggiungere = new ArrayList<SheetRow>();
 			List<SheetRow> anagraficheDaAggiornare = new ArrayList<SheetRow>();
 			
+			Integer maxId = GSheetsInterface.findMaxIdAnagrafica(spreadSheetIdAnagraficaRidotta);
+			int index = 0;
 			List<GiocatoreDTO> partecipanti = torneo.getPartecipanti();
-			
-			List<AnagraficaGiocatoreRidottaRow> anagraficheDaVerificare = new ArrayList<AnagraficaGiocatoreRidottaRow>();
-			for (SheetRow[] sheetRow: anagrafiche){
-				anagraficheDaVerificare.add((AnagraficaGiocatoreRidottaRow)sheetRow[0]);
-			}
-			List<AnagraficaGiocatoreRidottaRow> anagraficaRowFound = GSheetsInterface.findAnagraficheRidotteByKey(spreadSheetIdAnagraficaRidotta, AnagraficaGiocatoreRidottaRow.SHEET_ANAGRAFICA_NAME, anagraficheDaVerificare);
-			
-			if (anagraficaRowFound != null){
-				Integer maxId = GSheetsInterface.findMaxIdAnagrafica(spreadSheetIdAnagraficaRidotta);
-				int index = 0;
-				for (AnagraficaGiocatoreRidottaRow anagraficaGiocatoreRidottaRow: anagraficaRowFound){
-					AnagraficaGiocatoreRow anagraficaGiocatoreRow = (AnagraficaGiocatoreRow) anagrafiche[index][1];
-					if (anagraficaGiocatoreRidottaRow.getId() == null){
-						anagraficaGiocatoreRidottaRow.setId(++maxId);
-						anagraficheRidotteDaAggiungere.add(anagraficaGiocatoreRidottaRow);
-						anagraficheDaAggiungere.add(anagraficaGiocatoreRow);
-					}else{
-						anagraficheDaAggiornare.add(anagraficaGiocatoreRow);
-					}
-					anagraficaGiocatoreRow.setId(anagraficaGiocatoreRidottaRow.getId());			
-					//E' un po' una zozzata: si dà per scontato che la lista dei giocatori e l'array contengano stesso giocatore per stesso indice.
-					mappaIdExcelVsIdGSheets.put(partecipanti.get(index).getId(), anagraficaGiocatoreRidottaRow.getId());
-					index++;
+			for (SheetRow[] anagrafica: anagrafiche){
+				AnagraficaGiocatoreRidottaRow 	anagraficaGiocatoreRidottaRow 	= (AnagraficaGiocatoreRidottaRow) anagrafica[0];
+				AnagraficaGiocatoreRow 			anagraficaGiocatoreRow 			= (AnagraficaGiocatoreRow) anagrafica[1];
+				
+				SheetRow anagraficaRowFound = GSheetsInterface.findSheetRowByKey(spreadSheetIdAnagraficaRidotta, sheetNameAnagraficaRidotta, anagraficaGiocatoreRidottaRow);
+				if (anagraficaRowFound == null){
+					anagraficaGiocatoreRidottaRow.setId(++maxId);
+					anagraficheRidotteDaAggiungere.add(anagraficaGiocatoreRidottaRow);
+//					GSheetsInterface.appendRows(spreadSheetIdAnagraficaRidotta, AnagraficaGiocatoreRidottaRow.SHEET_ANAGRAFICA_NAME, Collections.singletonList((SheetRow)anagraficaGiocatoreRidottaRow));
+				}else{
+					anagraficaGiocatoreRidottaRow = (AnagraficaGiocatoreRidottaRow) GSheetsInterface.findSheetRowByLineNumber(spreadSheetIdAnagraficaRidotta, sheetNameAnagraficaRidotta, anagraficaGiocatoreRidottaRow);
 				}
+				
+				anagraficaGiocatoreRow.setId(anagraficaGiocatoreRidottaRow.getId());
+				SheetRow giocatoriRowFound = GSheetsInterface.findSheetRowByKey(spreadSheetIdTornei, sheetNameGiocatori, anagraficaGiocatoreRow);
+				
+				if (giocatoriRowFound != null){
+					anagraficaGiocatoreRow.setSheetRowNumber(giocatoriRowFound.getSheetRowNumber());
+					anagraficheDaAggiornare.add(anagraficaGiocatoreRow);
+//					List<SheetRow> rows = new ArrayList<SheetRow>();
+//					rows.add(anagraficaGiocatoreRow);
+//					GSheetsInterface.updateRows(spreadSheetIdTornei, sheetNameGiocatori, rows, true);
+				}else{
+					anagraficheDaAggiungere.add(anagraficaGiocatoreRow);
+//					GSheetsInterface.appendRows(spreadSheetIdTornei, sheetNameGiocatori, Collections.singletonList((SheetRow)anagraficaGiocatoreRow));
+				}
+				
+				//E' un po' una zozzata: si dà per scontato che la lista dei giocatori e l'array contengano stesso giocatore per stesso indice.
+				mappaIdExcelVsIdGSheets.put(partecipanti.get(index).getId(), anagraficaGiocatoreRidottaRow.getId());
+				
+				index++;
 			}
-			
 			if (!anagraficheRidotteDaAggiungere.isEmpty()){
 				GSheetsInterface.appendRows(spreadSheetIdAnagraficaRidotta, sheetNameAnagraficaRidotta, anagraficheRidotteDaAggiungere);
 				MyLogger.getLogger().info("Aggiunte "+anagraficheRidotteDaAggiungere.size()+" anagrafiche ridotte");
 			}
 			if (!anagraficheDaAggiornare.isEmpty()){
-				List<SheetRow> anagraficheDaAggiornareRowFound = GSheetsInterface.findAnagraficheByKey(spreadSheetIdTornei, AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME, anagraficheDaAggiornare);
-				GSheetsInterface.updateRows(spreadSheetIdTornei, sheetNameGiocatori, anagraficheDaAggiornareRowFound, true);
+				GSheetsInterface.updateRows(spreadSheetIdTornei, sheetNameGiocatori, anagraficheDaAggiornare, true);
 				MyLogger.getLogger().info("Aggiornate "+anagraficheDaAggiornare.size()+" anagrafiche");
 			}
 			if (!anagraficheDaAggiungere.isEmpty()){
@@ -160,11 +167,11 @@ public class ReportPublisher {
 		//Basta un oggetto: tanto l'id del torneo è sempre lo stesso.
 		PartitaRow partitaRowDiRicerca = new PartitaRow();
 		partitaRowDiRicerca.setIdTorneo(ExcelGSheetsBridge.obtainIdTorneo(torneo));
-		List<Integer> partiteRowFound = GSheetsInterface.findNumPartiteRowsByIdTorneo(spreadSheetIdTornei, sheetNamePartite, partitaRowDiRicerca);
+		List<SheetRow> partiteRowFound = GSheetsInterface.findSheetRowsByCols(spreadSheetIdTornei, sheetNamePartite, partitaRowDiRicerca, PartitaRow.ColPosition.ID_TORNEO);
 
 		if (partiteRowFound != null && !partiteRowFound.isEmpty()){
 			MyLogger.getLogger().info("Cancellazione di "+partiteRowFound.size()+" partite del torneo "+torneo);
-			GSheetsInterface.deleteRowsByNumRow(spreadSheetIdTornei, sheetNamePartite, partiteRowFound);
+			GSheetsInterface.deleteRows(spreadSheetIdTornei, sheetNamePartite, partiteRowFound);
 		}
 		
 		if (partiteRow != null && !partiteRow.isEmpty()){
@@ -182,13 +189,13 @@ public class ReportPublisher {
 		
 		ClassificheRow classificheRowDiRicerca = new ClassificheRow();
 		classificheRowDiRicerca.setIdTorneo(ExcelGSheetsBridge.obtainIdTorneo(torneo));
-		List<Integer> classificheRowFound = GSheetsInterface.findClassificaRowsByIdTorneo(spreadSheetIdTornei, sheetNameClassifiche, classificheRowDiRicerca);
-
+		List<SheetRow> classificheRowFound = GSheetsInterface.findSheetRowsByCols(spreadSheetIdTornei, sheetNameClassifiche, classificheRowDiRicerca, ClassificheRow.ColPosition.ID_TORNEO);
+		
 		if (classificheRowFound != null && !classificheRowFound.isEmpty()){
 			MyLogger.getLogger().info("Cancellazione di "+classificheRowFound.size()+" giocatori in classifica del torneo "+torneo);
-			GSheetsInterface.deleteRowsByNumRow(spreadSheetIdTornei, sheetNameClassifiche, classificheRowFound);
+			GSheetsInterface.deleteRows(spreadSheetIdTornei, sheetNameClassifiche, classificheRowFound);
 		}
-
+		
 		if (classificaRows != null && !classificaRows.isEmpty()){
 			if (torneo.isConcluso()){
 				MyLogger.getLogger().info("Inserimento di "+classificaRows.size()+" giocatori in classifica del torneo "+torneo);

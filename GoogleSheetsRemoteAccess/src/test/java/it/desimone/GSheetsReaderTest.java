@@ -34,10 +34,11 @@ public class GSheetsReaderTest {
 	    httpLogger.addHandler(consoleHandler);
 		
 	    //testInsertOrUpdateTorneo();
-	    //testInsertOrUpdateGiocatore2();
+	    testInsertOrUpdateGiocatore2();
 	    //testDeleteAndInsertPartita();
 	    //testDeleteAndInsertClassifica();
-	    testDeleteAndInsertPartita2();
+	    //testDeleteAndInsertPartita2();
+	    //testDeleteAndInsertClassifica2();
 	}
 	
 	
@@ -96,13 +97,13 @@ public class GSheetsReaderTest {
 		
 		String updateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime());
 		AnagraficaGiocatoreRidottaRow anagraficaRidottaRow1 = new AnagraficaGiocatoreRidottaRow();
-		anagraficaRidottaRow1.setNome("Marco");
+		anagraficaRidottaRow1.setNome("Marvo");
 		anagraficaRidottaRow1.setCognome("De Simone");
 		anagraficaRidottaRow1.setEmail("vjger69@gmail.com");
 		anagraficaRidottaRow1.setUpdateTime(updateTime);
 		
 		AnagraficaGiocatoreRidottaRow anagraficaRidottaRow2 = new AnagraficaGiocatoreRidottaRow();
-		anagraficaRidottaRow2.setNome("Marco");
+		anagraficaRidottaRow2.setNome("Mario");
 		anagraficaRidottaRow2.setCognome("De Simone");
 		anagraficaRidottaRow2.setEmail("vjger69@gmail.com");
 		anagraficaRidottaRow2.setUpdateTime(updateTime);
@@ -121,9 +122,9 @@ public class GSheetsReaderTest {
 				anagraficaGiocatoreRow.setUltimoClub("ROMA [Il Gufo]");
 				anagraficaGiocatoreRow.setUpdateTime(updateTime);
 				if (anagraficaGiocatoreRidottaRow.getId() == null){
-					anagraficaGiocatoreRidottaRow.setId(maxId+1);
+					anagraficaGiocatoreRidottaRow.setId(++maxId);
 					anagraficheRidotteDaAggiungere.add(anagraficaGiocatoreRidottaRow);
-					anagraficaGiocatoreRow.setId(maxId+1);
+					anagraficaGiocatoreRow.setId(maxId);
 					anagraficheDaAggiungere.add(anagraficaGiocatoreRow);
 				}else{
 					anagraficheDaAggiornare.add(anagraficaGiocatoreRow);
@@ -167,6 +168,28 @@ public class GSheetsReaderTest {
 			for (SheetRow row: classificheRowFound){
 				GSheetsInterface.deleteRow(spreadSheetIdTornei, sheetNameClassifiche, row);
 			}
+		}
+		
+		GSheetsInterface.appendRows(spreadSheetIdTornei, sheetNameClassifiche, Collections.singletonList((SheetRow)classificheRow));
+	}
+	
+	private static void testDeleteAndInsertClassifica2() throws IOException{
+		ClassificheRow classificheRow = new ClassificheRow();
+		classificheRow.setIdTorneo("20180126 - ROMA [Il Gufo]");
+		classificheRow.setClubGiocatore("ROMA [Il Gufo]");
+		classificheRow.setIdGiocatore(1);
+		classificheRow.setPosizione(10);
+		classificheRow.setNumeroVittorie(2);
+		classificheRow.setPartiteGiocate(5);
+		classificheRow.setPunti(257D);
+		classificheRow.setUpdateTime(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime()));
+		
+		String spreadSheetIdTornei = "1CsD-U3lpgBNHX0PgnRWwbGlKX6hcTtmrNKlqOdfwXtI";
+		String sheetNameClassifiche = ClassificheRow.SHEET_CLASSIFICHE;
+		List<Integer> classificheRowFound = GSheetsInterface.findClassificaRowsByIdTorneo(spreadSheetIdTornei, sheetNameClassifiche, classificheRow);
+
+		if (classificheRowFound != null && !classificheRowFound.isEmpty()){
+			GSheetsInterface.deleteRowsByNumRow(spreadSheetIdTornei, sheetNameClassifiche, classificheRowFound);
 		}
 		
 		GSheetsInterface.appendRows(spreadSheetIdTornei, sheetNameClassifiche, Collections.singletonList((SheetRow)classificheRow));
@@ -224,7 +247,7 @@ public class GSheetsReaderTest {
 		
 		String spreadSheetIdTornei = Configurator.getTorneiSheetId();
 		String sheetNamePartite = PartitaRow.SHEET_PARTITE_NAME;
-		List<Integer> partiteRowFound = GSheetsInterface.findNumPartiteRowsByCols(spreadSheetIdTornei, sheetNamePartite, partitaRow);
+		List<Integer> partiteRowFound = GSheetsInterface.findNumPartiteRowsByIdTorneo(spreadSheetIdTornei, sheetNamePartite, partitaRow);
 
 		if (partiteRowFound != null && !partiteRowFound.isEmpty()){
 			GSheetsInterface.deleteRowsByNumRow(spreadSheetIdTornei, sheetNamePartite, partiteRowFound);
