@@ -14,7 +14,7 @@ public class ReportAnalyzer {
 
 	public static Torneo analyzeExcelReport(ReportDriveData reportDriveData) throws ExcelValidationException {
 		Torneo torneo = null;
-		File excelFile = new File(ResourceWorking.workingDownloadPath(),reportDriveData.getFileName());
+		File excelFile = new File(ResourceWorking.workingAreaPath()+java.io.File.separator+reportDriveData.getParentFolderName(),reportDriveData.getFileName());
 		ExcelValidator excelValidator = new ExcelValidator(excelFile);
 		List<ExcelValidatorMessages> messaggiDiValidazione = excelValidator.validaFoglioExcel();
 		if (messaggiDiValidazione != null && !messaggiDiValidazione.isEmpty()){

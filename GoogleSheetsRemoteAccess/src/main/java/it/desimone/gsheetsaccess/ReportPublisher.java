@@ -8,6 +8,7 @@ import it.desimone.gheetsaccess.gsheets.dto.SheetRow;
 import it.desimone.gheetsaccess.gsheets.dto.TorneiRow;
 import it.desimone.gsheetsaccess.common.Configurator;
 import it.desimone.gsheetsaccess.common.ExcelValidationException;
+import it.desimone.gsheetsaccess.common.FileUtils;
 import it.desimone.gsheetsaccess.gdrive.file.GDriveDownloader;
 import it.desimone.gsheetsaccess.gdrive.file.ReportAnalyzer;
 import it.desimone.gsheetsaccess.gdrive.file.ReportDriveData;
@@ -43,12 +44,15 @@ public class ReportPublisher {
 						pubblicaTorneo(torneo);
 						MyLogger.getLogger().info("Pubblicato report "+reportDriveData);
 						//TODO Spostare file nell'area  DONE
+						FileUtils.moveToDone(reportDriveData);
 					}catch(ExcelValidationException eve){
 						MyLogger.getLogger().severe("Errore di validazione del report "+reportDriveData+"\n"+eve.getMessages().toString());
 						//TODO Manda negli scarti sia in remoto che in locale e avvisa per mail
+						FileUtils.moveToError(reportDriveData);
 					}catch(MyException me){
 						MyLogger.getLogger().severe("Errore di validazione del report "+reportDriveData+"\n"+me.getMessage());
-						//TODO Manda negli scarti sia in remoto che in locale e avvisa per mail						
+						//TODO Manda negli scarti sia in remoto che in locale e avvisa per mail		
+						FileUtils.moveToError(reportDriveData);
 					}catch(Exception e){
 						MyLogger.getLogger().severe("Errore di pubblicazione del report "+reportDriveData+"\n"+e.getMessage());
 						e.printStackTrace();

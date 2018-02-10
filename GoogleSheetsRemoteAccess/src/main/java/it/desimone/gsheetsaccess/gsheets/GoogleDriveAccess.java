@@ -172,7 +172,7 @@ public class GoogleDriveAccess {
     	return fileList;
     }
     
-    public void downloadFile(File file, String localFolder) throws IOException{
+    public void downloadFile(File file, String folder) throws IOException{
         Drive service = getDriveService();
 
         if (service != null){
@@ -180,7 +180,11 @@ public class GoogleDriveAccess {
         	if (driveFiles != null){
         		Drive.Files.Export driveFilesExport = service.files().export(file.getId(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         		if (driveFilesExport != null){
-        			java.io.File fileToDownload = new java.io.File(ResourceWorking.workingDownloadPath()/*+java.io.File.separator+localFolder*/, file.getName());
+        			java.io.File localFolder = new java.io.File(ResourceWorking.workingAreaPath()+java.io.File.separator+folder);
+        			if (!localFolder.exists()){
+        				localFolder.mkdir();
+        			}
+        			java.io.File fileToDownload = new java.io.File(localFolder, file.getName());
         			FileOutputStream fileOutputStream = new FileOutputStream(fileToDownload);
         			driveFilesExport.executeMediaAndDownloadTo(fileOutputStream);
         		}

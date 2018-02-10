@@ -16,8 +16,16 @@ public class ResourceWorking {
 	
 	private static final String googleClientSecret = "client_secret_manager.json";
 	
-	public static String workingDownloadPath(){
-		return ROOT+File.separator+"working"+File.separator+"download";
+	public static String workingAreaPath(){
+		return ROOT+File.separator+"working"+File.separator+"tmp";
+	}
+	
+	public static String doneAreaPath(){
+		return ROOT+File.separator+"working"+File.separator+"done";
+	}
+	
+	public static String errorAreaPath(){
+		return ROOT+File.separator+"working"+File.separator+"error";
 	}
 	
 	public static String googleClientSecretPath(){
