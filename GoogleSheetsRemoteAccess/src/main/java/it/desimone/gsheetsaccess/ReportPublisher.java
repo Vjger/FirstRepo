@@ -4,11 +4,13 @@ import it.desimone.gheetsaccess.gsheets.dto.AnagraficaGiocatoreRidottaRow;
 import it.desimone.gheetsaccess.gsheets.dto.AnagraficaGiocatoreRow;
 import it.desimone.gheetsaccess.gsheets.dto.ClassificheRow;
 import it.desimone.gheetsaccess.gsheets.dto.PartitaRow;
+import it.desimone.gheetsaccess.gsheets.dto.ReportElaborazioneRow;
 import it.desimone.gheetsaccess.gsheets.dto.SheetRow;
 import it.desimone.gheetsaccess.gsheets.dto.TorneiRow;
 import it.desimone.gsheetsaccess.common.Configurator;
 import it.desimone.gsheetsaccess.common.ExcelValidationException;
 import it.desimone.gsheetsaccess.common.FileUtils;
+import it.desimone.gsheetsaccess.common.GDriveUtils;
 import it.desimone.gsheetsaccess.gdrive.file.GDriveDownloader;
 import it.desimone.gsheetsaccess.gdrive.file.ReportAnalyzer;
 import it.desimone.gsheetsaccess.gdrive.file.ReportDriveData;
@@ -20,8 +22,10 @@ import it.desimone.utils.MyException;
 import it.desimone.utils.MyLogger;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,11 +34,12 @@ import java.util.logging.Level;
 public class ReportPublisher {
 
 	public static void main(String[] args) {
-		MyLogger.setConsoleLogLevel(Level.ALL);
+		MyLogger.setConsoleLogLevel(Level.INFO);
 
 		try{
 			List<ReportDriveData> publishedReport = GDriveDownloader.downloadReport();
 			if (publishedReport != null && !publishedReport.isEmpty()){
+				List<SheetRow> reportElaborazioni = new ArrayList<SheetRow>();
 				MyLogger.getLogger().info("Inizio elaborazione di "+publishedReport.size()+" report");
 				for (ReportDriveData reportDriveData: publishedReport){
 					MyLogger.getLogger().info("Inizio elaborazione di "+reportDriveData);
@@ -43,21 +48,33 @@ public class ReportPublisher {
 						MyLogger.getLogger().info("Validato report "+reportDriveData);
 						pubblicaTorneo(torneo);
 						MyLogger.getLogger().info("Pubblicato report "+reportDriveData);
-						//TODO Spostare file nell'area  DONE
 						FileUtils.moveToDone(reportDriveData);
+						GDriveUtils.moveToDone(reportDriveData);
+						ReportElaborazioneRow reportElaborazioneRow = new ReportElaborazioneRow(reportDriveData.getParentFolderName(), reportDriveData.getFileName(), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()), "OK", null);
+						reportElaborazioni.add(reportElaborazioneRow);
 					}catch(ExcelValidationException eve){
 						MyLogger.getLogger().severe("Errore di validazione del report "+reportDriveData+"\n"+eve.getMessages().toString());
 						//TODO Manda negli scarti sia in remoto che in locale e avvisa per mail
 						FileUtils.moveToError(reportDriveData);
+						GDriveUtils.moveToError(reportDriveData);
+						ReportElaborazioneRow reportElaborazioneRow = new ReportElaborazioneRow(reportDriveData.getParentFolderName(), reportDriveData.getFileName(), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()), "KO", eve.getMessages().toString());
+						reportElaborazioni.add(reportElaborazioneRow);
 					}catch(MyException me){
 						MyLogger.getLogger().severe("Errore di validazione del report "+reportDriveData+"\n"+me.getMessage());
 						//TODO Manda negli scarti sia in remoto che in locale e avvisa per mail		
 						FileUtils.moveToError(reportDriveData);
+						GDriveUtils.moveToError(reportDriveData);
+						ReportElaborazioneRow reportElaborazioneRow = new ReportElaborazioneRow(reportDriveData.getParentFolderName(), reportDriveData.getFileName(), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()), "KO", me.getMessage());
+						reportElaborazioni.add(reportElaborazioneRow);
 					}catch(Exception e){
 						MyLogger.getLogger().severe("Errore di pubblicazione del report "+reportDriveData+"\n"+e.getMessage());
 						e.printStackTrace();
 						//Avvisa per mail solo risiko.it
 					}
+				}
+				if (!reportElaborazioni.isEmpty()){
+					String reportElaborazioniId = Configurator.getReportElaborazioniSheetId();
+					GSheetsInterface.appendRows(reportElaborazioniId, ReportElaborazioneRow.SHEET_NAME, reportElaborazioni);
 				}
 			}
 		}catch(Exception e){

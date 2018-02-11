@@ -27,7 +27,7 @@ public class GDriveDownloader {
     	
     	if (parentFolderId != null){
     		try{
-    			List<File> availableFolders = googleDriveAccess.getClubFolders(parentFolderId);
+    			List<File> availableFolders = googleDriveAccess.getSubFolders(parentFolderId);
     			if (availableFolders != null && !availableFolders.isEmpty()){
     				for (File folder: availableFolders){
     					MyLogger.getLogger().info("Folder "+folder.getName());

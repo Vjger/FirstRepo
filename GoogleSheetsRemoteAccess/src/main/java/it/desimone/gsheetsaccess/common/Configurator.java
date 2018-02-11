@@ -43,4 +43,25 @@ private volatile static Properties properties = new Properties();
 		MyLogger.getLogger().info("ID Tornei:<<"+folderId+">>");
 		return folderId;
 	}
+	
+	public static String getDoneFolderId(){
+		String folderId = ((String)properties.get("DONEFolderId"));
+		if (folderId != null) folderId = folderId.trim();
+		MyLogger.getLogger().info("DONE Folder Id:<<"+folderId+">>");
+		return folderId;
+	}
+	
+	public static String getErrorFolderId(){
+		String folderId = ((String)properties.get("ERRORFolderId"));
+		if (folderId != null) folderId = folderId.trim();
+		MyLogger.getLogger().info("ERROR Folder Id:<<"+folderId+">>");
+		return folderId;
+	}
+	
+	public static String getReportElaborazioniSheetId(){
+		String sheetId = ((String)properties.get("spreadSheetIdReportElaborazioni"));
+		if (sheetId != null) sheetId = sheetId.trim();
+		MyLogger.getLogger().info("ID Report Elaborazioni:<<"+sheetId+">>");
+		return sheetId;
+	}
 }

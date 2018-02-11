@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import com.google.api.client.auth.oauth2.Credential;
@@ -133,7 +134,7 @@ public class GoogleDriveAccess {
         return permissionList;
     }
     
-    public List<File> getClubFolders(String parentFolderId) throws IOException{
+    public List<File> getSubFolders(String parentFolderId) throws IOException{
     	List<File> folders = null;
         Drive service = getDriveService();
 
@@ -192,4 +193,65 @@ public class GoogleDriveAccess {
         }
     }
 
+    public File moveFileToNewFolder(String fileId, String newFolderId) throws IOException{
+    	File file = null;
+        Drive service = getDriveService();
+
+        if (service != null){
+        	Drive.Files driveFiles = service.files();
+        	if (driveFiles != null){
+        		file = driveFiles.get(fileId).setFields("parents").execute();
+        		StringBuilder previousParents = new StringBuilder();
+	        	for (String parent : file.getParents()) {
+	        	  previousParents.append(parent);
+	        	  previousParents.append(',');
+	        	}
+	        	// Move the file to the new folder
+	        	file = driveFiles.update(fileId, null)
+	        		.setAddParents(newFolderId)
+	        	    .setRemoveParents(previousParents.toString())
+	        	    .setFields("id, parents")
+	        	    .execute();
+        	}
+        }
+        return file;
+    }
+    
+    public File findOrCreateFolderIfNotExists(String parentFolderId, String folderName) throws IOException{
+    	File folderFound = null;
+    	
+    	List<File> subFolders = getSubFolders(parentFolderId);
+    	if (subFolders != null && !subFolders.isEmpty()){
+	    	for (File file: subFolders){
+	    		if(file.getName().equalsIgnoreCase(folderName)){
+	    			folderFound = file;
+	    			break;
+	    		}
+	    	}
+    	}
+    	
+    	if (folderFound == null){
+    		folderFound = createFolder(parentFolderId, folderName);
+    	}
+  
+        return folderFound;
+    }
+    
+    public File createFolder(String parentFolderId, String folderName) throws IOException{
+    	File createdFolder = null;
+        Drive service = getDriveService();
+
+        if (service != null){
+        	Drive.Files driveFiles = service.files();
+        	if (driveFiles != null){
+        		File fileMetadata = new File();
+        		fileMetadata.setName(folderName);
+        		fileMetadata.setMimeType("application/vnd.google-apps.folder");
+        		fileMetadata.setParents(Collections.singletonList(parentFolderId));
+
+        		createdFolder = driveFiles.create(fileMetadata).setFields("id").execute();
+        	}
+        }
+        return createdFolder;
+    }
 }
