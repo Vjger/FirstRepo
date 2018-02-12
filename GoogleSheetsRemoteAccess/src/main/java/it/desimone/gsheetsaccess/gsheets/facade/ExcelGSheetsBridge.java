@@ -50,7 +50,12 @@ public class ExcelGSheetsBridge {
 		torneiRow.setNote(schedaTorneo.getNote());
 		torneiRow.setNumeroTurni(schedaTorneo.getNumeroTurni());
 		if (torneo.getPartecipanti() != null){
-			torneiRow.setNumeroPartecipanti(torneo.getPartecipanti().size());
+			Integer numeroPartecipanti = torneo.getPartecipanti().size();
+			if (torneo.getPartecipanti().contains(GiocatoreDTO.FITTIZIO)){
+				numeroPartecipanti--;
+			}
+			torneiRow.setNumeroPartecipanti(numeroPartecipanti);
+			
 		}
 		if (torneo.getSchedeTurno() != null){
 			Integer numeroPartite = 0;

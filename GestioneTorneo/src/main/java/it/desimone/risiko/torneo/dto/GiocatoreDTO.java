@@ -9,6 +9,7 @@ public class GiocatoreDTO implements Comparable{
 		FITTIZIO.setId(-1);
 		FITTIZIO.setNome("The");
 		FITTIZIO.setCognome("Ghost");
+		FITTIZIO.setEmail("TheGhost@theghost.it");
 	}
 	
 	private static final long serialVersionUID = 1;
