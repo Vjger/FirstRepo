@@ -235,4 +235,12 @@ public class GoogleDriveAccess {
         }
     	return fileId;
     }
+    
+    public static void main(String[] args) throws IOException{
+    	GoogleDriveAccess googleDriveAccess = new GoogleDriveAccess();
+    	List<File> files = googleDriveAccess.getClubFolders(null);
+    	for (File file: files){
+    		System.out.println(file.getName());
+    	}
+    }
 }
