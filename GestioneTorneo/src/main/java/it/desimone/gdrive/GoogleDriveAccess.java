@@ -1,10 +1,5 @@
 package it.desimone.gdrive;
 
-import it.desimone.utils.Configurator;
-import it.desimone.utils.MyException;
-import it.desimone.utils.MyLogger;
-import it.desimone.utils.ResourceLoader;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -29,6 +24,13 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
+import com.google.api.services.drive.model.Permission;
+import com.google.api.services.drive.model.PermissionList;
+
+import it.desimone.utils.Configurator;
+import it.desimone.utils.MyException;
+import it.desimone.utils.MyLogger;
+import it.desimone.utils.ResourceLoader;
 
 public class GoogleDriveAccess {
 	
@@ -171,7 +173,10 @@ public class GoogleDriveAccess {
         	if (driveFiles != null){
         		Drive.Files.List driveFilesList = service.files().list();
         		if (driveFilesList != null){
-        			driveFilesList = driveFilesList.setQ("\'"+parentFolderId+"\' in parents and mimeType = 'application/vnd.google-apps.folder' and sharedWithMe=true");
+        			driveFilesList = driveFilesList.setQ("\'"+parentFolderId+"\' in parents and mimeType = 'application/vnd.google-apps.folder' and sharedWithMe=true and trashed=false and \'risiko.it@gmail.com\' in owners");
+        			//driveFilesList = driveFilesList.setQ("\'"+parentFolderId+"\' in parents and mimeType = 'application/vnd.google-apps.folder'");
+        			//driveFilesList = driveFilesList.setQ("mimeType = 'application/vnd.google-apps.folder' and trashed=false");
+        			driveFilesList.setFields("files(owners)");
         			FileList fileList = driveFilesList.execute();
         			if (fileList != null){
         				folders = fileList.getFiles();
@@ -236,11 +241,57 @@ public class GoogleDriveAccess {
     	return fileId;
     }
     
+    public File createFolder(String parentFolderId, String folderName) throws IOException{
+    	File createdFolder = null;
+        Drive service = getDriveService();
+
+        if (service != null){
+        	Drive.Files driveFiles = service.files();
+        	if (driveFiles != null){
+        		File fileMetadata = new File();
+        		fileMetadata.setName(folderName);
+        		fileMetadata.setMimeType("application/vnd.google-apps.folder");
+        		fileMetadata.setParents(Collections.singletonList(parentFolderId));
+
+        		createdFolder = driveFiles.create(fileMetadata).setFields("id").execute();
+        	}
+        }
+        return createdFolder;
+    }
+    
     public static void main(String[] args) throws IOException{
     	GoogleDriveAccess googleDriveAccess = new GoogleDriveAccess();
-    	List<File> files = googleDriveAccess.getClubFolders(null);
-    	for (File file: files){
-    		System.out.println(file.getName());
+    	String parentFolderId = Configurator.getRCUFolderId();
+    	//File newFolder = googleDriveAccess.createFolder(parentFolderId, "RCU TEST");
+    	//System.out.println(newFolder.getId());
+    	List<File> clubFolders = googleDriveAccess.getClubFolders(parentFolderId);
+    	System.out.println(clubFolders.size());
+    	for (File folder: clubFolders){
+    		System.out.println(folder.getName()+" "+folder.getOwners());
     	}
+    	
+    	Drive service = googleDriveAccess.getDriveService();
+    	
+        if (service != null){
+        	Drive.Files driveFiles = service.files();
+        	if (driveFiles != null){
+        		Drive.Files.Get driveFilesGet = service.files().get("1sDkQHupCB6GTHKUCrJKjVpr_XV_Jbjhx");
+        		if (driveFilesGet != null){
+        			File file = driveFilesGet.execute();
+        			System.out.println(file.getName());
+                	Drive.Permissions drivePermissions = service.permissions();
+                	if (drivePermissions != null){
+                		Drive.Permissions.List drivePermissionsList = drivePermissions.list(file.getId()).setFields("permissions(emailAddress,displayName,domain,kind,type)");
+                		if (drivePermissionsList != null){
+                			PermissionList permissionList = drivePermissionsList.execute();
+        					List<Permission> permissions = permissionList.getPermissions();
+	    					for (Permission permission: permissions){
+	    						System.out.println(permission);
+	    					}
+                		}
+                	}
+        		}
+        	}
+        }
     }
 }
