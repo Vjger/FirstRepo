@@ -39,7 +39,7 @@ public class GoogleDriveAccess {
 
     /** Directory to store user credentials for this application. */
    
-    private static final java.io.File DATA_STORE_DIR = ResourceLoader.googleCredentials(); 
+    private static final java.io.File DATA_STORE_DIR = ResourceWorking.googleCredentials(); 
 
     /** Global instance of the {@link FileDataStoreFactory}. */
     private static FileDataStoreFactory DATA_STORE_FACTORY;
@@ -143,7 +143,7 @@ public class GoogleDriveAccess {
         	if (driveFiles != null){
         		Drive.Files.List driveFilesList = service.files().list();
         		if (driveFilesList != null){
-        			driveFilesList = driveFilesList.setQ("\'"+parentFolderId+"\' in parents and mimeType = 'application/vnd.google-apps.folder'");
+        			driveFilesList = driveFilesList.setQ("\'"+parentFolderId+"\' in parents and mimeType = 'application/vnd.google-apps.folder' and trashed=false");
         			FileList fileList = driveFilesList.execute();
         			if (fileList != null){
         				folders = fileList.getFiles();
