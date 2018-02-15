@@ -3,13 +3,10 @@ package it.desimone.risiko.torneo.scorecomparator;
 import it.desimone.risiko.torneo.dto.GiocatoreDTO;
 import it.desimone.risiko.torneo.dto.Partita;
 import it.desimone.risiko.torneo.scoreplayer.ScorePlayer;
-import it.desimone.utils.MyException;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Comparator;
-
-import com.itextpdf.text.log.SysoLogger;
 
 public class ScoreNazionaleRisikoComparator implements Comparator<ScorePlayer> {
 

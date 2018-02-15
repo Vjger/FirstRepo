@@ -1,14 +1,5 @@
 package it.desimone.risiko.torneo.batch;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
 import it.desimone.risiko.torneo.dto.GiocatoreDTO;
 import it.desimone.risiko.torneo.dto.Partita;
 import it.desimone.risiko.torneo.scoreplayer.ScorePlayer;
@@ -22,6 +13,14 @@ import it.desimone.utils.ArrayUtils;
 import it.desimone.utils.Configurator;
 import it.desimone.utils.MyException;
 import it.desimone.utils.MyLogger;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 public class Sorteggiatore {
 	
