@@ -45,7 +45,7 @@ public class Sorteggiatore {
 		case SantEufemia:
 			partiteTurno = getPartiteSorteggiateRadunoNazionaleConTavoliDa5(excelAccess, numeroTurno);
 			break;
-		case MasterRisiko2016:
+		case MasterRisiko:
 			partiteTurno = getPartiteSorteggiateMasterRisiko2016(excelAccess, numeroTurno);
 			break;			
 		case MasterRisiko2015:
@@ -782,7 +782,7 @@ public class Sorteggiatore {
 			}
 			break;
 		case 4:
-			Partita[] semifinali = excelAccess.loadPartite(3, false, TipoTorneo.MasterRisiko2016);
+			Partita[] semifinali = excelAccess.loadPartite(3, false, TipoTorneo.MasterRisiko);
 			if (semifinali == null){
 				throw new MyException("E' stato richiesto il sorteggio per il turno 4 ma non esiste il turno 3");
 			}

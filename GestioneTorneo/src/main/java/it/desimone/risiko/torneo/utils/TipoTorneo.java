@@ -7,7 +7,7 @@ public enum TipoTorneo {
 	,RadunoNazionale
 	,RadunoNazionale_con_quarti
 	,SantEufemia
-	,MasterRisiko2016
+	,MasterRisiko
 	,MasterRisiko2015
 	,OpenMaster
 	,Open
@@ -27,7 +27,7 @@ public enum TipoTorneo {
 		result.add(RadunoNazionale);
 		result.add(SantEufemia);
 		//result.add(RadunoNazionale_con_quarti);
-		result.add(MasterRisiko2016);
+		result.add(MasterRisiko);
 		//result.add(MasterRisiko2015);
 		result.add(OpenMaster);
 		result.add(Open);

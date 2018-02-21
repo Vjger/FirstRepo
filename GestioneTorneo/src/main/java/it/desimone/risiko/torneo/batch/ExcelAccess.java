@@ -891,7 +891,7 @@ public class ExcelAccess{
 		CellUtil.createCell(intestazione,  indexCell++, "Cognome",styleIntestazione);
 		CellUtil.createCell(intestazione,  indexCell++, "Nick",styleIntestazione);
 		CellUtil.createCell(intestazione,  indexCell++, "Club o Famiglia",styleIntestazione);
-		if (tipoTorneo != TipoTorneo.MasterRisiko2015 && tipoTorneo != TipoTorneo.MasterRisiko2016){
+		if (tipoTorneo != TipoTorneo.MasterRisiko2015 && tipoTorneo != TipoTorneo.MasterRisiko){
 			for (int i = 1; ; i++){
 				Partita[] partiteTurnoi = loadPartite(i,false,tipoTorneo);
 				if (partiteTurnoi == null){break;}
@@ -924,7 +924,7 @@ public class ExcelAccess{
 			scores = getClassificaRaduno(false);
 			break;
 		case MasterRisiko2015:
-		case MasterRisiko2016:
+		case MasterRisiko:
 			scores = getClassificaQualificazioniNazionale(false, true);
 			break;
 		case Open:
@@ -963,7 +963,7 @@ public class ExcelAccess{
 			CellUtil.createCell(rowScore,  indexCell++, giocatore.getClubProvenienza()!=null?giocatore.getClubProvenienza().getDenominazione():"", styleCellClass);
 			for (Partita partita: scorePlayer.getPartite()){
 				Cell punti	 	= rowScore.createCell((short)indexCell++, CellType.NUMERIC);
-				if ((tipoTorneo == TipoTorneo.MasterRisiko2015 || tipoTorneo == TipoTorneo.MasterRisiko2016) && indiceFormatTreDecimali != -1){
+				if ((tipoTorneo == TipoTorneo.MasterRisiko2015 || tipoTorneo == TipoTorneo.MasterRisiko) && indiceFormatTreDecimali != -1){
 					CellStyle cs = foglioTorneo.createCellStyle();
 					cs.cloneStyleFrom(styleCellClass);
 					cs.setDataFormat(indiceFormatTreDecimali);
@@ -973,7 +973,7 @@ public class ExcelAccess{
 				}
 				if(partita != null){
 					if(partita.isVincitore(giocatore)){
-						if ((tipoTorneo == TipoTorneo.MasterRisiko2015 || tipoTorneo == TipoTorneo.MasterRisiko2016) && indiceFormatTreDecimali != -1){
+						if ((tipoTorneo == TipoTorneo.MasterRisiko2015 || tipoTorneo == TipoTorneo.MasterRisiko) && indiceFormatTreDecimali != -1){
 							CellStyle cs = foglioTorneo.createCellStyle();
 							cs.cloneStyleFrom(styleCellClassWin);
 							cs.setDataFormat(indiceFormatTreDecimali);
@@ -993,7 +993,7 @@ public class ExcelAccess{
 			
 			Cell punteggioCell 	= rowScore.createCell((short)indexCell++, CellType.NUMERIC);
 
-			if ((tipoTorneo == TipoTorneo.MasterRisiko2015 || tipoTorneo == TipoTorneo.MasterRisiko2016) && indiceFormatTreDecimali != -1){
+			if ((tipoTorneo == TipoTorneo.MasterRisiko2015 || tipoTorneo == TipoTorneo.MasterRisiko) && indiceFormatTreDecimali != -1){
 				CellStyle cs = foglioTorneo.createCellStyle();
 				cs.cloneStyleFrom(styleCellClass);
 				cs.setDataFormat(indiceFormatTreDecimali);
