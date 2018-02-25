@@ -126,7 +126,7 @@ public class GmailAccess {
      * @throws MessagingException
      */
 
-    public static MimeMessage createEmail(String to, String from, String subject, String bodyText) throws MessagingException {
+    public static MimeMessage createEmail(String[] to, String[] cc, String[] bcc, String from, String subject, String bodyText) throws MessagingException {
     	Properties props = new Properties();
     	Session session = Session.getDefaultInstance(props, null);
 
@@ -135,7 +135,21 @@ public class GmailAccess {
     	if (from != null){
     		email.setFrom(new InternetAddress(from));
     	}
-    	email.addRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress(to));
+    	if (to != null){
+    		for (String a: to){
+    			email.addRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress(a));
+    		}
+    	}
+    	if (cc != null){
+    		for (String c: cc){
+    			email.addRecipient(javax.mail.Message.RecipientType.CC, new InternetAddress(c));
+    		}
+    	}
+    	if (bcc != null){
+    		for (String b: bcc){
+    			email.addRecipient(javax.mail.Message.RecipientType.BCC, new InternetAddress(b));
+    		}
+    	}
     	email.setSubject(subject);
     	email.setText(bodyText);
     	return email;

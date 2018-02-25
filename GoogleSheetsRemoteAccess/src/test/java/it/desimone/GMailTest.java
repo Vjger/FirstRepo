@@ -16,7 +16,7 @@ public class GMailTest {
 		String from = "pippo@pluto.com";
 		String to = "vjger69@gmail.com";
 		
-		MimeMessage mimeMessage = GmailAccess.createEmail(to, null, subject, bodyText);
+		MimeMessage mimeMessage = GmailAccess.createEmail(new String[]{to}, null, null, null, subject, bodyText);
 		
 		gmailAccess.sendMessage("me", mimeMessage);
 
