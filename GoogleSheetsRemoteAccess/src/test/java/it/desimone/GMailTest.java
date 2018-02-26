@@ -5,7 +5,7 @@ import java.io.IOException;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
-import it.desimone.gsheetsaccess.gsheets.GmailAccess;
+import it.desimone.gsheetsaccess.googleaccess.GmailAccess;
 
 public class GMailTest {
 

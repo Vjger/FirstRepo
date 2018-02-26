@@ -1,24 +1,15 @@
-package it.desimone.gsheetsaccess.gsheets;
+package it.desimone.gsheetsaccess.googleaccess;
 
 import it.desimone.gsheetsaccess.common.ResourceWorking;
 import it.desimone.utils.MyException;
 import it.desimone.utils.MyLogger;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
-
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-
-import org.apache.commons.codec.binary.Base64;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -30,13 +21,16 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.GmailScopes;
-import com.google.api.services.gmail.model.Message;
+import com.google.api.services.sheets.v4.Sheets;
+import com.google.api.services.sheets.v4.SheetsScopes;
 
-public class GmailAccess {
-	
-	private Credential credential;
+public class RisikoDataManagerAccess {
+
+	protected Credential credential;
 
     /** Application name. */
     private static final String APPLICATION_NAME = "RisiKo! Data Manager";
@@ -60,7 +54,8 @@ public class GmailAccess {
      * at ~/.credentials/drive-java-quickstart
      */
     private static final List<String> SCOPES =
-    	Arrays.asList(GmailScopes.GMAIL_SEND); 
+        //Arrays.asList(DriveScopes.DRIVE_METADATA_READONLY);
+    	Arrays.asList(new String[]{DriveScopes.DRIVE, SheetsScopes.DRIVE, GmailScopes.GMAIL_SEND}); 
 
     static {
         try {
@@ -71,7 +66,7 @@ public class GmailAccess {
         }
     }
 
-    public GmailAccess(){
+    public RisikoDataManagerAccess(){
     	try {
 			this.credential = authorize();
 		} catch (IOException e) {
@@ -86,7 +81,7 @@ public class GmailAccess {
      * @return an authorized Credential object.
      * @throws IOException
      */
-    private Credential authorize() throws IOException {
+    protected Credential authorize() throws IOException {
     	// Load client secrets.
     	//InputStream in = GDriveQuickStart.class.getResourceAsStream("/client_secret.json");
 
@@ -108,90 +103,26 @@ public class GmailAccess {
 
         return credential;
     }
+	
+    /**
+     * Build and return an authorized Drive client service.
+     * @return an authorized Drive client service
+     * @throws IOException
+     */
+    protected Drive getDriveService() {
+        //Credential credential = authorize();
+        return new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).setApplicationName(APPLICATION_NAME).build();
+    }
     
-    public Gmail getGmailService() throws IOException {
+    protected Sheets getSheetsService() throws IOException {
+        return new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
+                .setApplicationName(APPLICATION_NAME)
+                .build();
+    }
+   
+    protected Gmail getGmailService() throws IOException {
         return new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
                 .setApplicationName(APPLICATION_NAME)
                 .build();
     }
-
-    /**
-     * Create a MimeMessage using the parameters provided.
-     *
-     * @param to email address of the receiver
-     * @param from email address of the sender, the mailbox account
-     * @param subject subject of the email
-     * @param bodyText body text of the email
-     * @return the MimeMessage to be used to send email
-     * @throws MessagingException
-     */
-
-    public static MimeMessage createEmail(String[] to, String[] cc, String[] bcc, String from, String subject, String bodyText) throws MessagingException {
-    	Properties props = new Properties();
-    	Session session = Session.getDefaultInstance(props, null);
-
-    	MimeMessage email = new MimeMessage(session);
-
-    	if (from != null){
-    		email.setFrom(new InternetAddress(from));
-    	}
-    	if (to != null){
-    		for (String a: to){
-    			email.addRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress(a));
-    		}
-    	}
-    	if (cc != null){
-    		for (String c: cc){
-    			email.addRecipient(javax.mail.Message.RecipientType.CC, new InternetAddress(c));
-    		}
-    	}
-    	if (bcc != null){
-    		for (String b: bcc){
-    			email.addRecipient(javax.mail.Message.RecipientType.BCC, new InternetAddress(b));
-    		}
-    	}
-    	email.setSubject(subject);
-    	email.setText(bodyText);
-    	return email;
-    }
-
-    /**
-     * Create a message from an email.
-     *
-     * @param emailContent Email to be set to raw of message
-     * @return a message containing a base64url encoded email
-     * @throws IOException
-     * @throws MessagingException
-     */
-    public static Message createMessageWithEmail(MimeMessage emailContent) throws MessagingException, IOException {
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        emailContent.writeTo(buffer);
-        byte[] bytes = buffer.toByteArray();
-        String encodedEmail = Base64.encodeBase64URLSafeString(bytes);
-        Message message = new Message();
-        message.setRaw(encodedEmail);
-        return message;
-    }
-
-    /**
-     * Send an email from the user's mailbox to its recipient.
-     *
-     * @param service Authorized Gmail API instance.
-     * @param userId User's email address. The special value "me"
-     * can be used to indicate the authenticated user.
-     * @param emailContent Email to be sent.
-     * @return The sent message
-     * @throws MessagingException
-     * @throws IOException
-     */
-    public Message sendMessage(String userId, MimeMessage emailContent) throws MessagingException, IOException {
-    	Gmail service = getGmailService();
-        Message message = createMessageWithEmail(emailContent);
-        message = service.users().messages().send(userId, message).execute();
-
-        MyLogger.getLogger().info("Message id: " + message.getId());
-        MyLogger.getLogger().info(message.toPrettyString());
-        return message;
-    }
-
 }

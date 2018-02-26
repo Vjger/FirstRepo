@@ -12,7 +12,7 @@ import it.desimone.gsheetsaccess.common.ExcelValidationException;
 import it.desimone.gsheetsaccess.gdrive.file.GDriveDownloader;
 import it.desimone.gsheetsaccess.gdrive.file.ReportAnalyzer;
 import it.desimone.gsheetsaccess.gdrive.file.ReportDriveData;
-import it.desimone.gsheetsaccess.gsheets.GmailAccess;
+import it.desimone.gsheetsaccess.googleaccess.GmailAccess;
 import it.desimone.gsheetsaccess.gsheets.facade.ExcelGSheetsBridge;
 import it.desimone.gsheetsaccess.gsheets.facade.GSheetsInterface;
 import it.desimone.risiko.torneo.dto.GiocatoreDTO;
@@ -60,7 +60,7 @@ public class ReportPublisher {
 						reportElaborazioni.add(reportElaborazioneRow);
 					}catch(Exception e){
 						MyLogger.getLogger().severe("Errore di pubblicazione del report "+reportDriveData+"\n"+e.getMessage());
-						//sendErrorMail(reportDriveData, e.getMessage());
+						sendErrorMail(reportDriveData, e.getMessage());
 					}
 				}
 				if (!reportElaborazioni.isEmpty()){
@@ -70,7 +70,7 @@ public class ReportPublisher {
 			}
 		}catch(Exception e){
 			MyLogger.getLogger().severe("Errore di accesso a google drive "+e.getMessage());
-			//sendErrorMail(null, e.getMessage());
+			sendErrorMail(null, e.getMessage());
 		}
 	}
 

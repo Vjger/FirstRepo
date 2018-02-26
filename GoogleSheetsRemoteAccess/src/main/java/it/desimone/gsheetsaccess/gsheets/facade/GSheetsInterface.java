@@ -7,7 +7,7 @@ import it.desimone.gheetsaccess.gsheets.dto.ClassificheRow;
 import it.desimone.gheetsaccess.gsheets.dto.PartitaRow;
 import it.desimone.gheetsaccess.gsheets.dto.SheetRow;
 import it.desimone.gheetsaccess.gsheets.dto.TorneiRow;
-import it.desimone.gsheetsaccess.gsheets.GoogleSheetsAccess;
+import it.desimone.gsheetsaccess.googleaccess.GoogleSheetsAccess;
 import it.desimone.utils.MyLogger;
 
 import java.io.IOException;
