@@ -176,7 +176,7 @@ public class GoogleDriveAccess {
         			driveFilesList = driveFilesList.setQ("\'"+parentFolderId+"\' in parents and mimeType = 'application/vnd.google-apps.folder' and sharedWithMe=true and trashed=false and \'risiko.it@gmail.com\' in owners");
         			//driveFilesList = driveFilesList.setQ("\'"+parentFolderId+"\' in parents and mimeType = 'application/vnd.google-apps.folder'");
         			//driveFilesList = driveFilesList.setQ("mimeType = 'application/vnd.google-apps.folder' and trashed=false");
-        			driveFilesList.setFields("files(owners)");
+        			//driveFilesList.setFields("files(owners)");
         			FileList fileList = driveFilesList.execute();
         			if (fileList != null){
         				folders = fileList.getFiles();
