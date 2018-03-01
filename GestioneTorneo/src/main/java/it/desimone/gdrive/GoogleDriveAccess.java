@@ -1,5 +1,10 @@
 package it.desimone.gdrive;
 
+import it.desimone.utils.Configurator;
+import it.desimone.utils.MyException;
+import it.desimone.utils.MyLogger;
+import it.desimone.utils.ResourceLoader;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -19,18 +24,15 @@ import com.google.api.client.http.FileContent;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.store.DataStoreFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
+import com.google.api.client.util.store.MemoryDataStoreFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import com.google.api.services.drive.model.Permission;
 import com.google.api.services.drive.model.PermissionList;
-
-import it.desimone.utils.Configurator;
-import it.desimone.utils.MyException;
-import it.desimone.utils.MyLogger;
-import it.desimone.utils.ResourceLoader;
 
 public class GoogleDriveAccess {
 	
@@ -44,7 +46,7 @@ public class GoogleDriveAccess {
     private static final java.io.File DATA_STORE_DIR = ResourceLoader.tempRisikoDataCredentials();
 
     /** Global instance of the {@link FileDataStoreFactory}. */
-    private FileDataStoreFactory DATA_STORE_FACTORY;
+    private DataStoreFactory DATA_STORE_FACTORY;
 
     /** Global instance of the JSON factory. */
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
@@ -72,10 +74,14 @@ public class GoogleDriveAccess {
 
     public GoogleDriveAccess(){
     	try {
-    		if (!DATA_STORE_DIR.exists()){
-    			DATA_STORE_DIR.mkdir();
+    		if (Configurator.getMemorizzaCredenziali()){
+	    		if (!DATA_STORE_DIR.exists()){
+	    			DATA_STORE_DIR.mkdir();
+	    		}
+	    		DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);
+    		}else{
+    			DATA_STORE_FACTORY = new MemoryDataStoreFactory();
     		}
-    		DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);
 			this.credential = authorize();
 		} catch (IOException e) {
 			MyLogger.getLogger().severe("Credenziali errate per l'accesso a Google: "+e);

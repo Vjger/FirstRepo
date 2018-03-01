@@ -2,6 +2,7 @@ package it.desimone.utils;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -13,11 +14,20 @@ private static final String CONFIG_FILE = "configuration.properties";
 private volatile static Properties properties = new Properties();
 
 	static{
+		FileInputStream propertiesStream = null;
 		try {
-			FileInputStream propertiesStream = new FileInputStream(new File(PATH_CONFIGURATION+File.separator+CONFIG_FILE));
+			propertiesStream = new FileInputStream(new File(PATH_CONFIGURATION+File.separator+CONFIG_FILE));
 			properties.load(propertiesStream);
 		} catch (IOException e) {
 			MyLogger.getLogger().severe("IOException nel caricamento del file di Properties: "+e.getMessage());
+		} finally {
+			if (propertiesStream != null) {
+				try {
+					propertiesStream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 	
@@ -65,5 +75,32 @@ private volatile static Properties properties = new Properties();
 			MyLogger.getLogger().severe("Errore nel parsing del defaultVincitoreUnico:<<"+defaultVincitoreUnico+">>");
 		}
 		return result;
+	}
+	
+	public static Boolean getMemorizzaCredenziali(){
+		String memorizzaCredenziali = ((String)properties.get("memorizzaCredenziali"));
+		Boolean result = Boolean.TRUE;
+		if (memorizzaCredenziali != null) memorizzaCredenziali = memorizzaCredenziali.trim();
+		try{
+			result = Boolean.valueOf(memorizzaCredenziali);
+			MyLogger.getLogger().info("memorizzaCredenziali:<<"+memorizzaCredenziali+">>");
+		}catch(Exception e){
+			MyLogger.getLogger().severe("Errore nel parsing del memorizzaCredenziali:<<"+memorizzaCredenziali+">>");
+		}
+		return result;
+	}
+	
+	public static void setMemorizzaCredenziali(Boolean memorizzaCredenziali){
+		FileOutputStream out = null; 
+
+		try{
+			out = new FileOutputStream(new File(PATH_CONFIGURATION+File.separator+CONFIG_FILE));
+			properties.setProperty("memorizzaCredenziali", memorizzaCredenziali.toString());
+			properties.store(out, null);
+			out.close();
+			MyLogger.getLogger().info("memorizzaCredenziali:<<"+memorizzaCredenziali+">>");
+		}catch(Exception e){
+			MyLogger.getLogger().severe("Errore nel save del memorizzaCredenziali:<<"+memorizzaCredenziali+">>");
+		}
 	}
 }
