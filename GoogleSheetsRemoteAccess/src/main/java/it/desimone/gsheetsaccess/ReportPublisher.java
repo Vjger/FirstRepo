@@ -9,11 +9,10 @@ import it.desimone.gheetsaccess.gsheets.dto.SheetRow;
 import it.desimone.gheetsaccess.gsheets.dto.TorneiRow;
 import it.desimone.gsheetsaccess.common.Configurator;
 import it.desimone.gsheetsaccess.common.ExcelValidationException;
-import it.desimone.gsheetsaccess.common.FileUtils;
-import it.desimone.gsheetsaccess.common.GDriveUtils;
 import it.desimone.gsheetsaccess.gdrive.file.GDriveDownloader;
 import it.desimone.gsheetsaccess.gdrive.file.ReportAnalyzer;
 import it.desimone.gsheetsaccess.gdrive.file.ReportDriveData;
+import it.desimone.gsheetsaccess.googleaccess.GmailAccess;
 import it.desimone.gsheetsaccess.gsheets.facade.ExcelGSheetsBridge;
 import it.desimone.gsheetsaccess.gsheets.facade.GSheetsInterface;
 import it.desimone.risiko.torneo.dto.GiocatoreDTO;
@@ -22,14 +21,15 @@ import it.desimone.utils.MyException;
 import it.desimone.utils.MyLogger;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 
 public class ReportPublisher {
 
@@ -48,28 +48,19 @@ public class ReportPublisher {
 						MyLogger.getLogger().info("Validato report "+reportDriveData);
 						pubblicaTorneo(torneo);
 						MyLogger.getLogger().info("Pubblicato report "+reportDriveData);
-						FileUtils.moveToDone(reportDriveData);
-						GDriveUtils.moveToDone(reportDriveData);
-						ReportElaborazioneRow reportElaborazioneRow = new ReportElaborazioneRow(reportDriveData.getParentFolderName(), reportDriveData.getFileName(), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()), "OK", null);
+						ReportElaborazioneRow reportElaborazioneRow = PublisherActions.successingPublishing(reportDriveData);
 						reportElaborazioni.add(reportElaborazioneRow);
 					}catch(ExcelValidationException eve){
 						MyLogger.getLogger().severe("Errore di validazione del report "+reportDriveData+"\n"+eve.getMessages().toString());
-						//TODO Manda negli scarti sia in remoto che in locale e avvisa per mail
-						FileUtils.moveToError(reportDriveData);
-						GDriveUtils.moveToError(reportDriveData);
-						ReportElaborazioneRow reportElaborazioneRow = new ReportElaborazioneRow(reportDriveData.getParentFolderName(), reportDriveData.getFileName(), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()), "KO", eve.getMessages().toString());
+						ReportElaborazioneRow reportElaborazioneRow = PublisherActions.validationErrorPublishing(reportDriveData, eve);
 						reportElaborazioni.add(reportElaborazioneRow);
 					}catch(MyException me){
 						MyLogger.getLogger().severe("Errore di validazione del report "+reportDriveData+"\n"+me.getMessage());
-						//TODO Manda negli scarti sia in remoto che in locale e avvisa per mail		
-						FileUtils.moveToError(reportDriveData);
-						GDriveUtils.moveToError(reportDriveData);
-						ReportElaborazioneRow reportElaborazioneRow = new ReportElaborazioneRow(reportDriveData.getParentFolderName(), reportDriveData.getFileName(), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()), "KO", me.getMessage());
+						ReportElaborazioneRow reportElaborazioneRow = PublisherActions.errorPublishing(reportDriveData, me);
 						reportElaborazioni.add(reportElaborazioneRow);
 					}catch(Exception e){
 						MyLogger.getLogger().severe("Errore di pubblicazione del report "+reportDriveData+"\n"+e.getMessage());
-						e.printStackTrace();
-						//Avvisa per mail solo risiko.it
+						sendErrorMail(reportDriveData, e.getMessage());
 					}
 				}
 				if (!reportElaborazioni.isEmpty()){
@@ -79,11 +70,32 @@ public class ReportPublisher {
 			}
 		}catch(Exception e){
 			MyLogger.getLogger().severe("Errore di accesso a google drive "+e.getMessage());
-			e.printStackTrace();
-			//Avvisa per mail solo risiko.it
+			sendErrorMail(null, e.getMessage());
 		}
 	}
 
+	
+	private static void sendErrorMail(ReportDriveData reportDriveData, String errorMessage){
+		GmailAccess gmailAccess = new GmailAccess();
+		String subject = "ERRORE NELL'ELABORAZIONE DEI REPORT";
+		String[] to = {"risiko.it@gmail.com"};
+
+		if (reportDriveData != null){
+			errorMessage = "Report "+reportDriveData.toString()+"\n"+errorMessage;
+		}
+		
+		MimeMessage mimeMessage;
+		try {
+			MyLogger.getLogger().fine("Sending mail to "+to+" with subject "+subject);
+			mimeMessage = GmailAccess.createEmail(to, null, null, null, subject, errorMessage);
+			gmailAccess.sendMessage("me", mimeMessage);
+		} catch (MessagingException e) {
+			MyLogger.getLogger().severe("Error sending mail to "+to+": "+e.getMessage());
+		} catch (IOException e) {
+			MyLogger.getLogger().severe("Error sending mail to "+to+": "+e.getMessage());
+		}
+	}
+	
 	private static void pubblicaTorneo(Torneo torneo) throws IOException{
 		insertOrUpdateTorneo(torneo);
 		Map<Integer, Integer> mappaIdExcelVsIdGSheets = insertOrUpdateGiocatori(torneo);

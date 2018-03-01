@@ -46,6 +46,7 @@ public class OptionsMenu extends JMenu {
 	private static final String FILE 		= "file";
 	
 	private JCheckBoxMenuItem vincitoriUniciCheckBoxMenuItem;
+	private JCheckBoxMenuItem memorizzaCredenzialiCheckBoxMenuItem;
 	
 	public OptionsMenu(){
 		super("Opzioni");
@@ -128,6 +129,13 @@ public class OptionsMenu extends JMenu {
 		}
 		this.add(vincitoriUniciCheckBoxMenuItem);
 		
+		memorizzaCredenzialiCheckBoxMenuItem = new JCheckBoxMenuItem("Memorizza credenziali Google");
+		memorizzaCredenzialiCheckBoxMenuItem.addItemListener(getMemorizzaCredenzialiListener());
+		if (Configurator.getMemorizzaCredenziali()){
+			memorizzaCredenzialiCheckBoxMenuItem.doClick();
+		}
+		this.add(memorizzaCredenzialiCheckBoxMenuItem);
+		
 	}
 
 	private ActionListener getLogLevelListener(final Level level, final String handler){
@@ -147,7 +155,7 @@ public class OptionsMenu extends JMenu {
 	
 	private ItemListener getVincitoriUniciListener(){
 		ItemListener checkVincitoriUniciListener = new ItemListener(){
-				public void  itemStateChanged(ItemEvent e){
+				public void itemStateChanged(ItemEvent e){
 					if (e.getStateChange() == ItemEvent.SELECTED){
 						TorneiUtils.vincitoriUnici = Boolean.TRUE;
 					}else{
@@ -156,5 +164,15 @@ public class OptionsMenu extends JMenu {
 				}
 			};
 		return checkVincitoriUniciListener;
+	}
+	
+	private ItemListener getMemorizzaCredenzialiListener(){
+		ItemListener checkMemorizzaCredenzialiListener = new ItemListener(){
+				public void itemStateChanged(ItemEvent e){
+					Boolean memorizzaCredenziali = e.getStateChange() == ItemEvent.SELECTED;
+					Configurator.setMemorizzaCredenziali(memorizzaCredenziali);
+				}
+			};
+		return checkMemorizzaCredenzialiListener;
 	}
 }

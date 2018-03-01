@@ -11,7 +11,7 @@ import com.google.api.services.drive.model.Permission;
 import com.google.api.services.drive.model.PermissionList;
 
 import it.desimone.gsheetsaccess.common.Configurator;
-import it.desimone.gsheetsaccess.gsheets.GoogleDriveAccess;
+import it.desimone.gsheetsaccess.googleaccess.GoogleDriveAccess;
 import it.desimone.utils.MyException;
 import it.desimone.utils.MyLogger;
 

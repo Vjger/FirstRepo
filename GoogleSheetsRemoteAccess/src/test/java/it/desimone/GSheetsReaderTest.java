@@ -17,7 +17,7 @@ import it.desimone.gheetsaccess.gsheets.dto.PartitaRow;
 import it.desimone.gheetsaccess.gsheets.dto.SheetRow;
 import it.desimone.gheetsaccess.gsheets.dto.TorneiRow;
 import it.desimone.gsheetsaccess.common.Configurator;
-import it.desimone.gsheetsaccess.gsheets.GoogleSheetsAccess;
+import it.desimone.gsheetsaccess.googleaccess.GoogleSheetsAccess;
 import it.desimone.gsheetsaccess.gsheets.facade.GSheetsInterface;
 import it.desimone.risiko.torneo.batch.ExcelAccess;
 import it.desimone.risiko.torneo.dto.SchedaTorneo.TipoTorneo;
