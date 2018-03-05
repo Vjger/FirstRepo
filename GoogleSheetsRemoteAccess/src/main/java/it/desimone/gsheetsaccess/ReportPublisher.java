@@ -96,7 +96,7 @@ public class ReportPublisher {
 		}
 	}
 	
-	private static void pubblicaTorneo(Torneo torneo) throws IOException{
+	public static void pubblicaTorneo(Torneo torneo) throws IOException{
 		insertOrUpdateTorneo(torneo);
 		Map<Integer, Integer> mappaIdExcelVsIdGSheets = insertOrUpdateGiocatori(torneo);
 		deleteAndInsertPartita(torneo, mappaIdExcelVsIdGSheets);
