@@ -151,6 +151,7 @@ public class ExcelValidator {
 		}
 		
 		if (excelAccess.checkSheet(ExcelAccess.SCHEDA_CLASSIFICA_RIDOTTA)){
+			Set<GiocatoreDTO> partecipantiEffettivi = excelAccess.getPartecipantiEffettivi();
 			SchedaClassifica schedaClassifica = excelAccess.leggiSchedaClassifica();
 			List<RigaClassifica> giocatoriInClassifica = schedaClassifica.getClassifica();
 			if (giocatoriInClassifica != null && !giocatoriInClassifica.isEmpty()){
@@ -162,6 +163,8 @@ public class ExcelValidator {
 							giocatore.setId(rigaClassifica.getIdGiocatore());
 							if (!iscritti.contains(giocatore)){
 								result.add(new ExcelValidatorMessages(Scheda.CLASSIFICA_RIDOTTA, "Il giocatore presente in classifica con l'ID "+rigaClassifica.getIdGiocatore()+" non è presente nella Scheda Iscritti"));
+							}else if (!partecipantiEffettivi.contains(giocatore)){
+								result.add(new ExcelValidatorMessages(Scheda.CLASSIFICA_RIDOTTA, "Il giocatore presente in classifica con l'ID "+rigaClassifica.getIdGiocatore()+" non risulta aver disputato alcuna partita"));
 							}
 						}
 					}

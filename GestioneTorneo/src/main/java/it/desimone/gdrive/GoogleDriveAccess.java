@@ -31,8 +31,6 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
-import com.google.api.services.drive.model.Permission;
-import com.google.api.services.drive.model.PermissionList;
 
 public class GoogleDriveAccess {
 	
@@ -95,7 +93,7 @@ public class GoogleDriveAccess {
     	if (credenziali != null && credenziali.length > 0){
     		for (java.io.File cred: credenziali){
     			boolean resetted = cred.delete();
-    			MyLogger.getLogger().finest("Credenziali resettate da "+DATA_STORE_DIR.getAbsolutePath()+" - "+cred.getName()+": "+resetted);
+    			//MyLogger.getLogger().finest("Credenziali resettate da "+DATA_STORE_DIR.getAbsolutePath()+" - "+cred.getName()+": "+resetted);
     		}
     	}
     }
@@ -124,7 +122,7 @@ public class GoogleDriveAccess {
     				.build();
     		credential = new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
     		
-    		MyLogger.getLogger().info("Credentials saved to " + DATA_STORE_DIR.getAbsolutePath());
+    		//MyLogger.getLogger().info("Credentials saved to " + DATA_STORE_DIR.getAbsolutePath());
 
         return credential;
     }
@@ -247,57 +245,4 @@ public class GoogleDriveAccess {
     	return fileId;
     }
     
-    public File createFolder(String parentFolderId, String folderName) throws IOException{
-    	File createdFolder = null;
-        Drive service = getDriveService();
-
-        if (service != null){
-        	Drive.Files driveFiles = service.files();
-        	if (driveFiles != null){
-        		File fileMetadata = new File();
-        		fileMetadata.setName(folderName);
-        		fileMetadata.setMimeType("application/vnd.google-apps.folder");
-        		fileMetadata.setParents(Collections.singletonList(parentFolderId));
-
-        		createdFolder = driveFiles.create(fileMetadata).setFields("id").execute();
-        	}
-        }
-        return createdFolder;
-    }
-    
-    public static void main(String[] args) throws IOException{
-    	GoogleDriveAccess googleDriveAccess = new GoogleDriveAccess();
-    	String parentFolderId = Configurator.getRCUFolderId();
-    	//File newFolder = googleDriveAccess.createFolder(parentFolderId, "RCU TEST");
-    	//System.out.println(newFolder.getId());
-    	List<File> clubFolders = googleDriveAccess.getClubFolders(parentFolderId);
-    	System.out.println(clubFolders.size());
-    	for (File folder: clubFolders){
-    		System.out.println(folder.getName()+" "+folder.getOwners());
-    	}
-    	
-    	Drive service = googleDriveAccess.getDriveService();
-    	
-        if (service != null){
-        	Drive.Files driveFiles = service.files();
-        	if (driveFiles != null){
-        		Drive.Files.Get driveFilesGet = service.files().get("1sDkQHupCB6GTHKUCrJKjVpr_XV_Jbjhx");
-        		if (driveFilesGet != null){
-        			File file = driveFilesGet.execute();
-        			System.out.println(file.getName());
-                	Drive.Permissions drivePermissions = service.permissions();
-                	if (drivePermissions != null){
-                		Drive.Permissions.List drivePermissionsList = drivePermissions.list(file.getId()).setFields("permissions(emailAddress,displayName,domain,kind,type)");
-                		if (drivePermissionsList != null){
-                			PermissionList permissionList = drivePermissionsList.execute();
-        					List<Permission> permissions = permissionList.getPermissions();
-	    					for (Permission permission: permissions){
-	    						System.out.println(permission);
-	    					}
-                		}
-                	}
-        		}
-        	}
-        }
-    }
 }
