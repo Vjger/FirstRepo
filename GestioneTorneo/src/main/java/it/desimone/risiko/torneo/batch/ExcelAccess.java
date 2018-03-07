@@ -733,6 +733,14 @@ public class ExcelAccess{
 		return partecipantiEffettivi;
 	}
 	
+	public Set<GiocatoreDTO> getPartecipantiEffettivi(boolean withGhost){
+		Set<GiocatoreDTO> result = getPartecipantiEffettivi();
+		if (result != null && !withGhost){
+			result.remove(GiocatoreDTO.FITTIZIO);
+		}
+		return result;
+	}
+	
 	
 	public static String getNomeTurno(int numeroTurno){
 		return numeroTurno+SCHEDA_TURNO_SUFFIX;
@@ -824,7 +832,7 @@ public class ExcelAccess{
 		if (index >=0){foglioTorneo.removeSheetAt(index);}
 		Sheet schedaClassificaRidotta = foglioTorneo.cloneSheet(foglioTorneo.getSheetIndex(SCHEDA_CLASSIFICA));
 		List<String> colonneDaTenere = Arrays.asList(new String[]{"Pos.", "Nome", "Cognome", "pt_tot", "id"});
-		keepOnlyColumnsWithHeaders(schedaClassificaRidotta, colonneDaTenere);
+		ExcelUtils.keepOnlyColumnsWithHeaders(schedaClassificaRidotta, colonneDaTenere);
 		
 		for (int indiceCella = 0; indiceCella < 5; indiceCella++){
 			schedaClassificaRidotta.autoSizeColumn(indiceCella);
@@ -1016,107 +1024,10 @@ public class ExcelAccess{
 		scriviClassificaRidotta(tipoTorneo);
 	}
 	
-	
-	public void deleteColumn(Sheet sheet, int columnToDelete) {
-		int maxColumn = 0;
-		for (int r = 0; r < sheet.getLastRowNum() + 1; r++) {
-			Row row = sheet.getRow(r);
-
-			// if no row exists here; then nothing to do; next!
-			if (row == null)
-				continue;
-
-			// if the row doesn't have this many columns then we are good; next!
-			int lastColumn = row.getLastCellNum();
-			if (lastColumn > maxColumn)
-				maxColumn = lastColumn;
-
-			if (lastColumn < columnToDelete)
-				continue;
-
-			for (int x = columnToDelete + 1; x < lastColumn + 1; x++) {
-				Cell oldCell = row.getCell(x - 1);
-				if (oldCell != null)
-					row.removeCell(oldCell);
-
-				Cell nextCell = row.getCell(x);
-				if (nextCell != null) {
-					Cell newCell = row.createCell(x - 1, nextCell.getCellType());
-					cloneCell(newCell, nextCell);
-				}
-			}
-		}
-	}
-
-	private void cloneCell(Cell cNew, Cell cOld) {
-		cNew.setCellComment(cOld.getCellComment());
-		cNew.setCellStyle(cOld.getCellStyle());
-
-		switch (cNew.getCellType()) {
-		case Cell.CELL_TYPE_BOOLEAN: {
-			cNew.setCellValue(cOld.getBooleanCellValue());
-			break;
-		}
-		case Cell.CELL_TYPE_NUMERIC: {
-			cNew.setCellValue(cOld.getNumericCellValue());
-			break;
-		}
-		case Cell.CELL_TYPE_STRING: {
-			cNew.setCellValue(cOld.getStringCellValue());
-			break;
-		}
-		case Cell.CELL_TYPE_ERROR: {
-			cNew.setCellValue(cOld.getErrorCellValue());
-			break;
-		}
-		case Cell.CELL_TYPE_FORMULA: {
-			cNew.setCellFormula(cOld.getCellFormula());
-			break;
-		}
-		}
-
-	}
-
-	public void keepOnlyColumnsWithHeaders(Sheet sheet, List<String> columnHeaders) {
-		Row row = sheet.getRow(0);
-		if (row == null) {
-			return;
-		}
-
-		int lastColumn = row.getLastCellNum();
-
-		for (int x = lastColumn; x >= 0; x--) {
-			Cell headerCell = row.getCell(x);
-			if (headerCell != null && headerCell.getStringCellValue() != null
-					&& !columnHeaders.contains(headerCell.getStringCellValue())) {
-				deleteColumn(sheet, x);
-			}
-		}
-	}
-
-	public void deleteColumnsWithHeader(Sheet sheet, String columnHeader) {
-		Row row = sheet.getRow(0);
-		if (row == null) {
-			return;
-		}
-
-		int lastColumn = row.getLastCellNum();
-
-		for (int x = lastColumn; x >= 0; x--) {
-			Cell headerCell = row.getCell(x);
-			if (headerCell != null
-					&& headerCell.getStringCellValue() != null
-					&& headerCell.getStringCellValue().equalsIgnoreCase(
-							columnHeader)) {
-				deleteColumn(sheet, x);
-			}
-		}
-	}
-	
 	public List<ScorePlayer> getClassificaRaduno(boolean partecipanti){
 		List<ScorePlayer> scores = new ArrayList<ScorePlayer>();
 		//List<GiocatoreDTO>giocatori = getListaGiocatori(partecipanti);
-		Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi();
+		Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi(false);
 		List<Partita[]> listaPartiteTotali = new ArrayList<Partita[]>();
 		for (int i = 1; ; i++){
 			Partita[] partiteTurnoi = loadPartite(i,false,TipoTorneo.RadunoNazionale);
@@ -1143,7 +1054,7 @@ public class ExcelAccess{
 	public List<ScorePlayer> getClassificaRadunoAlSecondoTurno(boolean partecipanti){
 		List<ScorePlayer> scores = new ArrayList<ScorePlayer>();
 		//List<GiocatoreDTO>giocatori = getListaGiocatori(partecipanti);
-		Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi();
+		Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi(false);
 		List<Partita[]> listaPartiteTotali = new ArrayList<Partita[]>();
 		for (int i = 1; i <=2; i++){
 			Partita[] partiteTurnoi = loadPartite(i,false,TipoTorneo.RadunoNazionale);
@@ -1192,7 +1103,7 @@ public class ExcelAccess{
 	public List<ScorePlayer> getClassificaTorneoOpen(){
 		List<ScorePlayer> scores = new ArrayList<ScorePlayer>();
 		//List<GiocatoreDTO>giocatori = getListaGiocatori(false);
-		Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi();
+		Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi(false);
 		List<Partita[]> listaPartiteTotali = new ArrayList<Partita[]>();
 		for (int i = 1; ; i++){
 			Partita[] partiteTurnoi = loadPartite(i,false,TipoTorneo.Open);
@@ -1219,7 +1130,7 @@ public class ExcelAccess{
 	private List<ScorePlayer> getClassificaMasterRisikoSenzaFinale(){
 		List<ScorePlayer> scores = new ArrayList<ScorePlayer>();
 		//List<GiocatoreDTO>giocatori = getListaGiocatori(false);
-		Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi();
+		Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi(false);
 		List<Partita[]> listaPartiteTotali = new ArrayList<Partita[]>();
 		for (int i = 1; ; i++){
 			Partita[] partiteTurnoi = loadPartite(i,false,TipoTorneo.Open);
@@ -1246,7 +1157,7 @@ public class ExcelAccess{
 	public List<ScorePlayer> getClassificaNazionaleRisiko(){
 		List<ScorePlayer> scores = new ArrayList<ScorePlayer>();
 		//List<GiocatoreDTO>giocatori = getListaGiocatori(true);
-		Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi();
+		Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi(false);
 		List<Partita[]> listaPartiteTotali = new ArrayList<Partita[]>();
 		for (int i = 1; ; i++){
 			Partita[] partiteTurnoi = loadPartite(i,false,TipoTorneo.NazionaleRisiKo);
@@ -1273,7 +1184,7 @@ public class ExcelAccess{
 	private List<ScorePlayer> getClassificaTorneoGufo(){
 		List<ScorePlayer> scores = new ArrayList<ScorePlayer>();
 		//List<GiocatoreDTO>giocatori = getListaGiocatori(false);
-		Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi();
+		Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi(false);
 		List<Partita[]> listaPartiteTotali = new ArrayList<Partita[]>();
 		for (int i = 1; ; i++){
 			Partita[] partiteTurnoi = loadPartite(i,false,TipoTorneo.TorneoGufo);
@@ -1301,7 +1212,7 @@ public class ExcelAccess{
 	public List<ScorePlayer> getClassificaBGL(){
 		List<ScorePlayer> scores = new ArrayList<ScorePlayer>();
 		//List<GiocatoreDTO>giocatori = getListaGiocatori(false);
-		Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi();
+		Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi(false);
 		List<Partita[]> listaPartiteTotali = new ArrayList<Partita[]>();
 		for (int i = 1; ; i++){
 			Partita[] partiteTurnoi = loadPartite(i,true,TipoTorneo.BGL);
@@ -1326,7 +1237,7 @@ public class ExcelAccess{
 	private List<ScorePlayer> getClassificaCampionatoGufo(){
 		List<ScorePlayer> scores = new ArrayList<ScorePlayer>();
 		//List<GiocatoreDTO>giocatori = getListaGiocatori(false);
-		Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi();
+		Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi(false);
 		List<Partita[]> listaPartiteTotali = new ArrayList<Partita[]>();
 		for (int i = 1; ; i++){
 			Partita[] partiteTurnoi = loadPartite(i,true,TipoTorneo.CampionatoGufo);
@@ -1353,7 +1264,7 @@ public class ExcelAccess{
 	public List<ScorePlayer> getClassificaQualificazioniNazionale(boolean partecipanti, boolean compreseSemifinali){
 		List<ScorePlayer> scores = new ArrayList<ScorePlayer>();
 		//List<GiocatoreDTO>giocatori = getListaGiocatori(partecipanti);
-		Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi();
+		Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi(false);
 		List<Partita[]> listaPartiteTotali = new ArrayList<Partita[]>();
 		int numeroTurniDisputati = 0;
 		int numeroTurniDaConsiderare = 2;
