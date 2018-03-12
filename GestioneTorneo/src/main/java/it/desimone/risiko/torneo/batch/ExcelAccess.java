@@ -1053,8 +1053,8 @@ public class ExcelAccess{
 	
 	public List<ScorePlayer> getClassificaRadunoAlSecondoTurno(boolean partecipanti){
 		List<ScorePlayer> scores = new ArrayList<ScorePlayer>();
-		//List<GiocatoreDTO>giocatori = getListaGiocatori(partecipanti);
-		Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi(false);
+		List<GiocatoreDTO>giocatori = getListaGiocatori(partecipanti);
+		//Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi(false);
 		List<Partita[]> listaPartiteTotali = new ArrayList<Partita[]>();
 		for (int i = 1; i <=2; i++){
 			Partita[] partiteTurnoi = loadPartite(i,false,TipoTorneo.RadunoNazionale);
@@ -1102,8 +1102,8 @@ public class ExcelAccess{
 	
 	public List<ScorePlayer> getClassificaTorneoOpen(){
 		List<ScorePlayer> scores = new ArrayList<ScorePlayer>();
-		//List<GiocatoreDTO>giocatori = getListaGiocatori(false);
-		Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi(false);
+		List<GiocatoreDTO>giocatori = getListaGiocatori(false);
+		//Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi(false);
 		List<Partita[]> listaPartiteTotali = new ArrayList<Partita[]>();
 		for (int i = 1; ; i++){
 			Partita[] partiteTurnoi = loadPartite(i,false,TipoTorneo.Open);
@@ -1156,8 +1156,8 @@ public class ExcelAccess{
 	
 	public List<ScorePlayer> getClassificaNazionaleRisiko(){
 		List<ScorePlayer> scores = new ArrayList<ScorePlayer>();
-		//List<GiocatoreDTO>giocatori = getListaGiocatori(true);
-		Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi(false);
+		List<GiocatoreDTO>giocatori = getListaGiocatori(true);
+		//Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi(false);
 		List<Partita[]> listaPartiteTotali = new ArrayList<Partita[]>();
 		for (int i = 1; ; i++){
 			Partita[] partiteTurnoi = loadPartite(i,false,TipoTorneo.NazionaleRisiKo);
@@ -1211,8 +1211,8 @@ public class ExcelAccess{
 	
 	public List<ScorePlayer> getClassificaBGL(){
 		List<ScorePlayer> scores = new ArrayList<ScorePlayer>();
-		//List<GiocatoreDTO>giocatori = getListaGiocatori(false);
-		Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi(false);
+		List<GiocatoreDTO>giocatori = getListaGiocatori(false);
+		//Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi(false);
 		List<Partita[]> listaPartiteTotali = new ArrayList<Partita[]>();
 		for (int i = 1; ; i++){
 			Partita[] partiteTurnoi = loadPartite(i,true,TipoTorneo.BGL);
@@ -1263,8 +1263,8 @@ public class ExcelAccess{
 	
 	public List<ScorePlayer> getClassificaQualificazioniNazionale(boolean partecipanti, boolean compreseSemifinali){
 		List<ScorePlayer> scores = new ArrayList<ScorePlayer>();
-		//List<GiocatoreDTO>giocatori = getListaGiocatori(partecipanti);
-		Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi(false);
+		List<GiocatoreDTO>giocatori = getListaGiocatori(partecipanti);
+		//Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi(false);
 		List<Partita[]> listaPartiteTotali = new ArrayList<Partita[]>();
 		int numeroTurniDisputati = 0;
 		int numeroTurniDaConsiderare = 2;
