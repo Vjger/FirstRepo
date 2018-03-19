@@ -858,8 +858,8 @@ public class GeneratoreTavoliNew {
 		//int sizeAnomaliePrimaDelloScambio = contaCombinazioniScontriDiretti(nonRispettaCriterioStessoClub(partita1).size())+ contaCombinazioniScontriDiretti(nonRispettaCriterioStessoClub(partita2).size());
 		//int sizeAnomalieDopoLoScambio = contaCombinazioniScontriDiretti(nonRispettaCriterioStessoClub(partita1Bis).size())+ contaCombinazioniScontriDiretti(nonRispettaCriterioStessoClub(partita2Bis).size());
 		
-		int sizeAnomaliePrimaDelloScambio = contaCombinazioniScontriDiretti(nonRispettaCriterioStessoClub(partita1))+ contaCombinazioniScontriDiretti(nonRispettaCriterioStessoClub(partita2));
-		int sizeAnomalieDopoLoScambio = contaCombinazioniScontriDiretti(nonRispettaCriterioStessoClub(partita1Bis))+ contaCombinazioniScontriDiretti(nonRispettaCriterioStessoClub(partita2Bis));
+		int sizeAnomaliePrimaDelloScambio = contaCombinazioniScontriDirettiStessoClub(nonRispettaCriterioStessoClub(partita1))+ contaCombinazioniScontriDirettiStessoClub(nonRispettaCriterioStessoClub(partita2));
+		int sizeAnomalieDopoLoScambio = contaCombinazioniScontriDirettiStessoClub(nonRispettaCriterioStessoClub(partita1Bis))+ contaCombinazioniScontriDirettiStessoClub(nonRispettaCriterioStessoClub(partita2Bis));
 		
 		if (inSensoStretto){
 			result = sizeAnomaliePrimaDelloScambio >  sizeAnomalieDopoLoScambio;
@@ -883,11 +883,11 @@ public class GeneratoreTavoliNew {
 			partita2Bis.addGiocatore(giocatore1, null);
 			
 			int sizeAnomaliePrimaDelloScambio = 
-					contaCombinazioniScontriDiretti(nonRispettaCriterioStessoClubConsiderandoIFissi(partita1, consideraIFissi))
-				  + contaCombinazioniScontriDiretti(nonRispettaCriterioStessoClubConsiderandoIFissi(partita2, consideraIFissi));
+					contaCombinazioniScontriDirettiStessoClub(nonRispettaCriterioStessoClubConsiderandoIFissi(partita1, consideraIFissi))
+				  + contaCombinazioniScontriDirettiStessoClub(nonRispettaCriterioStessoClubConsiderandoIFissi(partita2, consideraIFissi));
 			int sizeAnomalieDopoLoScambio = 
-					contaCombinazioniScontriDiretti(nonRispettaCriterioStessoClubConsiderandoIFissi(partita1Bis, consideraIFissi))
-				  + contaCombinazioniScontriDiretti(nonRispettaCriterioStessoClubConsiderandoIFissi(partita2Bis, consideraIFissi));
+					contaCombinazioniScontriDirettiStessoClub(nonRispettaCriterioStessoClubConsiderandoIFissi(partita1Bis, consideraIFissi))
+				  + contaCombinazioniScontriDirettiStessoClub(nonRispettaCriterioStessoClubConsiderandoIFissi(partita2Bis, consideraIFissi));
 			
 			if (inSensoStretto){
 				result = sizeAnomaliePrimaDelloScambio >  sizeAnomalieDopoLoScambio;
@@ -900,7 +900,29 @@ public class GeneratoreTavoliNew {
 		return result;
 	}
 
-	private static int contaCombinazioniScontriDiretti(Set<GiocatoreDTO> giocatoriAnomali){
+	private static int contaCombinazioniScontriDirettiStessaRegione(Set<GiocatoreDTO> giocatoriAnomali){
+		int result = 0;
+		List<RegioneDTO> regioniEsaminate = new ArrayList<RegioneDTO>();
+		List<GiocatoreDTO> giocatoriInConfronto = new ArrayList<GiocatoreDTO>(giocatoriAnomali); //Mi serve che sia un List
+		for (int i=0; i<giocatoriInConfronto.size(); i++){
+			RegioneDTO regione = giocatoriInConfronto.get(i).getRegioneProvenienza();
+			if (regione != null && !regioniEsaminate.contains(regione)){
+				regioniEsaminate.add(regione);
+				short numeroGiocatoriPerQuellaRegione = 1;
+				for (int j=i+1; j<giocatoriInConfronto.size(); j++){
+					GiocatoreDTO giocatoreConfrontato = giocatoriInConfronto.get(j);
+					RegioneDTO regioneConfrontata = giocatoreConfrontato.getRegioneProvenienza();
+					if(regioneConfrontata != null && regioneConfrontata.equals(regione)){
+						numeroGiocatoriPerQuellaRegione++;
+					}
+				}
+				result += contaCombinazioniScontriDiretti(numeroGiocatoriPerQuellaRegione);
+			}
+		}
+		return result;
+	}
+	
+	private static int contaCombinazioniScontriDirettiStessoClub(Set<GiocatoreDTO> giocatoriAnomali){
 		int result = 0;
 		List<ClubDTO> clubEsaminati = new ArrayList<ClubDTO>();
 		List<GiocatoreDTO> giocatoriInConfronto = new ArrayList<GiocatoreDTO>(giocatoriAnomali); //Mi serve che sia un List
@@ -995,9 +1017,17 @@ public class GeneratoreTavoliNew {
 
 		partita2Bis.removeGiocatore(giocatore2);
 		partita2Bis.addGiocatore(giocatore1, null);
+		
+		int sizeAnomaliePrimaDelloScambio = 
+				contaCombinazioniScontriDirettiStessaRegione(nonRispettaCriterioStessaRegione(partita1))
+			  + contaCombinazioniScontriDirettiStessaRegione(nonRispettaCriterioStessaRegione(partita2));
+		int sizeAnomalieDopoLoScambio = 
+				contaCombinazioniScontriDirettiStessaRegione(nonRispettaCriterioStessaRegione(partita1Bis))
+			  + contaCombinazioniScontriDirettiStessaRegione(nonRispettaCriterioStessaRegione(partita2Bis));
+		
 
-		int sizeAnomaliePrimaDelloScambio = nonRispettaCriterioStessaRegione(partita1).size()+ nonRispettaCriterioStessaRegione(partita2).size();
-		int sizeAnomalieDopoLoScambio = nonRispettaCriterioStessaRegione(partita1Bis).size()+ nonRispettaCriterioStessaRegione(partita2Bis).size();
+		//int sizeAnomaliePrimaDelloScambio = nonRispettaCriterioStessaRegione(partita1).size()+ nonRispettaCriterioStessaRegione(partita2).size();
+		//int sizeAnomalieDopoLoScambio = nonRispettaCriterioStessaRegione(partita1Bis).size()+ nonRispettaCriterioStessaRegione(partita2Bis).size();
 		if (inSensoStretto){
 			result = sizeAnomaliePrimaDelloScambio >  sizeAnomalieDopoLoScambio;
 		}else{

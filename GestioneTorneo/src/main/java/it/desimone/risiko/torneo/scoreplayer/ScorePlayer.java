@@ -14,4 +14,6 @@ public interface ScorePlayer{
 	public GiocatoreDTO getGiocatore();
 	public void setGiocatore(GiocatoreDTO giocatore);
 	public Partita[] getPartite();
+	public void setPosition(int position);
+	public int getPosition();
 }

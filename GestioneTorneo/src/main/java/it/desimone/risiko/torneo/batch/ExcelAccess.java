@@ -55,6 +55,7 @@ import it.desimone.risiko.torneo.scorecomparator.ScoreSemifinalistiRadunoCompara
 import it.desimone.risiko.torneo.scorecomparator.ScoreTorneoOpenComparator;
 import it.desimone.risiko.torneo.scoreplayer.ScorePlayer;
 import it.desimone.risiko.torneo.scoreplayer.ScorePlayerCampionatoGufo;
+import it.desimone.risiko.torneo.scoreplayer.ScorePlayerClassificator;
 import it.desimone.risiko.torneo.scoreplayer.ScorePlayerNazionaleRisiko;
 import it.desimone.risiko.torneo.scoreplayer.ScorePlayerOpen;
 import it.desimone.risiko.torneo.scoreplayer.ScorePlayerQualificazioniNazionale;
@@ -964,7 +965,8 @@ public class ExcelAccess{
 				styleCellClassWin = styleCellClassWinODD;
 			}
 			Row rowScore = schedaClassifica.createRow(numeroRiga);
-			CellUtil.createCell(rowScore,  indexCell++, String.valueOf(position++), styleCellClass);
+			//CellUtil.createCell(rowScore,  indexCell++, String.valueOf(position++), styleCellClass);
+			CellUtil.createCell(rowScore,  indexCell++, String.valueOf(scorePlayer.getPosition()), styleCellClass);
 			CellUtil.createCell(rowScore,  indexCell++, giocatore.getNome(), styleCellClass);
 			CellUtil.createCell(rowScore,  indexCell++, giocatore.getCognome(), styleCellClass);
 			CellUtil.createCell(rowScore,  indexCell++, giocatore.getNick(), styleCellClass);
@@ -1047,7 +1049,8 @@ public class ExcelAccess{
 			ScorePlayer scorePlayer = new ScorePlayerRaduno(giocatore,partiteGiocatore);
 			scores.add(scorePlayer);
 		}
-		Collections.sort(scores, new ScoreRadunoComparator());
+		//Collections.sort(scores, new ScoreRadunoComparator());
+		scores = ScorePlayerClassificator.scorePlayerSorter(scores, new ScoreRadunoComparator());
 		return scores;
 	}
 	
@@ -1073,7 +1076,8 @@ public class ExcelAccess{
 			ScorePlayer scorePlayer = new ScorePlayerRaduno(giocatore,partiteGiocatore);
 			scores.add(scorePlayer);
 		}
-		Collections.sort(scores, new ScoreRadunoComparator());
+		//Collections.sort(scores, new ScoreRadunoComparator());
+		scores = ScorePlayerClassificator.scorePlayerSorter(scores, new ScoreRadunoComparator());
 		return scores;
 	}
 	
@@ -1123,7 +1127,8 @@ public class ExcelAccess{
 			ScorePlayer scorePlayer = new ScorePlayerOpen(giocatore,partiteGiocatore);
 			scores.add(scorePlayer);
 		}
-		Collections.sort(scores, new ScoreTorneoOpenComparator());
+		//Collections.sort(scores, new ScoreTorneoOpenComparator());
+		scores = ScorePlayerClassificator.scorePlayerSorter(scores, new ScoreTorneoOpenComparator());
 		return scores;
 	}
 	
@@ -1150,7 +1155,8 @@ public class ExcelAccess{
 			ScorePlayer scorePlayer = new ScorePlayerQualificazioniNazionale(giocatore,partiteGiocatore);
 			scores.add(scorePlayer);
 		}
-		Collections.sort(scores, new ScoreTorneoOpenComparator());
+		//Collections.sort(scores, new ScoreTorneoOpenComparator());
+		scores = ScorePlayerClassificator.scorePlayerSorter(scores, new ScoreTorneoOpenComparator());
 		return scores;
 	}
 	
@@ -1175,7 +1181,8 @@ public class ExcelAccess{
 			ScorePlayer scorePlayer = new ScorePlayerNazionaleRisiko(giocatore,partiteGiocatore);
 			scores.add(scorePlayer);
 		}
-		Collections.sort(scores, new ScoreNazionaleRisikoComparator());
+		//Collections.sort(scores, new ScoreNazionaleRisikoComparator());
+		scores = ScorePlayerClassificator.scorePlayerSorter(scores, new ScoreNazionaleRisikoComparator());
 		return scores;
 	}
 	
@@ -1204,7 +1211,8 @@ public class ExcelAccess{
 			ScorePlayer scorePlayer = new ScorePlayerTorneoGufo(giocatore,partiteGiocatore);
 			scores.add(scorePlayer);
 		}
-		Collections.sort(scores, new ScoreTorneoOpenComparator());
+		//Collections.sort(scores, new ScoreTorneoOpenComparator());
+		scores = ScorePlayerClassificator.scorePlayerSorter(scores, new ScoreTorneoOpenComparator());
 		return scores;
 	}
 	
@@ -1230,7 +1238,8 @@ public class ExcelAccess{
 			ScorePlayer scorePlayer = new ScorePlayerTorneoBGL(giocatore,partiteGiocatore);
 			scores.add(scorePlayer);
 		}
-		Collections.sort(scores, new ScoreTorneoOpenComparator());
+		//Collections.sort(scores, new ScoreTorneoOpenComparator());
+		scores = ScorePlayerClassificator.scorePlayerSorter(scores, new ScoreTorneoOpenComparator());
 		return scores;
 	}
 	
@@ -1257,10 +1266,12 @@ public class ExcelAccess{
 			ScorePlayer scorePlayer = new ScorePlayerCampionatoGufo(giocatore,partiteGiocatore);
 			scores.add(scorePlayer);
 		}
-		Collections.sort(scores, new ScoreCampionatoComparator());
+		//Collections.sort(scores, new ScoreCampionatoComparator());
+		scores = ScorePlayerClassificator.scorePlayerSorter(scores, new ScoreCampionatoComparator());
 		return scores;
 	}
 	
+	//TODO gestire la posizione dei finalisti.
 	public List<ScorePlayer> getClassificaQualificazioniNazionale(boolean partecipanti, boolean compreseSemifinali){
 		List<ScorePlayer> scores = new ArrayList<ScorePlayer>();
 		List<GiocatoreDTO>giocatori = getListaGiocatori(partecipanti);
@@ -1335,6 +1346,7 @@ public class ExcelAccess{
 			ScorePlayer scorePlayer = iterator.next(); 
 			if (scorePlayer.getGiocatore().equals(finalista)){
 				iterator.remove();
+				//scorePlayer.setPosition(posizione);
 				scores.add(posizione, scorePlayer);
 				break;
 			}

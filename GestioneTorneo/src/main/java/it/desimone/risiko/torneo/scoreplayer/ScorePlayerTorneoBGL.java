@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ScorePlayerTorneoBGL implements ScorePlayer{
+public class ScorePlayerTorneoBGL extends AbstractScorePlayer{
 
 	private int numeroVittorie = 0;
 	private Float massimoPunteggio = 0f;

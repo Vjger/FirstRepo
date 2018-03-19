@@ -5,7 +5,7 @@ import it.desimone.risiko.torneo.dto.Partita;
 
 import java.math.BigDecimal;
 
-public class ScorePlayerTorneoColoni implements ScorePlayer{
+public class ScorePlayerTorneoColoni extends AbstractScorePlayer{
 
 	public final static float PUNTEGGIO_VITTORIA = 10f;
 	private int numeroVittorie = 0;

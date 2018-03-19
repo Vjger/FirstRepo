@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Comparator;
 
-public class ScorePlayerQualificazioniNazionale implements ScorePlayer{
+public class ScorePlayerQualificazioniNazionale extends AbstractScorePlayer{
 
 	private final static int NUMERO_PARTITE_VALIDE = 5;
 

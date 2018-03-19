@@ -5,7 +5,7 @@ import it.desimone.risiko.torneo.dto.Partita;
 
 import java.math.BigDecimal;
 
-public class ScorePlayerTorneoGufo implements ScorePlayer{
+public class ScorePlayerTorneoGufo extends AbstractScorePlayer{
 
 	private int numeroVittorie = 0;
 	private Float massimoPunteggio = 0f;

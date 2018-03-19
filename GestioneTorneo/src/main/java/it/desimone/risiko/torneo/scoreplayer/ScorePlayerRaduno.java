@@ -5,7 +5,7 @@ import it.desimone.risiko.torneo.dto.Partita;
 
 import java.math.BigDecimal;
 
-public class ScorePlayerRaduno implements ScorePlayer{
+public class ScorePlayerRaduno extends AbstractScorePlayer{
 
 	public static final Integer BONUS = 50; 
 	public static final BigDecimal BONUS_B = new BigDecimal(BONUS); 

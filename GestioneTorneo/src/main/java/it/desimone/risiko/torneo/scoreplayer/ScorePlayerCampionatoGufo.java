@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Comparator;
 
-public class ScorePlayerCampionatoGufo implements ScorePlayer{
+public class ScorePlayerCampionatoGufo extends AbstractScorePlayer{
 
 	private static final BigDecimal UNO_V_25 = new BigDecimal(1.25); 
 	private static final BigDecimal CENTO = new BigDecimal(100); 

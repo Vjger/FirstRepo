@@ -5,7 +5,7 @@ import it.desimone.risiko.torneo.dto.Partita;
 
 import java.math.BigDecimal;
 
-public class ScorePlayerTorneoDominion implements ScorePlayer{
+public class ScorePlayerTorneoDominion extends AbstractScorePlayer{
 
 	
 	private int numeroVittorie = 0;
