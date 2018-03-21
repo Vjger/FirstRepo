@@ -11,6 +11,15 @@ public class ScorePlayerClassificator {
 			return scores;
 		}
 		Collections.sort(scores, comparator);
+		scorePlayerPositioner(scores, comparator);
+		return scores;
+	}
+	
+	
+	public static List<ScorePlayer> scorePlayerPositioner(List<ScorePlayer> scores, Comparator comparator){
+		if (scores == null || scores.isEmpty()){
+			return scores;
+		}
 		ScorePlayer first = scores.get(0);
 		first.setPosition(1);
 		for (int index = 1; index < scores.size(); index++){
@@ -27,5 +36,4 @@ public class ScorePlayerClassificator {
 		}
 		return scores;
 	}
-	
 }

@@ -1028,8 +1028,8 @@ public class ExcelAccess{
 	
 	public List<ScorePlayer> getClassificaRaduno(boolean partecipanti){
 		List<ScorePlayer> scores = new ArrayList<ScorePlayer>();
-		//List<GiocatoreDTO>giocatori = getListaGiocatori(partecipanti);
-		Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi(false);
+		List<GiocatoreDTO>giocatori = getListaGiocatori(partecipanti);
+		//Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi(false);
 		List<Partita[]> listaPartiteTotali = new ArrayList<Partita[]>();
 		for (int i = 1; ; i++){
 			Partita[] partiteTurnoi = loadPartite(i,false,TipoTorneo.RadunoNazionale);
@@ -1134,8 +1134,8 @@ public class ExcelAccess{
 	
 	private List<ScorePlayer> getClassificaMasterRisikoSenzaFinale(){
 		List<ScorePlayer> scores = new ArrayList<ScorePlayer>();
-		//List<GiocatoreDTO>giocatori = getListaGiocatori(false);
-		Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi(false);
+		List<GiocatoreDTO>giocatori = getListaGiocatori(false);
+		//Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi(false);
 		List<Partita[]> listaPartiteTotali = new ArrayList<Partita[]>();
 		for (int i = 1; ; i++){
 			Partita[] partiteTurnoi = loadPartite(i,false,TipoTorneo.Open);
@@ -1190,8 +1190,8 @@ public class ExcelAccess{
 	
 	private List<ScorePlayer> getClassificaTorneoGufo(){
 		List<ScorePlayer> scores = new ArrayList<ScorePlayer>();
-		//List<GiocatoreDTO>giocatori = getListaGiocatori(false);
-		Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi(false);
+		List<GiocatoreDTO>giocatori = getListaGiocatori(false);
+		//Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi(false);
 		List<Partita[]> listaPartiteTotali = new ArrayList<Partita[]>();
 		for (int i = 1; ; i++){
 			Partita[] partiteTurnoi = loadPartite(i,false,TipoTorneo.TorneoGufo);
@@ -1245,8 +1245,8 @@ public class ExcelAccess{
 	
 	private List<ScorePlayer> getClassificaCampionatoGufo(){
 		List<ScorePlayer> scores = new ArrayList<ScorePlayer>();
-		//List<GiocatoreDTO>giocatori = getListaGiocatori(false);
-		Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi(false);
+		List<GiocatoreDTO>giocatori = getListaGiocatori(false);
+		//Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi(false);
 		List<Partita[]> listaPartiteTotali = new ArrayList<Partita[]>();
 		for (int i = 1; ; i++){
 			Partita[] partiteTurnoi = loadPartite(i,true,TipoTorneo.CampionatoGufo);
@@ -1271,7 +1271,6 @@ public class ExcelAccess{
 		return scores;
 	}
 	
-	//TODO gestire la posizione dei finalisti.
 	public List<ScorePlayer> getClassificaQualificazioniNazionale(boolean partecipanti, boolean compreseSemifinali){
 		List<ScorePlayer> scores = new ArrayList<ScorePlayer>();
 		List<GiocatoreDTO>giocatori = getListaGiocatori(partecipanti);
@@ -1305,6 +1304,7 @@ public class ExcelAccess{
 			}
 		}
 		Collections.sort(scores, new ScoreQualificazioniNazionaleComparator());
+
 		Partita[] finale = loadPartite(4, false, TipoTorneo.MasterRisiko2015);
 		if (compreseSemifinali && finale != null){
 			int index = 0;
@@ -1322,31 +1322,26 @@ public class ExcelAccess{
 					GiocatoreDTO finalista2 = null;
 					if (giocatoriFinale2 != null){
 						finalista2 = giocatoriFinale2.get(indexGiocatori);
-						if (finale1.getPunteggio(finalista1) >= finale2.getPunteggio(finalista2)){
-							aggiornaClassificaConFinalisti(scores, finalista1, index++);
-							aggiornaClassificaConFinalisti(scores, finalista2, index++);
-						}else{
-							aggiornaClassificaConFinalisti(scores, finalista2, index++);
-							aggiornaClassificaConFinalisti(scores, finalista1, index++);
-						}
+						aggiornaClassificaConFinalisti(scores, finalista1, index++, indexGiocatori+1);
+						aggiornaClassificaConFinalisti(scores, finalista2, index++ , indexGiocatori+1);
 					}else{
-						aggiornaClassificaConFinalisti(scores, finalista1, index++);
+						aggiornaClassificaConFinalisti(scores, finalista1, index++, indexGiocatori+1);
 					}
 				}
-				
 			}
 		}
+		scores = ScorePlayerClassificator.scorePlayerPositioner(scores, new ScoreQualificazioniNazionaleComparator());
 		return scores;
 	}
 	
 
-	private void aggiornaClassificaConFinalisti(List<ScorePlayer> scores, GiocatoreDTO finalista, int posizione){
+	private void aggiornaClassificaConFinalisti(List<ScorePlayer> scores, GiocatoreDTO finalista, int posizione, int posizioneClassifica){
 		Iterator<ScorePlayer> iterator = scores.iterator();
 		while (iterator.hasNext()){
 			ScorePlayer scorePlayer = iterator.next(); 
 			if (scorePlayer.getGiocatore().equals(finalista)){
 				iterator.remove();
-				//scorePlayer.setPosition(posizione);
+				scorePlayer.setPosition(posizioneClassifica);
 				scores.add(posizione, scorePlayer);
 				break;
 			}

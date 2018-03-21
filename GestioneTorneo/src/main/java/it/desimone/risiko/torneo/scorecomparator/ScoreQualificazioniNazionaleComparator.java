@@ -27,8 +27,23 @@ public class ScoreQualificazioniNazionaleComparator implements Comparator<ScoreP
 		ScorePlayerQualificazioniNazionale sc1 = (ScorePlayerQualificazioniNazionale) scorePlayer1;
 		ScorePlayerQualificazioniNazionale sc2 = (ScorePlayerQualificazioniNazionale) scorePlayer2;
 		
+//		if (sc2.getPosition() > 0 && sc1.getPosition() == 0){
+//			result = 1;
+//		}
+//		if (result == 0 && sc2.getPosition() == 0 && sc1.getPosition() > 0){
+//			result = -1;
+//		}			
+//		if (result == 0 && sc2.getPosition() > 0 && sc1.getPosition() > 0){
+//			if (sc2.getPosition() < sc1.getPosition()){
+//				result = 1;
+//			}else if (sc2.getPosition() > sc1.getPosition()){
+//				result = -1;
+//			}
+//		}		
 		/* Confronto tra punteggi complessivi */
-		result = sc2.getPunteggioB(false).compareTo(sc1.getPunteggioB(false));
+		if (result == 0){
+			result = sc2.getPunteggioB(false).compareTo(sc1.getPunteggioB(false));
+		}
 		
 		/* Confronto tra punteggi ordinati in base al valore */
 		if (result == 0){
