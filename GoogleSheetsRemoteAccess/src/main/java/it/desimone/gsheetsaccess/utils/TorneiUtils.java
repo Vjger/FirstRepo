@@ -8,7 +8,7 @@ import it.desimone.gsheetsaccess.gsheets.facade.GSheetsInterface;
 import it.desimone.utils.MyLogger;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -17,7 +17,7 @@ public class TorneiUtils {
 		MyLogger.setConsoleLogLevel(Level.INFO);
 	}
 	public static void deleteTorneo(String idTorneo){
-		MyLogger.getLogger().info("Cancellazione del torneo "+idTorneo);
+		MyLogger.getLogger().info("INIZIO Cancellazione del torneo ["+idTorneo+"]");
 		
 		try {
 			deletePartiteTorneoRows(idTorneo);
@@ -26,6 +26,8 @@ public class TorneiUtils {
 		} catch (IOException e) {
 			MyLogger.getLogger().severe("Errore accedendo ai dati del torneo ["+idTorneo+"] - "+e.getMessage());
 		}
+		
+		MyLogger.getLogger().info("FINE Cancellazione del torneo ["+idTorneo+"]");
 	}
 	
 	private static void deletePartiteTorneoRows(String idTorneo) throws IOException{
@@ -69,7 +71,9 @@ public class TorneiUtils {
 		Integer torneoRowFound = GSheetsInterface.findNumTorneoRowByIdTorneo(spreadSheetIdTornei, sheetNameTornei, torneoRow);
 		
 		if (torneoRowFound != null){
-			GSheetsInterface.deleteRowsByNumRow(spreadSheetIdTornei, sheetNameTornei, Collections.singletonList(torneoRowFound));
+			List<Integer> partitaList = new ArrayList<Integer>();
+			partitaList.add(torneoRowFound);
+			GSheetsInterface.deleteRowsByNumRow(spreadSheetIdTornei, sheetNameTornei, partitaList);
 		}else{
 			MyLogger.getLogger().severe("Non trovato il torneo ["+idTorneo+"]");
 		}
