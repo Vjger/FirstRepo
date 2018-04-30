@@ -17,6 +17,8 @@ import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -104,6 +106,17 @@ public class RisikoDataManagerAccess {
         return credential;
     }
 	
+    private HttpRequestInitializer setHttpTimeout(final HttpRequestInitializer requestInitializer) {
+    	  return new HttpRequestInitializer() {
+    	    //@Override
+    	    public void initialize(HttpRequest httpRequest) throws IOException {
+    	      requestInitializer.initialize(httpRequest);
+    	      httpRequest.setConnectTimeout(3 * 60000);  // 3 minutes connect timeout
+    	      httpRequest.setReadTimeout(3 * 60000);  // 3 minutes read timeout
+    	    }
+    	  };
+    }
+    
     /**
      * Build and return an authorized Drive client service.
      * @return an authorized Drive client service
@@ -115,7 +128,7 @@ public class RisikoDataManagerAccess {
     }
     
     protected Sheets getSheetsService() throws IOException {
-        return new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
+        return new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, setHttpTimeout(credential))
                 .setApplicationName(APPLICATION_NAME)
                 .build();
     }

@@ -34,7 +34,11 @@ import javax.mail.internet.MimeMessage;
 public class ReportPublisher {
 
 	public static void main(String[] args) {
-		MyLogger.setConsoleLogLevel(Level.INFO);
+		publish();
+	}
+	
+	public static void publish() {
+		//MyLogger.setConsoleLogLevel(Level.INFO);
 
 		try{
 			List<ReportDriveData> publishedReport = GDriveDownloader.downloadReport();

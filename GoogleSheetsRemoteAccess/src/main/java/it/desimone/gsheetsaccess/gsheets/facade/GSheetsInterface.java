@@ -217,7 +217,8 @@ public class GSheetsInterface {
 		data.add(new ValueRange().setRange(rangeRicerca).setValues(values));
     	Integer updatedRows = getGoogleSheetsInstance().updateRows(spreadSheetId, sheetNameDataAnalysis, data, true);
 		
-		List<String> ranges = Collections.singletonList(AnagraficaGiocatoreRidottaRow.SHEET_DATA_ANALYSIS_NAME+"!"+"D"+indexStartingRow+":D"+(indexStartingRow+sheetRows.size()-1));
+    	String range = AnagraficaGiocatoreRidottaRow.SHEET_DATA_ANALYSIS_NAME+"!"+"D"+indexStartingRow+":D"+(indexStartingRow+sheetRows.size()-1);
+		List<String> ranges = Collections.singletonList(range);
 		
 		List<List<Object>> queryResponses = getGoogleSheetsInstance().leggiSheet(spreadSheetId, ranges);
 		

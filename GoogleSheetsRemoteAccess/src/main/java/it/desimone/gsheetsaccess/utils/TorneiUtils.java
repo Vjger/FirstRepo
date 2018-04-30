@@ -10,12 +10,9 @@ import it.desimone.utils.MyLogger;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 public class TorneiUtils {
-	static{
-		MyLogger.setConsoleLogLevel(Level.INFO);
-	}
+
 	public static void deleteTorneo(String idTorneo){
 		MyLogger.getLogger().info("INIZIO Cancellazione del torneo ["+idTorneo+"]");
 		
