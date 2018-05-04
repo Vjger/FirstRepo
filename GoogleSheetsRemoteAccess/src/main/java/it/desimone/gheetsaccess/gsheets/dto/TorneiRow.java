@@ -189,4 +189,13 @@ public class TorneiRow extends AbstractSheetRow {
 		return keyCols;
 	}
 
+	public boolean equals(Object o){
+		TorneiRow torneo = (TorneiRow) o;
+		
+		return getIdTorneo().equals(torneo.getIdTorneo());
+	}
+	
+	public int hashCode(){
+		return getIdTorneo().hashCode();
+	}
 }

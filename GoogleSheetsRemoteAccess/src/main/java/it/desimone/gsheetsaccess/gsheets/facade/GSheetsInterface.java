@@ -6,7 +6,9 @@ import it.desimone.gheetsaccess.gsheets.dto.AnagraficaGiocatoreRow;
 import it.desimone.gheetsaccess.gsheets.dto.ClassificheRow;
 import it.desimone.gheetsaccess.gsheets.dto.PartitaRow;
 import it.desimone.gheetsaccess.gsheets.dto.SheetRow;
+import it.desimone.gheetsaccess.gsheets.dto.SheetRowFactory;
 import it.desimone.gheetsaccess.gsheets.dto.TorneiRow;
+import it.desimone.gsheetsaccess.common.Configurator;
 import it.desimone.gsheetsaccess.googleaccess.GoogleSheetsAccess;
 import it.desimone.utils.MyLogger;
 
@@ -404,4 +406,25 @@ public class GSheetsInterface {
     	return updatedRows;
     }
 	
+    
+	public static <T> List<T> getAllRows(String spreadSheetId, SheetRowFactory.SheetRowType sheetRowType) throws IOException{
+		List<T> result = null;
+		GoogleSheetsAccess googleSheetsAccess = getGoogleSheetsInstance();
+
+		String sheetName = SheetRowFactory.getSheetName(sheetRowType);
+		List<String> ranges = Collections.singletonList(sheetName+"!A2:"+toAlphabetic(SheetRowFactory.create(sheetRowType).getDataSize()));
+
+		List<List<Object>> sheetRows = googleSheetsAccess.leggiSheet(spreadSheetId, ranges);
+
+		if (sheetRows != null && !sheetRows.isEmpty()){
+			result = new ArrayList<T>();
+			for (List<Object> sheetRow: sheetRows){
+				SheetRow row = SheetRowFactory.create(sheetRowType);
+				row.setData(sheetRow);
+				sheetRow.add(row);
+			}
+		}
+		return result;
+	}
+
 }

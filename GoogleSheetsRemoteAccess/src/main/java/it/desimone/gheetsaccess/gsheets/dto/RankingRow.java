@@ -5,7 +5,7 @@ import java.util.List;
 
 public class RankingRow extends AbstractSheetRow {
 	
-	public static final String SHEET_CLASSIFICHE 	= "RANKING";
+	public static final String SHEET_NAME 	= "RANKING";
 	
 	public static class ColPosition{
 		//zero-based

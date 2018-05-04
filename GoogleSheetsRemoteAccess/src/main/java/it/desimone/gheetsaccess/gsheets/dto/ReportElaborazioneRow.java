@@ -27,6 +27,10 @@ public class ReportElaborazioneRow extends AbstractSheetRow {
 	private String messaggioEsito;
 
 
+	public ReportElaborazioneRow(){
+		super();
+	}
+	
 	public ReportElaborazioneRow(String pubblicatore, String filename,
 			String performTime, String esito, String messaggioEsito) {
 		super();
