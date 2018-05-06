@@ -64,4 +64,11 @@ private volatile static Properties properties = new Properties();
 		MyLogger.getLogger().info("ID Report Elaborazioni:<<"+sheetId+">>");
 		return sheetId;
 	}
+	
+	public static String getRankingSheetId(){
+		String sheetId = ((String)properties.get("spreadSheetIdRanking"));
+		if (sheetId != null) sheetId = sheetId.trim();
+		MyLogger.getLogger().info("ID Ranking:<<"+sheetId+">>");
+		return sheetId;
+	}
 }

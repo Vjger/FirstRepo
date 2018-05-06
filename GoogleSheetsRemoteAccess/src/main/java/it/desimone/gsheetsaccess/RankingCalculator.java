@@ -36,7 +36,7 @@ public class RankingCalculator {
 		List<ScoreGiocatore> scoreGiocatori = getScoreGiocatori();
 		assignScores(scoreGiocatori);
 		List<SheetRow> righeRankingOrdinate = calcolaRankingEOrdina(scoreGiocatori);
-		String spreadSheetIdRanking = Configurator.getTorneiSheetId(); //Per adesso, poi spostare in un altro spreadSheet
+		String spreadSheetIdRanking = Configurator.getRankingSheetId(); 
 		
 		GSheetsInterface.clearSheet(spreadSheetIdRanking, RankingRow.SHEET_NAME);
 		GSheetsInterface.appendRows(spreadSheetIdRanking, RankingRow.SHEET_NAME, righeRankingOrdinate);

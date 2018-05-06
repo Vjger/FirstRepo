@@ -317,6 +317,16 @@ public class GSheetsInterface {
 		return query;
 	}
 	
+	private static String getQueryPartiteGiocatore(String idAnagrafica){
+		String query = "=FILTER("+PartitaRow.SHEET_PARTITE_NAME+"!A2:V; "+PartitaRow.SHEET_PARTITE_NAME+"!A2:E = \""+idAnagrafica+"\")";
+		return query;
+	}
+	
+	private static String getQueryClassificheGiocatore(String idAnagrafica){
+		String query = "=FILTER("+ClassificheRow.SHEET_CLASSIFICHE+"!A2:J; "+ClassificheRow.SHEET_CLASSIFICHE+"!A2:B = \""+idAnagrafica+"\")";
+		return query;
+	}
+	
 	private static String getQueryAnagrafica(Integer numeroRiga){
 		//String query = "=QUERY("+AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME+"!A2:G;ʺSELECT G WHERE A = 'ʺ&A"+numeroRiga+"&ʺ'ʺ; -1)";
 		String query = "=FILTER("+AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME+"!A2:G; "+AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME+"!A2:A = A"+numeroRiga+")";

@@ -1,5 +1,7 @@
 package it.desimone.gheetsaccess.gsheets.dto;
 
+import it.desimone.gsheetsaccess.common.Configurator;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,14 +84,18 @@ public class RankingRow extends AbstractSheetRow {
 		buffer.append("CERCA.VERT(");
 		buffer.append(id);
 		buffer.append(";");
-		buffer.append(AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME);
-		buffer.append("!A:E; "+(AnagraficaGiocatoreRow.ColPosition.NOME+1)+"; FALSE);");
+		buffer.append("IMPORTRANGE(\"https://docs.google.com/spreadsheets/d/");
+		buffer.append(Configurator.getTorneiSheetId()+"\";");
+		buffer.append("\""+AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME);
+		buffer.append("!A:E\"); "+(AnagraficaGiocatoreRow.ColPosition.NOME+1)+"; FALSE);");
 		buffer.append("\" \";");
 		buffer.append("CERCA.VERT(");
 		buffer.append(id);
 		buffer.append(";");
-		buffer.append(AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME);
-		buffer.append("!A:E; "+(AnagraficaGiocatoreRow.ColPosition.COGNOME+1)+"; FALSE);");
+		buffer.append("IMPORTRANGE(\"https://docs.google.com/spreadsheets/d/");
+		buffer.append(Configurator.getTorneiSheetId()+"\";");
+		buffer.append("\""+AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME);
+		buffer.append("!A:E\"); "+(AnagraficaGiocatoreRow.ColPosition.COGNOME+1)+"; FALSE);");
 		buffer.append(")");
 		return buffer.toString();
 	}
