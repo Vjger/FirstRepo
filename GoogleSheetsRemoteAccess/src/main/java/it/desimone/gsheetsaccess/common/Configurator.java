@@ -43,7 +43,7 @@ private volatile static Properties properties = new Properties();
 		MyLogger.getLogger().info("ID Tornei:<<"+folderId+">>");
 		return folderId;
 	}
-	
+		
 	public static String getDoneFolderId(){
 		String folderId = ((String)properties.get("DONEFolderId"));
 		if (folderId != null) folderId = folderId.trim();

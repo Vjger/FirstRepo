@@ -112,7 +112,7 @@ public class GSheetsInterface {
 	public static Integer findNumTorneoRowByIdTorneo(String spreadSheetId, String sheetName, SheetRow sheetRow) throws IOException{
 		Integer result = null;
 		String query = getQueryTorneo(((TorneiRow) sheetRow).getIdTorneo());
-		List<Integer> numRows = findNumRowsByIdTorneo(spreadSheetId, sheetName, sheetRow, query);
+		List<Integer> numRows = findNumRowsByIdTorneo(spreadSheetId, sheetRow, query);
 		if (numRows != null){
 			result = numRows.get(0);
 		}
@@ -121,18 +121,18 @@ public class GSheetsInterface {
 	
 	public static List<Integer> findNumPartiteRowsByIdTorneo(String spreadSheetId, String sheetName, SheetRow sheetRow) throws IOException{
 		String query = getQueryPartiteTorneo(((PartitaRow) sheetRow).getIdTorneo());
-		List<Integer> numRows = findNumRowsByIdTorneo(spreadSheetId, sheetName, sheetRow, query);
+		List<Integer> numRows = findNumRowsByIdTorneo(spreadSheetId, sheetRow, query);
 		return numRows;
 	}
 	
 	public static List<Integer> findClassificaRowsByIdTorneo(String spreadSheetId, String sheetName, SheetRow sheetRow) throws IOException{
 		String query = getQueryClassificaTorneo(((ClassificheRow) sheetRow).getIdTorneo());
-		List<Integer> numRows = findNumRowsByIdTorneo(spreadSheetId, sheetName, sheetRow, query);
+		List<Integer> numRows = findNumRowsByIdTorneo(spreadSheetId, sheetRow, query);
 		return numRows;
 	}
 	
 	
-	private static List<Integer> findNumRowsByIdTorneo(String spreadSheetId, String sheetName, SheetRow sheetRow, String query) throws IOException{
+	private static List<Integer> findNumRowsByIdTorneo(String spreadSheetId, SheetRow sheetRow, String query) throws IOException{
     	List<ValueRange> data = new ArrayList<ValueRange>();
 
     	String sheetNameDataAnalysis = AbstractSheetRow.SHEET_DATA_ANALYSIS_NAME;
@@ -145,7 +145,7 @@ public class GSheetsInterface {
 		values.add(rigaFormula);
 		
 		data.add(new ValueRange().setRange(rangeRicerca).setValues(values));
-    	Integer updatedRows = getGoogleSheetsInstance().updateRows(spreadSheetId, sheetNameDataAnalysis, data, true);
+    	Integer updatedRows = getGoogleSheetsInstance().updateRows(spreadSheetId, data, true);
 		String columnLetterNumRows = toAlphabetic(sheetRow.getSheetRowNumberColPosition());
 		List<String> ranges = Collections.singletonList(AbstractSheetRow.SHEET_DATA_ANALYSIS_NAME+"!"+columnLetterNumRows+":"+columnLetterNumRows);
 		
@@ -169,6 +169,12 @@ public class GSheetsInterface {
 		return numRows;
 	}
 	
+	public static void clearSheet(String spreadSheetId, String sheetName) throws IOException{
+		List<ValueRange> data = Collections.singletonList(new ValueRange().setRange(sheetName));
+		//getGoogleSheetsInstance().updateRows(spreadSheetId, data, true);
+		
+		getGoogleSheetsInstance().clearRows(spreadSheetId, Collections.singletonList(sheetName));
+	}
 	
 	public static SheetRow findSheetRowByKey(String spreadSheetId, String sheetName, SheetRow sheetRow) throws IOException{
 		SheetRow result = null;
@@ -217,7 +223,7 @@ public class GSheetsInterface {
 			numeroRiga++;
     	}
 		data.add(new ValueRange().setRange(rangeRicerca).setValues(values));
-    	Integer updatedRows = getGoogleSheetsInstance().updateRows(spreadSheetId, sheetNameDataAnalysis, data, true);
+    	Integer updatedRows = getGoogleSheetsInstance().updateRows(spreadSheetId, data, true);
 		
     	String range = AnagraficaGiocatoreRidottaRow.SHEET_DATA_ANALYSIS_NAME+"!"+"D"+indexStartingRow+":D"+(indexStartingRow+sheetRows.size()-1);
 		List<String> ranges = Collections.singletonList(range);
@@ -258,7 +264,7 @@ public class GSheetsInterface {
 			numeroRiga++;
     	}
 		data.add(new ValueRange().setRange(rangeRicerca).setValues(values));
-    	Integer updatedRows = getGoogleSheetsInstance().updateRows(spreadSheetId, sheetNameDataAnalysis, data, true);
+    	Integer updatedRows = getGoogleSheetsInstance().updateRows(spreadSheetId, data, true);
 		String columnLetterNumRows = toAlphabetic(sheetRows.get(0).getSheetRowNumberColPosition()+1);
 		List<String> ranges = Collections.singletonList(AbstractSheetRow.SHEET_DATA_ANALYSIS_NAME+"!"+columnLetterNumRows+indexStartingRow+":"+columnLetterNumRows+(indexStartingRow+sheetRows.size()-1));
 		
@@ -401,7 +407,7 @@ public class GSheetsInterface {
     		data.add(new ValueRange().setRange(range).setValues(values));
     	}
     	
-    	Integer updatedRows = getGoogleSheetsInstance().updateRows(spreadsheetId, sheetName, data, userEntered);
+    	Integer updatedRows = getGoogleSheetsInstance().updateRows(spreadsheetId, data, userEntered);
     	
     	return updatedRows;
     }
@@ -421,7 +427,8 @@ public class GSheetsInterface {
 			for (List<Object> sheetRow: sheetRows){
 				SheetRow row = SheetRowFactory.create(sheetRowType);
 				row.setData(sheetRow);
-				sheetRow.add(row);
+				
+				result.add((T) row);
 			}
 		}
 		return result;

@@ -15,11 +15,13 @@ public class RankingRow extends AbstractSheetRow {
 		public static final Integer PUNTI_RANKING 			= 3;
 	}
 	
+	public static final String[] intestazione = new String[]{"POS.", "ID_GIOCATORE", "NOMINATIVO", "RANK"};
+	
 	public Integer getDataSize() {
 		return 100; //metto un numero alto perchè in realtà la dimensione sarà variabile
 	}
 
-	class ContributoRanking{
+	public class ContributoRanking{
 		private String idTorneo;
 		private Double puntiRanking;
 		public String getIdTorneo() {
@@ -100,9 +102,10 @@ public class RankingRow extends AbstractSheetRow {
 		if (puntiRanking != null) data.set(ColPosition.PUNTI_RANKING, puntiRanking);
 
 		if (contributiRanking != null && !contributiRanking.isEmpty()){
+			Integer startIndex = ColPosition.PUNTI_RANKING;
 			for (ContributoRanking contributoRanking: contributiRanking){
-				data.add(contributoRanking.getIdTorneo());
-				data.add(contributoRanking.getPuntiRanking());
+				data.set(++startIndex,contributoRanking.getIdTorneo());
+				data.set(++startIndex,contributoRanking.getPuntiRanking());
 			}
 		}
 		return data;

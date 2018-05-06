@@ -295,7 +295,7 @@ public class GoogleSheetsAccess extends RisikoDataManagerAccess{
 
     }
     
-    public Integer updateRows(String spreadsheetId, String sheetName, List<ValueRange> data, boolean userEntered) throws IOException{
+    public Integer updateRows(String spreadsheetId, List<ValueRange> data, boolean userEntered) throws IOException{
    	
         Sheets service = getSheetsService();
         String valueInputOption = userEntered?USER_ENTERED:RAW;

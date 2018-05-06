@@ -174,9 +174,9 @@ public class TorneiRow extends AbstractSheetRow {
 		startDate 		= (String) data.get(ColPosition.START_DATE);
 		endDate 		= (String) data.get(ColPosition.END_DATE);
 		organizzatore 	= (String) data.get(ColPosition.ORGANIZZATORE);
-		numeroTurni 	= (Integer) data.get(ColPosition.NUMERO_TURNI);
-		numeroPartecipanti 	= (Integer) data.get(ColPosition.NUMERO_PARTECIPANTI);
-		numeroTavoli 	= (Integer) data.get(ColPosition.NUMERO_TAVOLI);
+		numeroTurni 	= Integer.valueOf((String)data.get(ColPosition.NUMERO_TURNI));
+		numeroPartecipanti 	= Integer.valueOf((String)data.get(ColPosition.NUMERO_PARTECIPANTI));
+		numeroTavoli 	= Integer.valueOf((String)data.get(ColPosition.NUMERO_TAVOLI));
 		note 			= (String) data.get(ColPosition.NOTE);
 		filename		= (String) data.get(ColPosition.NOME_FILE);
 		updateTime		= (String) data.get(ColPosition.UPDATE_TIME);

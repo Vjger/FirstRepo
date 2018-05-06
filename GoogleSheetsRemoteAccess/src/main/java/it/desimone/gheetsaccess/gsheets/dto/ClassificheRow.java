@@ -1,11 +1,18 @@
 package it.desimone.gheetsaccess.gsheets.dto;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class ClassificheRow extends AbstractSheetRow {
 	
 	public static final String SHEET_CLASSIFICHE 	= "CLASSIFICHE";
+	
+	private static final NumberFormat nf = new DecimalFormat("#.0000",DecimalFormatSymbols.getInstance(Locale.ITALY));
 	
 	public static class ColPosition{
 		//zero-based
@@ -156,7 +163,12 @@ public class ClassificheRow extends AbstractSheetRow {
 		idGiocatore 	= Integer.valueOf((String)data.get(ColPosition.ID_GIOCATORE));
 		clubGiocatore 	= (String) data.get(ColPosition.CLUB_GIOCATORE);
 		posizione 		= Integer.valueOf((String)data.get(ColPosition.POSIZIONE));
-		punti 			= (Double) data.get(ColPosition.PUNTI);
+		try {
+			punti 		= nf.parse((String)data.get(ColPosition.PUNTI)).doubleValue();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		numeroVittorie 	= Integer.valueOf((String)data.get(ColPosition.NUMERO_VITTORIE));
 		partiteGiocate 	= Integer.valueOf((String)data.get(ColPosition.PARTITE_GIOCATE));
 		updateTime		= (String) data.get(ColPosition.UPDATE_TIME);
