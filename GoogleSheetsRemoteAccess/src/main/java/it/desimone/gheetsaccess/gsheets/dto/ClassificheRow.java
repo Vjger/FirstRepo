@@ -1,5 +1,7 @@
 package it.desimone.gheetsaccess.gsheets.dto;
 
+import it.desimone.utils.MyLogger;
+
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -166,8 +168,8 @@ public class ClassificheRow extends AbstractSheetRow {
 		try {
 			punti 		= nf.parse((String)data.get(ColPosition.PUNTI)).doubleValue();
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			MyLogger.getLogger().severe("Errore nel parsing di un punteggio: "+data);
+			throw new IllegalArgumentException("Errore nel parsing di un punteggio: "+data);
 		}
 		numeroVittorie 	= Integer.valueOf((String)data.get(ColPosition.NUMERO_VITTORIE));
 		partiteGiocate 	= Integer.valueOf((String)data.get(ColPosition.PARTITE_GIOCATE));

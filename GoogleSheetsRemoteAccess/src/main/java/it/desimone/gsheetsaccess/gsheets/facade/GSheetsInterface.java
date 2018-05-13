@@ -8,7 +8,6 @@ import it.desimone.gheetsaccess.gsheets.dto.PartitaRow;
 import it.desimone.gheetsaccess.gsheets.dto.SheetRow;
 import it.desimone.gheetsaccess.gsheets.dto.SheetRowFactory;
 import it.desimone.gheetsaccess.gsheets.dto.TorneiRow;
-import it.desimone.gsheetsaccess.common.Configurator;
 import it.desimone.gsheetsaccess.googleaccess.GoogleSheetsAccess;
 import it.desimone.utils.MyLogger;
 
@@ -22,6 +21,7 @@ import com.google.api.services.sheets.v4.model.ValueRange;
 
 public class GSheetsInterface {
 
+	private static final String NOT_AVAILABLE = "#N/A";
 	private static GoogleSheetsAccess googleSheetAccess;
 	
 	public static GoogleSheetsAccess getGoogleSheetsInstance(){
@@ -119,13 +119,13 @@ public class GSheetsInterface {
 		return result;
 	}
 	
-	public static List<Integer> findNumPartiteRowsByIdTorneo(String spreadSheetId, String sheetName, SheetRow sheetRow) throws IOException{
+	public static List<Integer> findNumPartiteRowsByIdTorneo(String spreadSheetId, SheetRow sheetRow) throws IOException{
 		String query = getQueryPartiteTorneo(((PartitaRow) sheetRow).getIdTorneo());
 		List<Integer> numRows = findNumRowsByIdTorneo(spreadSheetId, sheetRow, query);
 		return numRows;
 	}
 	
-	public static List<Integer> findClassificaRowsByIdTorneo(String spreadSheetId, String sheetName, SheetRow sheetRow) throws IOException{
+	public static List<Integer> findClassificaRowsByIdTorneo(String spreadSheetId, SheetRow sheetRow) throws IOException{
 		String query = getQueryClassificaTorneo(((ClassificheRow) sheetRow).getIdTorneo());
 		List<Integer> numRows = findNumRowsByIdTorneo(spreadSheetId, sheetRow, query);
 		return numRows;
@@ -161,6 +161,88 @@ public class GSheetsInterface {
 					numRows.add(numRow);
 				}catch(NumberFormatException ne){
 					MyLogger.getLogger().info("Not found: "+valueQuery);
+				}
+			}
+		}
+
+		getGoogleSheetsInstance().clearRows(spreadSheetId, Collections.singletonList(rangeRicerca));
+		return numRows;
+	}
+	
+	public static List<SheetRow> findClassificaRowsByIdGiocatore(String spreadSheetId, SheetRow sheetRow) throws IOException{
+		String query = getQueryClassificaTorneo(((ClassificheRow) sheetRow).getIdGiocatore());
+		List<SheetRow> numRows = findClassificheRowsByRow(spreadSheetId, sheetRow, query);
+		return numRows;
+	}
+	
+	public static List<SheetRow> findPartiteRowsByIdGiocatore(String spreadSheetId, SheetRow sheetRow) throws IOException{
+		String query = getQueryPartiteTorneo(((PartitaRow) sheetRow).getIdGiocatoreVincitore());
+		List<SheetRow> numRows = findPartiteRowsByRow(spreadSheetId, sheetRow, query);
+		return numRows;
+	}
+	
+	private static List<SheetRow> findClassificheRowsByRow(String spreadSheetId, SheetRow sheetRow, String query) throws IOException{
+    	List<ValueRange> data = new ArrayList<ValueRange>();
+
+    	String sheetNameDataAnalysis = AbstractSheetRow.SHEET_DATA_ANALYSIS_NAME;
+    	
+		List<List<Object>> values = new ArrayList<List<Object>>();
+
+		String rangeRicerca = sheetNameDataAnalysis+"!A1:A1";
+
+		List<Object> rigaFormula = Arrays.asList(new Object[]{query});
+		values.add(rigaFormula);
+		
+		data.add(new ValueRange().setRange(rangeRicerca).setValues(values));
+    	Integer updatedRows = getGoogleSheetsInstance().updateRows(spreadSheetId, data, true);
+		String columnLetterNumRows = toAlphabetic(sheetRow.getSheetRowNumberColPosition());
+		List<String> ranges = Collections.singletonList(AbstractSheetRow.SHEET_DATA_ANALYSIS_NAME+"!A:"+columnLetterNumRows);
+		
+		List<List<Object>> queryResponses = getGoogleSheetsInstance().leggiSheet(spreadSheetId, ranges);
+		
+		List<SheetRow> numRows = null;
+		if (queryResponses != null && !queryResponses.isEmpty()){
+			numRows = new ArrayList<SheetRow>();
+			for (List<Object> queryResponse: queryResponses){
+				if (queryResponse != null && !queryResponse.isEmpty() && !queryResponse.get(0).equals(NOT_AVAILABLE)){
+					ClassificheRow classificheRow = new ClassificheRow();
+					classificheRow.setData(queryResponse);
+					numRows.add(classificheRow);
+				}
+			}
+		}
+
+		getGoogleSheetsInstance().clearRows(spreadSheetId, Collections.singletonList(rangeRicerca));
+		return numRows;
+	}
+	
+	private static List<SheetRow> findPartiteRowsByRow(String spreadSheetId, SheetRow sheetRow, String query) throws IOException{
+    	List<ValueRange> data = new ArrayList<ValueRange>();
+
+    	String sheetNameDataAnalysis = AbstractSheetRow.SHEET_DATA_ANALYSIS_NAME;
+    	
+		List<List<Object>> values = new ArrayList<List<Object>>();
+
+		String rangeRicerca = sheetNameDataAnalysis+"!A1:A1";
+
+		List<Object> rigaFormula = Arrays.asList(new Object[]{query});
+		values.add(rigaFormula);
+		
+		data.add(new ValueRange().setRange(rangeRicerca).setValues(values));
+    	Integer updatedRows = getGoogleSheetsInstance().updateRows(spreadSheetId, data, true);
+		String columnLetterNumRows = toAlphabetic(sheetRow.getSheetRowNumberColPosition());
+		List<String> ranges = Collections.singletonList(AbstractSheetRow.SHEET_DATA_ANALYSIS_NAME+"!A:"+columnLetterNumRows);
+		
+		List<List<Object>> queryResponses = getGoogleSheetsInstance().leggiSheet(spreadSheetId, ranges);
+		
+		List<SheetRow> numRows = null;
+		if (queryResponses != null && !queryResponses.isEmpty()){
+			numRows = new ArrayList<SheetRow>();
+			for (List<Object> queryResponse: queryResponses){
+				if (queryResponse != null && !queryResponse.isEmpty() && !queryResponse.get(0).equals(NOT_AVAILABLE)){
+					PartitaRow partitaRow = new PartitaRow();
+					partitaRow.setData(queryResponse);
+					numRows.add(partitaRow);
 				}
 			}
 		}
@@ -288,7 +370,7 @@ public class GSheetsInterface {
 		
 		return sheetRows;
 	}
-	
+		
 	private static String getQueryTorneo(String idTorneo){
 		StringBuilder buffer = new StringBuilder();
 		buffer.append("=FILTER(");
@@ -311,22 +393,48 @@ public class GSheetsInterface {
 		return buffer.toString();
 	}
 	
+	private static String getQueryClassificaTorneo(Integer idGiocatore){
+		StringBuilder buffer = new StringBuilder();
+		buffer.append("=FILTER(");
+		buffer.append(ClassificheRow.SHEET_CLASSIFICHE + "!A2:");
+		buffer.append(toAlphabetic(new ClassificheRow().getDataSize() -1)+";");
+		buffer.append(ClassificheRow.SHEET_CLASSIFICHE + "!B2:B = ");
+		buffer.append(idGiocatore);
+		buffer.append(")");
+		return buffer.toString();
+	}
+	
+	private static String getQueryPartiteTorneo(Integer idGiocatore){
+		StringBuilder buffer = new StringBuilder();
+		buffer.append("=FILTER(");
+		buffer.append(PartitaRow.SHEET_PARTITE_NAME + "!A2:");
+		buffer.append(toAlphabetic(new PartitaRow().getDataSize() -1)+";");
+		buffer.append("(");
+		buffer.append(PartitaRow.SHEET_PARTITE_NAME + "!G2:G = ");
+		buffer.append(idGiocatore);
+		buffer.append(")+(");
+		buffer.append(PartitaRow.SHEET_PARTITE_NAME + "!J2:J = ");
+		buffer.append(idGiocatore);
+		buffer.append(")+(");
+		buffer.append(PartitaRow.SHEET_PARTITE_NAME + "!M2:M = ");
+		buffer.append(idGiocatore);
+		buffer.append(")+(");
+		buffer.append(PartitaRow.SHEET_PARTITE_NAME + "!P2:P = ");
+		buffer.append(idGiocatore);
+		buffer.append(")+(");
+		buffer.append(PartitaRow.SHEET_PARTITE_NAME + "!S2:S = ");
+		buffer.append(idGiocatore);
+		buffer.append(")");
+		buffer.append(")");
+		return buffer.toString();
+	}
+	
 	private static String getQueryPartiteTorneo(String idTorneo){
 		//String query = "=QUERY("+AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME+"!A2:G;ʺSELECT G WHERE A = 'ʺ&A"+numeroRiga+"&ʺ'ʺ; -1)";
 		String query = "=FILTER("+PartitaRow.SHEET_PARTITE_NAME+"!A2:V; "+PartitaRow.SHEET_PARTITE_NAME+"!A2:A = \""+idTorneo+"\")";
 		return query;
 	}
-	
-	private static String getQueryPartiteGiocatore(String idAnagrafica){
-		String query = "=FILTER("+PartitaRow.SHEET_PARTITE_NAME+"!A2:V; "+PartitaRow.SHEET_PARTITE_NAME+"!A2:E = \""+idAnagrafica+"\")";
-		return query;
-	}
-	
-	private static String getQueryClassificheGiocatore(String idAnagrafica){
-		String query = "=FILTER("+ClassificheRow.SHEET_CLASSIFICHE+"!A2:J; "+ClassificheRow.SHEET_CLASSIFICHE+"!A2:B = \""+idAnagrafica+"\")";
-		return query;
-	}
-	
+		
 	private static String getQueryAnagrafica(Integer numeroRiga){
 		//String query = "=QUERY("+AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME+"!A2:G;ʺSELECT G WHERE A = 'ʺ&A"+numeroRiga+"&ʺ'ʺ; -1)";
 		String query = "=FILTER("+AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME+"!A2:G; "+AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME+"!A2:A = A"+numeroRiga+")";

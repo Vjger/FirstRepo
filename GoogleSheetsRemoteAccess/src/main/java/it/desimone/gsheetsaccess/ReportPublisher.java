@@ -197,7 +197,7 @@ public class ReportPublisher {
 		//Basta un oggetto: tanto l'id del torneo è sempre lo stesso.
 		PartitaRow partitaRowDiRicerca = new PartitaRow();
 		partitaRowDiRicerca.setIdTorneo(ExcelGSheetsBridge.obtainIdTorneo(torneo));
-		List<Integer> partiteRowFound = GSheetsInterface.findNumPartiteRowsByIdTorneo(spreadSheetIdTornei, sheetNamePartite, partitaRowDiRicerca);
+		List<Integer> partiteRowFound = GSheetsInterface.findNumPartiteRowsByIdTorneo(spreadSheetIdTornei, partitaRowDiRicerca);
 
 		if (partiteRowFound != null && !partiteRowFound.isEmpty()){
 			MyLogger.getLogger().info("Cancellazione di "+partiteRowFound.size()+" partite del torneo "+torneo);
@@ -219,7 +219,7 @@ public class ReportPublisher {
 		
 		ClassificheRow classificheRowDiRicerca = new ClassificheRow();
 		classificheRowDiRicerca.setIdTorneo(ExcelGSheetsBridge.obtainIdTorneo(torneo));
-		List<Integer> classificheRowFound = GSheetsInterface.findClassificaRowsByIdTorneo(spreadSheetIdTornei, sheetNameClassifiche, classificheRowDiRicerca);
+		List<Integer> classificheRowFound = GSheetsInterface.findClassificaRowsByIdTorneo(spreadSheetIdTornei, classificheRowDiRicerca);
 
 		if (classificheRowFound != null && !classificheRowFound.isEmpty()){
 			MyLogger.getLogger().info("Cancellazione di "+classificheRowFound.size()+" giocatori in classifica del torneo "+torneo);

@@ -1,16 +1,40 @@
 package it.desimone;
 
+import it.desimone.gheetsaccess.gsheets.dto.AnagraficaGiocatoreRow;
+import it.desimone.gheetsaccess.gsheets.dto.ClassificheRow;
+import it.desimone.gheetsaccess.gsheets.dto.PartitaRow;
+import it.desimone.gheetsaccess.gsheets.dto.SheetRow;
+import it.desimone.gsheetsaccess.common.Configurator;
+import it.desimone.gsheetsaccess.googleaccess.GoogleSheetsAccess;
+import it.desimone.gsheetsaccess.gsheets.facade.GSheetsInterface;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import it.desimone.gheetsaccess.gsheets.dto.AnagraficaGiocatoreRow;
-import it.desimone.gsheetsaccess.common.Configurator;
-import it.desimone.gsheetsaccess.googleaccess.GoogleSheetsAccess;
 import junit.framework.TestCase;
 
 public class GSheetsInterfaceTest extends TestCase {
 
+	public void testCercaPartiteGiocatore() throws IOException {
+		Integer idGiocatore = 1;
+		String spreadSheetIdTornei = Configurator.getTorneiSheetId();
+		PartitaRow row = new PartitaRow();
+		row.setIdGiocatoreVincitore(idGiocatore);
+		
+		List<SheetRow> rows = GSheetsInterface.findPartiteRowsByIdGiocatore(spreadSheetIdTornei, row);
+	}
+	
+	public void testCercaClassificheGiocatore() throws IOException {
+		Integer idGiocatore = 1;
+		String spreadSheetIdTornei = Configurator.getTorneiSheetId();
+		ClassificheRow row = new ClassificheRow();
+		row.setIdGiocatore(idGiocatore);
+		
+		List<SheetRow> rows = GSheetsInterface.findClassificaRowsByIdGiocatore(spreadSheetIdTornei, row);
+	}
+	
+	
 	public void testLeggiSheetStringString() throws IOException {
 		GoogleSheetsAccess googleSheetsAccess = new GoogleSheetsAccess();
 		String spreadSheetIdTornei = Configurator.getTorneiSheetId();

@@ -1,10 +1,18 @@
 package it.desimone.gheetsaccess.gsheets.dto;
 
+import it.desimone.utils.MyLogger;
+
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class PartitaRow extends AbstractSheetRow {
 
+	private static final NumberFormat nf = new DecimalFormat("#.0000",DecimalFormatSymbols.getInstance(Locale.ITALY));
 	public static final String SHEET_PARTITE_NAME 	= "PARTITE";
 	
 	private String idTorneo;
@@ -75,12 +83,12 @@ public class PartitaRow extends AbstractSheetRow {
 		if (idGiocatore5 != null) data.set(ColPosition.ID_GIOCATORE5, idGiocatore5);
 		if (punteggioGiocatore5 != null) data.set(ColPosition.PUNTEGGIO_GIOCATORE5, punteggioGiocatore5);
 		if (idGiocatoreVincitore != null) data.set(ColPosition.ID_GIOCATORE_VINCITORE, idGiocatoreVincitore);
-		if (nominativoGiocatore1 != null) data.set(ColPosition.NOMINATIVO_GIOCATORE1, nominativoGiocatore1);
-		if (nominativoGiocatore2 != null) data.set(ColPosition.NOMINATIVO_GIOCATORE2, nominativoGiocatore2);
-		if (nominativoGiocatore3 != null) data.set(ColPosition.NOMINATIVO_GIOCATORE3, nominativoGiocatore3);
-		if (nominativoGiocatore4 != null) data.set(ColPosition.NOMINATIVO_GIOCATORE4, nominativoGiocatore4);
-		if (nominativoGiocatore5 != null) data.set(ColPosition.NOMINATIVO_GIOCATORE5, nominativoGiocatore5);
-		if (nominativoVincitore != null) data.set(ColPosition.NOMINATIVO_VINCITORE, nominativoVincitore);
+		if (getNominativoGiocatore1() != null) data.set(ColPosition.NOMINATIVO_GIOCATORE1, getNominativoGiocatore1());
+		if (getNominativoGiocatore2() != null) data.set(ColPosition.NOMINATIVO_GIOCATORE2, getNominativoGiocatore2());
+		if (getNominativoGiocatore3() != null) data.set(ColPosition.NOMINATIVO_GIOCATORE3, getNominativoGiocatore3());
+		if (getNominativoGiocatore4() != null) data.set(ColPosition.NOMINATIVO_GIOCATORE4, getNominativoGiocatore4());
+		if (getNominativoGiocatore5() != null) data.set(ColPosition.NOMINATIVO_GIOCATORE5, getNominativoGiocatore5());
+		if (getNominativoVincitore() != null) data.set(ColPosition.NOMINATIVO_VINCITORE, getNominativoVincitore());
 		return data;
 	}
 
@@ -91,17 +99,37 @@ public class PartitaRow extends AbstractSheetRow {
 		numeroTurno 		= Integer.valueOf((String)data.get(ColPosition.NUMERO_TURNO));
 		dataTurno 			= (String) data.get(ColPosition.DATA_TURNO);
 		numeroTavolo 		= Integer.valueOf((String)data.get(ColPosition.NUMERO_TAVOLO));
-		idGiocatore1 		= Integer.valueOf((String)data.get(ColPosition.ID_GIOCATORE1));
-		punteggioGiocatore1 = (Double) data.get(ColPosition.PUNTEGGIO_GIOCATORE1);
-		idGiocatore2 		= Integer.valueOf((String)data.get(ColPosition.ID_GIOCATORE2));
-		punteggioGiocatore2 = (Double) data.get(ColPosition.PUNTEGGIO_GIOCATORE2);
-		idGiocatore3 		= Integer.valueOf((String)data.get(ColPosition.ID_GIOCATORE3));
-		punteggioGiocatore3 = (Double) data.get(ColPosition.PUNTEGGIO_GIOCATORE3);
-		idGiocatore4 		= Integer.valueOf((String)data.get(ColPosition.ID_GIOCATORE4));
-		punteggioGiocatore4 = (Double) data.get(ColPosition.PUNTEGGIO_GIOCATORE4);
-		idGiocatore5 		= Integer.valueOf((String)data.get(ColPosition.ID_GIOCATORE5));
-		punteggioGiocatore5 = (Double) data.get(ColPosition.PUNTEGGIO_GIOCATORE5);
-		idGiocatoreVincitore= (Integer) data.get(ColPosition.ID_GIOCATORE_VINCITORE);
+		try {
+			punteggioGiocatore1 		= nf.parse((String)data.get(ColPosition.PUNTEGGIO_GIOCATORE1)).doubleValue();
+			punteggioGiocatore2 		= nf.parse((String)data.get(ColPosition.PUNTEGGIO_GIOCATORE2)).doubleValue();
+			punteggioGiocatore3 		= nf.parse((String)data.get(ColPosition.PUNTEGGIO_GIOCATORE3)).doubleValue();
+			punteggioGiocatore4 		= nf.parse((String)data.get(ColPosition.PUNTEGGIO_GIOCATORE4)).doubleValue();
+			punteggioGiocatore5 		= nf.parse((String)data.get(ColPosition.PUNTEGGIO_GIOCATORE5)).doubleValue();
+		} catch (ParseException e) {
+			MyLogger.getLogger().severe("Errore nel parsing di un punteggio: "+data);
+			//throw new IllegalArgumentException("Errore nel parsing di un punteggio: "+data);
+		}
+		
+		String colonnaGiocatore1 = (String)data.get(ColPosition.ID_GIOCATORE1);
+		if (colonnaGiocatore1 != null && colonnaGiocatore1.trim().length() > 0)
+			idGiocatore1 	= Integer.valueOf(colonnaGiocatore1);
+		String colonnaGiocatore2 = (String)data.get(ColPosition.ID_GIOCATORE2);
+		if (colonnaGiocatore2 != null && colonnaGiocatore2.trim().length() > 0)
+			idGiocatore2 	= Integer.valueOf(colonnaGiocatore2);
+		String colonnaGiocatore3 = (String)data.get(ColPosition.ID_GIOCATORE3);
+		if (colonnaGiocatore3 != null && colonnaGiocatore3.trim().length() > 0)
+			idGiocatore3 	= Integer.valueOf(colonnaGiocatore3);
+		String colonnaGiocatore4 = (String)data.get(ColPosition.ID_GIOCATORE4);
+		if (colonnaGiocatore4 != null && colonnaGiocatore4.trim().length() > 0)
+			idGiocatore4 	= Integer.valueOf(colonnaGiocatore4);
+		String colonnaGiocatore5 = (String)data.get(ColPosition.ID_GIOCATORE5);
+		if (colonnaGiocatore5 != null && colonnaGiocatore5.trim().length() > 0)
+			idGiocatore5 	= Integer.valueOf(colonnaGiocatore5);
+		String colonnaGiocatoreVincitore = (String)data.get(ColPosition.ID_GIOCATORE_VINCITORE);
+		if (colonnaGiocatoreVincitore != null && colonnaGiocatoreVincitore.trim().length() > 0)
+			idGiocatoreVincitore 	= Integer.valueOf(colonnaGiocatoreVincitore);
+
+		//idGiocatoreVincitore= (Integer) data.get(ColPosition.ID_GIOCATORE_VINCITORE);
 	}
 
 	public List<Integer> keyCols(){
@@ -238,6 +266,78 @@ public class PartitaRow extends AbstractSheetRow {
 		this.dataTurno = dataTurno;
 	}
 	
+	public String getNominativoVincitore() {
+		if (idGiocatoreVincitore != null){
+			return getGiocatoreCellById(idGiocatoreVincitore);
+		}else{
+			return null;
+		}
+	}
+
+	public void setNominativoVincitore(String nominativoVincitore) {
+		this.nominativoVincitore = nominativoVincitore;
+	}
+
+	public String getNominativoGiocatore1() {
+		if (idGiocatore1 != null){
+			return getGiocatoreCellById(idGiocatore1);
+		}else{
+			return null;
+		}
+	}
+
+	public void setNominativoGiocatore1(String nominativoGiocatore1) {
+		this.nominativoGiocatore1 = nominativoGiocatore1;
+	}
+
+	public String getNominativoGiocatore2() {
+		if (idGiocatore2 != null){
+			return getGiocatoreCellById(idGiocatore2);
+		}else{
+			return null;
+		}
+	}
+
+	public void setNominativoGiocatore2(String nominativoGiocatore2) {
+		this.nominativoGiocatore2 = nominativoGiocatore2;
+	}
+
+	public String getNominativoGiocatore3() {
+		if (idGiocatore3 != null){
+			return getGiocatoreCellById(idGiocatore3);
+		}else{
+			return null;
+		}
+	}
+
+	public void setNominativoGiocatore3(String nominativoGiocatore3) {
+		this.nominativoGiocatore3 = nominativoGiocatore3;
+	}
+
+	public String getNominativoGiocatore4() {
+		if (idGiocatore4 != null){
+			return getGiocatoreCellById(idGiocatore4);
+		}else{
+			return null;
+		}
+	}
+
+	public void setNominativoGiocatore4(String nominativoGiocatore4) {
+		this.nominativoGiocatore4 = nominativoGiocatore4;
+	}
+
+	public String getNominativoGiocatore5() {
+		if (idGiocatore5 != null){
+			return getGiocatoreCellById(idGiocatore5);
+		}else{
+			return null;
+		}
+	}
+
+	public void setNominativoGiocatore5(String nominativoGiocatore5) {
+		this.nominativoGiocatore5 = nominativoGiocatore5;
+	}
+
 	private static String getGiocatoreCellById(Integer id){
 		StringBuilder buffer = new StringBuilder();
 		buffer.append("=CONCATENATE(");

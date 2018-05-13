@@ -186,7 +186,7 @@ public class GSheetsReaderTest {
 		
 		String spreadSheetIdTornei = "1CsD-U3lpgBNHX0PgnRWwbGlKX6hcTtmrNKlqOdfwXtI";
 		String sheetNameClassifiche = ClassificheRow.SHEET_CLASSIFICHE;
-		List<Integer> classificheRowFound = GSheetsInterface.findClassificaRowsByIdTorneo(spreadSheetIdTornei, sheetNameClassifiche, classificheRow);
+		List<Integer> classificheRowFound = GSheetsInterface.findClassificaRowsByIdTorneo(spreadSheetIdTornei, classificheRow);
 
 		if (classificheRowFound != null && !classificheRowFound.isEmpty()){
 			GSheetsInterface.deleteRowsByNumRow(spreadSheetIdTornei, sheetNameClassifiche, classificheRowFound);
@@ -247,7 +247,7 @@ public class GSheetsReaderTest {
 		
 		String spreadSheetIdTornei = Configurator.getTorneiSheetId();
 		String sheetNamePartite = PartitaRow.SHEET_PARTITE_NAME;
-		List<Integer> partiteRowFound = GSheetsInterface.findNumPartiteRowsByIdTorneo(spreadSheetIdTornei, sheetNamePartite, partitaRow);
+		List<Integer> partiteRowFound = GSheetsInterface.findNumPartiteRowsByIdTorneo(spreadSheetIdTornei, partitaRow);
 
 		if (partiteRowFound != null && !partiteRowFound.isEmpty()){
 			GSheetsInterface.deleteRowsByNumRow(spreadSheetIdTornei, sheetNamePartite, partiteRowFound);
