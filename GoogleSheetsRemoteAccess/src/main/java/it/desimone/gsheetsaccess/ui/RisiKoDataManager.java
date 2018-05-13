@@ -24,7 +24,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 
-public class TextAreaLogProgram extends JFrame {
+public class RisiKoDataManager extends JFrame {
     /**
      * The text area which is used for displaying logging information.
      */
@@ -38,7 +38,7 @@ public class TextAreaLogProgram extends JFrame {
      
     private PrintStream standardOut;
      
-    public TextAreaLogProgram() {
+    public RisiKoDataManager() {
         super("Demo printing to JTextArea");
          
         textArea = new JTextArea(250, 10);
@@ -166,7 +166,7 @@ public class TextAreaLogProgram extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                new TextAreaLogProgram().setVisible(true);
+                new RisiKoDataManager().setVisible(true);
             }
         });
     }

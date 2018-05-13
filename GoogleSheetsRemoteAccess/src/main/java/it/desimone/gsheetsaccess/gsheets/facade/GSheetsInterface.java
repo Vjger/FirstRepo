@@ -290,7 +290,7 @@ public class GSheetsInterface {
 		return result;
 	}
 	
-	public static List<AnagraficaGiocatoreRidottaRow> findAnagraficheRidotteByKey(String spreadSheetId, String sheetName, List<AnagraficaGiocatoreRidottaRow> sheetRows) throws IOException{
+	public static List<AnagraficaGiocatoreRidottaRow> findAnagraficheRidotteByKey(String spreadSheetId, List<AnagraficaGiocatoreRidottaRow> sheetRows) throws IOException{
     	List<ValueRange> data = new ArrayList<ValueRange>();
 
     	String sheetNameDataAnalysis = AnagraficaGiocatoreRidottaRow.SHEET_DATA_ANALYSIS_NAME;
@@ -331,7 +331,48 @@ public class GSheetsInterface {
 		return sheetRows;
 	}
 	
-	public static List<SheetRow> findAnagraficheByKey(String spreadSheetId, String sheetName, List<SheetRow> sheetRows) throws IOException{
+	public static List<AnagraficaGiocatoreRidottaRow> findAnagraficheRidotteById(String spreadSheetId, List<AnagraficaGiocatoreRidottaRow> sheetRows) throws IOException{
+    	List<ValueRange> data = new ArrayList<ValueRange>();
+
+    	String sheetNameDataAnalysis = AnagraficaGiocatoreRidottaRow.SHEET_DATA_ANALYSIS_NAME;
+    	
+		List<List<Object>> values = new ArrayList<List<Object>>();
+    	int indexStartingRow = 8;
+    	int numeroRiga = indexStartingRow;
+		String rangeRicerca = sheetNameDataAnalysis+"!A"+indexStartingRow+":B"+(indexStartingRow+sheetRows.size()-1);
+    	for (AnagraficaGiocatoreRidottaRow sheetRow: sheetRows){
+			List<Object> rigaRicerca = Arrays.asList(new Object[]{sheetRow.getId(), getQueryAnagraficaRidotta(numeroRiga)});
+			values.add(rigaRicerca);
+			numeroRiga++;
+    	}
+		data.add(new ValueRange().setRange(rangeRicerca).setValues(values));
+    	Integer updatedRows = getGoogleSheetsInstance().updateRows(spreadSheetId, data, true);
+		
+    	String range = AnagraficaGiocatoreRidottaRow.SHEET_DATA_ANALYSIS_NAME+"!"+"G"+indexStartingRow+":G"+(indexStartingRow+sheetRows.size()-1);
+		List<String> ranges = Collections.singletonList(range);
+		
+		List<List<Object>> queryResponses = getGoogleSheetsInstance().leggiSheet(spreadSheetId, ranges);
+		
+		if (queryResponses != null && !queryResponses.isEmpty()){
+			int index = 0;
+			for (List<Object> queryResponse: queryResponses){
+				String valueQuery = (String)queryResponse.get(0);
+				try{
+					Integer numRow = Integer.valueOf(valueQuery);
+					sheetRows.get(index).setSheetRowNumber(numRow);
+				}catch(NumberFormatException ne){
+					MyLogger.getLogger().info("Not found: "+valueQuery);
+				}
+				index++;
+			}
+		}
+		
+		getGoogleSheetsInstance().clearRows(spreadSheetId, Collections.singletonList(rangeRicerca));
+		
+		return sheetRows;
+	}
+	
+	public static List<SheetRow> findAnagraficheByKey(String spreadSheetId, List<SheetRow> sheetRows) throws IOException{
     	List<ValueRange> data = new ArrayList<ValueRange>();
 
     	String sheetNameDataAnalysis = AbstractSheetRow.SHEET_DATA_ANALYSIS_NAME;
@@ -370,7 +411,7 @@ public class GSheetsInterface {
 		
 		return sheetRows;
 	}
-		
+	
 	private static String getQueryTorneo(String idTorneo){
 		StringBuilder buffer = new StringBuilder();
 		buffer.append("=FILTER(");

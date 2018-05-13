@@ -148,7 +148,7 @@ public class ReportPublisher {
 			for (SheetRow[] sheetRow: anagrafiche){
 				anagraficheDaVerificare.add((AnagraficaGiocatoreRidottaRow)sheetRow[0]);
 			}
-			List<AnagraficaGiocatoreRidottaRow> anagraficaRowFound = GSheetsInterface.findAnagraficheRidotteByKey(spreadSheetIdAnagraficaRidotta, AnagraficaGiocatoreRidottaRow.SHEET_ANAGRAFICA_NAME, anagraficheDaVerificare);
+			List<AnagraficaGiocatoreRidottaRow> anagraficaRowFound = GSheetsInterface.findAnagraficheRidotteByKey(spreadSheetIdAnagraficaRidotta, anagraficheDaVerificare);
 			
 			if (anagraficaRowFound != null){
 				Integer maxId = GSheetsInterface.findMaxIdAnagrafica(spreadSheetIdAnagraficaRidotta);
@@ -174,7 +174,7 @@ public class ReportPublisher {
 				MyLogger.getLogger().info("Aggiunte "+anagraficheRidotteDaAggiungere.size()+" anagrafiche ridotte");
 			}
 			if (!anagraficheDaAggiornare.isEmpty()){
-				List<SheetRow> anagraficheDaAggiornareRowFound = GSheetsInterface.findAnagraficheByKey(spreadSheetIdTornei, AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME, anagraficheDaAggiornare);
+				List<SheetRow> anagraficheDaAggiornareRowFound = GSheetsInterface.findAnagraficheByKey(spreadSheetIdTornei, anagraficheDaAggiornare);
 				GSheetsInterface.updateRows(spreadSheetIdTornei, sheetNameGiocatori, anagraficheDaAggiornareRowFound, true);
 				MyLogger.getLogger().info("Aggiornate "+anagraficheDaAggiornare.size()+" anagrafiche");
 			}

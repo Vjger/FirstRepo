@@ -1,5 +1,6 @@
 package it.desimone.gsheetsaccess.utils;
 
+import it.desimone.gheetsaccess.gsheets.dto.AnagraficaGiocatoreRow;
 import it.desimone.gheetsaccess.gsheets.dto.ClassificheRow;
 import it.desimone.gheetsaccess.gsheets.dto.PartitaRow;
 import it.desimone.gheetsaccess.gsheets.dto.SheetRow;
@@ -10,6 +11,7 @@ import it.desimone.utils.MyLogger;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class TorneiUtils {
@@ -23,9 +25,15 @@ public class TorneiUtils {
 			classificheRow.setIdGiocatore(idPlayerFrom);
 			List<SheetRow> righeClassificaGiocatore = GSheetsInterface.findClassificaRowsByIdGiocatore(spreadSheetIdTornei, classificheRow);
 			
+			MyLogger.getLogger().info("Estratte "+(righeClassificaGiocatore==null?0:righeClassificaGiocatore.size())+" righe Classifica per il giocatore con ID ["+idPlayerFrom+"]");
+			if (righeClassificaGiocatore != null) MyLogger.getLogger().info(righeClassificaGiocatore.toString());
+			
 			PartitaRow partitaRow = new PartitaRow();
 			partitaRow.setIdGiocatoreVincitore(idPlayerFrom);
 			List<SheetRow> righePartiteGiocatore = GSheetsInterface.findPartiteRowsByIdGiocatore(spreadSheetIdTornei, partitaRow);
+			
+			MyLogger.getLogger().info("Estratte "+(righePartiteGiocatore==null?0:righePartiteGiocatore.size())+" righe Partita per il giocatore con ID ["+idPlayerFrom+"]");
+			if (righePartiteGiocatore != null) MyLogger.getLogger().info(righePartiteGiocatore.toString());
 			
 			for (SheetRow rigaClassifica: righeClassificaGiocatore){
 				ClassificheRow riga = (ClassificheRow) rigaClassifica;
@@ -55,7 +63,20 @@ public class TorneiUtils {
 			}
 			
 			GSheetsInterface.updateRows(spreadSheetIdTornei, ClassificheRow.SHEET_CLASSIFICHE, righeClassificaGiocatore, true);
+			MyLogger.getLogger().info("Sostituito nelle righe classifica il giocatore con ID ["+idPlayerFrom+"] con quello con ID ["+idPlayerTo+"]");
 			GSheetsInterface.updateRows(spreadSheetIdTornei, PartitaRow.SHEET_PARTITE_NAME, righePartiteGiocatore, true);
+			MyLogger.getLogger().info("Sostituito nelle righe partita il giocatore con ID ["+idPlayerFrom+"] con quello con ID ["+idPlayerTo+"]");
+			
+			//INizio cancellazione giocatore
+			SheetRow anagraficaGiocatoreRowFrom = new AnagraficaGiocatoreRow();
+			((AnagraficaGiocatoreRow)anagraficaGiocatoreRowFrom).setId(idPlayerFrom);
+			List<SheetRow> anagraficheDaCancellareRowFound = GSheetsInterface.findAnagraficheByKey(spreadSheetIdTornei, Collections.singletonList(anagraficaGiocatoreRowFrom));
+			
+			if (anagraficheDaCancellareRowFound != null && !anagraficheDaCancellareRowFound.isEmpty()){
+				List<Integer> rowNumberGiocatoreFrom = new ArrayList<Integer>();
+				rowNumberGiocatoreFrom.add(anagraficheDaCancellareRowFound.get(0).getSheetRowNumber());
+				GSheetsInterface.deleteRowsByNumRow(spreadSheetIdTornei, AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME, rowNumberGiocatoreFrom);
+			}
 			
 		}catch(Exception e){
 			MyLogger.getLogger().severe("Errore accedendo ai dati "+e.getMessage());
