@@ -35,6 +35,11 @@ public class RisiKoDataManager extends JFrame {
     private JButton buttonClear = new JButton("Clear");
     private JLabel torneoToDeleteLabel = new JLabel("ID Torneo");
     private JTextField torneoToDelete = new JTextField(200);
+    private JLabel mergeGiocatoreDaLabel = new JLabel("Merge giocatore ID");
+    private JTextField idGiocatoreDa = new JTextField(20);
+    private JLabel mergeGiocatoreALabel = new JLabel("in ID");
+    private JTextField idGiocatoreA = new JTextField(20);
+    private JButton buttonMergeGiocatore = new JButton("Merge");
      
     private PrintStream standardOut;
      
@@ -65,7 +70,7 @@ public class RisiKoDataManager extends JFrame {
         constraints.gridx = 1;
         add(torneoToDeleteLabel, constraints);
         
-        torneoToDelete.setPreferredSize(new Dimension(150,30));
+        //torneoToDelete.setPreferredSize(new Dimension(150,30));
         torneoToDelete.setMinimumSize(new Dimension(140,25));
         constraints.gridx = 2;
         add(torneoToDelete, constraints);
@@ -73,12 +78,29 @@ public class RisiKoDataManager extends JFrame {
         constraints.gridx = 3;
         add(buttonDelete, constraints);
         
-       constraints.gridx = 4;
-       add(buttonClear, constraints);
+        constraints.gridx = 4;
+        add(mergeGiocatoreDaLabel, constraints);
+        
+        constraints.gridx = 5;
+        idGiocatoreDa.setMinimumSize(new Dimension(20,25));
+        add(idGiocatoreDa, constraints);
+        
+        constraints.gridx = 6;
+        add(mergeGiocatoreALabel, constraints);
+        
+        constraints.gridx = 7;
+        idGiocatoreA.setMinimumSize(new Dimension(20,25));
+        add(idGiocatoreA, constraints);
+        
+        constraints.gridx = 8;
+        add(buttonMergeGiocatore, constraints);
+        
+        constraints.gridx = 9;
+        add(buttonClear, constraints);
         
         constraints.gridx = 0;
         constraints.gridy = 1;
-        constraints.gridwidth = 5;
+        constraints.gridwidth = 10;
         constraints.fill = GridBagConstraints.BOTH;
         constraints.weightx = 1.0;
         constraints.weighty = 1.0;
@@ -97,9 +119,28 @@ public class RisiKoDataManager extends JFrame {
             public void actionPerformed(ActionEvent evt) {
             	String idTorneo = torneoToDelete.getText();
             	if (idTorneo == null || idTorneo.trim().length() == 0){
-            		JOptionPane.showMessageDialog(null, "Selezionare l'id del Torneo da cancellare");
+            		JOptionPane.showMessageDialog(null, "Indicare l'id del Torneo da cancellare");
             	}else{
             		deleteTorneo(idTorneo);
+            	}
+            }
+        });
+        
+        buttonMergeGiocatore.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+            	String idGiocatoreDaTxt = idGiocatoreDa.getText();
+            	String idGiocatoreATxt = idGiocatoreA.getText();
+            	if (idGiocatoreDaTxt == null || idGiocatoreDaTxt.trim().length() == 0 || idGiocatoreATxt == null || idGiocatoreATxt.trim().length() == 0){
+            		JOptionPane.showMessageDialog(null, "Indicare gli ID dei giocatori di partenza ed arrivo");
+            	}else{
+            		Integer idGiocatoreDaInt, idGiocatoreAInt;
+            		try{
+            			idGiocatoreDaInt = Integer.valueOf(idGiocatoreDaTxt);
+            			idGiocatoreAInt = Integer.valueOf(idGiocatoreATxt);
+                		mergeGiocatore(idGiocatoreDaInt, idGiocatoreAInt);
+            		}catch(Exception e){
+            			JOptionPane.showMessageDialog(null, "ID dei giocatori di partenza e/o di arrivo non numerici");
+            		}
             	}
             }
         });
@@ -156,6 +197,15 @@ public class RisiKoDataManager extends JFrame {
             	MyLogger.setConsoleLogLevel(Level.INFO);
             	TorneiUtils.deleteTorneo(idTorneo);
             }
+        });
+        thread.start();
+    }
+    
+    private void mergeGiocatore(final Integer idGiocatoreDa, final Integer idGiocatoreA) {
+        Thread thread = new Thread(new Runnable() {
+            public void run() {
+            	MyLogger.setConsoleLogLevel(Level.INFO);
+            	TorneiUtils.mergePlayer(idGiocatoreDa, idGiocatoreA);            }
         });
         thread.start();
     }
