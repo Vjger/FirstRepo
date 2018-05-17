@@ -15,7 +15,11 @@ public class SchedaTorneo {
 	private List<Date> dataTurni;
 	
 	public enum TipoTorneo{
-		RADUNO_NAZIONALE("Raduno Nazionale"), MASTER("Torneo Master"), OPEN("Torneo Open"), CAMPIONATO("Campionato Periodico");
+		  RADUNO_NAZIONALE("Raduno Nazionale")
+		, MASTER("Torneo Master")
+		, OPEN("Torneo Open")
+		, CAMPIONATO("Campionato Periodico")
+		, TORNEO_A_SQUADRE("Torneo a Squadre");
 		TipoTorneo(String tipoTorneo){
 			this.tipoTorneo = tipoTorneo;
 		}

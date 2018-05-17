@@ -227,7 +227,7 @@ public class ExcelValidator {
 		List<ExcelValidatorMessages> result = new ArrayList<ExcelValidatorMessages>();
 		
 		excelAccess.openFileExcel();
-		
+		//TODO Aggiungere check sui duplicati: possibile solo per gli anonimi
 		if (!excelAccess.checkSheet(ExcelAccess.SCHEDA_ISCRITTI)){
 			result.add(new ExcelValidatorMessages(Scheda.ISCRITTI, "Sheet "+ExcelAccess.SCHEDA_ISCRITTI+" assente"));
 		}else{

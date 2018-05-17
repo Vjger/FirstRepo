@@ -93,7 +93,7 @@ public class GmailAccess extends RisikoDataManagerAccess{
         message = service.users().messages().send(userId, message).execute();
 
         MyLogger.getLogger().info("Message id: " + message.getId());
-        MyLogger.getLogger().info(message.toPrettyString());
+        //MyLogger.getLogger().info(message.toPrettyString());
         return message;
     }
 

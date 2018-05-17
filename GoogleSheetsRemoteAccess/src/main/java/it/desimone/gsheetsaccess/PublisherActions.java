@@ -68,17 +68,17 @@ public class PublisherActions {
 	
 	private static String messaggioOK(ReportDriveData reportDriveData){
 		StringBuilder result = new StringBuilder();
-		result.append("L'elaborazione del report ");
+		result.append("L'elaborazione del report [");
 		result.append(reportDriveData.getFileName());
-		result.append(" è avvenuta regolarmente ed ora i dati del report sono disponibili nel database centrale");
+		result.append("] è avvenuta regolarmente ed ora i dati del report sono disponibili nel database centrale");
 		return result.toString();
 	}
 	
 	private static String messaggioKOValidazione(ReportDriveData reportDriveData, ExcelValidationException eve){
 		StringBuilder result = new StringBuilder();
-		result.append("L'elaborazione del report ");
+		result.append("L'elaborazione del report [");
 		result.append(reportDriveData.getFileName());
-		result.append(" ha riscontrato degli errori di validazione e quindi è stato scartato.");
+		result.append("] ha riscontrato degli errori di validazione e quindi è stato scartato.");
 		result.append("\n");
 		result.append("Correggere gli errori indicati e ripubblicare il report");
 		result.append("\n");
@@ -96,9 +96,9 @@ public class PublisherActions {
 	
 	private static String messaggioKOErrore(ReportDriveData reportDriveData, MyException me){
 		StringBuilder result = new StringBuilder();
-		result.append("L'elaborazione del report ");
+		result.append("L'elaborazione del report [");
 		result.append(reportDriveData.getFileName());
-		result.append(" ha riscontrato degli errori e quindi è stato scartato.");
+		result.append("] ha riscontrato degli errori e quindi è stato scartato.");
 		result.append("\n");
 		result.append("Correggere gli errori indicati e ripubblicare il report");
 		result.append("\n");

@@ -1,6 +1,7 @@
 package it.desimone.gheetsaccess.gsheets.dto;
 
 import it.desimone.utils.MyLogger;
+import it.desimone.utils.StringUtils;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -100,14 +101,44 @@ public class PartitaRow extends AbstractSheetRow {
 		dataTurno 			= (String) data.get(ColPosition.DATA_TURNO);
 		numeroTavolo 		= Integer.valueOf((String)data.get(ColPosition.NUMERO_TAVOLO));
 		try {
-			punteggioGiocatore1 		= nf.parse((String)data.get(ColPosition.PUNTEGGIO_GIOCATORE1)).doubleValue();
-			punteggioGiocatore2 		= nf.parse((String)data.get(ColPosition.PUNTEGGIO_GIOCATORE2)).doubleValue();
-			punteggioGiocatore3 		= nf.parse((String)data.get(ColPosition.PUNTEGGIO_GIOCATORE3)).doubleValue();
-			punteggioGiocatore4 		= nf.parse((String)data.get(ColPosition.PUNTEGGIO_GIOCATORE4)).doubleValue();
-			punteggioGiocatore5 		= nf.parse((String)data.get(ColPosition.PUNTEGGIO_GIOCATORE5)).doubleValue();
+			String punteggioGiocatore1Str = (String)data.get(ColPosition.PUNTEGGIO_GIOCATORE1);
+			if (!StringUtils.isNullOrEmpty(punteggioGiocatore1Str)){
+				punteggioGiocatore1 		= nf.parse(punteggioGiocatore1Str).doubleValue();
+			}
 		} catch (ParseException e) {
-			MyLogger.getLogger().severe("Errore nel parsing di un punteggio: "+data);
-			//throw new IllegalArgumentException("Errore nel parsing di un punteggio: "+data);
+			MyLogger.getLogger().severe("Errore nel parsing del punteggio del giocatore 1: "+data);
+		}
+		try {
+			String punteggioGiocatore2Str = (String)data.get(ColPosition.PUNTEGGIO_GIOCATORE2);
+			if (!StringUtils.isNullOrEmpty(punteggioGiocatore2Str)){
+				punteggioGiocatore2 		= nf.parse(punteggioGiocatore2Str).doubleValue();
+			}
+		} catch (ParseException e) {
+			MyLogger.getLogger().severe("Errore nel parsing del punteggio del giocatore 2: "+data);
+		}
+		try {
+			String punteggioGiocatore3Str = (String)data.get(ColPosition.PUNTEGGIO_GIOCATORE3);
+			if (!StringUtils.isNullOrEmpty(punteggioGiocatore3Str)){
+				punteggioGiocatore3 		= nf.parse(punteggioGiocatore3Str).doubleValue();
+			}
+		} catch (ParseException e) {
+			MyLogger.getLogger().severe("Errore nel parsing del punteggio del giocatore 3: "+data);
+		}
+		try {
+			String punteggioGiocatore4Str = (String)data.get(ColPosition.PUNTEGGIO_GIOCATORE4);
+			if (!StringUtils.isNullOrEmpty(punteggioGiocatore4Str)){
+				punteggioGiocatore4 		= nf.parse(punteggioGiocatore4Str).doubleValue();
+			}
+		} catch (ParseException e) {
+			MyLogger.getLogger().severe("Errore nel parsing del punteggio del giocatore 4: "+data);
+		}
+		try {
+			String punteggioGiocatore5Str = (String)data.get(ColPosition.PUNTEGGIO_GIOCATORE5);
+			if (!StringUtils.isNullOrEmpty(punteggioGiocatore5Str)){
+				punteggioGiocatore5 		= nf.parse(punteggioGiocatore5Str).doubleValue();
+			}
+		} catch (ParseException e) {
+			MyLogger.getLogger().severe("Errore nel parsing del punteggio del giocatore 5: "+data);
 		}
 		
 		String colonnaGiocatore1 = (String)data.get(ColPosition.ID_GIOCATORE1);

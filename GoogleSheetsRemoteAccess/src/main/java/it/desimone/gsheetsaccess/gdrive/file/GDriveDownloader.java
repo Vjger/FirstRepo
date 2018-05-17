@@ -37,14 +37,14 @@ public class GDriveDownloader {
     					if (permissions != null){
     						emailAddresses = new ArrayList<String>();
 	    					for (Permission permission: permissions){
-	    						MyLogger.getLogger().info("Folder "+folder.getName()+" permission: "+permission.getRole()+" - "+permission.getEmailAddress());
+	    						MyLogger.getLogger().info("Folder "+folder.getName()+" e-mail: "+permission.getEmailAddress());
 	    						emailAddresses.add(permission.getEmailAddress());
 	    					}
     					}
     					FileList fileList = googleDriveAccess.filesIntoFolder(folder);
     					List<File> files = fileList.getFiles();
     					if (files != null){
-    						MyLogger.getLogger().info("Trovati "+files.size()+" nel folder "+folder.getName());
+    						MyLogger.getLogger().info("Trovati "+files.size()+" report nel folder "+folder.getName());
     						for (File file: files){
     							MyLogger.getLogger().info("Download del file "+file.getName()+" con id "+file.getId());
     							googleDriveAccess.downloadFile(file, folder.getName());
