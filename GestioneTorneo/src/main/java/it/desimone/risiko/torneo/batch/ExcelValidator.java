@@ -5,6 +5,7 @@ import it.desimone.risiko.torneo.dto.GiocatoreDTO;
 import it.desimone.risiko.torneo.dto.Partita;
 import it.desimone.risiko.torneo.dto.SchedaClassifica;
 import it.desimone.risiko.torneo.dto.SchedaClassifica.RigaClassifica;
+import it.desimone.risiko.torneo.dto.SchedaTorneo.TipoTorneo;
 import it.desimone.risiko.torneo.dto.SchedaTorneo;
 import it.desimone.risiko.torneo.dto.SchedaTurno;
 import it.desimone.utils.MyException;
@@ -15,6 +16,7 @@ import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -252,6 +254,17 @@ public class ExcelValidator {
 					if (StringUtils.isNullOrEmpty(giocatore.getEmail())){
 						result.add(new ExcelValidatorMessages(Scheda.ISCRITTI, "L'indirizzo email del giocatore "+giocatore+" non è indicato"));
 					}
+					int frequency = Collections.frequency(partecipantiEffettivi, giocatore);
+					if (!giocatore.equals(GiocatoreDTO.FITTIZIO) && frequency != 1){
+						result.add(new ExcelValidatorMessages(Scheda.ISCRITTI, "Sono presenti "+frequency+" giocatori con ID "+giocatore.getId()));
+					}
+					if (giocatore.getId() != null && !giocatore.equals(GiocatoreDTO.ANONIMO) && !giocatore.equals(GiocatoreDTO.FITTIZIO)){
+						for (GiocatoreDTO giocatoreBis: iscritti){
+							if (!giocatore.equals(giocatoreBis) && giocatore.uguale(giocatoreBis)){
+								result.add(new ExcelValidatorMessages(Scheda.ISCRITTI, "Sono presenti due giocatori con stessi dati anagrafici: "+giocatore.getNome()+ " "+giocatore.getCognome()+" "+giocatore.getEmail()));
+							}
+						}
+					}
 				}
 			}
 		}
@@ -341,7 +354,9 @@ public class ExcelValidator {
 				&& schedaTorneo.getNumeroTurni() > 0 
 				&& excelAccess.checkSheet(excelAccess.getNomeTurno(schedaTorneo.getNumeroTurni()));
 		
-		if (giocatoUltimoTurno && !excelAccess.checkSheet(ExcelAccess.SCHEDA_CLASSIFICA_RIDOTTA)){
+		if (giocatoUltimoTurno 
+		&& TipoTorneo.prevedeClassifica(schedaTorneo.getTipoTorneo()) 
+		&& !excelAccess.checkSheet(ExcelAccess.SCHEDA_CLASSIFICA_RIDOTTA)){
 			result.add(new ExcelValidatorMessages(Scheda.CLASSIFICA_RIDOTTA, "Sheet "+ExcelAccess.SCHEDA_CLASSIFICA_RIDOTTA+" assente: obbligatoria perchè giocato l'ultimo turno"));
 		}else{
 			if (excelAccess.checkSheet(ExcelAccess.SCHEDA_CLASSIFICA_RIDOTTA)){

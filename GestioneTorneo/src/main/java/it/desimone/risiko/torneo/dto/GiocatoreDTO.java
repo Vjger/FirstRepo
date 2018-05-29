@@ -3,6 +3,7 @@ package it.desimone.risiko.torneo.dto;
 public class GiocatoreDTO implements Comparable{
 	
 	public static final GiocatoreDTO FITTIZIO;
+	public static final GiocatoreDTO ANONIMO;
 
 	static{
 		FITTIZIO = new GiocatoreDTO();
@@ -10,6 +11,11 @@ public class GiocatoreDTO implements Comparable{
 		FITTIZIO.setNome("The");
 		FITTIZIO.setCognome("Ghost");
 		FITTIZIO.setEmail("TheGhost@theghost.it");
+		
+		ANONIMO = new GiocatoreDTO();
+		ANONIMO.setNome("Anonimo");
+		ANONIMO.setCognome("Anonimo");
+		ANONIMO.setEmail("anonimo@anonimo.it");
 	}
 	
 	private static final long serialVersionUID = 1;
@@ -52,6 +58,14 @@ public class GiocatoreDTO implements Comparable{
 	public boolean equals(Object o){
 		GiocatoreDTO giocatore = (GiocatoreDTO) o;
 		return giocatore.getId().equals(this.getId());
+	}
+	
+	public boolean uguale(GiocatoreDTO giocatore){
+		boolean stessoNome = (this.nome == null && giocatore.getNome() == null) || (this.nome != null && giocatore.getNome() != null && this.nome.trim().equalsIgnoreCase(giocatore.getNome().trim()));
+		boolean stessoCognome = (this.cognome == null && giocatore.getCognome() == null) || (this.cognome != null && giocatore.getCognome() != null && this.cognome.trim().equalsIgnoreCase(giocatore.getCognome().trim()));
+		boolean stessaMail = (this.email == null && giocatore.getEmail() == null) || (this.email != null && giocatore.getEmail() != null && this.email.trim().equalsIgnoreCase(giocatore.getEmail().trim()));
+		
+		return stessoNome && stessoCognome && stessaMail;
 	}
 
 	public int hashCode(){

@@ -19,7 +19,9 @@ public class SchedaTorneo {
 		, MASTER("Torneo Master")
 		, OPEN("Torneo Open")
 		, CAMPIONATO("Campionato Periodico")
-		, TORNEO_A_SQUADRE("Torneo a Squadre");
+		, TORNEO_A_SQUADRE("Torneo a Squadre")
+		, TORNEO_2VS2("Torneo 2VS2")
+		, AMICHEVOLI("Amichevoli");
 		TipoTorneo(String tipoTorneo){
 			this.tipoTorneo = tipoTorneo;
 		}
@@ -39,6 +41,10 @@ public class SchedaTorneo {
 				}
 			}
 			return result;
+		}
+		
+		public static boolean prevedeClassifica(TipoTorneo tipoTorneo){
+			return tipoTorneo != TORNEO_A_SQUADRE && tipoTorneo != TORNEO_2VS2 && tipoTorneo != AMICHEVOLI;
 		}
 	}
 
