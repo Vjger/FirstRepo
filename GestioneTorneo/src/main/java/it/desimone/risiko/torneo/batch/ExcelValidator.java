@@ -229,7 +229,7 @@ public class ExcelValidator {
 		List<ExcelValidatorMessages> result = new ArrayList<ExcelValidatorMessages>();
 		
 		excelAccess.openFileExcel();
-		//TODO Aggiungere check sui duplicati: possibile solo per gli anonimi
+
 		if (!excelAccess.checkSheet(ExcelAccess.SCHEDA_ISCRITTI)){
 			result.add(new ExcelValidatorMessages(Scheda.ISCRITTI, "Sheet "+ExcelAccess.SCHEDA_ISCRITTI+" assente"));
 		}else{
@@ -258,7 +258,7 @@ public class ExcelValidator {
 					if (!giocatore.equals(GiocatoreDTO.FITTIZIO) && frequency != 1){
 						result.add(new ExcelValidatorMessages(Scheda.ISCRITTI, "Sono presenti "+frequency+" giocatori con ID "+giocatore.getId()));
 					}
-					if (giocatore.getId() != null && !giocatore.equals(GiocatoreDTO.ANONIMO) && !giocatore.equals(GiocatoreDTO.FITTIZIO)){
+					if (!giocatore.equals(GiocatoreDTO.FITTIZIO)){
 						for (GiocatoreDTO giocatoreBis: iscritti){
 							if (!giocatore.equals(giocatoreBis) && giocatore.uguale(giocatoreBis)){
 								result.add(new ExcelValidatorMessages(Scheda.ISCRITTI, "Sono presenti due giocatori con stessi dati anagrafici: "+giocatore.getNome()+ " "+giocatore.getCognome()+" "+giocatore.getEmail()));

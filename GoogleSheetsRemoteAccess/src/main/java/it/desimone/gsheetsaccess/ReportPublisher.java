@@ -16,6 +16,7 @@ import it.desimone.gsheetsaccess.googleaccess.GmailAccess;
 import it.desimone.gsheetsaccess.gsheets.facade.ExcelGSheetsBridge;
 import it.desimone.gsheetsaccess.gsheets.facade.GSheetsInterface;
 import it.desimone.risiko.torneo.dto.GiocatoreDTO;
+import it.desimone.risiko.torneo.dto.SchedaTorneo.TipoTorneo;
 import it.desimone.risiko.torneo.dto.Torneo;
 import it.desimone.utils.MyException;
 import it.desimone.utils.MyLogger;
@@ -26,7 +27,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -227,7 +227,7 @@ public class ReportPublisher {
 		}
 
 		if (classificaRows != null && !classificaRows.isEmpty()){
-			if (torneo.isConcluso()){
+			if (torneo.isConcluso() && TipoTorneo.prevedeClassifica(torneo.getSchedaTorneo().getTipoTorneo())){
 				MyLogger.getLogger().info("Inserimento di "+classificaRows.size()+" giocatori in classifica del torneo "+torneo);
 				GSheetsInterface.appendRows(spreadSheetIdTornei, sheetNameClassifiche, classificaRows);
 			}
