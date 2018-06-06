@@ -36,15 +36,15 @@ public class RisiKoDataManager extends JFrame {
     private JLabel torneoToDeleteLabel = new JLabel("ID Torneo");
     private JTextField torneoToDelete = new JTextField(200);
     private JLabel mergeGiocatoreDaLabel = new JLabel("Merge giocatore ID");
-    private JTextField idGiocatoreDa = new JTextField(20);
+    private JTextField idGiocatoreDa = new JTextField(30);
     private JLabel mergeGiocatoreALabel = new JLabel("in ID");
-    private JTextField idGiocatoreA = new JTextField(20);
+    private JTextField idGiocatoreA = new JTextField(30);
     private JButton buttonMergeGiocatore = new JButton("Merge");
      
     private PrintStream standardOut;
      
     public RisiKoDataManager() {
-        super("Demo printing to JTextArea");
+        super("RisiKo! Data Manager");
          
         textArea = new JTextArea(250, 10);
         textArea.setEditable(false);
@@ -82,14 +82,14 @@ public class RisiKoDataManager extends JFrame {
         add(mergeGiocatoreDaLabel, constraints);
         
         constraints.gridx = 5;
-        idGiocatoreDa.setMinimumSize(new Dimension(20,25));
+        idGiocatoreDa.setMinimumSize(new Dimension(30,25));
         add(idGiocatoreDa, constraints);
         
         constraints.gridx = 6;
         add(mergeGiocatoreALabel, constraints);
         
         constraints.gridx = 7;
-        idGiocatoreA.setMinimumSize(new Dimension(20,25));
+        idGiocatoreA.setMinimumSize(new Dimension(30,25));
         add(idGiocatoreA, constraints);
         
         constraints.gridx = 8;

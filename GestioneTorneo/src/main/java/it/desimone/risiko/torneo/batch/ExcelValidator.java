@@ -258,7 +258,7 @@ public class ExcelValidator {
 					if (!giocatore.equals(GiocatoreDTO.FITTIZIO) && frequency != 1){
 						result.add(new ExcelValidatorMessages(Scheda.ISCRITTI, "Sono presenti "+frequency+" giocatori con ID "+giocatore.getId()));
 					}
-					if (!giocatore.equals(GiocatoreDTO.FITTIZIO)){
+					if (!giocatore.equals(GiocatoreDTO.FITTIZIO) && !giocatore.uguale(GiocatoreDTO.ANONIMO)){
 						for (GiocatoreDTO giocatoreBis: iscritti){
 							if (!giocatore.equals(giocatoreBis) && giocatore.uguale(giocatoreBis)){
 								result.add(new ExcelValidatorMessages(Scheda.ISCRITTI, "Sono presenti due giocatori con stessi dati anagrafici: "+giocatore.getNome()+ " "+giocatore.getCognome()+" "+giocatore.getEmail()));

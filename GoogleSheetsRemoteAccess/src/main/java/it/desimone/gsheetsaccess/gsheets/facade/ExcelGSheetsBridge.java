@@ -93,13 +93,13 @@ public class ExcelGSheetsBridge {
 		for (int index = 0; index < partecipanti.size(); index++){
 			GiocatoreDTO giocatore = partecipanti.get(index);
 			AnagraficaGiocatoreRidottaRow anagraficaGiocatoreRidottaRow = new AnagraficaGiocatoreRidottaRow();
-			anagraficaGiocatoreRidottaRow.setNome(giocatore.getNome());
-			anagraficaGiocatoreRidottaRow.setCognome(giocatore.getCognome());
-			anagraficaGiocatoreRidottaRow.setEmail(giocatore.getEmail());
+			anagraficaGiocatoreRidottaRow.setNome(giocatore.getNome().trim());
+			anagraficaGiocatoreRidottaRow.setCognome(giocatore.getCognome().trim());
+			anagraficaGiocatoreRidottaRow.setEmail(giocatore.getEmail().trim());
 			anagraficaGiocatoreRidottaRow.setUpdateTime(dfUpdateTime.format(now));
 			AnagraficaGiocatoreRow anagraficaGiocatoreRow = new AnagraficaGiocatoreRow();
-			anagraficaGiocatoreRow.setNome(giocatore.getNome());
-			anagraficaGiocatoreRow.setCognome(giocatore.getCognome());
+			anagraficaGiocatoreRow.setNome(giocatore.getNome().trim());
+			anagraficaGiocatoreRow.setCognome(giocatore.getCognome().trim());
 			anagraficaGiocatoreRow.setUltimoClub(giocatore.getClubProvenienza()==null?null:giocatore.getClubProvenienza().getDenominazione());
 			anagraficaGiocatoreRow.setIdUltimoTorneo(idTorneo);
 			anagraficaGiocatoreRow.setUpdateTime(dfUpdateTime.format(now));
