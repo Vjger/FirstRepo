@@ -5,7 +5,9 @@ import it.desimone.utils.MyLogger;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import com.google.api.services.drive.Drive;
@@ -110,6 +112,22 @@ public class GoogleDriveAccess extends RisikoDataManagerAccess{
 	        	    .setRemoveParents(previousParents.toString())
 	        	    .setFields("id, parents")
 	        	    .execute();
+        	}
+        }
+        return file;
+    }
+    
+    public File copyFileToNewFolder(String fileId, String newFolderId) throws IOException{
+    	File file = null;
+        Drive service = getDriveService();
+
+        if (service != null){
+        	Drive.Files driveFiles = service.files();
+        	if (driveFiles != null){
+        		file = driveFiles.get(fileId).setFields("parents, name").execute();
+        		file.setName(file.getName()+"_"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
+	        	file = driveFiles.copy(fileId, file).execute();
+	        	file = moveFileToNewFolder(file.getId(), newFolderId);
         	}
         }
         return file;

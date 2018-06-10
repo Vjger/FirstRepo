@@ -1,6 +1,7 @@
 package it.desimone.gsheetsaccess.ui;
 
 import it.desimone.gsheetsaccess.ReportPublisher;
+import it.desimone.gsheetsaccess.common.Configurator;
 import it.desimone.gsheetsaccess.utils.TorneiUtils;
 import it.desimone.utils.MyLogger;
 
@@ -29,7 +30,9 @@ public class RisiKoDataManager extends JFrame {
      * The text area which is used for displaying logging information.
      */
     private JTextArea textArea;
-     
+    
+    private JButton switchEnvironment = new JButton("Switch");
+    private JLabel environmentLabel = new JLabel(Configurator.getEnvironment().name());
     private JButton buttonPublish = new JButton("Pubblica Tornei");
     private JButton buttonDelete = new JButton("Elimina Torneo");
     private JButton buttonClear = new JButton("Clear");
@@ -98,9 +101,15 @@ public class RisiKoDataManager extends JFrame {
         constraints.gridx = 9;
         add(buttonClear, constraints);
         
+        constraints.gridx = 10;
+        add(switchEnvironment, constraints);
+        
+        constraints.gridx = 11;
+        add(environmentLabel, constraints);
+        
         constraints.gridx = 0;
         constraints.gridy = 1;
-        constraints.gridwidth = 10;
+        constraints.gridwidth = 12;
         constraints.fill = GridBagConstraints.BOTH;
         constraints.weightx = 1.0;
         constraints.weighty = 1.0;
@@ -156,7 +165,15 @@ public class RisiKoDataManager extends JFrame {
                 }
             }
         });
-         
+        
+        // adds event handler for button Clear
+        switchEnvironment.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+               Configurator.switchEnvironment();
+               environmentLabel.setText(Configurator.getEnvironment().name());
+            }
+        });
+        
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1080, 320);
         setLocationRelativeTo(null);    // centers on screen

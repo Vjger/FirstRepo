@@ -11,64 +11,112 @@ public class Configurator {
 	
 public static final String ROOT = new File("").getAbsolutePath();
 public static final String PATH_CONFIGURATION = ROOT+File.separator+"configuration"; //ROOT+File.separator+"configuration";
-private static final String CONFIG_FILE = "configuration.properties";	
+private static final String CONFIG_FILE_STAGE = "configurationStage.properties";	
+private static final String CONFIG_FILE_PROD = "configurationProd.properties";	
 private volatile static Properties properties = new Properties();
 
+private static Environment environment;
+
+	public enum Environment{
+		STAGE, PRODUCTION
+	}
+
 	static{
+		loadConfiguration(Environment.PRODUCTION);
+	}
+	
+	public static void switchEnvironment(){
+		switch (environment) {
+		case STAGE:
+			loadConfiguration(Environment.PRODUCTION);
+			break;
+		case PRODUCTION:
+			loadConfiguration(Environment.STAGE);
+			break;
+		default:
+			break;
+		}
+	}
+	
+	public static void loadConfiguration(Environment env){
+		String configFileName = null;
 		try {
-			FileInputStream propertiesStream = new FileInputStream(new File(PATH_CONFIGURATION+File.separator+CONFIG_FILE));
+			switch (env) {
+			case STAGE:
+				configFileName = CONFIG_FILE_STAGE;
+				break;
+			case PRODUCTION:
+				configFileName = CONFIG_FILE_PROD;
+				break;
+			default:
+				break;
+			}
+			FileInputStream propertiesStream = new FileInputStream(new File(PATH_CONFIGURATION+File.separator+configFileName));
 			properties.load(propertiesStream);
+			environment = env;
 		} catch (IOException e) {
 			MyLogger.getLogger().severe("IOException nel caricamento del file di Properties: "+e.getMessage());
 		}
 	}
 	
+	
+	public static Environment getEnvironment(){
+		return environment;
+	}
+	
 	public static String getRCUFolderId(){
 		String folderId = ((String)properties.get("rcuFolderId"));
 		if (folderId != null) folderId = folderId.trim();
-		MyLogger.getLogger().info("ID RCU Folder:<<"+folderId+">>");
+		MyLogger.getLogger().finest("ID RCU Folder:<<"+folderId+">>");
 		return folderId;
 	}
 	
 	public static String getAnagraficaRidottaSheetId(){
 		String folderId = ((String)properties.get("spreadSheetIdAnagraficaRidotta"));
 		if (folderId != null) folderId = folderId.trim();
-		MyLogger.getLogger().info("ID Anagrafica Ridotta:<<"+folderId+">>");
+		MyLogger.getLogger().finest("ID Anagrafica Ridotta:<<"+folderId+">>");
 		return folderId;
 	}
 
 	public static String getTorneiSheetId(){
 		String folderId = ((String)properties.get("spreadSheetIdTornei"));
 		if (folderId != null) folderId = folderId.trim();
-		MyLogger.getLogger().info("ID Tornei:<<"+folderId+">>");
+		MyLogger.getLogger().finest("ID Tornei:<<"+folderId+">>");
 		return folderId;
 	}
 		
 	public static String getDoneFolderId(){
 		String folderId = ((String)properties.get("DONEFolderId"));
 		if (folderId != null) folderId = folderId.trim();
-		MyLogger.getLogger().info("DONE Folder Id:<<"+folderId+">>");
+		MyLogger.getLogger().finest("DONE Folder Id:<<"+folderId+">>");
 		return folderId;
 	}
 	
 	public static String getErrorFolderId(){
 		String folderId = ((String)properties.get("ERRORFolderId"));
 		if (folderId != null) folderId = folderId.trim();
-		MyLogger.getLogger().info("ERROR Folder Id:<<"+folderId+">>");
+		MyLogger.getLogger().finest("ERROR Folder Id:<<"+folderId+">>");
 		return folderId;
 	}
 	
 	public static String getReportElaborazioniSheetId(){
 		String sheetId = ((String)properties.get("spreadSheetIdReportElaborazioni"));
 		if (sheetId != null) sheetId = sheetId.trim();
-		MyLogger.getLogger().info("ID Report Elaborazioni:<<"+sheetId+">>");
+		MyLogger.getLogger().finest("ID Report Elaborazioni:<<"+sheetId+">>");
 		return sheetId;
 	}
 	
 	public static String getRankingSheetId(){
 		String sheetId = ((String)properties.get("spreadSheetIdRanking"));
 		if (sheetId != null) sheetId = sheetId.trim();
-		MyLogger.getLogger().info("ID Ranking:<<"+sheetId+">>");
+		MyLogger.getLogger().finest("ID Ranking:<<"+sheetId+">>");
+		return sheetId;
+	}
+
+	public static String getBaclupsFolderId(){
+		String sheetId = ((String)properties.get("backupsFolder"));
+		if (sheetId != null) sheetId = sheetId.trim();
+		MyLogger.getLogger().finest("Backups Folder:<<"+sheetId+">>");
 		return sheetId;
 	}
 }

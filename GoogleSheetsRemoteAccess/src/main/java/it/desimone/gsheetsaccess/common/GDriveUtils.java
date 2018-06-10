@@ -50,4 +50,21 @@ public class GDriveUtils {
     		throw new MyException("Non è stato trovato il folder di Google Drive con id "+folderId);
     	}
 	}
+	
+	
+	public static void backup(){
+		MyLogger.getLogger().info("Inizio backup");
+		
+		try {
+			String spreadSheetIdTornei = Configurator.getTorneiSheetId();
+			String spreadSheetIdAnagrafiche = Configurator.getAnagraficaRidottaSheetId();
+			String backupsFolderId = Configurator.getBaclupsFolderId();
+			
+			GoogleDriveAccess googleDriveAccess = new GoogleDriveAccess();
+
+			File backupFile = googleDriveAccess.copyFileToNewFolder(spreadSheetIdTornei, backupsFolderId);
+		}catch(Exception e){
+			MyLogger.getLogger().severe("Errore backup "+e.getMessage());
+		}
+	}
 }
