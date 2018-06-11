@@ -2,6 +2,8 @@ package it.desimone.gsheetsaccess.common;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import com.google.api.services.drive.model.File;
 
@@ -52,19 +54,25 @@ public class GDriveUtils {
 	}
 	
 	
-	public static void backup(){
-		MyLogger.getLogger().info("Inizio backup");
+	public static void backup() throws Exception{
+		MyLogger.getLogger().info("INIZIO backup");
 		
 		try {
 			String spreadSheetIdTornei = Configurator.getTorneiSheetId();
 			String spreadSheetIdAnagrafiche = Configurator.getAnagraficaRidottaSheetId();
 			String backupsFolderId = Configurator.getBaclupsFolderId();
-			
+			String suffix = "_"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 			GoogleDriveAccess googleDriveAccess = new GoogleDriveAccess();
 
-			File backupFile = googleDriveAccess.copyFileToNewFolder(spreadSheetIdTornei, backupsFolderId);
+			File backupFileTornei = googleDriveAccess.copyFileToNewFolder(spreadSheetIdTornei, backupsFolderId, suffix);
+			MyLogger.getLogger().info("Backup di "+backupFileTornei.getId()+" - "+backupFileTornei.getName());
+			File backupFileAnagrafiche = googleDriveAccess.copyFileToNewFolder(spreadSheetIdAnagrafiche, backupsFolderId, suffix);
+			MyLogger.getLogger().info("Backup di "+backupFileAnagrafiche.getId()+" - "+backupFileAnagrafiche.getName());
 		}catch(Exception e){
 			MyLogger.getLogger().severe("Errore backup "+e.getMessage());
+			throw e;
 		}
+		
+		MyLogger.getLogger().info("FINE backup");
 	}
 }

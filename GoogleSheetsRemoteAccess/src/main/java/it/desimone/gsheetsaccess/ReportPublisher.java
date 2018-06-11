@@ -9,6 +9,7 @@ import it.desimone.gheetsaccess.gsheets.dto.SheetRow;
 import it.desimone.gheetsaccess.gsheets.dto.TorneiRow;
 import it.desimone.gsheetsaccess.common.Configurator;
 import it.desimone.gsheetsaccess.common.ExcelValidationException;
+import it.desimone.gsheetsaccess.common.GDriveUtils;
 import it.desimone.gsheetsaccess.gdrive.file.GDriveDownloader;
 import it.desimone.gsheetsaccess.gdrive.file.ReportAnalyzer;
 import it.desimone.gsheetsaccess.gdrive.file.ReportDriveData;
@@ -43,6 +44,7 @@ public class ReportPublisher {
 		try{
 			List<ReportDriveData> publishedReport = GDriveDownloader.downloadReport();
 			if (publishedReport != null && !publishedReport.isEmpty()){
+				GDriveUtils.backup();
 				List<SheetRow> reportElaborazioni = new ArrayList<SheetRow>();
 				MyLogger.getLogger().info("Inizio elaborazione di "+publishedReport.size()+" report");
 				for (ReportDriveData reportDriveData: publishedReport){

@@ -110,14 +110,14 @@ public class GoogleDriveAccess extends RisikoDataManagerAccess{
 	        	file = driveFiles.update(fileId, null)
 	        		.setAddParents(newFolderId)
 	        	    .setRemoveParents(previousParents.toString())
-	        	    .setFields("id, parents")
+	        	    .setFields("id, name, parents")
 	        	    .execute();
         	}
         }
         return file;
     }
     
-    public File copyFileToNewFolder(String fileId, String newFolderId) throws IOException{
+    public File copyFileToNewFolder(String fileId, String newFolderId, String suffix) throws IOException{
     	File file = null;
         Drive service = getDriveService();
 
@@ -125,7 +125,7 @@ public class GoogleDriveAccess extends RisikoDataManagerAccess{
         	Drive.Files driveFiles = service.files();
         	if (driveFiles != null){
         		file = driveFiles.get(fileId).setFields("parents, name").execute();
-        		file.setName(file.getName()+"_"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
+        		file.setName(file.getName()+suffix);
 	        	file = driveFiles.copy(fileId, file).execute();
 	        	file = moveFileToNewFolder(file.getId(), newFolderId);
         	}

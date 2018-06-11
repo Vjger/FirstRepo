@@ -12,6 +12,7 @@ import it.desimone.utils.MyLogger;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -56,13 +57,13 @@ public class PublisherActions {
 
 		MimeMessage mimeMessage;
 		try {
-			MyLogger.getLogger().info("Invio mail a "+to+" con subject "+subject+" per il report "+reportDriveData.getFileName());
+			MyLogger.getLogger().info("Invio mail a "+Arrays.toString(to)+" con subject "+subject+" per il report "+reportDriveData.getFileName());
 			mimeMessage = GmailAccess.createEmail(to, null, bcc, null, subject, message);
 			gmailAccess.sendMessage("me", mimeMessage);
 		} catch (MessagingException e) {
-			MyLogger.getLogger().severe("Error sending mail to "+to+": "+e.getMessage());
+			MyLogger.getLogger().severe("Error sending mail to "+Arrays.toString(to)+": "+e.getMessage());
 		} catch (IOException e) {
-			MyLogger.getLogger().severe("Error sending mail to "+to+": "+e.getMessage());
+			MyLogger.getLogger().severe("Error sending mail to "+Arrays.toString(to)+": "+e.getMessage());
 		}
 	}
 	

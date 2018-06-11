@@ -10,9 +10,14 @@ import it.desimone.utils.MyLogger;
 public class GDriveUtilsTest {
 
 	public static void main(String[] args) {
-		MyLogger.getLogger().setLevel(Level.ALL);
-		Configurator.loadConfiguration(Environment.STAGE);
-		GDriveUtils.backup();
+		MyLogger.setConsoleLogLevel(Level.ALL);
+		Configurator.loadConfiguration(Environment.PRODUCTION);
+		try {
+			GDriveUtils.backup();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
