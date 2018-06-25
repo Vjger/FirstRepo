@@ -4,7 +4,7 @@
 
   <groupId>it.desimone</groupId>
   <artifactId>GoogleSheetsRemoteAccess</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>1.0</version>
   <packaging>jar</packaging>
 
   <name>GoogleSheetsRemoteAccess</name>
@@ -12,7 +12,112 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.output>${user.home}\Desktop\GoogleSheetsRemoteAccess ${version}</project.output>
   </properties>
+
+	<build> 
+		<finalName>${project.artifactId}</finalName>
+		
+		<plugins>
+		
+		  <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+          <excludes>
+            <exclude>it/desimone/risiko/torneo/batch/ExcelAccessHSSF.java</exclude>
+          </excludes>
+          </configuration>
+        </plugin>
+		
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-dependency-plugin</artifactId>
+			    <executions>
+			        <execution>
+			            <id>copy-dependencies</id>
+			            <phase>prepare-package</phase>
+			            <goals>
+			                <goal>copy-dependencies</goal>
+			            </goals>
+			            <configuration>
+			                <outputDirectory>
+			                    ${project.build.directory}/libs
+			                </outputDirectory>
+			            </configuration>
+			        </execution>
+			    </executions>
+			</plugin>
+			
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-jar-plugin</artifactId>
+			    <configuration>
+			        <archive>
+			            <manifest>
+			                <addClasspath>true</addClasspath>
+			                <classpathPrefix>libs/</classpathPrefix>
+			                <mainClass>
+			                    it.desimone.gsheetsaccess.ui.RisiKoDataManager
+			                </mainClass>
+			            </manifest>
+			        </archive>
+			    </configuration>
+			</plugin>
+	
+			<plugin>
+		        <artifactId>maven-resources-plugin</artifactId>
+		        <version>3.0.2</version>
+		        <executions> 	        
+		          <execution>
+		            <id>copy-resources</id>
+            
+		            <phase>install</phase>
+		            <goals>
+		              <goal>copy-resources</goal>
+		            </goals>
+		            <configuration>
+		               <includeEmptyDirs>true</includeEmptyDirs>
+		              <outputDirectory>${project.output}</outputDirectory>
+		              <resources>          
+		                <resource>
+		                  <directory>/</directory>
+		                  <includes>
+		                  	<include>resources/</include>
+		                  	<include>configuration/</include>
+		                  </includes>
+		                  <excludes>
+		                  	<exclude>resources/*.png</exclude>
+		                  	<exclude>resources/*.pdf</exclude>
+		                  	<exclude>resources/*.xls</exclude>
+		                  	<exclude>resources/*.gitignore</exclude>
+		                  	<exclude>resources/google/.credentials/</exclude>
+		                  </excludes>
+		                  <filtering>false</filtering>
+		                </resource>
+		                <resource>
+		                  <directory>target/</directory>
+		                  <includes>
+		                  	<include>libs/</include>
+		                  	<include>*.jar</include>
+		                  </includes>
+		                  <filtering>false</filtering>
+		                </resource>
+		                <resource>
+		                  <directory>scripts/</directory>
+		                  <filtering>false</filtering>
+		                </resource>		                
+		              </resources>              
+		            </configuration>            
+		          </execution>
+		        </executions>
+		     </plugin>
+		</plugins>
+	</build>
+	
+
 
   <dependencies>
     <dependency>

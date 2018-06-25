@@ -170,4 +170,20 @@ public class GoogleDriveAccess extends RisikoDataManagerAccess{
         }
         return createdFolder;
     }
+    
+    public File updateFileWithData(String fileIdToUpdate, String fileIdToRestore) throws IOException{
+    	File file = null;
+        Drive service = getDriveService();
+
+        if (service != null){
+        	Drive.Files driveFiles = service.files();
+        	if (driveFiles != null){
+        		File restoreFile = driveFiles.get(fileIdToRestore).execute();
+        		if (restoreFile != null){
+        			file = driveFiles.update(fileIdToUpdate, restoreFile).setFileId(fileIdToUpdate).execute();
+        		}
+        	}
+        }
+        return file;
+    }
 }

@@ -113,7 +113,7 @@ private static Environment environment;
 		return sheetId;
 	}
 
-	public static String getBaclupsFolderId(){
+	public static String getBackupsFolderId(){
 		String sheetId = ((String)properties.get("backupsFolder"));
 		if (sheetId != null) sheetId = sheetId.trim();
 		MyLogger.getLogger().finest("Backups Folder:<<"+sheetId+">>");

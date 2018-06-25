@@ -11,7 +11,11 @@ public class GDriveUtilsTest {
 
 	public static void main(String[] args) {
 		MyLogger.setConsoleLogLevel(Level.ALL);
-		Configurator.loadConfiguration(Environment.PRODUCTION);
+		Configurator.loadConfiguration(Environment.STAGE);
+		testRestore();
+	}
+
+	public static void testBackup(){
 		try {
 			GDriveUtils.backup();
 		} catch (Exception e) {
@@ -19,5 +23,16 @@ public class GDriveUtilsTest {
 			e.printStackTrace();
 		}
 	}
-
+	
+	public static void testRestore(){
+		try {
+			String anagraficaRidottaId = Configurator.getAnagraficaRidottaSheetId();
+			String backupAnagraficaRidottaId = "1AhXrPvb32l6Lt04AjaG2nqvaoMoOvyONszhb3H0Xc8o";
+			GDriveUtils.restore(anagraficaRidottaId, backupAnagraficaRidottaId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 }

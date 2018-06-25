@@ -60,7 +60,7 @@ public class GDriveUtils {
 		try {
 			String spreadSheetIdTornei = Configurator.getTorneiSheetId();
 			String spreadSheetIdAnagrafiche = Configurator.getAnagraficaRidottaSheetId();
-			String backupsFolderId = Configurator.getBaclupsFolderId();
+			String backupsFolderId = Configurator.getBackupsFolderId();
 			String suffix = "_"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 			GoogleDriveAccess googleDriveAccess = new GoogleDriveAccess();
 
@@ -74,5 +74,20 @@ public class GDriveUtils {
 		}
 		
 		MyLogger.getLogger().info("FINE backup");
+	}
+	
+	public static void restore(String fileIdToOverWrite, String fileIdToRestore) throws Exception{
+		MyLogger.getLogger().info("INIZIO restore di "+fileIdToRestore+" su "+fileIdToOverWrite);
+		
+		try {
+			GoogleDriveAccess googleDriveAccess = new GoogleDriveAccess();
+			File backupFileAnagrafiche = googleDriveAccess.updateFileWithData(fileIdToOverWrite, fileIdToRestore);
+			MyLogger.getLogger().info("Backup di "+backupFileAnagrafiche.getId()+" - "+backupFileAnagrafiche.getName());
+		}catch(Exception e){
+			MyLogger.getLogger().severe("Errore restore "+e.getMessage());
+			throw e;
+		}
+		
+		MyLogger.getLogger().info("FINE restore");
 	}
 }
