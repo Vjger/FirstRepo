@@ -323,6 +323,12 @@ public class GeneratoreTavoliNew {
 		case MINIMIZZAZIONE_SCONTRI_DIRETTI:
 			result = sonoIntercambiabiliInBaseAPartitePrecedenti(inSensoStretto, partita1, giocatore1, partita2, giocatore2, partitePrecedenti);
 			break;
+		case MINIMIZZAZIONE_SCONTRI_DIRETTI_TRA_CLUB:
+			result = sonoIntercambiabiliInBaseAClubAffrontatiPrecedenti(inSensoStretto, partita1, giocatore1, partita2, giocatore2, partitePrecedenti);
+			break;	
+		case MINIMIZZAZIONE_SCONTRI_DIRETTI_GIOCATORE_CLUB:
+			result = sonoIntercambiabiliInBaseAClubAffrontatoPrecedentemente(inSensoStretto, partita1, giocatore1, partita2, giocatore2, partitePrecedenti);
+			break;				
 		case VINCITORI_SEPARATI:
 			result = sonoIntercambiabiliInBaseAVincitoriPrecedenti(inSensoStretto, partita1, giocatore1, partita2, giocatore2, partitePrecedenti);
 			break;
@@ -400,6 +406,12 @@ public class GeneratoreTavoliNew {
 		case ALLA_GRECA:
 			result = partite;
 			break;
+		case MINIMIZZAZIONE_SCONTRI_DIRETTI_TRA_CLUB:
+			result = redistribuisciPartiteMinimizzareScontriMultipliTraClub(priorita, listaPriorita, partite, partitePrecedenti);
+			break;
+		case MINIMIZZAZIONE_SCONTRI_DIRETTI_GIOCATORE_CLUB:
+			result = redistribuisciPartiteMinimizzareScontriGiocatoreVersoStessoClub(priorita, listaPriorita, partite, partitePrecedenti);
+			break;
 		default:
 			throw new IllegalArgumentException("Tipo di priorità non gestita: "+priorita);
 		}
@@ -434,6 +446,86 @@ public class GeneratoreTavoliNew {
 										if(!sostituitoAlmenoUno){sostituitoAlmenoUno = true;}
 										/* Caso in cui il tavolo aveva più di una violazione */
 										if (ilTavolohaGiocatoriCheSiSonoGiaAffrontati(partite[i], partitePrecedenti)){
+											i--;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}while(sostituitoAlmenoUno && numeroIterazioni < NUMERO_MASSIMO_ITERAZIONI);
+		return partite;
+	}
+	
+	private static Partita[] redistribuisciPartiteMinimizzareScontriMultipliTraClub(PrioritaSorteggio priorita, List<PrioritaSorteggio> listaPriorita, Partita[] partite, Partita[] partitePrecedenti){
+		short numeroIterazioni = 0; //non serve a nulla ma evita il rischio di loop.
+		boolean sostituitoAlmenoUno = false;
+		do{
+			numeroIterazioni++;
+			MyLogger.getLogger().info("redistribuisciPartiteMinimizzareScontriMultipliTraClub - Iterazione n° "+numeroIterazioni);
+			sostituitoAlmenoUno = false;
+			for (int i=0; i < partite.length; i++){
+				if (ilTavolohaGiocatoriDiClubCheSiSonoGiaAffrontatiOSiStannoPerAffrontare(partite[i], partite, partitePrecedenti)){
+					Set<GiocatoreDTO> giocatoriCheSisonoGiaAffrontati = giocatoriDiClubCheSiSonoGiaAffrontati(partite[i], partite, partitePrecedenti);
+					Iterator<GiocatoreDTO> iterator =  giocatoriCheSisonoGiaAffrontati.iterator();
+					MyLogger.getLogger().info("Nel tavolo "+partite[i].getNumeroTavolo()+" si sono già affrontati i club dei giocatori "+giocatoriCheSisonoGiaAffrontati);
+					boolean sostituito = false;
+					/* Ciclo tutti i giocatori del tavolo che hanno già scontri diretti: se avviene uno scambio la lista si rigenera daccapo.*/
+					while (iterator.hasNext() && !sostituito){
+						GiocatoreDTO giocatore1 = iterator.next();
+						for (int j=0; j < partite.length && !sostituito; j++){
+							if (i != j){
+								GiocatoreDTO[] giocatori = partite[j].getGiocatori().toArray(new GiocatoreDTO[0]);
+								for (int k=0; k<giocatori.length && !sostituito; k++){
+									GiocatoreDTO giocatore2 = giocatori[k];
+									if (verificaSeScambiabili(priorita, listaPriorita, partite[i], giocatore1, partite[j], giocatore2, partitePrecedenti)){
+										scambiaGiocatori(partite[i],giocatore1,partite[j],giocatore2);
+										sostituito = true;
+										if(!sostituitoAlmenoUno){sostituitoAlmenoUno = true;}
+										/* Caso in cui il tavolo aveva più di una violazione */
+										if (ilTavolohaGiocatoriDiClubCheSiSonoGiaAffrontatiOSiStannoPerAffrontare(partite[i], partite, partitePrecedenti)){
+											i--;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}while(sostituitoAlmenoUno && numeroIterazioni < NUMERO_MASSIMO_ITERAZIONI);
+		return partite;
+	}
+	
+	private static Partita[] redistribuisciPartiteMinimizzareScontriGiocatoreVersoStessoClub(PrioritaSorteggio priorita, List<PrioritaSorteggio> listaPriorita, Partita[] partite, Partita[] partitePrecedenti){
+		short numeroIterazioni = 0; //non serve a nulla ma evita il rischio di loop.
+		boolean sostituitoAlmenoUno = false;
+		do{
+			numeroIterazioni++;
+			MyLogger.getLogger().info("redistribuisciPartiteMinimizzareScontriGiocatoreVersoStessoClub - Iterazione n° "+numeroIterazioni);
+			sostituitoAlmenoUno = false;
+			for (int i=0; i < partite.length; i++){
+				if (ilTavolohaGiocatoriCheHannoGiaAffrontatoQuelClub(partite[i], partitePrecedenti)){
+					Set<GiocatoreDTO> giocatoriCheHannoGiaAffrontatoQuelClub = giocatoriCheHannoGiaAffrontatoQuelClub(partite[i], partitePrecedenti);
+					Iterator<GiocatoreDTO> iterator =  giocatoriCheHannoGiaAffrontatoQuelClub.iterator();
+					MyLogger.getLogger().info("Nel tavolo "+partite[i].getNumeroTavolo()+" ha già affrontato almeno uno dei club i giocatori "+giocatoriCheHannoGiaAffrontatoQuelClub);
+					boolean sostituito = false;
+					/* Ciclo tutti i giocatori del tavolo che hanno già scontri diretti: se avviene uno scambio la lista si rigenera daccapo.*/
+					while (iterator.hasNext() && !sostituito){
+						GiocatoreDTO giocatore1 = iterator.next();
+						for (int j=0; j < partite.length && !sostituito; j++){
+							if (i != j){
+								GiocatoreDTO[] giocatori = partite[j].getGiocatori().toArray(new GiocatoreDTO[0]);
+								for (int k=0; k<giocatori.length && !sostituito; k++){
+									GiocatoreDTO giocatore2 = giocatori[k];
+									if (verificaSeScambiabili(priorita, listaPriorita, partite[i], giocatore1, partite[j], giocatore2, partitePrecedenti)){
+										scambiaGiocatori(partite[i],giocatore1,partite[j],giocatore2);
+										sostituito = true;
+										if(!sostituitoAlmenoUno){sostituitoAlmenoUno = true;}
+										/* Caso in cui il tavolo aveva più di una violazione */
+										if (ilTavolohaGiocatoriCheHannoGiaAffrontatoQuelClub(partite[i], partitePrecedenti)){
 											i--;
 										}
 									}
@@ -780,6 +872,58 @@ public class GeneratoreTavoliNew {
 		return result;
 	}
 
+	private static boolean sonoIntercambiabiliInBaseAClubAffrontatiPrecedenti(boolean inSensoStretto, Partita partita1, GiocatoreDTO giocatore1, Partita partita2, GiocatoreDTO giocatore2, Partita[] partitePrecedenti){
+		boolean result = false;
+				
+		Partita partita1Bis = new Partita(partita1);
+		Partita partita2Bis = new Partita(partita2);
+		partita1Bis.removeGiocatore(giocatore1);
+		partita1Bis.addGiocatore(giocatore2, null);
+
+		partita2Bis.removeGiocatore(giocatore2);
+		partita2Bis.addGiocatore(giocatore1, null);
+	
+		int numeroScontriClubGiaAffrontatiPrima 	= totaleScontriTraClubCheSiSonoGiaAffrontati(partita1, partitePrecedenti)
+												+ totaleScontriTraClubCheSiSonoGiaAffrontati(partita2, partitePrecedenti);
+
+		int numeroScontriClubGiaAffrontatiDopo 	= totaleScontriTraClubCheSiSonoGiaAffrontati(partita1Bis, partitePrecedenti)
+												+ totaleScontriTraClubCheSiSonoGiaAffrontati(partita2Bis, partitePrecedenti);
+
+		if (inSensoStretto){
+			result = numeroScontriClubGiaAffrontatiPrima >  numeroScontriClubGiaAffrontatiDopo;
+		}else{
+			result = numeroScontriClubGiaAffrontatiPrima >= numeroScontriClubGiaAffrontatiDopo;
+		}
+				
+		return result;
+	}
+	
+	private static boolean sonoIntercambiabiliInBaseAClubAffrontatoPrecedentemente(boolean inSensoStretto, Partita partita1, GiocatoreDTO giocatore1, Partita partita2, GiocatoreDTO giocatore2, Partita[] partitePrecedenti){
+		boolean result = false;
+				
+		Partita partita1Bis = new Partita(partita1);
+		Partita partita2Bis = new Partita(partita2);
+		partita1Bis.removeGiocatore(giocatore1);
+		partita1Bis.addGiocatore(giocatore2, null);
+
+		partita2Bis.removeGiocatore(giocatore2);
+		partita2Bis.addGiocatore(giocatore1, null);
+	
+		int numeroScontriClubGiaAffrontatiPrima 	= totaleScontriTraGiocatoreEClub(partita1, partitePrecedenti)
+												+ totaleScontriTraGiocatoreEClub(partita2, partitePrecedenti);
+
+		int numeroScontriClubGiaAffrontatiDopo 	= totaleScontriTraGiocatoreEClub(partita1Bis, partitePrecedenti)
+												+ totaleScontriTraGiocatoreEClub(partita2Bis, partitePrecedenti);
+
+		if (inSensoStretto){
+			result = numeroScontriClubGiaAffrontatiPrima >  numeroScontriClubGiaAffrontatiDopo;
+		}else{
+			result = numeroScontriClubGiaAffrontatiPrima >= numeroScontriClubGiaAffrontatiDopo;
+		}
+				
+		return result;
+	}
+	
 	private static boolean sonoIntercambiabiliInBaseAVincitoriPrecedenti(boolean inSensoStretto, Partita partita1, GiocatoreDTO giocatore1, Partita partita2, GiocatoreDTO giocatore2, Partita[] partitePrecedenti){
 		boolean result = false;
 				
@@ -1066,14 +1210,14 @@ public class GeneratoreTavoliNew {
 		return result;
 	}
 	
-	private static boolean ilTavolohaGiocatoriCheSiSonoGiaAffrontati(Partita partita, Partita[] partitePrimoTurno){
+	private static boolean ilTavolohaGiocatoriCheSiSonoGiaAffrontati(Partita partita, Partita[] partitePrecedenti){
 		boolean result = false;
-		if (partitePrimoTurno != null){
+		if (partitePrecedenti != null){
 			GiocatoreDTO[] giocatoriInConfronto = partita.getGiocatori().toArray(new GiocatoreDTO[0]);		
 			for (int i=0; i<giocatoriInConfronto.length-1 && !result; i++){
 				for (int j=i+1; j<giocatoriInConfronto.length && !result; j++){
-					for (Partita partitaPrimoTurno: partitePrimoTurno){
-						result = partitaPrimoTurno.eAlTavolo(giocatoriInConfronto[i]) && partitaPrimoTurno.eAlTavolo(giocatoriInConfronto[j]);
+					for (Partita partitaPrecedente: partitePrecedenti){
+						result = partitaPrecedente.eAlTavolo(giocatoriInConfronto[i]) && partitaPrecedente.eAlTavolo(giocatoriInConfronto[j]);
 						if (result) break;
 					}
 				}
@@ -1082,6 +1226,40 @@ public class GeneratoreTavoliNew {
 		return result;
 	}
 
+	private static boolean ilTavolohaGiocatoriDiClubCheSiSonoGiaAffrontatiOSiStannoPerAffrontare(Partita partitaInLinea, Partita[] partiteTurnoInCorso, Partita[] partitePrecedenti){
+		boolean result = false;
+		Object[] partite = ArrayUtils.concatena(partiteTurnoInCorso, partitePrecedenti);
+		GiocatoreDTO[] giocatoriInConfronto = partitaInLinea.getGiocatori().toArray(new GiocatoreDTO[0]);		
+		for (int i=0; i<giocatoriInConfronto.length-1 && !result; i++){
+			for (int j=i+1; j<giocatoriInConfronto.length && !result; j++){
+				for (Object p: partite){
+					Partita partita = (Partita) p;
+					if (!partita.equals(partitaInLinea)){
+						result = partita.isClubGiocatoreAlTavolo(giocatoriInConfronto[i]) && partita.isClubGiocatoreAlTavolo(giocatoriInConfronto[j]);
+						if (result) break;
+					}
+				}
+			}
+		}
+		return result;
+	}
+
+	private static boolean ilTavolohaGiocatoriCheHannoGiaAffrontatoQuelClub(Partita partita, Partita[] partitePrecedenti){
+		boolean result = false;
+		if (partitePrecedenti != null){
+			GiocatoreDTO[] giocatoriInConfronto = partita.getGiocatori().toArray(new GiocatoreDTO[0]);		
+			for (int i=0; i<giocatoriInConfronto.length-1 && !result; i++){
+				for (int j=i+1; j<giocatoriInConfronto.length && !result; j++){
+					for (Partita partitaPrecedente: partitePrecedenti){
+						result = partitaPrecedente.eAlTavolo(giocatoriInConfronto[i]) && partitaPrecedente.isClubGiocatoreAlTavolo(giocatoriInConfronto[j]);
+						if (result) break;
+					}
+				}
+			}
+		}
+		return result;
+	}
+	
 	private static boolean ilTavolohaPiuVincitori(Partita partita, Partita[] partitePrecedenti){
 		boolean result = false;
 		int numeroVincitori = 0;
@@ -1142,6 +1320,43 @@ public class GeneratoreTavoliNew {
 		return result;
 	}
 	
+	private static Set<GiocatoreDTO> giocatoriDiClubCheSiSonoGiaAffrontati(Partita partitaInLinea, Partita[] partiteTurnoInCorso, Partita[] partitePrecedenti){
+		Set<GiocatoreDTO> result = new HashSet<GiocatoreDTO>();
+		Object[] partite = ArrayUtils.concatena(partiteTurnoInCorso, partitePrecedenti);
+		GiocatoreDTO[] giocatoriInConfronto = partitaInLinea.getGiocatori().toArray(new GiocatoreDTO[0]);		
+		for (int i=0; i<giocatoriInConfronto.length-1; i++){
+			for (int j=i+1; j<giocatoriInConfronto.length; j++){
+				for (Object p: partite){
+					Partita partita = (Partita) p;
+					if (!partita.equals(partitaInLinea)){
+						if(partita.isClubGiocatoreAlTavolo(giocatoriInConfronto[i]) && partita.isClubGiocatoreAlTavolo(giocatoriInConfronto[j])){
+							result.add(giocatoriInConfronto[i]);
+							result.add(giocatoriInConfronto[j]);	
+						}
+					}
+				}
+			}
+		}
+		return result;
+	}
+	
+	private static Set<GiocatoreDTO> giocatoriCheHannoGiaAffrontatoQuelClub(Partita partita, Partita[] partitePrecedenti){
+		Set<GiocatoreDTO> result = new HashSet<GiocatoreDTO>();
+		if (partitePrecedenti != null){
+			GiocatoreDTO[] giocatoriInConfronto = partita.getGiocatori().toArray(new GiocatoreDTO[0]);		
+			for (int i=0; i<giocatoriInConfronto.length-1; i++){
+				for (int j=i+1; j<giocatoriInConfronto.length; j++){
+					for (Partita partitaPrecedente: partitePrecedenti){
+						if(partitaPrecedente.eAlTavolo(giocatoriInConfronto[i]) && partitaPrecedente.isClubGiocatoreAlTavolo(giocatoriInConfronto[j])){
+							result.add(giocatoriInConfronto[i]);
+						}
+					}
+				}
+			}
+		}
+		return result;
+	}
+	
 	private static Set<GiocatoreDTO> giocatoriCheHannoGiaVinto(Partita partita, Partita[] partitePrecedenti){
 		Set<GiocatoreDTO> result = new HashSet<GiocatoreDTO>();
 		if (partitePrecedenti != null){
@@ -1173,6 +1388,41 @@ public class GeneratoreTavoliNew {
 		}
 		return result;
 	}
+	
+	private static int totaleScontriTraClubCheSiSonoGiaAffrontati(Partita partita, Partita[] partitePrecedenti){
+		int result = 0;
+		if (partitePrecedenti != null){
+			GiocatoreDTO[] giocatoriInConfronto = partita.getGiocatori().toArray(new GiocatoreDTO[0]);		
+			for (int i=0; i<giocatoriInConfronto.length-1; i++){
+				for (int j=i+1; j<giocatoriInConfronto.length; j++){
+					for (Partita partitaPrecedente: partitePrecedenti){
+						if(partitaPrecedente.isClubGiocatoreAlTavolo(giocatoriInConfronto[i]) && partitaPrecedente.isClubGiocatoreAlTavolo(giocatoriInConfronto[j])){
+							result++;
+						}
+					}
+				}
+			}
+		}
+		return result;
+	}
+	
+	private static int totaleScontriTraGiocatoreEClub(Partita partita, Partita[] partitePrecedenti){
+		int result = 0;
+		if (partitePrecedenti != null){
+			GiocatoreDTO[] giocatoriInConfronto = partita.getGiocatori().toArray(new GiocatoreDTO[0]);		
+			for (int i=0; i<giocatoriInConfronto.length-1; i++){
+				for (int j=i+1; j<giocatoriInConfronto.length; j++){
+					for (Partita partitaPrecedente: partitePrecedenti){
+						if(partitaPrecedente.eAlTavolo(giocatoriInConfronto[i]) && partitaPrecedente.isClubGiocatoreAlTavolo(giocatoriInConfronto[j])){
+							result++;
+						}
+					}
+				}
+			}
+		}
+		return result;
+	}
+	
 	
 	private static int totaleVittorieOVincitori(Partita partita, Partita[] partitePrecedenti, boolean vincitori){
 		int result = 0;

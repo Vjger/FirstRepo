@@ -70,7 +70,10 @@ public class Sorteggiatore {
 			break;
 		case _1vs1_SVIZZERA:
 			partiteTurno = getPartiteSorteggiate1VS1Svizzera(excelAccess, numeroTurno);
-			break;			
+			break;	
+		case TorneoASquadre:
+			partiteTurno = getPartiteSorteggiateTorneoASquadre(excelAccess, numeroTurno);
+			break;				
 		default:
 			MyLogger.getLogger().severe("Tipo di Torneo non previsto: "+tipoTorneo);
 			throw new MyException("Tipo di Torneo non previsto: "+tipoTorneo);
@@ -1459,5 +1462,40 @@ public class Sorteggiatore {
 		return partiteTurno;
 	}
 	
-
+	private static Partita[] getPartiteSorteggiateTorneoASquadre(ExcelAccess excelAccess, int numeroTurno){
+		MyLogger.getLogger().entering("Sorteggiatore", "getPartiteSorteggiateTorneoASquadre");
+		Partita[] partiteTurno = null;
+		List<GiocatoreDTO> giocatoriPartecipanti = excelAccess.getListaGiocatori(true);
+		List<PrioritaSorteggio> priorita = new ArrayList<PrioritaSorteggio>();
+		switch (numeroTurno) {
+		case 1:
+			priorita.add(PrioritaSorteggio.IMPEDITO_STESSO_CLUB);
+			priorita.add(PrioritaSorteggio.MINIMIZZAZIONE_SCONTRI_DIRETTI_TRA_CLUB);
+			partiteTurno = GeneratoreTavoliNew.generaPartite(giocatoriPartecipanti, null, TipoTavoli.DA_4_ED_EVENTUALMENTE_DA_5, priorita);
+			break;
+		default:
+			List<Partita> listaPartitePrecedenti = new ArrayList<Partita>();
+			for (int i = 1; i < numeroTurno; i++){
+				Partita[] partiteTurnoi = excelAccess.loadPartite(i,false,TipoTorneo.TorneoASquadre);
+				if (partiteTurnoi == null){
+					MyLogger.getLogger().severe("E' stato richiesto il sorteggio per il turno "+numeroTurno+" ma non esiste il turno "+i);
+					throw new MyException("E' stato richiesto il sorteggio per il turno "+numeroTurno+" ma non esiste il turno "+i);
+				}
+				listaPartitePrecedenti.addAll(Arrays.asList(partiteTurnoi));
+			}
+			
+			TorneiUtils.checkPartiteConPiuVincitori(listaPartitePrecedenti);
+			
+			Partita[] partitePrecedenti = listaPartitePrecedenti.toArray(new Partita[0]);
+			priorita.add(PrioritaSorteggio.IMPEDITO_STESSO_CLUB);
+			priorita.add(PrioritaSorteggio.MINIMIZZAZIONE_SCONTRI_DIRETTI_TRA_CLUB);
+			priorita.add(PrioritaSorteggio.MINIMIZZAZIONE_SCONTRI_DIRETTI);
+			priorita.add(PrioritaSorteggio.MINIMIZZAZIONE_SCONTRI_DIRETTI_GIOCATORE_CLUB);			
+			partiteTurno = GeneratoreTavoliNew.generaPartite(giocatoriPartecipanti, partitePrecedenti, TipoTavoli.DA_4_ED_EVENTUALMENTE_DA_5, priorita);
+			break;
+		}	
+		MyLogger.getLogger().exiting("Sorteggiatore", "getPartiteSorteggiateTorneoGufo", ArrayUtils.fromPartiteToString(partiteTurno));
+		return partiteTurno;
+	}
+	
 }

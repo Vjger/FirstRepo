@@ -198,6 +198,17 @@ public class Partita implements Cloneable{
 		return result;
 	}
 	
+	public boolean isClubGiocatoreAlTavolo(GiocatoreDTO giocatore){
+		Set<GiocatoreDTO> giocatoriAlTavolo = getGiocatori();
+		boolean found = false;
+		Iterator<GiocatoreDTO> iterator = giocatoriAlTavolo.iterator();
+		while (iterator.hasNext() && !found){
+			GiocatoreDTO giocatoreAlTavolo = iterator.next();
+			found = giocatore.getClubProvenienza() != null && giocatoreAlTavolo.getClubProvenienza() != null && giocatore.getClubProvenienza().equals(giocatoreAlTavolo.getClubProvenienza());
+		}
+		return found;
+	}
+	
 	public String toString(){
 		StringBuilder result = new StringBuilder();
 		result.append("\nTavolo n°"+numeroTavolo+": "+numeroGiocatori+" giocatori\n");

@@ -35,13 +35,32 @@ public class ClubDTO {
 	public String toString(){
 		return denominazione;
 	}
-	
-	public boolean equals(Object o){
-		boolean result = false;
-		if (o != null){
-			ClubDTO club = (ClubDTO) o;
-			result = club.getDenominazione().equals(this.getDenominazione());
-		}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((denominazione == null) ? 0 : denominazione.hashCode());
 		return result;
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ClubDTO other = (ClubDTO) obj;
+		if (denominazione == null) {
+			if (other.denominazione != null)
+				return false;
+		} else if (!denominazione.equalsIgnoreCase(other.denominazione))
+			return false;
+		return true;
+	}
+	
+
 }

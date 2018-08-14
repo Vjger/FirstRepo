@@ -19,7 +19,8 @@ public enum TipoTorneo {
 	,BGL
 	,BGL_SVIZZERA
 	,_1vs1_
-	,_1vs1_SVIZZERA;
+	,_1vs1_SVIZZERA
+	,TorneoASquadre;
 	
 	public static Vector<TipoTorneo> getTipiAbilitati(){
 		Vector<TipoTorneo> result = new Vector<TipoTorneo>();
@@ -37,6 +38,7 @@ public enum TipoTorneo {
 		result.add(BGL_SVIZZERA);
 		result.add(_1vs1_);
 		result.add(_1vs1_SVIZZERA);
+		result.add(TorneoASquadre);
 		return result;
 	}
 	

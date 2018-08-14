@@ -30,4 +30,17 @@ public class ArrayUtils {
 		return clone;
 	}
 	
+    public static Object[] concatena(Object[] a, Object[] b){
+    	if (a != null && b == null) return a;
+    	if (b != null && a == null) return b;
+    	if (a == null && b == null) return null;
+    	
+        int length = a.length + b.length;
+        Object[] result = new Object[length];
+        System.arraycopy(a, 0, result, 0, a.length);
+        System.arraycopy(b, 0, result, a.length, b.length);
+        return result;
+    }
+
+
 }
