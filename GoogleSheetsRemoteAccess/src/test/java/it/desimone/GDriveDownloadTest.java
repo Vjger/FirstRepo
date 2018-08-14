@@ -40,8 +40,8 @@ public class GDriveDownloadTest {
     					if (files != null){
     						MyLogger.getLogger().info("Trovati "+files.size()+" nel folder "+folder.getName());
     						for (File file: files){
-    							MyLogger.getLogger().info("Download del file "+file.getName()+" con id "+file.getId());
-    							googleDriveAccess.downloadFile(file, folder.getName());
+    							MyLogger.getLogger().info("Download del file ["+file.getName()+"] con id "+file.getId());
+    							//googleDriveAccess.downloadFile(file, folder.getName());
     						}
     					}
     				}

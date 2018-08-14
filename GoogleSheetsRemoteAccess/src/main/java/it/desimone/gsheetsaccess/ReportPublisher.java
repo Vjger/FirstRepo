@@ -42,7 +42,7 @@ public class ReportPublisher {
 		//MyLogger.setConsoleLogLevel(Level.INFO);
 
 		try{
-			List<ReportDriveData> publishedReport = GDriveDownloader.downloadReport();
+			List<ReportDriveData> publishedReport = GDriveDownloader.downloadReport(true);
 			if (publishedReport != null && !publishedReport.isEmpty()){
 				GDriveUtils.backup();
 				List<SheetRow> reportElaborazioni = new ArrayList<SheetRow>();

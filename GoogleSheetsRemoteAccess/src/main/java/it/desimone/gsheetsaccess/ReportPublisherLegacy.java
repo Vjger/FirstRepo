@@ -37,7 +37,7 @@ public class ReportPublisherLegacy {
 		MyLogger.setConsoleLogLevel(Level.INFO);
 
 		try{
-			List<ReportDriveData> publishedReport = GDriveDownloader.downloadReport();
+			List<ReportDriveData> publishedReport = GDriveDownloader.downloadReport(true);
 			if (publishedReport != null && !publishedReport.isEmpty()){
 				List<SheetRow> reportElaborazioni = new ArrayList<SheetRow>();
 				MyLogger.getLogger().info("Inizio elaborazione di "+publishedReport.size()+" report");

@@ -48,6 +48,10 @@ public class RisiKoDataManager extends JFrame {
      
     public RisiKoDataManager() {
         super("RisiKo! Data Manager");
+        
+        setExtendedState(JFrame.MAXIMIZED_BOTH); 
+        //setUndecorated(true);
+        setVisible(true);
          
         textArea = new JTextArea(250, 10);
         textArea.setEditable(false);
@@ -175,7 +179,7 @@ public class RisiKoDataManager extends JFrame {
         });
         
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1080, 320);
+        //setSize(1080, 320);
         setLocationRelativeTo(null);    // centers on screen
     }
      

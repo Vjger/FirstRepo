@@ -18,7 +18,7 @@ import it.desimone.utils.MyLogger;
 public class GDriveDownloader {
 
 	
-	public static List<ReportDriveData> downloadReport(){
+	public static List<ReportDriveData> downloadReport(boolean download){
 		List<ReportDriveData> result = new ArrayList<ReportDriveData>();
 		
 		GoogleDriveAccess googleDriveAccess = new GoogleDriveAccess();
@@ -47,7 +47,9 @@ public class GDriveDownloader {
     						MyLogger.getLogger().info("Trovati "+files.size()+" report nel folder "+folder.getName());
     						for (File file: files){
     							MyLogger.getLogger().info("Download del file "+file.getName()+" con id "+file.getId());
-    							googleDriveAccess.downloadFile(file, folder.getName());
+    							if (download){
+    								googleDriveAccess.downloadFile(file, folder.getName());
+    							}
     							ReportDriveData reportDriveData = new ReportDriveData();
     							reportDriveData.setParentFolderId(folder.getId());
     							reportDriveData.setParentFolderName(folder.getName());
