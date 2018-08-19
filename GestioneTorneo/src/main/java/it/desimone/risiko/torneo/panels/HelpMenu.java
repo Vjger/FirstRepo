@@ -16,7 +16,7 @@ import javax.swing.JOptionPane;
 
 public class HelpMenu extends JMenu {
 	
-	public static final String VERSIONE = "2.0.1";
+	public static final String VERSIONE = "2.1.0 beta";
 	
 	private JMenuItem menuHelp= new JMenuItem("Help");
 	private JMenuItem menuXls= new JMenuItem("Nuovo xls");

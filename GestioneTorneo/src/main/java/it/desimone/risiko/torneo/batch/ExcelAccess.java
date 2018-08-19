@@ -45,7 +45,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -108,6 +107,11 @@ public class ExcelAccess{
 	private CellStyle styleCellClassEVEN;
 	private CellStyle styleCellClassWinODD;
 	private CellStyle styleCellClassWinEVEN;
+	
+	private CellStyle styleCellClass0;
+	private CellStyle styleCellClass1;
+	private CellStyle styleCellClass2;
+	private CellStyle styleCellClassIntestStat;
 	
 	private static short indiceFormatTreDecimali = -1;
 		
@@ -1416,6 +1420,8 @@ public class ExcelAccess{
 			listaPartitePrecedenti.addAll(Arrays.asList(partiteTurnoi));
 		}
 		
+		creaStiliStatistiche();
+		
 		MatchGrids matchGrids = MatchAnalyzer.calcolaGriglie(listaPartitePrecedenti);
 		
 		Map<ClubDTO, Map<ClubDTO, Integer>> mapClubVsClub = matchGrids.getMapClubVsClub();
@@ -1435,7 +1441,7 @@ public class ExcelAccess{
 		short indexCell = 1;
 		for (Object o: clubsList){
 			ClubDTO club = (ClubDTO) o;
-			CellUtil.createCell(intestazioneMapClubVsClub,  indexCell++, club.getDenominazione());
+			CellUtil.createCell(intestazioneMapClubVsClub,  indexCell++, club.getDenominazione(), styleCellClassIntestStat);
 		}
 		for (Object o: clubsList){
 			indexCell = 0;
@@ -1448,11 +1454,121 @@ public class ExcelAccess{
 				ClubDTO club2 = (ClubDTO) o2;
 				Integer confronti = mappaI.get(club2);
 				if (confronti == null) confronti = 0;
-				CellUtil.createCell(rowClub,  indexCell++, confronti.toString());
+				CellUtil.createCell(rowClub,  indexCell++, confronti.toString(), styleByConfronti(confronti));
 			}
 		}
+		indexRow+=2;
+		
+		Row intestazioneMapGiocatoreVsClub = schedaStatistiche.createRow(indexRow);
+		indexCell = 1;
+		for (Object o: clubsList){
+			ClubDTO club = (ClubDTO) o;
+			CellUtil.createCell(intestazioneMapGiocatoreVsClub,  indexCell++, club.getDenominazione(), styleCellClassIntestStat);
+		}
+		for (Object o: giocatoriList){
+			GiocatoreDTO giocatore = (GiocatoreDTO) o;
+			indexCell = 0;
+			Row rowGiocatore = schedaStatistiche.createRow(++indexRow);
+			String nominativo = giocatore.getNome()+" "+giocatore.getCognome();
+			if (giocatore.getClubProvenienza() != null){
+				nominativo +=" ["+giocatore.getClubProvenienza()+"]";
+			}
+			CellUtil.createCell(rowGiocatore,  indexCell++, nominativo);
+			Map<ClubDTO,Integer> mappaI = mapGiocatoreVsClub.get(giocatore);
 
+			for (Object o2: clubsList){
+				ClubDTO club2 = (ClubDTO) o2;
+				Integer confronti = mappaI.get(club2);
+				if (confronti == null) confronti = 0;
+				CellUtil.createCell(rowGiocatore,  indexCell++, confronti.toString(), styleByConfronti(confronti));
+			}
+		}
+		
+		indexRow+=2;
+		
+		Row intestazioneMapGiocatoreVsGiocatore = schedaStatistiche.createRow(indexRow);
+		indexCell = 1;
+		for (Object o: giocatoriList){
+			GiocatoreDTO giocatore = (GiocatoreDTO) o;
+			String nominativo = giocatore.getNome()+" "+giocatore.getCognome();
+			if (giocatore.getClubProvenienza() != null){
+				nominativo +=" ["+giocatore.getClubProvenienza()+"]";
+			}
+			CellUtil.createCell(intestazioneMapGiocatoreVsGiocatore,  indexCell++, nominativo, styleCellClassIntestStat);
+		}
+		for (Object o: giocatoriList){
+			GiocatoreDTO giocatore = (GiocatoreDTO) o;
+			indexCell = 0;
+			Row rowGiocatore = schedaStatistiche.createRow(++indexRow);
+			String nominativo = giocatore.getNome()+" "+giocatore.getCognome();
+			if (giocatore.getClubProvenienza() != null){
+				nominativo +=" ["+giocatore.getClubProvenienza()+"]";
+			}
+			CellUtil.createCell(rowGiocatore,  indexCell++, nominativo);
+			Map<GiocatoreDTO,Integer> mappaI = mapGiocatoreVsGiocatore.get(giocatore);
+
+			for (Object o2: giocatoriList){
+				GiocatoreDTO giocatore2 = (GiocatoreDTO) o2;
+				Integer confronti = mappaI.get(giocatore2);
+				if (confronti == null) confronti = 0;
+				CellUtil.createCell(rowGiocatore,  indexCell++, confronti.toString(), styleByConfronti(confronti));
+			}
+		}
+		
+		for (int indiceCella = 0; indiceCella < indexCell; indiceCella++){
+			//schedaStatistiche.autoSizeColumn(indiceCella);
+		}
 	}
+	
+	private CellStyle styleByConfronti(Integer confronti){
+		switch (confronti) {
+		case 0:
+			return styleCellClass0;
+		case 1:
+			return styleCellClass1;
+		default:
+			return styleCellClass2;
+		}
+	}
+	
+	private void creaStiliStatistiche(){
+		Font font = foglioTorneo.createFont();
+		font.setFontName(HSSFFont.FONT_ARIAL);
+		font.setColor(IndexedColors.BLACK.getIndex());
+		
+		styleCellClassIntestStat = foglioTorneo.createCellStyle();
+		styleCellClassIntestStat.setAlignment(HorizontalAlignment.CENTER);
+		styleCellClassIntestStat.setFont(font);
+		styleCellClassIntestStat.setWrapText(true);
+		styleCellClassIntestStat.setVerticalAlignment(VerticalAlignment.CENTER);
+		styleCellClassIntestStat.setFillForegroundColor(IndexedColors.AQUA.getIndex());
+		styleCellClassIntestStat.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		
+		styleCellClass0 = foglioTorneo.createCellStyle();
+		styleCellClass0.setAlignment(HorizontalAlignment.CENTER);
+		styleCellClass0.setFont(font);
+		styleCellClass0.setWrapText(true);
+		styleCellClass0.setVerticalAlignment(VerticalAlignment.CENTER);
+		styleCellClass0.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+		styleCellClass0.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		
+		styleCellClass1 = foglioTorneo.createCellStyle();
+		styleCellClass1.setAlignment(HorizontalAlignment.CENTER);
+		styleCellClass1.setFont(font);
+		styleCellClass1.setWrapText(true);
+		styleCellClass1.setVerticalAlignment(VerticalAlignment.CENTER);
+		styleCellClass1.setFillForegroundColor(IndexedColors.GOLD.getIndex());
+		styleCellClass1.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		
+		styleCellClass2 = foglioTorneo.createCellStyle();
+		styleCellClass2.setAlignment(HorizontalAlignment.CENTER);
+		styleCellClass2.setFont(font);
+		styleCellClass2.setWrapText(true);
+		styleCellClass2.setVerticalAlignment(VerticalAlignment.CENTER);
+		styleCellClass2.setFillForegroundColor(IndexedColors.ROSE.getIndex());
+		styleCellClass2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+	}
+	
 	public void closeFileExcel(){
 		if (pathFileExcel != null){
 			try{

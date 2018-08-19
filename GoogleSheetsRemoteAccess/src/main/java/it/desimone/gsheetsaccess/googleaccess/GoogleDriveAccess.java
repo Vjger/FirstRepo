@@ -5,9 +5,7 @@ import it.desimone.utils.MyLogger;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import com.google.api.services.drive.Drive;
