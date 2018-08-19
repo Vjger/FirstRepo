@@ -1,43 +1,5 @@
 package it.desimone.risiko.torneo.batch;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.poi.hssf.usermodel.HSSFFont;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.BorderStyle;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.DataFormat;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.VerticalAlignment;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.ss.util.CellUtil;
-import org.apache.poi.ss.util.RegionUtil;
-
 import it.desimone.risiko.torneo.dto.ClubDTO;
 import it.desimone.risiko.torneo.dto.GiocatoreDTO;
 import it.desimone.risiko.torneo.dto.Partita;
@@ -63,11 +25,53 @@ import it.desimone.risiko.torneo.scoreplayer.ScorePlayerRaduno;
 import it.desimone.risiko.torneo.scoreplayer.ScorePlayerTorneoBGL;
 import it.desimone.risiko.torneo.scoreplayer.ScorePlayerTorneoGufo;
 import it.desimone.risiko.torneo.utils.ClubLoader;
+import it.desimone.risiko.torneo.utils.MatchAnalyzer;
+import it.desimone.risiko.torneo.utils.MatchAnalyzer.MatchGrids;
 import it.desimone.risiko.torneo.utils.RegioniLoader;
 import it.desimone.risiko.torneo.utils.TipoTorneo;
 import it.desimone.risiko.torneo.utils.TorneiUtils;
 import it.desimone.utils.MyException;
 import it.desimone.utils.MyLogger;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.DataFormat;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.CellUtil;
+import org.apache.poi.ss.util.RegionUtil;
 
 
 public class ExcelAccess{
@@ -81,6 +85,7 @@ public class ExcelAccess{
 	public static final String SCHEDA_CLASSIFICA	= "Classifica";
 	public static final String SCHEDA_CLASSIFICA_RIDOTTA	= "Classifica Ridotta";
 	public static final String SCHEDA_TURNO_SUFFIX	= "° Turno";
+	public static final String SCHEDA_STATISTICHE	= "STATISTICHE";
 		
 	String pathFileExcel;
 	short posizioneId 			= 0;
@@ -923,6 +928,7 @@ public class ExcelAccess{
 			scores = getClassificaNazionaleRisiko();
 			break;
 		case TorneoGufo:
+		case TorneoASquadre:
 			scores = getClassificaTorneoGufo();
 			break;
 		case CampionatoGufo:
@@ -1395,6 +1401,58 @@ public class ExcelAccess{
 		return torneo;
 	}
 	
+	public void scriviStatistiche(){
+		int index = foglioTorneo.getSheetIndex(SCHEDA_STATISTICHE);
+		if (index >=0){
+			foglioTorneo.removeSheetAt(index);
+		}
+		
+		Sheet schedaStatistiche = foglioTorneo.createSheet(SCHEDA_STATISTICHE);
+
+		List<Partita> listaPartitePrecedenti = new ArrayList<Partita>();
+		for (int i = 1; ; i++){
+			Partita[] partiteTurnoi = loadPartite(i,false,null);
+			if (partiteTurnoi == null){break;}
+			listaPartitePrecedenti.addAll(Arrays.asList(partiteTurnoi));
+		}
+		
+		MatchGrids matchGrids = MatchAnalyzer.calcolaGriglie(listaPartitePrecedenti);
+		
+		Map<ClubDTO, Map<ClubDTO, Integer>> mapClubVsClub = matchGrids.getMapClubVsClub();
+		Map<GiocatoreDTO, Map<ClubDTO, Integer>> 		mapGiocatoreVsClub 		= matchGrids.getMapGiocatoreVsClub();
+		Map<GiocatoreDTO, Map<GiocatoreDTO, Integer>> 	mapGiocatoreVsGiocatore = matchGrids.getMapGiocatoreVsGiocatore();
+		
+		Set<ClubDTO> clubsSet = mapClubVsClub.keySet();
+		List clubsList = new ArrayList<ClubDTO>(clubsSet);
+		Collections.sort(clubsList);
+		
+		Set<GiocatoreDTO> giocatoriSet = mapGiocatoreVsClub.keySet();
+		List giocatoriList = new ArrayList<GiocatoreDTO>(giocatoriSet);
+		Collections.sort(giocatoriList);
+		
+		int indexRow = 0;
+		Row intestazioneMapClubVsClub = schedaStatistiche.createRow(indexRow);
+		short indexCell = 1;
+		for (Object o: clubsList){
+			ClubDTO club = (ClubDTO) o;
+			CellUtil.createCell(intestazioneMapClubVsClub,  indexCell++, club.getDenominazione());
+		}
+		for (Object o: clubsList){
+			indexCell = 0;
+			ClubDTO club = (ClubDTO) o;
+			Row rowClub = schedaStatistiche.createRow(++indexRow);
+			CellUtil.createCell(rowClub,  indexCell++, club.getDenominazione());
+			Map<ClubDTO,Integer> mappaI = mapClubVsClub.get(club);
+
+			for (Object o2: clubsList){
+				ClubDTO club2 = (ClubDTO) o2;
+				Integer confronti = mappaI.get(club2);
+				if (confronti == null) confronti = 0;
+				CellUtil.createCell(rowClub,  indexCell++, confronti.toString());
+			}
+		}
+
+	}
 	public void closeFileExcel(){
 		if (pathFileExcel != null){
 			try{

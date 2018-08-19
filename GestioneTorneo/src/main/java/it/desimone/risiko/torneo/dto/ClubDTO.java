@@ -1,6 +1,6 @@
 package it.desimone.risiko.torneo.dto;
 
-public class ClubDTO {
+public class ClubDTO implements Comparable<ClubDTO>{
 
 	private String codProvincia;
 	private String denominazione;
@@ -60,6 +60,18 @@ public class ClubDTO {
 		} else if (!denominazione.equalsIgnoreCase(other.denominazione))
 			return false;
 		return true;
+	}
+
+	@Override
+	public int compareTo(ClubDTO o) {
+		// TODO Auto-generated method stub
+		if (o != null && denominazione != null){
+			return denominazione.compareTo(o.getDenominazione());
+		}else if (o != null){
+			return -1;
+		}else{
+			return 1;
+		}
 	}
 	
 

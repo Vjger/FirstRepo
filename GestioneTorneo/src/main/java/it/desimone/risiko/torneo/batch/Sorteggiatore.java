@@ -3,6 +3,7 @@ package it.desimone.risiko.torneo.batch;
 import it.desimone.risiko.torneo.dto.GiocatoreDTO;
 import it.desimone.risiko.torneo.dto.Partita;
 import it.desimone.risiko.torneo.scoreplayer.ScorePlayer;
+import it.desimone.risiko.torneo.utils.MatchAnalyzer;
 import it.desimone.risiko.torneo.utils.PrioritaSorteggio;
 import it.desimone.risiko.torneo.utils.RegioniLoader;
 import it.desimone.risiko.torneo.utils.TavoliVuotiCreator;
@@ -1484,7 +1485,7 @@ public class Sorteggiatore {
 				listaPartitePrecedenti.addAll(Arrays.asList(partiteTurnoi));
 			}
 			
-			TorneiUtils.checkPartiteConPiuVincitori(listaPartitePrecedenti);
+			//TorneiUtils.checkPartiteConPiuVincitori(listaPartitePrecedenti);
 			
 			Partita[] partitePrecedenti = listaPartitePrecedenti.toArray(new Partita[0]);
 			priorita.add(PrioritaSorteggio.IMPEDITO_STESSO_CLUB);
