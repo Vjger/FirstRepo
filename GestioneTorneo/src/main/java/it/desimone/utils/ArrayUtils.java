@@ -41,6 +41,18 @@ public class ArrayUtils {
         System.arraycopy(b, 0, result, a.length, b.length);
         return result;
     }
+    
+    public static Partita[] concatenaPartite(Partita[] a, Partita[] b){
+    	Partita[] result = null;
+    	Object[] arrayO = concatena(a, b);
+    	if (arrayO != null){
+    		result = new Partita[arrayO.length];
+    		for (int index = 0; index < arrayO.length; index++){
+    			result[index] = (Partita)arrayO[index];
+    		}
+    	}
+        return result;
+    }
 
 
 }

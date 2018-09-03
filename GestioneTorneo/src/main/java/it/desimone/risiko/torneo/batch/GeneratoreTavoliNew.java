@@ -459,33 +459,42 @@ public class GeneratoreTavoliNew {
 		return partite;
 	}
 	
-	private static Partita[] redistribuisciPartiteMinimizzareScontriMultipliTraClub(PrioritaSorteggio priorita, List<PrioritaSorteggio> listaPriorita, Partita[] partite, Partita[] partitePrecedenti){
+	private static Partita[] redistribuisciPartiteMinimizzareScontriMultipliTraClub(PrioritaSorteggio priorita, List<PrioritaSorteggio> listaPriorita, Partita[] partiteTurnoInCorso, Partita[] partitePrecedenti){
 		short numeroIterazioni = 0; //non serve a nulla ma evita il rischio di loop.
 		boolean sostituitoAlmenoUno = false;
 		do{
 			numeroIterazioni++;
 			MyLogger.getLogger().info("redistribuisciPartiteMinimizzareScontriMultipliTraClub - Iterazione n° "+numeroIterazioni);
 			sostituitoAlmenoUno = false;
-			for (int i=0; i < partite.length; i++){
-				if (ilTavolohaGiocatoriDiClubCheSiSonoGiaAffrontatiOSiStannoPerAffrontare(partite[i], partite, partitePrecedenti)){
-					Set<GiocatoreDTO> giocatoriCheSisonoGiaAffrontati = giocatoriDiClubCheSiSonoGiaAffrontati(partite[i], partite, partitePrecedenti);
+			for (int i=0; i < partiteTurnoInCorso.length; i++){
+				if (ilTavolohaGiocatoriDiClubCheSiSonoGiaAffrontatiOSiStannoPerAffrontare(partiteTurnoInCorso[i], partiteTurnoInCorso, partitePrecedenti)){
+					Set<GiocatoreDTO> giocatoriCheSisonoGiaAffrontati = giocatoriDiClubCheSiSonoGiaAffrontati(partiteTurnoInCorso[i], partiteTurnoInCorso, partitePrecedenti);
 					Iterator<GiocatoreDTO> iterator =  giocatoriCheSisonoGiaAffrontati.iterator();
-					MyLogger.getLogger().info("Nel tavolo "+partite[i].getNumeroTavolo()+" si sono già affrontati i club dei giocatori "+giocatoriCheSisonoGiaAffrontati);
+					MyLogger.getLogger().info("Nel tavolo "+partiteTurnoInCorso[i].getNumeroTavolo()+" si sono già affrontati i club dei giocatori "+giocatoriCheSisonoGiaAffrontati);
 					boolean sostituito = false;
 					/* Ciclo tutti i giocatori del tavolo che hanno già scontri diretti: se avviene uno scambio la lista si rigenera daccapo.*/
 					while (iterator.hasNext() && !sostituito){
 						GiocatoreDTO giocatore1 = iterator.next();
-						for (int j=0; j < partite.length && !sostituito; j++){
+						for (int j=0; j < partiteTurnoInCorso.length && !sostituito; j++){
 							if (i != j){
-								GiocatoreDTO[] giocatori = partite[j].getGiocatori().toArray(new GiocatoreDTO[0]);
+								GiocatoreDTO[] giocatori = partiteTurnoInCorso[j].getGiocatori().toArray(new GiocatoreDTO[0]);
 								for (int k=0; k<giocatori.length && !sostituito; k++){
 									GiocatoreDTO giocatore2 = giocatori[k];
-									if (verificaSeScambiabili(priorita, listaPriorita, partite[i], giocatore1, partite[j], giocatore2, partitePrecedenti)){
-										scambiaGiocatori(partite[i],giocatore1,partite[j],giocatore2);
+									List<Partita> listPartiteTurnoInCorso = new ArrayList<Partita>(Arrays.asList(partiteTurnoInCorso));
+									Iterator<Partita> iteratorInCorso = listPartiteTurnoInCorso.iterator();
+									while(iteratorInCorso.hasNext()){
+										Partita p = iteratorInCorso.next();
+										if (p.equals(partiteTurnoInCorso[i]) || p.equals(partiteTurnoInCorso[j])){
+											iteratorInCorso.remove();
+										}
+									}
+									Partita[] partite = ArrayUtils.concatenaPartite(listPartiteTurnoInCorso.toArray(new Partita[listPartiteTurnoInCorso.size()]), partitePrecedenti);
+									if (verificaSeScambiabili(priorita, listaPriorita, partiteTurnoInCorso[i], giocatore1, partiteTurnoInCorso[j], giocatore2, partite)){
+										scambiaGiocatori(partiteTurnoInCorso[i],giocatore1,partiteTurnoInCorso[j],giocatore2);
 										sostituito = true;
 										if(!sostituitoAlmenoUno){sostituitoAlmenoUno = true;}
 										/* Caso in cui il tavolo aveva più di una violazione */
-										if (ilTavolohaGiocatoriDiClubCheSiSonoGiaAffrontatiOSiStannoPerAffrontare(partite[i], partite, partitePrecedenti)){
+										if (ilTavolohaGiocatoriDiClubCheSiSonoGiaAffrontatiOSiStannoPerAffrontare(partiteTurnoInCorso[i], partiteTurnoInCorso, partitePrecedenti)){
 											i--;
 										}
 									}
@@ -496,7 +505,7 @@ public class GeneratoreTavoliNew {
 				}
 			}
 		}while(sostituitoAlmenoUno && numeroIterazioni < NUMERO_MASSIMO_ITERAZIONI);
-		return partite;
+		return partiteTurnoInCorso;
 	}
 	
 	private static Partita[] redistribuisciPartiteMinimizzareScontriGiocatoreVersoStessoClub(PrioritaSorteggio priorita, List<PrioritaSorteggio> listaPriorita, Partita[] partite, Partita[] partitePrecedenti){
@@ -1228,15 +1237,16 @@ public class GeneratoreTavoliNew {
 
 	private static boolean ilTavolohaGiocatoriDiClubCheSiSonoGiaAffrontatiOSiStannoPerAffrontare(Partita partitaInLinea, Partita[] partiteTurnoInCorso, Partita[] partitePrecedenti){
 		boolean result = false;
-		Object[] partite = ArrayUtils.concatena(partiteTurnoInCorso, partitePrecedenti);
+		Partita[] partite = ArrayUtils.concatenaPartite(partiteTurnoInCorso, partitePrecedenti);
 		GiocatoreDTO[] giocatoriInConfronto = partitaInLinea.getGiocatori().toArray(new GiocatoreDTO[0]);		
 		for (int i=0; i<giocatoriInConfronto.length-1 && !result; i++){
 			for (int j=i+1; j<giocatoriInConfronto.length && !result; j++){
-				for (Object p: partite){
-					Partita partita = (Partita) p;
+				for (Partita partita: partite){
 					if (!partita.equals(partitaInLinea)){
 						result = partita.isClubGiocatoreAlTavolo(giocatoriInConfronto[i]) && partita.isClubGiocatoreAlTavolo(giocatoriInConfronto[j]);
-						if (result) break;
+						if (result){
+							break;
+						}
 					}
 				}
 			}
@@ -1322,12 +1332,11 @@ public class GeneratoreTavoliNew {
 	
 	private static Set<GiocatoreDTO> giocatoriDiClubCheSiSonoGiaAffrontati(Partita partitaInLinea, Partita[] partiteTurnoInCorso, Partita[] partitePrecedenti){
 		Set<GiocatoreDTO> result = new HashSet<GiocatoreDTO>();
-		Object[] partite = ArrayUtils.concatena(partiteTurnoInCorso, partitePrecedenti);
+		Partita[] partite = ArrayUtils.concatenaPartite(partiteTurnoInCorso, partitePrecedenti);
 		GiocatoreDTO[] giocatoriInConfronto = partitaInLinea.getGiocatori().toArray(new GiocatoreDTO[0]);		
 		for (int i=0; i<giocatoriInConfronto.length-1; i++){
 			for (int j=i+1; j<giocatoriInConfronto.length; j++){
-				for (Object p: partite){
-					Partita partita = (Partita) p;
+				for (Partita partita: partite){
 					if (!partita.equals(partitaInLinea)){
 						if(partita.isClubGiocatoreAlTavolo(giocatoriInConfronto[i]) && partita.isClubGiocatoreAlTavolo(giocatoriInConfronto[j])){
 							result.add(giocatoriInConfronto[i]);
