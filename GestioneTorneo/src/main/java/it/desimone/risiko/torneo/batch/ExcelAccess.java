@@ -1051,19 +1051,6 @@ public class ExcelAccess{
 		
 		Sheet schedaClassifica = foglioTorneo.createSheet(SCHEDA_CLASSIFICA_A_SQUADRE);
 
-		Row intestazione = schedaClassifica.createRow(0);
-		short indexCell = 0;
-		CellUtil.createCell(intestazione,  indexCell++, "Pos.",styleIntestazione);
-		CellUtil.createCell(intestazione,  indexCell++, "Club o Famiglia",styleIntestazione);
-		for (int i = 1; ; i++){
-			Partita[] partiteTurnoi = loadPartite(i,false,tipoTorneo);
-			if (partiteTurnoi == null){break;}
-			CellUtil.createCell(intestazione,  indexCell++, "pt"+i,styleIntestazione);
-		}
-		CellUtil.createCell(intestazione,  indexCell++, "v_tot",styleIntestazione);
-		CellUtil.createCell(intestazione,  indexCell++, "pt_tot",styleIntestazione);
-		CellUtil.createCell(intestazione,  indexCell++, "pt_class",styleIntestazione);
-		
 		List<ScoreTeam>scores = null;
 		switch (tipoTorneo) {
 		case TorneoASquadre:
@@ -1072,6 +1059,17 @@ public class ExcelAccess{
 		default:
 			throw new MyException("Classifica non prevista per questo tipo di Torneo: "+tipoTorneo);
 		}
+		
+		Row intestazione = schedaClassifica.createRow(0);
+		short indexCell = 0;
+		CellUtil.createCell(intestazione,  indexCell++, "Pos.",styleIntestazione);
+		CellUtil.createCell(intestazione,  indexCell++, "Club o Famiglia",styleIntestazione);
+		for (int i = 1; i <= scores.get(0).getPartite().size(); i++){
+			CellUtil.createCell(intestazione,  indexCell++, "pt"+i,styleIntestazione);
+		}
+		CellUtil.createCell(intestazione,  indexCell++, "v_tot",styleIntestazione);
+		CellUtil.createCell(intestazione,  indexCell++, "pt_tot",styleIntestazione);
+		CellUtil.createCell(intestazione,  indexCell++, "pt_class",styleIntestazione);
 		
 		for (ScoreTeam scoreTeam: scores){
 			indexCell = 0;
