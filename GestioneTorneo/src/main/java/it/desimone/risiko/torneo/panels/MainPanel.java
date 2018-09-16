@@ -170,6 +170,9 @@ public class MainPanel extends JFrame implements ActionListener {
 					ExcelAccess excelAccess = new ExcelAccess(excelFile);
 					excelAccess.openFileExcel();
 					excelAccess.scriviClassifica(getTipoTorneo());
+					if (getTipoTorneo() == TipoTorneo.TorneoASquadre){
+						excelAccess.scriviClassificaASquadre(getTipoTorneo());
+					}
 					excelAccess.scriviStatistiche();
 					excelAccess.closeFileExcel();
 					MyLogger.getLogger().info("***  Fine calcolo classifica per tipo Torneo "+getTipoTorneo()+" versione "+HelpMenu.VERSIONE+" ***");

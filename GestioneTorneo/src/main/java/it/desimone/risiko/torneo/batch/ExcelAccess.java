@@ -9,6 +9,7 @@ import it.desimone.risiko.torneo.dto.SchedaClassifica.RigaClassifica;
 import it.desimone.risiko.torneo.dto.SchedaTorneo;
 import it.desimone.risiko.torneo.dto.SchedaTurno;
 import it.desimone.risiko.torneo.dto.Torneo;
+import it.desimone.risiko.torneo.scorecomparator.ScoreCNSComparator;
 import it.desimone.risiko.torneo.scorecomparator.ScoreCampionatoComparator;
 import it.desimone.risiko.torneo.scorecomparator.ScoreNazionaleRisikoComparator;
 import it.desimone.risiko.torneo.scorecomparator.ScoreQualificazioniNazionaleComparator;
@@ -24,6 +25,9 @@ import it.desimone.risiko.torneo.scoreplayer.ScorePlayerQualificazioniNazionale;
 import it.desimone.risiko.torneo.scoreplayer.ScorePlayerRaduno;
 import it.desimone.risiko.torneo.scoreplayer.ScorePlayerTorneoBGL;
 import it.desimone.risiko.torneo.scoreplayer.ScorePlayerTorneoGufo;
+import it.desimone.risiko.torneo.scoreplayer.ScoreTeam;
+import it.desimone.risiko.torneo.scoreplayer.ScoreTeamCNS;
+import it.desimone.risiko.torneo.scoreplayer.ScoreTeamClassificator;
 import it.desimone.risiko.torneo.utils.ClubLoader;
 import it.desimone.risiko.torneo.utils.MatchAnalyzer;
 import it.desimone.risiko.torneo.utils.MatchAnalyzer.MatchGrids;
@@ -83,6 +87,7 @@ public class ExcelAccess{
 	public static final String SCHEDA_LOG 			= "Log";
 	public static final String SCHEDA_CLASSIFICA	= "Classifica";
 	public static final String SCHEDA_CLASSIFICA_RIDOTTA	= "Classifica Ridotta";
+	public static final String SCHEDA_CLASSIFICA_A_SQUADRE	= "Classifica a Squadre";
 	public static final String SCHEDA_TURNO_SUFFIX	= "° Turno";
 	public static final String SCHEDA_STATISTICHE	= "STATISTICHE";
 		
@@ -1036,6 +1041,87 @@ public class ExcelAccess{
 		scriviClassificaRidotta(tipoTorneo);
 	}
 	
+	public void scriviClassificaASquadre(TipoTorneo tipoTorneo){
+		int index = foglioTorneo.getSheetIndex(SCHEDA_CLASSIFICA_A_SQUADRE);
+		if (index >=0){
+			foglioTorneo.removeSheetAt(index);
+		}
+		creaStiliClassifica();
+		CellStyle styleCellClass, styleCellClassWin;
+		
+		Sheet schedaClassifica = foglioTorneo.createSheet(SCHEDA_CLASSIFICA_A_SQUADRE);
+
+		Row intestazione = schedaClassifica.createRow(0);
+		short indexCell = 0;
+		CellUtil.createCell(intestazione,  indexCell++, "Pos.",styleIntestazione);
+		CellUtil.createCell(intestazione,  indexCell++, "Club o Famiglia",styleIntestazione);
+		for (int i = 1; ; i++){
+			Partita[] partiteTurnoi = loadPartite(i,false,tipoTorneo);
+			if (partiteTurnoi == null){break;}
+			CellUtil.createCell(intestazione,  indexCell++, "pt"+i,styleIntestazione);
+		}
+		CellUtil.createCell(intestazione,  indexCell++, "v_tot",styleIntestazione);
+		CellUtil.createCell(intestazione,  indexCell++, "pt_tot",styleIntestazione);
+		CellUtil.createCell(intestazione,  indexCell++, "pt_class",styleIntestazione);
+		
+		List<ScoreTeam>scores = null;
+		switch (tipoTorneo) {
+		case TorneoASquadre:
+			scores = getClassificaTorneoCNS();
+			break;
+		default:
+			throw new MyException("Classifica non prevista per questo tipo di Torneo: "+tipoTorneo);
+		}
+		
+		for (ScoreTeam scoreTeam: scores){
+			indexCell = 0;
+			int numeroRiga = schedaClassifica.getLastRowNum()+1;
+			if (numeroRiga%2==0){
+				styleCellClass = styleCellClassEVEN;
+				styleCellClassWin = styleCellClassWinEVEN;
+			}else{
+				styleCellClass = styleCellClassODD;
+				styleCellClassWin = styleCellClassWinODD;
+			}
+			Row rowScore = schedaClassifica.createRow(numeroRiga);
+			//CellUtil.createCell(rowScore,  indexCell++, String.valueOf(position++), styleCellClass);
+			CellUtil.createCell(rowScore,  indexCell++, String.valueOf(scoreTeam.getPosition()), styleCellClass);
+			String teamName = scoreTeam.getTeam()!=null?scoreTeam.getTeam().getDenominazione():"";
+			CellUtil.createCell(rowScore,  indexCell++, teamName, styleCellClass);
+			int numeroPartite = 0;
+			for (GiocatoreDTO giocatoreTeam: scoreTeam.getGiocatori()){
+				for (Partita partita: scoreTeam.getPartitePerGiocatore(giocatoreTeam)){
+					numeroPartite++;
+					Cell punti	 	= rowScore.createCell((short)indexCell++, CellType.NUMERIC);
+					punti.setCellStyle(styleCellClass);
+					if(partita != null){
+						if(partita.isVincitore(giocatoreTeam)){
+							punti.setCellStyle(styleCellClassWin);
+						}
+						double puntid = partita.getPunteggioTrascodificatoB(giocatoreTeam).doubleValue();
+						punti.setCellValue(puntid);
+					}	
+				}
+			}
+			Cell totVittorieCell 	= rowScore.createCell((short)indexCell++, CellType.NUMERIC);
+			totVittorieCell.setCellStyle(styleCellClass);
+			totVittorieCell.setCellValue(scoreTeam.getNumeroVittorie());		
+			
+			Cell punteggioTotCell 	= rowScore.createCell((short)indexCell++, CellType.NUMERIC);
+			punteggioTotCell.setCellStyle(styleCellClass);
+			punteggioTotCell.setCellValue(scoreTeam.getPunteggioB(numeroPartite).doubleValue());
+
+			Cell punteggioClassCell 	= rowScore.createCell((short)indexCell++, CellType.NUMERIC);
+			punteggioClassCell.setCellStyle(styleCellClass);
+			punteggioClassCell.setCellValue(scoreTeam.getPunteggioB(ScoreCNSComparator.RISULTATI_VALIDI_CNS).doubleValue());
+		}
+		for (int indiceCella = 0; indiceCella < indexCell; indiceCella++){
+			schedaClassifica.autoSizeColumn(indiceCella);
+		}
+		foglioTorneo.setActiveSheet(foglioTorneo.getSheetIndex(SCHEDA_CLASSIFICA_A_SQUADRE));
+
+	}
+	
 	public List<ScorePlayer> getClassificaRaduno(boolean partecipanti){
 		List<ScorePlayer> scores = new ArrayList<ScorePlayer>();
 		List<GiocatoreDTO>giocatori = getListaGiocatori(partecipanti);
@@ -1223,6 +1309,45 @@ public class ExcelAccess{
 		}
 		//Collections.sort(scores, new ScoreTorneoOpenComparator());
 		scores = ScorePlayerClassificator.scorePlayerSorter(scores, new ScoreTorneoOpenComparator());
+		return scores;
+	}
+	
+
+	private List<ScoreTeam> getClassificaTorneoCNS(){
+		List<ScoreTeam> scores = new ArrayList<ScoreTeam>();
+		List<GiocatoreDTO>giocatori = getListaGiocatori(false);
+		//Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi(false);
+		List<Partita[]> listaPartiteTotali = new ArrayList<Partita[]>();
+		for (int i = 1; ; i++){
+			Partita[] partiteTurnoi = loadPartite(i,false,TipoTorneo.TorneoGufo);
+			if (partiteTurnoi == null){break;}
+			listaPartiteTotali.add(partiteTurnoi);
+		}
+		
+		TorneiUtils.checksPartiteConPiuVincitori(listaPartiteTotali);
+		
+		for (Partita[] partite: listaPartiteTotali){
+			for (Partita partita: partite){
+				Set<GiocatoreDTO> giocatoriInPartita = partita.getGiocatori();
+				for (GiocatoreDTO giocatore: giocatoriInPartita){
+					int indexGiocatore = giocatori.indexOf(giocatore);
+					if (indexGiocatore >= 0){
+						giocatore = giocatori.get(indexGiocatore);
+						ScoreTeam scoreTeam = new ScoreTeamCNS(giocatore.getClubProvenienza());
+						int indexTeam = scores.indexOf(scoreTeam);
+						if (indexTeam >= 0){
+							scoreTeam = scores.get(indexTeam);
+							scoreTeam.addPartitaPerGiocatore(giocatore, partita);
+						}else{
+							scoreTeam.addPartitaPerGiocatore(giocatore, partita);
+							scores.add(scoreTeam);
+						}
+					}
+				}
+			}
+		}
+		
+		scores = ScoreTeamClassificator.scoreTeamSorter(scores, new ScoreCNSComparator());
 		return scores;
 	}
 	
