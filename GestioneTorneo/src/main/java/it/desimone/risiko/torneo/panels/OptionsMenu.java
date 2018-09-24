@@ -57,9 +57,9 @@ public class OptionsMenu extends JMenu {
 		
 		offLogLevelConsoleMenuItem = new JRadioButtonMenuItem(OFF_LEVEL);
 		offLogLevelConsoleMenuItem.addActionListener(getLogLevelListener(Level.OFF, CONSOLE));
-		offLogLevelConsoleMenuItem.doClick(); //default
 		lowLogLevelConsoleMenuItem = new JRadioButtonMenuItem(LOW_LEVEL);
 		lowLogLevelConsoleMenuItem.addActionListener(getLogLevelListener(Level.INFO, CONSOLE));
+		lowLogLevelConsoleMenuItem.doClick(); //default
 		highLogLevelConsoleMenuItem = new JRadioButtonMenuItem(HIGH_LEVEL);
 		highLogLevelConsoleMenuItem.addActionListener(getLogLevelListener(Level.FINEST, CONSOLE));
 		

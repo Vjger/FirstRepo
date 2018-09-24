@@ -50,7 +50,6 @@ public class MainPanel extends JFrame implements ActionListener {
 	private FileMenu fileMenu	  = new FileMenu();
 	private JMenu optionsMenu 	= new OptionsMenu();
 	private JMenu helpMenu    = new HelpMenu();
-
 	
 	public MainPanel(){
 		MyLogger.getLogger().entering("MainPanel", "MainPanel");
@@ -66,7 +65,7 @@ public class MainPanel extends JFrame implements ActionListener {
 		
 		componiMenu();
 		setJMenuBar(menuBar);
-					
+		
 		tipoTornei.setRenderer(new BasicComboBoxRenderer() {
 		    public Component getListCellRendererComponent(JList list, Object value,
 		            int index, boolean isSelected, boolean cellHasFocus) {
@@ -131,6 +130,7 @@ public class MainPanel extends JFrame implements ActionListener {
 	private JPanel getChecksPanel(){
 		JPanel checksPanel = new JPanel();
 		checksPanel.setSize(new Dimension(10,10));
+		//checksPanel.setPreferredSize(new Dimension(10,10));
         JLabel tipoTorneoLabel = new JLabel("Tipo Torneo", JLabel.CENTER);
         tipoTorneoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         checksPanel.add(tipoTorneoLabel);
@@ -215,7 +215,7 @@ public class MainPanel extends JFrame implements ActionListener {
 			JOptionPane.showMessageDialog(null, new TextException(e),"Orrore!",JOptionPane.ERROR_MESSAGE);
 		}
 	}
-
+	
 	
 //	public void actionPerformed(ActionEvent event) {
 //		Object source = event.getSource();

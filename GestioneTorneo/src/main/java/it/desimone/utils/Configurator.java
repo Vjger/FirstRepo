@@ -34,7 +34,7 @@ private volatile static Properties properties = new Properties();
 	public static String getRCUFolderId(){
 		String folderId = ((String)properties.get("rcuFolderId"));
 		if (folderId != null) folderId = folderId.trim();
-		MyLogger.getLogger().info("ID RCU Folder:<<"+folderId+">>");
+		MyLogger.getLogger().finest("ID RCU Folder:<<"+folderId+">>");
 		return folderId;
 	}
 	
@@ -44,7 +44,7 @@ private volatile static Properties properties = new Properties();
 		if (soglia != null) soglia = soglia.trim();
 		try{
 			result = Integer.valueOf(soglia);
-			MyLogger.getLogger().info("Soglia raduno con quarti:<<"+soglia+">>");
+			MyLogger.getLogger().finest("Soglia raduno con quarti:<<"+soglia+">>");
 		}catch(Exception e){
 			MyLogger.getLogger().severe("Errore nel parsing della soglia:<<"+soglia+">>");
 		}
@@ -57,7 +57,7 @@ private volatile static Properties properties = new Properties();
 		if (soglia != null) soglia = soglia.trim();
 		try{
 			result = Integer.valueOf(soglia);
-			MyLogger.getLogger().info("Soglia master splittato:<<"+soglia+">>");
+			MyLogger.getLogger().finest("Soglia master splittato:<<"+soglia+">>");
 		}catch(Exception e){
 			MyLogger.getLogger().severe("Errore nel parsing della soglia:<<"+soglia+">>");
 		}
@@ -70,7 +70,7 @@ private volatile static Properties properties = new Properties();
 		if (defaultVincitoreUnico != null) defaultVincitoreUnico = defaultVincitoreUnico.trim();
 		try{
 			result = Boolean.valueOf(defaultVincitoreUnico);
-			MyLogger.getLogger().info("defaultVincitoreUnico:<<"+defaultVincitoreUnico+">>");
+			MyLogger.getLogger().finest("defaultVincitoreUnico:<<"+defaultVincitoreUnico+">>");
 		}catch(Exception e){
 			MyLogger.getLogger().severe("Errore nel parsing del defaultVincitoreUnico:<<"+defaultVincitoreUnico+">>");
 		}
@@ -83,7 +83,7 @@ private volatile static Properties properties = new Properties();
 		if (memorizzaCredenziali != null) memorizzaCredenziali = memorizzaCredenziali.trim();
 		try{
 			result = Boolean.valueOf(memorizzaCredenziali);
-			MyLogger.getLogger().info("memorizzaCredenziali:<<"+memorizzaCredenziali+">>");
+			MyLogger.getLogger().finest("memorizzaCredenziali:<<"+memorizzaCredenziali+">>");
 		}catch(Exception e){
 			MyLogger.getLogger().severe("Errore nel parsing del memorizzaCredenziali:<<"+memorizzaCredenziali+">>");
 		}
@@ -98,7 +98,7 @@ private volatile static Properties properties = new Properties();
 			properties.setProperty("memorizzaCredenziali", memorizzaCredenziali.toString());
 			properties.store(out, null);
 			out.close();
-			MyLogger.getLogger().info("memorizzaCredenziali:<<"+memorizzaCredenziali+">>");
+			MyLogger.getLogger().finest("memorizzaCredenziali:<<"+memorizzaCredenziali+">>");
 		}catch(Exception e){
 			MyLogger.getLogger().severe("Errore nel save del memorizzaCredenziali:<<"+memorizzaCredenziali+">>");
 		}

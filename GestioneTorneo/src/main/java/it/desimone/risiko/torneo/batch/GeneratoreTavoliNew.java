@@ -38,6 +38,8 @@ public class GeneratoreTavoliNew {
 		
 		Partita[] tavoliIniziali = getTavoliIniziali(giocatori, tavoliVuoti, partitePrecedenti, listaPriorita);
 		
+		MyLogger.getLogger().info("Estratti "+(tavoliIniziali==null?0:tavoliIniziali.length)+" tavoli iniziali");
+		
 		Partita[] partiteDaRedistribuire = tavoliIniziali;
 		Partita[] partitePrimaDelCiclo = ArrayUtils.clonaPartite(tavoliIniziali);
 
@@ -45,7 +47,7 @@ public class GeneratoreTavoliNew {
 		short numeroIterazioniPriorita = 0;
 		while(partiteTrasformate && numeroIterazioniPriorita < NUMERO_MASSIMO_ITERAZIONI){
 			numeroIterazioniPriorita++;
-			MyLogger.getLogger().info("ITERAZIONE PRIORITA N° "+numeroIterazioniPriorita);
+			MyLogger.getLogger().info("Inizio redistribuzione: Iterazione N° "+numeroIterazioniPriorita);
 			for (PrioritaSorteggio priorita: listaPriorita){
 				partiteDaRedistribuire = redistribuzionePartite(priorita, listaPriorita, partiteDaRedistribuire, partitePrecedenti);
 			}
@@ -183,7 +185,7 @@ public class GeneratoreTavoliNew {
 				boolean assegnato = tavoliVuoti[tavoliVuoti.length-index].addGiocatore(sventurato, null);
 				if (assegnato){
 					giocatori.remove(sventurato);
-					MyLogger.getLogger().info("Assegnato "+sventurato+" al tavolo "+(tavoliVuoti.length-index+1));
+					MyLogger.getLogger().fine("Assegnato "+sventurato+" al tavolo "+(tavoliVuoti.length-index+1));
 				}
 			}
 //			for (GiocatoreDTO sventurato: giocatoriDaEstrarre){
@@ -424,13 +426,13 @@ public class GeneratoreTavoliNew {
 		boolean sostituitoAlmenoUno = false;
 		do{
 			numeroIterazioni++;
-			MyLogger.getLogger().info("redistribuisciPartiteMinimizzareScontriMultipli - Iterazione n° "+numeroIterazioni);
+			MyLogger.getLogger().info("Redistribuzione Partite per Minimizzare Scontri Multipli tra Giocatori - Iterazione n° "+numeroIterazioni);
 			sostituitoAlmenoUno = false;
 			for (int i=0; i < partite.length; i++){
 				if (ilTavolohaGiocatoriCheSiSonoGiaAffrontati(partite[i], partitePrecedenti)){
 					Set<GiocatoreDTO> giocatoriCheSisonoGiaAffrontati = giocatoriCheSiSonoGiaAffrontati(partite[i], partitePrecedenti);
 					Iterator<GiocatoreDTO> iterator =  giocatoriCheSisonoGiaAffrontati.iterator();
-					MyLogger.getLogger().info("Nel tavolo "+partite[i].getNumeroTavolo()+" si sono già affrontati i giocatori "+giocatoriCheSisonoGiaAffrontati);
+					MyLogger.getLogger().fine("Nel tavolo "+partite[i].getNumeroTavolo()+" si sono già affrontati i giocatori "+giocatoriCheSisonoGiaAffrontati);
 					boolean sostituito = false;
 					/* Ciclo tutti i giocatori del tavolo che hanno già scontri diretti: se avviene uno scambio la lista si rigenera daccapo.*/
 					while (iterator.hasNext() && !sostituito){
@@ -464,13 +466,13 @@ public class GeneratoreTavoliNew {
 		boolean sostituitoAlmenoUno = false;
 		do{
 			numeroIterazioni++;
-			MyLogger.getLogger().info("redistribuisciPartiteMinimizzareScontriMultipliTraClub - Iterazione n° "+numeroIterazioni);
+			MyLogger.getLogger().info("Redistribuzione Partite per Minimizzare Scontri Multipli Tra Club - Iterazione n° "+numeroIterazioni);
 			sostituitoAlmenoUno = false;
 			for (int i=0; i < partiteTurnoInCorso.length; i++){
 				if (ilTavolohaGiocatoriDiClubCheSiSonoGiaAffrontatiOSiStannoPerAffrontare(partiteTurnoInCorso[i], partiteTurnoInCorso, partitePrecedenti)){
 					Set<GiocatoreDTO> giocatoriCheSisonoGiaAffrontati = giocatoriDiClubCheSiSonoGiaAffrontati(partiteTurnoInCorso[i], partiteTurnoInCorso, partitePrecedenti);
 					Iterator<GiocatoreDTO> iterator =  giocatoriCheSisonoGiaAffrontati.iterator();
-					MyLogger.getLogger().info("Nel tavolo "+partiteTurnoInCorso[i].getNumeroTavolo()+" si sono già affrontati i club dei giocatori "+giocatoriCheSisonoGiaAffrontati);
+					MyLogger.getLogger().fine("Nel tavolo "+partiteTurnoInCorso[i].getNumeroTavolo()+" si sono già affrontati i club dei giocatori "+giocatoriCheSisonoGiaAffrontati);
 					boolean sostituito = false;
 					/* Ciclo tutti i giocatori del tavolo che hanno già scontri diretti: se avviene uno scambio la lista si rigenera daccapo.*/
 					while (iterator.hasNext() && !sostituito){
@@ -513,13 +515,13 @@ public class GeneratoreTavoliNew {
 		boolean sostituitoAlmenoUno = false;
 		do{
 			numeroIterazioni++;
-			MyLogger.getLogger().info("redistribuisciPartiteMinimizzareScontriGiocatoreVersoStessoClub - Iterazione n° "+numeroIterazioni);
+			MyLogger.getLogger().info("Redistribuzione Partite per Minimizzare Scontri Giocatore Verso Stesso Club - Iterazione n° "+numeroIterazioni);
 			sostituitoAlmenoUno = false;
 			for (int i=0; i < partite.length; i++){
 				if (ilTavolohaGiocatoriCheHannoGiaAffrontatoQuelClub(partite[i], partitePrecedenti)){
 					Set<GiocatoreDTO> giocatoriCheHannoGiaAffrontatoQuelClub = giocatoriCheHannoGiaAffrontatoQuelClub(partite[i], partitePrecedenti);
 					Iterator<GiocatoreDTO> iterator =  giocatoriCheHannoGiaAffrontatoQuelClub.iterator();
-					MyLogger.getLogger().info("Nel tavolo "+partite[i].getNumeroTavolo()+" ha già affrontato almeno uno dei club i giocatori "+giocatoriCheHannoGiaAffrontatoQuelClub);
+					MyLogger.getLogger().fine("Nel tavolo "+partite[i].getNumeroTavolo()+" ha già affrontato almeno uno dei club i giocatori "+giocatoriCheHannoGiaAffrontatoQuelClub);
 					boolean sostituito = false;
 					/* Ciclo tutti i giocatori del tavolo che hanno già scontri diretti: se avviene uno scambio la lista si rigenera daccapo.*/
 					while (iterator.hasNext() && !sostituito){
@@ -553,13 +555,13 @@ public class GeneratoreTavoliNew {
 		boolean sostituitoAlmenoUno = false;
 		do{
 			numeroIterazioni++;
-			MyLogger.getLogger().info("redistribuisciPartiteMinimizzareScontriTraVincitori - Iterazione n° "+numeroIterazioni);
+			MyLogger.getLogger().info("Redistribuzione Partite per Minimizzare Scontri Tra Vincitori - Iterazione n° "+numeroIterazioni);
 			sostituitoAlmenoUno = false;
 			for (int i=0; i < partite.length; i++){
 				if (ilTavolohaPiuVincitori(partite[i], partitePrecedenti)){
 					Set<GiocatoreDTO> giocatoriCheHannoGiaVinto = giocatoriCheHannoGiaVinto(partite[i], partitePrecedenti);
 					Iterator<GiocatoreDTO> iterator =  giocatoriCheHannoGiaVinto.iterator();
-					MyLogger.getLogger().info("Nel tavolo "+partite[i].getNumeroTavolo()+" hanno già vinto i giocatori "+giocatoriCheHannoGiaVinto);
+					MyLogger.getLogger().fine("Nel tavolo "+partite[i].getNumeroTavolo()+" hanno già vinto i giocatori "+giocatoriCheHannoGiaVinto);
 					boolean sostituito = false;
 					/* Ciclo tutti i giocatori del tavolo che hanno già vinto: se avviene uno scambio la lista si rigenera daccapo.*/
 					while (iterator.hasNext() && !sostituito){
@@ -593,14 +595,14 @@ public class GeneratoreTavoliNew {
 		boolean sostituitoAlmenoUno = false;
 		do{
 			numeroIterazioni++;
-			MyLogger.getLogger().info("redistribuisciPartitePerCriterioRegioniDiverse - Iterazione n° "+numeroIterazioni);
+			MyLogger.getLogger().info("Redistribuzione Partite Per Criterio Regioni Diverse - Iterazione n° "+numeroIterazioni);
 			sostituitoAlmenoUno = false;
 			for (int i=0; i < partite.length; i++){
 				Set<GiocatoreDTO> giocatoriAnomali = nonRispettaCriterioStessaRegione(partite[i]);
 				Iterator<GiocatoreDTO> iterator = giocatoriAnomali.iterator();
 				while (iterator.hasNext() && giocatoriAnomali.size() > 1){				
 					GiocatoreDTO giocatore1 = iterator.next();
-					MyLogger.getLogger().info("Nel tavolo "+partite[i].getNumeroTavolo()+" il giocatore "+giocatore1+ " incontrerebbe persone della stessa regione");
+					MyLogger.getLogger().fine("Nel tavolo "+partite[i].getNumeroTavolo()+" il giocatore "+giocatore1+ " incontrerebbe persone della stessa regione");
 					boolean sostituito = false;
 					for (int j=0; j < partite.length && !sostituito; j++){
 						if (i != j){
@@ -628,14 +630,14 @@ public class GeneratoreTavoliNew {
 		boolean sostituitoAlmenoUno = false;
 		do{
 			numeroIterazioni++;
-			MyLogger.getLogger().info("redistribuisciPartitePerCriterioClubDiversi - Iterazione n° "+numeroIterazioni);
+			MyLogger.getLogger().info("Redistribuzione Partite Per Criterio Club Diversi - Iterazione n° "+numeroIterazioni);
 			sostituitoAlmenoUno = false;
 			for (int i=0; i < partite.length; i++){
 				Set<GiocatoreDTO> giocatoriAnomali = nonRispettaCriterioStessoClub(partite[i]);
 				Iterator<GiocatoreDTO> iterator = giocatoriAnomali.iterator();
 				while (iterator.hasNext() && giocatoriAnomali.size() > 1){				
 					GiocatoreDTO giocatore1 = iterator.next();
-					MyLogger.getLogger().info("Nel tavolo "+partite[i].getNumeroTavolo()+" il giocatore "+giocatore1+ " incontrerebbe compagni di Club");
+					MyLogger.getLogger().fine("Nel tavolo "+partite[i].getNumeroTavolo()+" il giocatore "+giocatore1+ " incontrerebbe compagni di Club");
 					boolean sostituito = false;
 					for (int j=0; j < partite.length && !sostituito; j++){
 						if (i != j){
@@ -667,14 +669,14 @@ public class GeneratoreTavoliNew {
 		boolean sostituitoAlmenoUno = false;
 		do{
 			numeroIterazioni++;
-			MyLogger.getLogger().info("redistribuisciPartitePerCriterioClubDiversiConsiderandoIFissiAlTavolo: "+consideraIFissi+" - Iterazione n° "+numeroIterazioni);
+			MyLogger.getLogger().info("Redistribuzione Partite per Criterio Club Diversi Considerando I Fissi Al Tavolo: "+consideraIFissi+" - Iterazione n° "+numeroIterazioni);
 			sostituitoAlmenoUno = false;
 			for (int i=0; i < partite.length; i++){
 				Set<GiocatoreDTO> giocatoriAnomali = nonRispettaCriterioStessoClubConsiderandoIFissi(partite[i], consideraIFissi);
 				Iterator<GiocatoreDTO> iterator = giocatoriAnomali.iterator();
 				while (iterator.hasNext() && giocatoriAnomali.size() > 1){				
 					GiocatoreDTO giocatore1 = iterator.next();
-					MyLogger.getLogger().info("Nel tavolo "+partite[i].getNumeroTavolo()+" il giocatore "+giocatore1+ " incontrerebbe "+(giocatoriAnomali.size()-1)+" compagni di Club: "+giocatoriAnomali);
+					MyLogger.getLogger().fine("Nel tavolo "+partite[i].getNumeroTavolo()+" il giocatore "+giocatore1+ " incontrerebbe "+(giocatoriAnomali.size()-1)+" compagni di Club: "+giocatoriAnomali);
 					boolean sostituito = false;
 					for (int j=0; j < partite.length && !sostituito; j++){
 						if (i != j){
@@ -714,7 +716,7 @@ public class GeneratoreTavoliNew {
 			Iterator<GiocatoreDTO> iterator = giocatoriAnomali.iterator();
 			while (iterator.hasNext() && giocatoriAnomali.size() > 1){				
 				GiocatoreDTO giocatore1 = iterator.next();
-				MyLogger.getLogger().info("Nel tavolo "+partite[i].getNumeroTavolo()+" il giocatore "+giocatore1+ " incontrerebbe compagni di Club");
+				MyLogger.getLogger().fine("Nel tavolo "+partite[i].getNumeroTavolo()+" il giocatore "+giocatore1+ " incontrerebbe compagni di Club");
 				boolean sostituito = false;
 				for (int j=0; j < partite.length && !sostituito; j++){
 					if (i != j){
@@ -743,7 +745,7 @@ public class GeneratoreTavoliNew {
 		boolean sostituitoAlmenoUno = false;
 		do{
 			numeroIterazioni++;
-			MyLogger.getLogger().info("redistribuisciPartitePerMinimizzarePartecipazioneTavoloda - Iterazione n° "+numeroIterazioni);
+			MyLogger.getLogger().info("Redistribuzione Partite per Minimizzare Partecipazione Tavolo da "+numeroGiocatori+" - Iterazione n° "+numeroIterazioni);
 			sostituitoAlmenoUno = false;
 			for (int i=0; i < partite.length; i++){
 				if(partite[i].getNumeroGiocatori() == numeroGiocatori){
@@ -751,7 +753,7 @@ public class GeneratoreTavoliNew {
 					for (GiocatoreDTO giocatore1: giocatori1){
 						int numeroPartecipazioniTavoloda = numeroPartecipazioniTavoloda(giocatore1,partitePrecedenti,numeroGiocatori);
 						if (numeroPartecipazioniTavoloda > 0){
-							MyLogger.getLogger().info("Nel tavolo "+partite[i].getNumeroTavolo()+" il giocatore "+giocatore1+ " ha già giocato "+numeroPartecipazioniTavoloda+" volte al tavolo da "+numeroGiocatori);
+							MyLogger.getLogger().fine("Nel tavolo "+partite[i].getNumeroTavolo()+" il giocatore "+giocatore1+ " ha già giocato "+numeroPartecipazioniTavoloda+" volte al tavolo da "+numeroGiocatori);
 							boolean sostituito = false;
 							for (int j=0; j < partite.length && !sostituito; j++){
 								if (i != j && partite[j].getNumeroGiocatori() != numeroGiocatori){
@@ -849,7 +851,7 @@ public class GeneratoreTavoliNew {
 		partita1.addGiocatore(giocatore2, null);
 		partita2.removeGiocatore(giocatore2);
 		partita2.addGiocatore(giocatore1, null);
-		MyLogger.getLogger().info("Sostituito "+giocatore1+ " del tavolo "+partita1.getNumeroTavolo()+" con "+giocatore2+" del tavolo "+partita2.getNumeroTavolo());
+		MyLogger.getLogger().fine("Sostituito "+giocatore1+ " del tavolo "+partita1.getNumeroTavolo()+" con "+giocatore2+" del tavolo "+partita2.getNumeroTavolo());
 	}
 	
 

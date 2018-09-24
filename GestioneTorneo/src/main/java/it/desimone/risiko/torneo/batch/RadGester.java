@@ -1,6 +1,6 @@
 package it.desimone.risiko.torneo.batch;
 
-import it.desimone.risiko.torneo.panels.MainPanel;
+import it.desimone.risiko.torneo.panels.MainPanelNew;
 import it.desimone.utils.ExceptionUtils;
 import it.desimone.utils.MyLogger;
 import it.desimone.utils.TextException;
@@ -18,7 +18,7 @@ public class RadGester {
 		
 		try{
 			//new StartPanelTornei();
-			new MainPanel();
+			new MainPanelNew();
 		}catch (Throwable e) {
 			writeException(e);
 			JOptionPane.showMessageDialog(null, new TextException(e),"Orrore!",JOptionPane.ERROR_MESSAGE);

@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -42,8 +43,9 @@ public class MyLogger {
 		
 		_log.setLevel(Level.FINEST);
 		_log.setUseParentHandlers(false);
-		consoleHandler = new ConsoleHandler();
+		consoleHandler = new MyConsoleHandler();
 		consoleHandler.setLevel(Level.OFF);
+		consoleHandler.setFormatter(new MySimpleFormatter());
 		streamHandler = new StreamHandler(byteArrayOutputStream, new SimpleFormatter());
 		streamHandler.setLevel(Level.INFO);
 		try{
@@ -68,6 +70,10 @@ public class MyLogger {
 	
 	public static void setConsoleLogLevel(Level level){
 		if (consoleHandler != null) consoleHandler.setLevel(level);
+	}
+	
+	public static void setConsoleOutputStream(OutputStream ps){
+		if (consoleHandler != null) ((MyConsoleHandler)consoleHandler).setOutputStream(ps);
 	}
 	
 	public static void setStreamLogLevel(Level level){
