@@ -116,6 +116,7 @@ public class ExcelAccess{
 	private CellStyle styleCellClass0;
 	private CellStyle styleCellClass1;
 	private CellStyle styleCellClass2;
+	private CellStyle styleCellClassD;
 	private CellStyle styleCellClassIntestStat;
 	
 	private static short indiceFormatTreDecimali = -1;
@@ -1649,8 +1650,10 @@ public class ExcelAccess{
 			return styleCellClass0;
 		case 1:
 			return styleCellClass1;
-		default:
+		case 2:
 			return styleCellClass2;
+		default:
+			return styleCellClassD;
 		}
 	}
 	
@@ -1690,6 +1693,14 @@ public class ExcelAccess{
 		styleCellClass2.setVerticalAlignment(VerticalAlignment.CENTER);
 		styleCellClass2.setFillForegroundColor(IndexedColors.ROSE.getIndex());
 		styleCellClass2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		
+		styleCellClassD = foglioTorneo.createCellStyle();
+		styleCellClassD.setAlignment(HorizontalAlignment.CENTER);
+		styleCellClassD.setFont(font);
+		styleCellClassD.setWrapText(true);
+		styleCellClassD.setVerticalAlignment(VerticalAlignment.CENTER);
+		styleCellClassD.setFillForegroundColor(IndexedColors.RED.getIndex());
+		styleCellClassD.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 	}
 	
 	public void closeFileExcel(){

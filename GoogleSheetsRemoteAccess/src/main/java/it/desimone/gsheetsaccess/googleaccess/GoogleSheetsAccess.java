@@ -66,6 +66,8 @@ public class GoogleSheetsAccess extends RisikoDataManagerAccess{
     
     public List<List<Object>> leggiSheet(String spreadsheetId, List<String> ranges) throws IOException{
         
+    	MyLogger.getLogger().fine(ranges.toString());
+    	
         Sheets service = getSheetsService();
 
         Sheets.Spreadsheets.Values.BatchGet spreadSheetsValuesBatchGet = service.spreadsheets().values().batchGet(spreadsheetId).setRanges(ranges);
@@ -297,6 +299,8 @@ public class GoogleSheetsAccess extends RisikoDataManagerAccess{
     
     public Integer updateRows(String spreadsheetId, List<ValueRange> data, boolean userEntered) throws IOException{
    	
+    	MyLogger.getLogger().fine(data.toString());
+    	
         Sheets service = getSheetsService();
         String valueInputOption = userEntered?USER_ENTERED:RAW;
     	BatchUpdateValuesRequest body = new BatchUpdateValuesRequest().setValueInputOption(valueInputOption).setData(data);

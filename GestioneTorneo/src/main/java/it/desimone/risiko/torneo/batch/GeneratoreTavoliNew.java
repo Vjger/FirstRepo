@@ -4,6 +4,7 @@ import it.desimone.risiko.torneo.dto.ClubDTO;
 import it.desimone.risiko.torneo.dto.GiocatoreDTO;
 import it.desimone.risiko.torneo.dto.Partita;
 import it.desimone.risiko.torneo.dto.RegioneDTO;
+import it.desimone.risiko.torneo.utils.MatchAnalyzer;
 import it.desimone.risiko.torneo.utils.PrioritaSorteggio;
 import it.desimone.risiko.torneo.utils.TavoliVuotiCreator;
 import it.desimone.risiko.torneo.utils.TipoTavoli;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -28,7 +30,7 @@ import java.util.logging.Level;
 
 public class GeneratoreTavoliNew {
 	
-	private static final short NUMERO_MASSIMO_ITERAZIONI = 5;
+	private static final short NUMERO_MASSIMO_ITERAZIONI = 15;
 	
 	private static List<Integer> listaTavoli = new ArrayList<Integer>();
 	

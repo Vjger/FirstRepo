@@ -225,6 +225,7 @@ public class GoogleDriveAccess {
     }
     
     private String fileExistsIntoFolder(File folder, String reportName) throws IOException{
+    	String reportNamePrefix = getNameWithoutSuffix(reportName);
     	MyLogger.getLogger().fine("Ricerca del file "+reportName+" nel folder "+folder.getName());
     	String fileId = null;
     	Drive service = getDriveService();
@@ -234,7 +235,14 @@ public class GoogleDriveAccess {
         	if (driveFiles != null){
         		Drive.Files.List driveFilesList = service.files().list();
         		if (driveFilesList != null){
-        			driveFilesList = driveFilesList.setQ("\'"+folder.getId()+"\' in parents and name=\'"+reportName+"\' and trashed=false");
+        			String queryString = null;
+        			if (!reportNamePrefix.equalsIgnoreCase(reportName)){
+        				queryString = "\'"+folder.getId()+"\' in parents and (name=\'"+reportName+"\' or name=\'"+reportNamePrefix+"\') and trashed=false";
+        			}else{
+        				queryString = "\'"+folder.getId()+"\' in parents and name=\'"+reportName+"\' and trashed=false";
+        			}
+        			MyLogger.getLogger().fine("QueryString: ["+queryString+"]");
+        			driveFilesList = driveFilesList.setQ(queryString);
         			FileList fileList = driveFilesList.execute();
         			if (fileList != null && fileList.getFiles() != null && !fileList.getFiles().isEmpty()){
         				fileId = fileList.getFiles().get(0).getId();
@@ -243,6 +251,22 @@ public class GoogleDriveAccess {
         	}
         }
     	return fileId;
+    }
+    
+    private static String getNameWithoutSuffix(String reportName){
+    	String result = reportName;
+    	
+    	int indexOfExtension = reportName.lastIndexOf(".xlsx");
+    	if (indexOfExtension < 0){
+    		indexOfExtension = reportName.lastIndexOf(".xls");
+    	}
+    	if (indexOfExtension < 0){
+    		indexOfExtension = reportName.lastIndexOf(".ods");
+    	}
+    	if (indexOfExtension >=0){
+    		result = reportName.substring(0, indexOfExtension);
+    	}
+    	return result;
     }
     
 }

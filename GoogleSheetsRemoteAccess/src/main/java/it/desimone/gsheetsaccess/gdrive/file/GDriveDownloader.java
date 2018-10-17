@@ -37,7 +37,7 @@ public class GDriveDownloader {
     					if (permissions != null){
     						emailAddresses = new ArrayList<String>();
 	    					for (Permission permission: permissions){
-	    						MyLogger.getLogger().info("Folder "+folder.getName()+" e-mail: "+permission.getEmailAddress());
+	    						MyLogger.getLogger().fine("Folder "+folder.getName()+" e-mail: "+permission.getEmailAddress());
 	    						emailAddresses.add(permission.getEmailAddress());
 	    					}
     					}

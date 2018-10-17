@@ -320,7 +320,7 @@ public class GSheetsInterface {
 					Integer idAnagrafica = Integer.valueOf(valueQuery);
 					sheetRows.get(index).setId(idAnagrafica);
 				}catch(NumberFormatException ne){
-					MyLogger.getLogger().info("Not found: "+valueQuery);
+					MyLogger.getLogger().fine("Not found: "+valueQuery);
 				}
 				index++;
 			}

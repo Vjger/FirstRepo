@@ -11,8 +11,13 @@ import it.desimone.utils.MyLogger;
 import it.desimone.utils.TextException;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -20,8 +25,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.util.logging.Level;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -102,7 +107,7 @@ public class MainPanelNew extends JFrame implements ActionListener {
 		
 		setLayout(new BorderLayout());
 		//add(fileButton,BorderLayout.NORTH);
-		//add(getVoidPanel(),BorderLayout.EAST);
+		add(getVoidPanel(),BorderLayout.EAST);
 		add(getVoidPanel(),BorderLayout.WEST);
 		add(getChecksPanel(),BorderLayout.CENTER);
 		//add(classificaButton,BorderLayout.SOUTH);
@@ -139,6 +144,57 @@ public class MainPanelNew extends JFrame implements ActionListener {
 	}
 	
 	private JPanel getChecksPanel(){
+		JPanel checksPanel = new JPanel();
+		checksPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+		checksPanel.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		//checksPanel.setSize(new Dimension(10,10));
+		//checksPanel.setPreferredSize(new Dimension(10,10));
+        JLabel tipoTorneoLabel = new JLabel("Tipo Torneo", JLabel.CENTER);
+        tipoTorneoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        //c.insets = new Insets(50, 50, 50, 50);
+        //c.anchor = GridBagConstraints.PAGE_START;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 1;
+        c.gridy = 0;
+        c.weightx = 0.9;
+        c.weighty = 0.9;
+        checksPanel.add(tipoTorneoLabel, c);
+
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 1;
+        c.gridy = 1;
+        checksPanel.add(tipoTornei, c);
+
+        JLabel sliderLabel = new JLabel("Numero Turno", JLabel.CENTER);
+        sliderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 0;
+        c.gridy = 2;
+        checksPanel.add(sliderLabel, c);
+        
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 0;
+        c.gridy = 3;
+        checksPanel.add(numeroTurno, c);
+
+        JPanel goPanel = new JPanel(new FlowLayout());
+        goPanel.add(getConfirmButton());
+        goPanel.add(stampaTurno);
+        c.fill = GridBagConstraints.NONE;
+        c.gridx = 0;
+        c.gridy = 4;
+		checksPanel.add(goPanel,c);
+				
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 2;
+        c.gridy = 4;
+		checksPanel.add(classificaButton, c);
+		checksPanel.setVisible(true);
+		return checksPanel;
+	}
+	
+	private JPanel getChecksPanel_Old(){
 		JPanel checksPanel = new JPanel();
 		checksPanel.setSize(new Dimension(10,10));
 		//checksPanel.setPreferredSize(new Dimension(10,10));

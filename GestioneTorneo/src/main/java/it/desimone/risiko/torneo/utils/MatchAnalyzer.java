@@ -53,30 +53,7 @@ public class MatchAnalyzer {
 					GiocatoreDTO giocatoreI = giocatoriInConfronto[i];
 					GiocatoreDTO giocatoreJ = giocatoriInConfronto[j];
 					
-					Map<ClubDTO, Integer> mappaI = mapClubVsClub.get(giocatoreI.getClubProvenienza());
-					if (mappaI == null){
-						mappaI = new HashMap<ClubDTO,Integer>();
-					}
-					Integer confrontiI = mappaI.get(giocatoreJ.getClubProvenienza());
-					if (confrontiI == null){
-						confrontiI = 0;
-					}
-					confrontiI++;
-					mappaI.put(giocatoreJ.getClubProvenienza(), confrontiI);
-					
-					Map<ClubDTO, Integer> mappaJ = mapClubVsClub.get(giocatoreJ.getClubProvenienza());
-					if (mappaJ == null){
-						mappaJ = new HashMap<ClubDTO,Integer>();
-					}
-					Integer confrontiJ = mappaJ.get(giocatoreI.getClubProvenienza());
-					if (confrontiJ == null){
-						confrontiJ = 0;
-					}
-					confrontiJ++;
-					mappaJ.put(giocatoreI.getClubProvenienza(), confrontiJ);
-					
-					mapClubVsClub.put(giocatoreI.getClubProvenienza(), mappaI);
-					mapClubVsClub.put(giocatoreJ.getClubProvenienza(), mappaJ);
+					mappaConfrontiTraClub(mapClubVsClub, giocatoreI, giocatoreJ);
 					
 					Map<ClubDTO, Integer> mappaI2 = mapGiocatoreVsClub.get(giocatoreI);
 					if (mappaI2 == null){
@@ -137,6 +114,33 @@ public class MatchAnalyzer {
 		matchGrids.setMapGiocatoreVsGiocatore(mapGiocatoreVsGiocatore);
 
 		return matchGrids;
+	}
+	
+	public static void mappaConfrontiTraClub(Map<ClubDTO, Map<ClubDTO, Integer>> mapClubVsClub, GiocatoreDTO giocatoreI, GiocatoreDTO giocatoreJ){
+		Map<ClubDTO, Integer> mappaI = mapClubVsClub.get(giocatoreI.getClubProvenienza());
+		if (mappaI == null){
+			mappaI = new HashMap<ClubDTO,Integer>();
+		}
+		Integer confrontiI = mappaI.get(giocatoreJ.getClubProvenienza());
+		if (confrontiI == null){
+			confrontiI = 0;
+		}
+		confrontiI++;
+		mappaI.put(giocatoreJ.getClubProvenienza(), confrontiI);
+		
+		Map<ClubDTO, Integer> mappaJ = mapClubVsClub.get(giocatoreJ.getClubProvenienza());
+		if (mappaJ == null){
+			mappaJ = new HashMap<ClubDTO,Integer>();
+		}
+		Integer confrontiJ = mappaJ.get(giocatoreI.getClubProvenienza());
+		if (confrontiJ == null){
+			confrontiJ = 0;
+		}
+		confrontiJ++;
+		mappaJ.put(giocatoreI.getClubProvenienza(), confrontiJ);
+		
+		mapClubVsClub.put(giocatoreI.getClubProvenienza(), mappaI);
+		mapClubVsClub.put(giocatoreJ.getClubProvenienza(), mappaJ);
 	}
 	
 	private static void printMatchGrids(MatchGrids matchGrids){

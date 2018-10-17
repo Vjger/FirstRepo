@@ -1490,8 +1490,8 @@ public class Sorteggiatore {
 			Partita[] partitePrecedenti = listaPartitePrecedenti.toArray(new Partita[0]);
 			priorita.add(PrioritaSorteggio.IMPEDITO_STESSO_CLUB);
 			priorita.add(PrioritaSorteggio.MINIMIZZAZIONE_SCONTRI_DIRETTI_TRA_CLUB);
-			priorita.add(PrioritaSorteggio.MINIMIZZAZIONE_SCONTRI_DIRETTI);
-			priorita.add(PrioritaSorteggio.MINIMIZZAZIONE_SCONTRI_DIRETTI_GIOCATORE_CLUB);			
+			//priorita.add(PrioritaSorteggio.MINIMIZZAZIONE_SCONTRI_DIRETTI);
+			//priorita.add(PrioritaSorteggio.MINIMIZZAZIONE_SCONTRI_DIRETTI_GIOCATORE_CLUB);			
 			partiteTurno = GeneratoreTavoliNew.generaPartite(giocatoriPartecipanti, partitePrecedenti, TipoTavoli.DA_4_ED_EVENTUALMENTE_DA_5, priorita);
 			break;
 		}	
