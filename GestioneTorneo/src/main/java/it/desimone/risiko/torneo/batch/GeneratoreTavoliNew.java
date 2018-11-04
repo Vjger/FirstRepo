@@ -512,6 +512,106 @@ public class GeneratoreTavoliNew {
 		return partiteTurnoInCorso;
 	}
 	
+	/**
+	 * 1) Calcolo numero giocatori per squadra
+	 * 2) Calcolo numero squadre in campo
+	 * 3) Calcolo numero turno in corso
+	 * 4) 1)+2)+3) ==> massimo e minimo scontri diretti tra club
+	 * 5) Analisi degli scontri diretti: se si trova che si è sopra il massimo o sotto il minimo ricerca di scontro diretto e tentativo di scambio con altro partita
+	 * @param priorita
+	 * @param listaPriorita
+	 * @param partiteTurnoInCorso
+	 * @param partitePrecedenti
+	 * @return
+	 */
+	private static Partita[] redistribuisciPartiteMinimizzareScontriMultipliTraClubNew(PrioritaSorteggio priorita, List<PrioritaSorteggio> listaPriorita, Partita[] partiteTurnoInCorso, Partita[] partitePrecedenti){
+		
+		Partita[] partite = ArrayUtils.concatenaPartite(partitePrecedenti, partiteTurnoInCorso);
+		Map<ClubDTO, Map<ClubDTO, Integer>> mapClubVsClub = MatchAnalyzer.calcolaGrigliaClubVsClub(Arrays.asList(partite));
+		
+		int numeroClubInGioco = mapClubVsClub.size(); //Va migliorato: è vero solo nell'ipotesi che nessun club si ritiri dopo il 1° turno o che nessun club si aggiunga
+		int numeroGiocatoriPerClub = partiteTurnoInCorso.length / numeroClubInGioco;
+		
+		for (ClubDTO club: mapClubVsClub.keySet()){//Andrebbe fatto solo sui club sicuramente in gioco nel turno in linea
+			int numeroAvversariPerClub = 0;
+			for (int value: mapClubVsClub.get(club).values()){
+				numeroAvversariPerClub += value;
+			}
+			int minAvversari = (numeroClubInGioco / numeroAvversariPerClub);
+			int maxAvversari = 0;
+			if (numeroClubInGioco % numeroAvversariPerClub != 0){
+				maxAvversari = (numeroClubInGioco / numeroAvversariPerClub) +1;
+			}else{
+				maxAvversari = (numeroClubInGioco / numeroAvversariPerClub) ;
+			}
+
+			Map<ClubDTO, Integer> scontriDiretti = mapClubVsClub.get(club);
+			for (ClubDTO clubAvversario: scontriDiretti.keySet()){
+				if (!club.equals(clubAvversario)){
+					Integer numeroScontriClubVsClub = scontriDiretti.get(clubAvversario);
+					if (numeroScontriClubVsClub > maxAvversari){
+						//Cercare nelle partiteTurnoInCorso la coppia e scambiare uno dei due
+						
+					}
+				}
+			}
+		}
+		
+		return partiteTurnoInCorso;
+	}
+	
+	private static Partita[] redistribuisciPartiteDiminuireScontriMultipliTraClub(PrioritaSorteggio priorita, List<PrioritaSorteggio> listaPriorita, Partita[] partiteTurnoInCorso, Partita[] partitePrecedenti, ClubDTO club1, ClubDTO club2){
+		short numeroIterazioni = 0; //non serve a nulla ma evita il rischio di loop.
+		boolean sostituitoAlmenoUno = false;
+		do{
+			numeroIterazioni++;
+			MyLogger.getLogger().info("Redistribuzione Partite per Minimizzare Scontri Multipli Tra Club - Iterazione n° "+numeroIterazioni);
+			sostituitoAlmenoUno = false;
+			MyLogger.getLogger().fine("Si sono già affrontati troppe volte i club "+club1+" e "+club2);
+			for (int i=0; i < partiteTurnoInCorso.length; i++){
+					boolean sostituito = false;
+					Partita partitaI = partiteTurnoInCorso[i];
+					GiocatoreDTO giocatoreI1 = partitaI.isClubGiocatoreAlTavolo(club1);
+					GiocatoreDTO giocatoreI2 = partitaI.isClubGiocatoreAlTavolo(club2);
+					if (giocatoreI1 != null && giocatoreI2 != null)
+						for (int j=0; j < partiteTurnoInCorso.length && !sostituito; j++){
+							if (i != j){
+								Partita partitaJ = partiteTurnoInCorso[j];
+								if (partitaJ.isClubGiocatoreAlTavolo(club1) == null && partitaJ.isClubGiocatoreAlTavolo(club2) == null){
+								GiocatoreDTO[] giocatori = partiteTurnoInCorso[j].getGiocatori().toArray(new GiocatoreDTO[0]);
+								for (int k=0; k<giocatori.length && !sostituito; k++){
+									GiocatoreDTO giocatoreJ = giocatori[k];
+									List<Partita> listPartiteTurnoInCorso = new ArrayList<Partita>(Arrays.asList(partiteTurnoInCorso));
+									Iterator<Partita> iteratorInCorso = listPartiteTurnoInCorso.iterator();
+									while(iteratorInCorso.hasNext()){
+										Partita p = iteratorInCorso.next();
+										if (p.equals(partiteTurnoInCorso[i]) || p.equals(partiteTurnoInCorso[j])){
+											iteratorInCorso.remove();
+										}
+									}
+									Partita[] partite = ArrayUtils.concatenaPartite(listPartiteTurnoInCorso.toArray(new Partita[listPartiteTurnoInCorso.size()]), partitePrecedenti);
+									if (verificaSeScambiabili(priorita, listaPriorita, partiteTurnoInCorso[i], giocatoreI1, partiteTurnoInCorso[j], giocatoreJ, partite)){
+										scambiaGiocatori(partiteTurnoInCorso[i],giocatoreI1,partiteTurnoInCorso[j],giocatoreJ);
+										sostituito = true;
+										if(!sostituitoAlmenoUno){sostituitoAlmenoUno = true;}
+									}
+									if (!sostituito){
+										if (verificaSeScambiabili(priorita, listaPriorita, partiteTurnoInCorso[i], giocatoreI2, partiteTurnoInCorso[j], giocatoreJ, partite)){
+											scambiaGiocatori(partiteTurnoInCorso[i],giocatoreI2,partiteTurnoInCorso[j],giocatoreJ);
+											sostituito = true;
+											if(!sostituitoAlmenoUno){sostituitoAlmenoUno = true;}
+										}
+									}
+								}
+								}
+							}
+						}
+				}
+
+		}while(sostituitoAlmenoUno && numeroIterazioni < NUMERO_MASSIMO_ITERAZIONI);
+		return partiteTurnoInCorso;
+	}
+	
 	private static Partita[] redistribuisciPartiteMinimizzareScontriGiocatoreVersoStessoClub(PrioritaSorteggio priorita, List<PrioritaSorteggio> listaPriorita, Partita[] partite, Partita[] partitePrecedenti){
 		short numeroIterazioni = 0; //non serve a nulla ma evita il rischio di loop.
 		boolean sostituitoAlmenoUno = false;

@@ -7,6 +7,7 @@ import it.desimone.risiko.torneo.dto.Partita;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -116,7 +117,83 @@ public class MatchAnalyzer {
 		return matchGrids;
 	}
 	
-	public static void mappaConfrontiTraClub(Map<ClubDTO, Map<ClubDTO, Integer>> mapClubVsClub, GiocatoreDTO giocatoreI, GiocatoreDTO giocatoreJ){
+	public static Map<ClubDTO, Map<ClubDTO, Integer>> calcolaGrigliaClubVsClub(List<Partita> partite){
+		Map<ClubDTO, Map<ClubDTO, Integer>> mapClubVsClub = new HashMap<ClubDTO, Map<ClubDTO,Integer>>();
+				
+		for (Partita partita: partite){
+			GiocatoreDTO[] giocatoriInConfronto = partita.getGiocatori().toArray(new GiocatoreDTO[0]);		
+			for (int i=0; i<giocatoriInConfronto.length-1; i++){
+				for (int j=i+1; j<giocatoriInConfronto.length; j++){
+					GiocatoreDTO giocatoreI = giocatoriInConfronto[i];
+					GiocatoreDTO giocatoreJ = giocatoriInConfronto[j];
+					
+					mappaConfrontiTraClub(mapClubVsClub, giocatoreI, giocatoreJ);										
+				}
+			}
+		}
+		//Vanno aggiunti gli zeri, cioè quei casi in cui due club non si affrontano mai.
+		Set<ClubDTO> clubs = mapClubVsClub.keySet();
+		
+		for (ClubDTO club: clubs){
+			Map<ClubDTO, Integer> scontri = mapClubVsClub.get(club);
+			for (ClubDTO club2: clubs){
+				if (!scontri.containsKey(club2)) {
+					scontri.put(club2, 0);
+				}
+			}				
+		}
+		return mapClubVsClub;
+	}
+	
+	public static Map<ClubDTO, Map<ClubDTO, Integer>> calcolaConfrontiClubAnomali(List<Partita> partite){
+		Map<ClubDTO, Map<ClubDTO, Integer>> mapClubVsClubAnomali = null;
+		
+		Map<ClubDTO, Map<ClubDTO, Integer>> mapClubVsClub = calcolaGrigliaClubVsClub(partite);
+		
+		int numeroClubInGioco = mapClubVsClub.size(); //Va migliorato: è vero solo nell'ipotesi che nessun club si ritiri dopo il 1° turno o che nessun club si aggiunga
+		
+		Iterator<Map.Entry<ClubDTO, Map<ClubDTO, Integer>>> iterClub = mapClubVsClub.entrySet().iterator();
+		while (iterClub.hasNext()){
+		//for (ClubDTO club: mapClubVsClub.keySet()){//Andrebbe fatto solo sui club sicuramente in gioco nel turno in linea
+			Map.Entry<ClubDTO, Map<ClubDTO, Integer>> entry = iterClub.next();
+			ClubDTO club = entry.getKey();
+			int numeroAvversariPerClub = 0;
+			for (int value: mapClubVsClub.get(club).values()){
+				numeroAvversariPerClub += value;
+			}
+			int minAvversari = (numeroAvversariPerClub / numeroClubInGioco);
+			int maxAvversari = 0;
+			if (numeroClubInGioco % numeroAvversariPerClub != 0){
+				maxAvversari = (numeroAvversariPerClub / numeroClubInGioco) +1;
+			}else{
+				maxAvversari = (numeroAvversariPerClub / numeroClubInGioco) ;
+			}
+
+			Iterator<Map.Entry<ClubDTO, Integer>> iterScontriDiretti = mapClubVsClub.get(club).entrySet().iterator();
+			//Map<ClubDTO, Integer> scontriDiretti = mapClubVsClub.get(club);
+			while (iterScontriDiretti.hasNext()){
+			//for (ClubDTO clubAvversario: scontriDiretti.keySet()){
+				Map.Entry<ClubDTO, Integer> entryScontri = iterScontriDiretti.next();
+				ClubDTO clubAvversario = entryScontri.getKey();
+				if (!club.equals(clubAvversario)){
+					Integer numeroScontriClubVsClub = entryScontri.getValue();
+					if (!(numeroScontriClubVsClub > maxAvversari || numeroScontriClubVsClub < minAvversari)){
+						iterScontriDiretti.remove();
+					}
+				}else{
+					iterScontriDiretti.remove();
+				}
+			}
+			if (mapClubVsClub.get(club).isEmpty()){
+				iterClub.remove();
+			}
+		}
+		mapClubVsClubAnomali = mapClubVsClub;
+		
+		return mapClubVsClubAnomali;
+	}
+	
+	private static void mappaConfrontiTraClub(Map<ClubDTO, Map<ClubDTO, Integer>> mapClubVsClub, GiocatoreDTO giocatoreI, GiocatoreDTO giocatoreJ){
 		Map<ClubDTO, Integer> mappaI = mapClubVsClub.get(giocatoreI.getClubProvenienza());
 		if (mappaI == null){
 			mappaI = new HashMap<ClubDTO,Integer>();

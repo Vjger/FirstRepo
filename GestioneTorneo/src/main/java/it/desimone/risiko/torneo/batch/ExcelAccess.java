@@ -1548,6 +1548,10 @@ public class ExcelAccess{
 		
 		MatchGrids matchGrids = MatchAnalyzer.calcolaGriglie(listaPartitePrecedenti);
 		
+		Map<ClubDTO, Map<ClubDTO, Integer>> confrontiClubAnomali = MatchAnalyzer.calcolaConfrontiClubAnomali(listaPartitePrecedenti);
+		MyLogger.getLogger().info(confrontiClubAnomali.toString());
+		
+		
 		Map<ClubDTO, Map<ClubDTO, Integer>> mapClubVsClub = matchGrids.getMapClubVsClub();
 		Map<GiocatoreDTO, Map<ClubDTO, Integer>> 		mapGiocatoreVsClub 		= matchGrids.getMapGiocatoreVsClub();
 		Map<GiocatoreDTO, Map<GiocatoreDTO, Integer>> 	mapGiocatoreVsGiocatore = matchGrids.getMapGiocatoreVsGiocatore();
