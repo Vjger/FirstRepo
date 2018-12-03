@@ -1,5 +1,6 @@
 package it.desimone.gsheetsaccess.utils;
 
+import it.desimone.gheetsaccess.gsheets.dto.AnagraficaGiocatoreRidottaRow;
 import it.desimone.gheetsaccess.gsheets.dto.AnagraficaGiocatoreRow;
 import it.desimone.gheetsaccess.gsheets.dto.ClassificheRow;
 import it.desimone.gheetsaccess.gsheets.dto.PartitaRow;
@@ -21,6 +22,7 @@ public class TorneiUtils {
 		
 		try {
 			String spreadSheetIdTornei = Configurator.getTorneiSheetId();
+			String spreadSheetAnagraficaRidotta = Configurator.getAnagraficaRidottaSheetId();
 			ClassificheRow classificheRow = new ClassificheRow();
 			classificheRow.setIdGiocatore(idPlayerFrom);
 			List<SheetRow> righeClassificaGiocatore = GSheetsInterface.findClassificaRowsByIdGiocatore(spreadSheetIdTornei, classificheRow);
@@ -76,6 +78,18 @@ public class TorneiUtils {
 				List<Integer> rowNumberGiocatoreFrom = new ArrayList<Integer>();
 				rowNumberGiocatoreFrom.add(anagraficheDaCancellareRowFound.get(0).getSheetRowNumber());
 				GSheetsInterface.deleteRowsByNumRow(spreadSheetIdTornei, AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME, rowNumberGiocatoreFrom);
+				MyLogger.getLogger().info("Cancellato il giocatore con ID ["+idPlayerFrom+"] dal foglio Tornei");
+			}
+			
+			SheetRow anagraficaRidottaGiocatoreRowFrom = new AnagraficaGiocatoreRidottaRow();
+			((AnagraficaGiocatoreRidottaRow)anagraficaRidottaGiocatoreRowFrom).setId(idPlayerFrom);
+			List<SheetRow> anagraficheRidotteDaCancellareRowFound = GSheetsInterface.findAnagraficheByKey(spreadSheetAnagraficaRidotta, Collections.singletonList(anagraficaGiocatoreRowFrom));
+			
+			if (anagraficheRidotteDaCancellareRowFound != null && !anagraficheRidotteDaCancellareRowFound.isEmpty()){
+				List<Integer> rowNumberGiocatoreFrom = new ArrayList<Integer>();
+				rowNumberGiocatoreFrom.add(anagraficheRidotteDaCancellareRowFound.get(0).getSheetRowNumber());
+				GSheetsInterface.deleteRowsByNumRow(spreadSheetAnagraficaRidotta, AnagraficaGiocatoreRidottaRow.SHEET_ANAGRAFICA_NAME, rowNumberGiocatoreFrom);
+				MyLogger.getLogger().info("Cancellato il giocatore con ID ["+idPlayerFrom+"] dal foglio Anagrafica Ridotta");
 			}
 			
 		}catch(Exception e){
