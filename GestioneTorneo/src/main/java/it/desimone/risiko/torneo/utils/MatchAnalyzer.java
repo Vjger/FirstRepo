@@ -38,8 +38,38 @@ public class MatchAnalyzer {
 				Map<GiocatoreDTO, Map<GiocatoreDTO, Integer>> mapGiocatoreVsGiocatore) {
 			this.mapGiocatoreVsGiocatore = mapGiocatoreVsGiocatore;
 		}
-		
-		
+	}
+	
+	public static class MatchAnomali{
+		private int sogliaMinima;
+		private int sogliaMassima;
+		private AnomaliaConfrontiClub anomaliaValutata;
+		private Map<ClubDTO, Map<ClubDTO, Integer>> matchClubVsClubAnomali;
+		public int getSogliaMinima() {
+			return sogliaMinima;
+		}
+		public void setSogliaMinima(int sogliaMinima) {
+			this.sogliaMinima = sogliaMinima;
+		}
+		public int getSogliaMassima() {
+			return sogliaMassima;
+		}
+		public void setSogliaMassima(int sogliaMassima) {
+			this.sogliaMassima = sogliaMassima;
+		}
+		public AnomaliaConfrontiClub getAnomaliaValutata() {
+			return anomaliaValutata;
+		}
+		public void setAnomaliaValutata(AnomaliaConfrontiClub anomaliaValutata) {
+			this.anomaliaValutata = anomaliaValutata;
+		}
+		public Map<ClubDTO, Map<ClubDTO, Integer>> getMatchClubVsClubAnomali() {
+			return matchClubVsClubAnomali;
+		}
+		public void setMatchClubVsClubAnomali(
+				Map<ClubDTO, Map<ClubDTO, Integer>> matchClubVsClubAnomali) {
+			this.matchClubVsClubAnomali = matchClubVsClubAnomali;
+		}
 	}
 	
 	public static MatchGrids calcolaGriglie(List<Partita> partite){
@@ -145,12 +175,18 @@ public class MatchAnalyzer {
 		return mapClubVsClub;
 	}
 	
-	public static Map<ClubDTO, Map<ClubDTO, Integer>> calcolaConfrontiClubAnomali(List<Partita> partite){
+	public static enum AnomaliaConfrontiClub{
+		UP, DOWN, BOTH
+	}
+	
+	public static MatchAnomali calcolaConfrontiClubAnomali(List<Partita> partite, AnomaliaConfrontiClub anomaliaConfrontiClub){
 		Map<ClubDTO, Map<ClubDTO, Integer>> mapClubVsClubAnomali = null;
 		
 		Map<ClubDTO, Map<ClubDTO, Integer>> mapClubVsClub = calcolaGrigliaClubVsClub(partite);
 		
 		int numeroClubInGioco = mapClubVsClub.size(); //Va migliorato: è vero solo nell'ipotesi che nessun club si ritiri dopo il 1° turno o che nessun club si aggiunga
+		int minAvversari = 0;
+		int maxAvversari = 0;
 		
 		Iterator<Map.Entry<ClubDTO, Map<ClubDTO, Integer>>> iterClub = mapClubVsClub.entrySet().iterator();
 		while (iterClub.hasNext()){
@@ -161,8 +197,7 @@ public class MatchAnalyzer {
 			for (int value: mapClubVsClub.get(club).values()){
 				numeroAvversariPerClub += value;
 			}
-			int minAvversari = (numeroAvversariPerClub / numeroClubInGioco);
-			int maxAvversari = 0;
+			minAvversari = (numeroAvversariPerClub / numeroClubInGioco);
 			if (numeroClubInGioco % numeroAvversariPerClub != 0){
 				maxAvversari = (numeroAvversariPerClub / numeroClubInGioco) +1;
 			}else{
@@ -179,6 +214,10 @@ public class MatchAnalyzer {
 					Integer numeroScontriClubVsClub = entryScontri.getValue();
 					if (!(numeroScontriClubVsClub > maxAvversari || numeroScontriClubVsClub < minAvversari)){
 						iterScontriDiretti.remove();
+					}else if (numeroScontriClubVsClub > maxAvversari && (anomaliaConfrontiClub == AnomaliaConfrontiClub.DOWN)){
+						iterScontriDiretti.remove();
+					}else if (numeroScontriClubVsClub < minAvversari && (anomaliaConfrontiClub == AnomaliaConfrontiClub.UP)){
+						iterScontriDiretti.remove();
 					}
 				}else{
 					iterScontriDiretti.remove();
@@ -190,7 +229,13 @@ public class MatchAnalyzer {
 		}
 		mapClubVsClubAnomali = mapClubVsClub;
 		
-		return mapClubVsClubAnomali;
+		MatchAnomali matchAnomali = new MatchAnomali();
+		matchAnomali.setSogliaMinima(minAvversari);
+		matchAnomali.setSogliaMassima(maxAvversari);
+		matchAnomali.setAnomaliaValutata(anomaliaConfrontiClub);
+		matchAnomali.setMatchClubVsClubAnomali(mapClubVsClubAnomali);
+		
+		return matchAnomali;
 	}
 	
 	private static void mappaConfrontiTraClub(Map<ClubDTO, Map<ClubDTO, Integer>> mapClubVsClub, GiocatoreDTO giocatoreI, GiocatoreDTO giocatoreJ){

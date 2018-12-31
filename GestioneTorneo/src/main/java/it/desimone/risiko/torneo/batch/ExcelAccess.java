@@ -30,6 +30,8 @@ import it.desimone.risiko.torneo.scoreplayer.ScoreTeamCNS;
 import it.desimone.risiko.torneo.scoreplayer.ScoreTeamClassificator;
 import it.desimone.risiko.torneo.utils.ClubLoader;
 import it.desimone.risiko.torneo.utils.MatchAnalyzer;
+import it.desimone.risiko.torneo.utils.MatchAnalyzer.AnomaliaConfrontiClub;
+import it.desimone.risiko.torneo.utils.MatchAnalyzer.MatchAnomali;
 import it.desimone.risiko.torneo.utils.MatchAnalyzer.MatchGrids;
 import it.desimone.risiko.torneo.utils.RegioniLoader;
 import it.desimone.risiko.torneo.utils.TipoTorneo;
@@ -1548,8 +1550,8 @@ public class ExcelAccess{
 		
 		MatchGrids matchGrids = MatchAnalyzer.calcolaGriglie(listaPartitePrecedenti);
 		
-		Map<ClubDTO, Map<ClubDTO, Integer>> confrontiClubAnomali = MatchAnalyzer.calcolaConfrontiClubAnomali(listaPartitePrecedenti);
-		MyLogger.getLogger().info(confrontiClubAnomali.toString());
+		MatchAnomali matchAnomali = MatchAnalyzer.calcolaConfrontiClubAnomali(listaPartitePrecedenti, AnomaliaConfrontiClub.BOTH);
+		MyLogger.getLogger().info(matchAnomali.getMatchClubVsClubAnomali().toString());
 		
 		
 		Map<ClubDTO, Map<ClubDTO, Integer>> mapClubVsClub = matchGrids.getMapClubVsClub();
