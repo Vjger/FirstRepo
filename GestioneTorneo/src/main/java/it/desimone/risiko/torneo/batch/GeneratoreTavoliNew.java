@@ -5,12 +5,12 @@ import it.desimone.risiko.torneo.dto.GiocatoreDTO;
 import it.desimone.risiko.torneo.dto.Partita;
 import it.desimone.risiko.torneo.dto.RegioneDTO;
 import it.desimone.risiko.torneo.utils.MatchAnalyzer;
+import it.desimone.risiko.torneo.utils.MatchAnalyzer.AnomaliaConfrontiClub;
+import it.desimone.risiko.torneo.utils.MatchAnalyzer.MatchAnomali;
 import it.desimone.risiko.torneo.utils.PrioritaSorteggio;
 import it.desimone.risiko.torneo.utils.TavoliVuotiCreator;
 import it.desimone.risiko.torneo.utils.TipoTavoli;
 import it.desimone.risiko.torneo.utils.TipoTorneo;
-import it.desimone.risiko.torneo.utils.MatchAnalyzer.AnomaliaConfrontiClub;
-import it.desimone.risiko.torneo.utils.MatchAnalyzer.MatchAnomali;
 import it.desimone.utils.ArrayUtils;
 import it.desimone.utils.MapUtils;
 import it.desimone.utils.MyException;
@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -642,7 +641,7 @@ public class GeneratoreTavoliNew {
 						GiocatoreDTO giocatoreI = partitaTurnoInCorso.isClubGiocatoreAlTavolo(club);
 						GiocatoreDTO giocatoreJ = partitaTurnoInCorso.isClubGiocatoreAlTavolo(clubAvversario);
 						if (giocatoreI != null && giocatoreJ != null){
-							MyLogger.getLogger().info("Nel tavolo "+partitaTurnoInCorso.getNumeroTavolo()+" si sono già affrontati "+numeroScontriClubVsClub+" volte i club "+club+" e "+clubAvversario);
+							MyLogger.getLogger().fine("Nel tavolo "+partitaTurnoInCorso.getNumeroTavolo()+" si sono già affrontati "+numeroScontriClubVsClub+" volte i club "+club+" e "+clubAvversario);
 							boolean sostituito = false;
 							/* Ciclo tutti i giocatori del tavolo che hanno già scontri diretti: se avviene uno scambio la lista si rigenera daccapo.*/
 							for (int j=0; j < partiteTurnoInCorso.length && !sostituito; j++){
@@ -697,7 +696,7 @@ public class GeneratoreTavoliNew {
 										for (int k=0; k<giocatori.length && !sostituito; k++){
 											GiocatoreDTO giocatore2 = giocatori[k];
 											if (!giocatore2.equals(giocatoreJ)){
-												MyLogger.getLogger().info("Nel tavolo "+partiteTurnoInCorso[j].getNumeroTavolo()+" si fanno affrontare i club "+club+" e "+clubAvversario);
+												MyLogger.getLogger().fine("Nel tavolo "+partiteTurnoInCorso[j].getNumeroTavolo()+" si fanno affrontare i club "+club+" e "+clubAvversario);
 												List<Partita> listPartiteTurnoInCorso = new ArrayList<Partita>(Arrays.asList(partiteTurnoInCorso));
 												Iterator<Partita> iteratorInCorso = listPartiteTurnoInCorso.iterator();
 												while(iteratorInCorso.hasNext()){

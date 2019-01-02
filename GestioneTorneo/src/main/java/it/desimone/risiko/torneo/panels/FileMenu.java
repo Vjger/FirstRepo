@@ -3,6 +3,7 @@ package it.desimone.risiko.torneo.panels;
 import it.desimone.gdrive.GoogleDrivePublisher;
 import it.desimone.risiko.torneo.batch.ExcelAccess;
 import it.desimone.risiko.torneo.batch.ExcelValidator;
+import it.desimone.risiko.torneo.batch.ExcelValidator.ExcelValidatorData;
 import it.desimone.risiko.torneo.batch.ExcelValidator.ExcelValidatorMessages;
 import it.desimone.risiko.torneo.batch.RadGester;
 import it.desimone.risiko.torneo.dto.GiocatoreDTO;
@@ -20,6 +21,7 @@ import java.io.FileWriter;
 import java.util.List;
 
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -201,14 +203,15 @@ public class FileMenu extends JMenu {
 				}else{
 					try{
 						ExcelValidator excelValidator = new ExcelValidator(excelFile);
-						List<ExcelValidatorMessages> messaggiDiValidazione = excelValidator.validaFoglioExcel();
-						
-						if (messaggiDiValidazione == null || messaggiDiValidazione.isEmpty()){	
-							GoogleDrivePublisher googleDrivePublisher = new GoogleDrivePublisher(excelFile.getPath());
-							Thread t = new Thread(googleDrivePublisher);
-							t.start();							
+						ExcelValidatorData excelValidatorData = excelValidator.validaFoglioExcel();
+						if (!excelValidatorData.containsErrors()){	
+							if (!excelValidatorData.containsWarnings() || pubblicaWarningsDiValidazione(excelValidatorData.getWarnings())){
+								GoogleDrivePublisher googleDrivePublisher = new GoogleDrivePublisher(excelFile.getPath());
+								Thread t = new Thread(googleDrivePublisher);
+								t.start();			
+							}
 						}else{
-							pubblicaErroriDiValidazione(messaggiDiValidazione);
+							pubblicaErroriDiValidazione(excelValidatorData.getErrors());
 						}
 					}catch(Exception ex){
 						RadGester.writeException(ex);
@@ -257,6 +260,36 @@ public class FileMenu extends JMenu {
 		scrollPane.setPreferredSize(new Dimension(1000, 500));
 		errorTable.setFillsViewportHeight(true);
 		JOptionPane.showMessageDialog(null, scrollPane,"Foglio Excel non completo",JOptionPane.ERROR_MESSAGE);
+	}
+	
+	private boolean pubblicaWarningsDiValidazione(List<ExcelValidatorMessages> messaggiDiValidazione){
+		Object[] header = new String[]{"Scheda", "Messaggio di errore"};
+		
+		Object[][] rows = new String[messaggiDiValidazione.size()][2];
+		int indexRows = 0;
+		for (ExcelValidatorMessages excelValidatorMessages: messaggiDiValidazione){
+			if (excelValidatorMessages.getSchedaDiRiferimento() != null){
+				rows[indexRows][0] = excelValidatorMessages.getSchedaDiRiferimento().name();
+			}
+			rows[indexRows][1] = excelValidatorMessages.getMessage();
+			indexRows++;
+		}
+		JTable errorTable = new JTable(rows, header);
+		//errorTable.setSize(400, 400);
+		errorTable.setPreferredSize(new Dimension(1000, 500));
+		//errorTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		//errorTable.doLayout();
+		TableColumnModel jTableColumnModel = errorTable.getColumnModel();
+		TableColumn columnScheda = jTableColumnModel.getColumn(0);
+		columnScheda.setPreferredWidth(150);
+		TableColumn columnMessage = jTableColumnModel.getColumn(1);
+		columnMessage.setPreferredWidth(850);
+		JScrollPane scrollPane = new JScrollPane(errorTable);
+		scrollPane.setPreferredSize(new Dimension(1000, 500));
+		errorTable.setFillsViewportHeight(true);
+		//Integer response = JOptionPane.showConfirmDialog(null, scrollPane, "Confermi di voler procedere nonostante i messaggi indicati?", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+		Integer response = JOptionPane.showOptionDialog(null, scrollPane, "Confermi di voler procedere nonostante i messaggi indicati?", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, new String[]{"Pubblica con giocatori anonimi", "Annulla"}, null);
+		return response == JOptionPane.OK_OPTION;
 	}
 	
 	public File getExcelFile() {

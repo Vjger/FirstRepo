@@ -21,6 +21,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import javax.print.attribute.standard.Severity;
+
 public class ExcelValidator {
 
 	public static class ExcelValidatorMessages{
@@ -28,10 +30,18 @@ public class ExcelValidator {
 		public ExcelValidatorMessages(Scheda schedaDiRiferimento, String message){
 			this.schedaDiRiferimento = schedaDiRiferimento;
 			this.message = message;
+			this.severity = Severity.ERROR;
+		}
+		
+		public ExcelValidatorMessages(Scheda schedaDiRiferimento, String message, Severity severity){
+			this.schedaDiRiferimento = schedaDiRiferimento;
+			this.message = message;
+			this.severity = severity;
 		}
 		
 		private String message;
 		private Scheda schedaDiRiferimento;
+		private Severity severity;
 		
 		public String getMessage() {
 			return message;
@@ -46,13 +56,59 @@ public class ExcelValidator {
 		public void setSchedaDiRiferimento(Scheda schedaDiRiferimento) {
 			this.schedaDiRiferimento = schedaDiRiferimento;
 		}
+		public Severity getSeverity() {
+			return severity;
+		}
+		public void setSeverity(Severity severity) {
+			this.severity = severity;
+		}
 		public enum Scheda{
 			TORNEO, ISCRITTI, TURNO, CLASSIFICA_RIDOTTA
+		}
+		public enum Severity{
+			ERROR, WARNING
 		}
 		@Override
 		public String toString() {
 			return "ExcelValidatorMessages [message=" + message
 					+ ", schedaDiRiferimento=" + schedaDiRiferimento + "]";
+		}
+	}
+
+	public static class ExcelValidatorData{
+		private List<ExcelValidatorMessages> errors;
+		private List<ExcelValidatorMessages> warnings;
+		public List<ExcelValidatorMessages> getErrors() {
+			return errors;
+		}
+		public void setErrors(List<ExcelValidatorMessages> errors) {
+			this.errors = errors;
+		}
+		public List<ExcelValidatorMessages> getWarnings() {
+			return warnings;
+		}
+		public void setWarnings(List<ExcelValidatorMessages> warnings) {
+			this.warnings = warnings;
+		}
+		
+		public void addMessages(List<ExcelValidatorMessages> messages){
+			if (messages != null){
+				for (ExcelValidatorMessages message: messages){
+					if (message.getSeverity() == ExcelValidatorMessages.Severity.ERROR){
+						if (errors == null){errors = new ArrayList<ExcelValidatorMessages>();}
+						errors.add(message);
+					}else if (message.getSeverity() == ExcelValidatorMessages.Severity.WARNING){
+						if (warnings == null){warnings = new ArrayList<ExcelValidatorMessages>();}
+						warnings.add(message);
+					}
+				}
+			}
+		}
+		public boolean containsErrors(){
+			return errors != null && !errors.isEmpty();
+		}
+		public boolean containsWarnings(){
+			return warnings != null && !warnings.isEmpty();
 		}
 	}
 	
@@ -63,7 +119,9 @@ public class ExcelValidator {
 	}
 	
 	
-	public List<ExcelValidatorMessages> validaFoglioExcel(){
+	public ExcelValidatorData validaFoglioExcel(){
+		
+		ExcelValidatorData excelValidatorData = null;
 		List<ExcelValidatorMessages> result = new ArrayList<ExcelValidatorMessages>();
 		
 		try{
@@ -94,8 +152,12 @@ public class ExcelValidator {
 			ExcelValidatorMessages excelValidatorMessages = new ExcelValidatorMessages(null, me.getMessage());
 			result.add(excelValidatorMessages);
 		}
-
-		return result;
+		
+		if (result != null && !result.isEmpty()){
+			excelValidatorData = new ExcelValidatorData();
+			excelValidatorData.addMessages(result);
+		}
+		return excelValidatorData; /*result*/
 	}
 	
 	/*
@@ -251,8 +313,11 @@ public class ExcelValidator {
 					if (StringUtils.isNullOrEmpty(giocatore.getCognome())){
 						result.add(new ExcelValidatorMessages(Scheda.ISCRITTI, "Il cognome del giocatore "+giocatore+" non è indicato"));
 					}
-					if (StringUtils.isNullOrEmpty(giocatore.getEmail())){
-						result.add(new ExcelValidatorMessages(Scheda.ISCRITTI, "L'indirizzo email del giocatore "+giocatore+" non è indicato"));
+//					if (StringUtils.isNullOrEmpty(giocatore.getEmail())){
+//						result.add(new ExcelValidatorMessages(Scheda.ISCRITTI, "L'indirizzo email del giocatore "+giocatore+" non è indicato"));
+//					}
+					if (giocatore.getDataDiNascita() == null){
+						result.add(new ExcelValidatorMessages(Scheda.ISCRITTI, "La data di nascita del giocatore "+giocatore+" non è indicata: verrà trattato come anonimo", ExcelValidatorMessages.Severity.WARNING));
 					}
 					int frequency = Collections.frequency(partecipantiEffettivi, giocatore);
 					if (!giocatore.equals(GiocatoreDTO.FITTIZIO) && frequency != 1){
@@ -261,7 +326,7 @@ public class ExcelValidator {
 					if (!giocatore.equals(GiocatoreDTO.FITTIZIO) && !giocatore.uguale(GiocatoreDTO.ANONIMO)){
 						for (GiocatoreDTO giocatoreBis: iscritti){
 							if (!giocatore.equals(giocatoreBis) && giocatore.uguale(giocatoreBis)){
-								result.add(new ExcelValidatorMessages(Scheda.ISCRITTI, "Sono presenti due giocatori con stessi dati anagrafici: "+giocatore.getNome()+ " "+giocatore.getCognome()+" "+giocatore.getEmail()));
+								result.add(new ExcelValidatorMessages(Scheda.ISCRITTI, "Sono presenti due giocatori con stessi dati anagrafici: "+giocatore.getNome()+ " "+giocatore.getCognome()+" "+giocatore.getDataDiNascita()));
 							}
 						}
 					}

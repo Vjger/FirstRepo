@@ -101,7 +101,8 @@ public class ExcelAccess{
 	short posizioneClub 		= 4;
 	short posizionePresenza 	= 5;
 	short posizioneRegione 		= 6;
-	short posizioneEmail 		= 7;
+	//short posizioneEmail 		= 7;
+	short posizioneDataDiNascita= 7;
 
 	private Workbook foglioTorneo;
 	private CreationHelper creationHelper;
@@ -279,7 +280,7 @@ public class ExcelAccess{
 								dataTurni.add(dataTurno);
 							}
 						}catch(IllegalStateException ise){
-							MyLogger.getLogger().severe("Errore nel parsing della data a riga "+(indexDate+1)+": "+ ise.getMessage());
+							MyLogger.getLogger().severe("Errore nel parsing della data a riga "+(indexDate+1)+" della scheda "+SCHEDA_TORNEO+": "+ ise.getMessage());
 						}
 					}
 				}
@@ -391,9 +392,15 @@ public class ExcelAccess{
 		
 		String nome = determinaValoreCella(row, posizioneNome);
 		String cognome = determinaValoreCella(row, posizioneCognome);
-		String email = determinaValoreCella(row, posizioneEmail);
+		//String email = determinaValoreCella(row, posizioneEmail);
 		String nick = determinaValoreCella(row, posizioneNick);
-		
+		Date dataDiNascita = null;
+		try{
+			dataDiNascita = row.getCell(posizioneDataDiNascita).getDateCellValue();
+		}catch(IllegalStateException ise){
+			MyLogger.getLogger().severe("Errore nel parsing della data di nascita a riga "+(row.getRowNum()+1)+" della scheda "+SCHEDA_ISCRITTI+": "+ ise.getMessage());
+			throw new MyException(ise,"Errore di formato della data di nascita a riga "+(row.getRowNum()+1)+" della scheda "+SCHEDA_ISCRITTI);
+		}
 		String regione = determinaValoreCella(row, posizioneRegione);
 		String club = determinaValoreCella(row, posizioneClub);
 		String presenza = determinaValoreCella(row, posizionePresenza);
@@ -404,7 +411,8 @@ public class ExcelAccess{
 		giocatore.setId(id.intValue());
 		giocatore.setNome(nome);
 		giocatore.setCognome(cognome);
-		giocatore.setEmail(email);
+		//giocatore.setEmail(email);
+		giocatore.setDataDiNascita(dataDiNascita);
 		giocatore.setNick(nick);
 		if (regione != null && regione.length() >0){
 			try{

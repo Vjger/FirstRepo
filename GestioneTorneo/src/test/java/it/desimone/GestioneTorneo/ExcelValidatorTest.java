@@ -1,11 +1,11 @@
 package it.desimone.GestioneTorneo;
 
 import it.desimone.risiko.torneo.batch.ExcelValidator;
+import it.desimone.risiko.torneo.batch.ExcelValidator.ExcelValidatorData;
 import it.desimone.risiko.torneo.batch.ExcelValidator.ExcelValidatorMessages;
 import it.desimone.utils.MyLogger;
 
 import java.io.File;
-import java.util.List;
 import java.util.logging.Level;
 
 public class ExcelValidatorTest {
@@ -20,9 +20,13 @@ public class ExcelValidatorTest {
 		
 		ExcelValidator excelValidator = new ExcelValidator(testFile);
 		
-		List<ExcelValidatorMessages> messages = excelValidator.validaFoglioExcel();
+		ExcelValidatorData excelValidatorData = excelValidator.validaFoglioExcel();
 		
-		for(ExcelValidatorMessages message: messages){
+		for(ExcelValidatorMessages message: excelValidatorData.getErrors()){
+			System.out.println(message);
+		}
+		
+		for(ExcelValidatorMessages message: excelValidatorData.getWarnings()){
 			System.out.println(message);
 		}
 	}

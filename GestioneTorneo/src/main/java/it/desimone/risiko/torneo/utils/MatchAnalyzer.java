@@ -70,6 +70,14 @@ public class MatchAnalyzer {
 				Map<ClubDTO, Map<ClubDTO, Integer>> matchClubVsClubAnomali) {
 			this.matchClubVsClubAnomali = matchClubVsClubAnomali;
 		}
+		@Override
+		public String toString() {
+			return "MatchAnomali [sogliaMinima=" + sogliaMinima
+					+ ", sogliaMassima=" + sogliaMassima
+					+ ", anomaliaValutata=" + anomaliaValutata
+					+ ", matchClubVsClubAnomali=" + matchClubVsClubAnomali
+					+ "]";
+		}
 	}
 	
 	public static MatchGrids calcolaGriglie(List<Partita> partite){
