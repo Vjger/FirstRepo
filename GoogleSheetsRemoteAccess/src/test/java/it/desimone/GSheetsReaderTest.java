@@ -48,7 +48,8 @@ public class GSheetsReaderTest {
 		
 		anagraficaRidottaRow.setNome("Marco");
 		anagraficaRidottaRow.setCognome("De Simone");
-		anagraficaRidottaRow.setEmail("vjger69@gmail.com");
+		//anagraficaRidottaRow.setEmail("vjger69@gmail.com");
+		anagraficaRidottaRow.setDataDiNascita("26/01/1969");
 		anagraficaRidottaRow.setUpdateTime(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime()));
 		
 		String spreadSheetIdAnagraficaRidotta = "1nPDrmKcgXJzRZhsEdHIEk_GV36P7AC29C8c9ay8lLHQ";
@@ -99,13 +100,15 @@ public class GSheetsReaderTest {
 		AnagraficaGiocatoreRidottaRow anagraficaRidottaRow1 = new AnagraficaGiocatoreRidottaRow();
 		anagraficaRidottaRow1.setNome("Marvo");
 		anagraficaRidottaRow1.setCognome("De Simone");
-		anagraficaRidottaRow1.setEmail("vjger69@gmail.com");
+		//anagraficaRidottaRow1.setEmail("vjger69@gmail.com");
+		anagraficaRidottaRow1.setDataDiNascita("26/01/1969");
 		anagraficaRidottaRow1.setUpdateTime(updateTime);
 		
 		AnagraficaGiocatoreRidottaRow anagraficaRidottaRow2 = new AnagraficaGiocatoreRidottaRow();
 		anagraficaRidottaRow2.setNome("Mario");
 		anagraficaRidottaRow2.setCognome("De Simone");
-		anagraficaRidottaRow2.setEmail("vjger69@gmail.com");
+		//anagraficaRidottaRow2.setEmail("vjger69@gmail.com");
+		anagraficaRidottaRow2.setDataDiNascita("26/01/1969");
 		anagraficaRidottaRow2.setUpdateTime(updateTime);
 		
 		List<AnagraficaGiocatoreRidottaRow> anagraficheDaVerificare = new ArrayList<AnagraficaGiocatoreRidottaRow>();

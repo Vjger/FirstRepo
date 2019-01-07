@@ -204,13 +204,13 @@ public class FileMenu extends JMenu {
 					try{
 						ExcelValidator excelValidator = new ExcelValidator(excelFile);
 						ExcelValidatorData excelValidatorData = excelValidator.validaFoglioExcel();
-						if (!excelValidatorData.containsErrors()){	
+						if (excelValidatorData != null && !excelValidatorData.containsErrors()){	
 							if (!excelValidatorData.containsWarnings() || pubblicaWarningsDiValidazione(excelValidatorData.getWarnings())){
 								GoogleDrivePublisher googleDrivePublisher = new GoogleDrivePublisher(excelFile.getPath());
 								Thread t = new Thread(googleDrivePublisher);
 								t.start();			
 							}
-						}else{
+						}else if (excelValidatorData != null && excelValidatorData.containsErrors()){
 							pubblicaErroriDiValidazione(excelValidatorData.getErrors());
 						}
 					}catch(Exception ex){

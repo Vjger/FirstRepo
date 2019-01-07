@@ -93,13 +93,25 @@ public class ExcelGSheetsBridge {
 		for (int index = 0; index < partecipanti.size(); index++){
 			GiocatoreDTO giocatore = partecipanti.get(index);
 			AnagraficaGiocatoreRidottaRow anagraficaGiocatoreRidottaRow = new AnagraficaGiocatoreRidottaRow();
-			anagraficaGiocatoreRidottaRow.setNome(giocatore.getNome().trim());
-			anagraficaGiocatoreRidottaRow.setCognome(giocatore.getCognome().trim());
-			anagraficaGiocatoreRidottaRow.setEmail(giocatore.getEmail().trim());
+			if (giocatore.getDataDiNascita() != null){
+				anagraficaGiocatoreRidottaRow.setNome(giocatore.getNome().trim());
+				anagraficaGiocatoreRidottaRow.setCognome(giocatore.getCognome().trim());
+				//anagraficaGiocatoreRidottaRow.setEmail(giocatore.getEmail().trim());
+				anagraficaGiocatoreRidottaRow.setDataDiNascita(dfDateTorneo.format(giocatore.getDataDiNascita()));
+			}else{
+				anagraficaGiocatoreRidottaRow.setNome(AnagraficaGiocatoreRidottaRow.NOME_ANONIMO);
+				anagraficaGiocatoreRidottaRow.setCognome(AnagraficaGiocatoreRidottaRow.COGNOME_ANONIMO);
+				anagraficaGiocatoreRidottaRow.setDataDiNascita(AnagraficaGiocatoreRidottaRow.DATA_NASCITA_ANONIMO);
+			}
 			anagraficaGiocatoreRidottaRow.setUpdateTime(dfUpdateTime.format(now));
 			AnagraficaGiocatoreRow anagraficaGiocatoreRow = new AnagraficaGiocatoreRow();
-			anagraficaGiocatoreRow.setNome(giocatore.getNome().trim());
-			anagraficaGiocatoreRow.setCognome(giocatore.getCognome().trim());
+			if (giocatore.getDataDiNascita() != null){
+				anagraficaGiocatoreRow.setNome(giocatore.getNome().trim());
+				anagraficaGiocatoreRow.setCognome(giocatore.getCognome().trim());
+			}else{
+				anagraficaGiocatoreRow.setNome(AnagraficaGiocatoreRidottaRow.NOME_ANONIMO);
+				anagraficaGiocatoreRow.setCognome(AnagraficaGiocatoreRidottaRow.COGNOME_ANONIMO);
+			}
 			anagraficaGiocatoreRow.setUltimoClub(giocatore.getClubProvenienza()==null?null:giocatore.getClubProvenienza().getDenominazione());
 			anagraficaGiocatoreRow.setIdUltimoTorneo(idTorneo);
 			anagraficaGiocatoreRow.setUpdateTime(dfUpdateTime.format(now));

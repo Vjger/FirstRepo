@@ -48,7 +48,7 @@ public class ClubLoader {
 	public final static ClubDTO AIRONI = new ClubDTO("VA", "GERENZANO [Aironi]");
 	public final static ClubDTO BORGO_PILA = new ClubDTO("GE", "GENOVA [Borgo Pila]");
 	public final static ClubDTO PANZER8 = new ClubDTO("BA", "BITONTO [Panzer8]");
-	public final static ClubDTO FOGGIA = new ClubDTO("FG", "FOGGIA [RCU]");
+	public final static ClubDTO I_SATANELLI = new ClubDTO("FG", "FOGGIA [I Satanelli]");
 	public final static ClubDTO LE_ARMATE = new ClubDTO("AG", "LICATA [Le Armate]");
 	public final static ClubDTO I_BALUARDI = new ClubDTO("LU", "LUCCA [I Baluardi]");
 
@@ -93,7 +93,7 @@ public class ClubLoader {
 		clubs.add(AIRONI);
 		clubs.add(BORGO_PILA);
 		clubs.add(PANZER8);
-		clubs.add(FOGGIA);
+		clubs.add(I_SATANELLI);
 		clubs.add(I_BALUARDI);
 		clubs.add(LE_ARMATE);
 	}

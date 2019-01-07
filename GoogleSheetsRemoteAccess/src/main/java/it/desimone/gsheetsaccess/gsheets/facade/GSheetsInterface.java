@@ -300,7 +300,8 @@ public class GSheetsInterface {
     	int numeroRiga = indexStartingRow;
 		String rangeRicerca = sheetNameDataAnalysis+"!A"+indexStartingRow+":D"+(indexStartingRow+sheetRows.size()-1);
     	for (AnagraficaGiocatoreRidottaRow sheetRow: sheetRows){
-			List<Object> rigaRicerca = Arrays.asList(new Object[]{sheetRow.getNome().trim(), sheetRow.getCognome().trim(), sheetRow.getEmail().trim(), getQueryAnagraficaRidotta(numeroRiga)});
+			//List<Object> rigaRicerca = Arrays.asList(new Object[]{sheetRow.getNome().trim(), sheetRow.getCognome().trim(), sheetRow.getEmail().trim(), getQueryAnagraficaRidotta(numeroRiga)});
+			List<Object> rigaRicerca = Arrays.asList(new Object[]{sheetRow.getNome().trim(), sheetRow.getCognome().trim(), sheetRow.getDataDiNascita().trim(), getQueryAnagraficaRidotta(numeroRiga)});
 			values.add(rigaRicerca);
 			numeroRiga++;
     	}

@@ -7,11 +7,16 @@ public class AnagraficaGiocatoreRidottaRow extends AbstractSheetRow{
 	
 	public static final String SHEET_ANAGRAFICA_NAME 	= "ANAGRAFICA";
 	public static final String SHEET_DATA_ANALYSIS_NAME = "DATA_ANALYSIS";
+	
+	public static final String NOME_ANONIMO = "ANONIMO";
+	public static final String COGNOME_ANONIMO = "ANONIMO";
+	public static final String DATA_NASCITA_ANONIMO = "01/01/2019";
 
 	private Integer id;
 	private String nome;
 	private String cognome;
-	private String email;
+	//private String email;
+	private String dataDiNascita;
 	private String updateTime;
 	
 	static class ColPosition{
@@ -19,7 +24,8 @@ public class AnagraficaGiocatoreRidottaRow extends AbstractSheetRow{
 		public static final Integer ID 					= 0;
 		public static final Integer NOME 				= 1;
 		public static final Integer COGNOME 			= 2;
-		public static final Integer E_MAIL		 		= 3;
+		//public static final Integer E_MAIL		 		= 3;
+		public static final Integer DATA_DI_NASCITA		= 3;
 		public static final Integer UPDATE_TIME 		= 4;
 	}
 	
@@ -31,7 +37,8 @@ public class AnagraficaGiocatoreRidottaRow extends AbstractSheetRow{
 		List<Integer> keyCols = new ArrayList<Integer>();
 		keyCols.add(ColPosition.NOME);
 		keyCols.add(ColPosition.COGNOME);
-		keyCols.add(ColPosition.E_MAIL);
+		//keyCols.add(ColPosition.E_MAIL);
+		keyCols.add(ColPosition.DATA_DI_NASCITA);
 		return keyCols;
 	}
 
@@ -40,7 +47,8 @@ public class AnagraficaGiocatoreRidottaRow extends AbstractSheetRow{
 		if (id != null) data.set(ColPosition.ID, id);
 		if (nome != null) data.set(ColPosition.NOME, nome.trim());
 		if (cognome != null) data.set(ColPosition.COGNOME, cognome.trim());
-		if (email != null) data.set(ColPosition.E_MAIL, email.trim());
+		//if (email != null) data.set(ColPosition.E_MAIL, email.trim());
+		if (dataDiNascita != null) data.set(ColPosition.DATA_DI_NASCITA, dataDiNascita.trim());
 		if (updateTime != null) data.set(ColPosition.UPDATE_TIME, updateTime);
 		return data;
 	}
@@ -51,7 +59,8 @@ public class AnagraficaGiocatoreRidottaRow extends AbstractSheetRow{
 		id 				= Integer.valueOf((String)data.get(ColPosition.ID));
 		nome 			= (String) data.get(ColPosition.NOME);
 		cognome 		= (String) data.get(ColPosition.COGNOME);
-		email	 		= (String) data.get(ColPosition.E_MAIL);
+		//email	 		= (String) data.get(ColPosition.E_MAIL);
+		dataDiNascita	= (String) data.get(ColPosition.DATA_DI_NASCITA);
 		updateTime		= (String) data.get(ColPosition.UPDATE_TIME);
 	}
 
@@ -86,14 +95,22 @@ public class AnagraficaGiocatoreRidottaRow extends AbstractSheetRow{
 	}
 
 
-	public String getEmail() {
-		return email;
+	public String getDataDiNascita() {
+		return dataDiNascita;
 	}
 
-
-	public void setEmail(String email) {
-		this.email = email;
+	public void setDataDiNascita(String dataDiNascita) {
+		this.dataDiNascita = dataDiNascita;
 	}
+
+//	public String getEmail() {
+//		return email;
+//	}
+//
+//
+//	public void setEmail(String email) {
+//		this.email = email;
+//	}
 
 	public String getUpdateTime() {
 		return updateTime;

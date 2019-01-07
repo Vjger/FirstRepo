@@ -36,6 +36,7 @@ import it.desimone.risiko.torneo.utils.MatchAnalyzer.MatchGrids;
 import it.desimone.risiko.torneo.utils.RegioniLoader;
 import it.desimone.risiko.torneo.utils.TipoTorneo;
 import it.desimone.risiko.torneo.utils.TorneiUtils;
+import it.desimone.utils.DateUtils;
 import it.desimone.utils.MyException;
 import it.desimone.utils.MyLogger;
 
@@ -46,6 +47,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -396,7 +398,11 @@ public class ExcelAccess{
 		String nick = determinaValoreCella(row, posizioneNick);
 		Date dataDiNascita = null;
 		try{
-			dataDiNascita = row.getCell(posizioneDataDiNascita).getDateCellValue();
+			Cell cellaDataDiNascita   = row.getCell(posizioneDataDiNascita);
+			if (cellaDataDiNascita != null){
+				dataDiNascita = cellaDataDiNascita.getDateCellValue();
+				dataDiNascita = DateUtils.normalizeDate(dataDiNascita);
+			}
 		}catch(IllegalStateException ise){
 			MyLogger.getLogger().severe("Errore nel parsing della data di nascita a riga "+(row.getRowNum()+1)+" della scheda "+SCHEDA_ISCRITTI+": "+ ise.getMessage());
 			throw new MyException(ise,"Errore di formato della data di nascita a riga "+(row.getRowNum()+1)+" della scheda "+SCHEDA_ISCRITTI);
