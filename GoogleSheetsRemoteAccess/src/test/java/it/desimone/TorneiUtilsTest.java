@@ -11,7 +11,7 @@ public class TorneiUtilsTest {
 		MyLogger.setConsoleLogLevel(Level.INFO);
 		//TorneiUtils.deleteTorneo("20171120 - ROMA [Il Gufo]");
 
-		TorneiUtils.mergePlayer(12, 71);
+		TorneiUtils.mergePlayer(12, 71, "2018");
 	}
 
 }

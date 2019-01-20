@@ -5,8 +5,8 @@ import it.desimone.risiko.torneo.dto.GiocatoreDTO;
 import it.desimone.risiko.torneo.dto.Partita;
 import it.desimone.risiko.torneo.dto.SchedaClassifica;
 import it.desimone.risiko.torneo.dto.SchedaClassifica.RigaClassifica;
-import it.desimone.risiko.torneo.dto.SchedaTorneo.TipoTorneo;
 import it.desimone.risiko.torneo.dto.SchedaTorneo;
+import it.desimone.risiko.torneo.dto.SchedaTorneo.TipoTorneo;
 import it.desimone.risiko.torneo.dto.SchedaTurno;
 import it.desimone.utils.MyException;
 import it.desimone.utils.MyLogger;
@@ -20,8 +20,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-
-import javax.print.attribute.standard.Severity;
 
 public class ExcelValidator {
 
@@ -121,7 +119,7 @@ public class ExcelValidator {
 	
 	public ExcelValidatorData validaFoglioExcel(){
 		
-		ExcelValidatorData excelValidatorData = null;
+		ExcelValidatorData excelValidatorData = new ExcelValidatorData();
 		List<ExcelValidatorMessages> result = new ArrayList<ExcelValidatorMessages>();
 		
 		try{
@@ -154,7 +152,6 @@ public class ExcelValidator {
 		}
 		
 		if (result != null && !result.isEmpty()){
-			excelValidatorData = new ExcelValidatorData();
 			excelValidatorData.addMessages(result);
 		}
 		return excelValidatorData; /*result*/

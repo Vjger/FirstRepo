@@ -25,6 +25,7 @@ import it.desimone.utils.MyLogger;
 public class ExcelGSheetsBridge {
 
 	private static final DateFormat dfIdTorneo = new SimpleDateFormat("yyyyMMdd");
+	private static final DateFormat dfYearTorneo = new SimpleDateFormat("yyyy");
 	private static final DateFormat dfDateTorneo = new SimpleDateFormat("dd/MM/yyyy");
 	private static final DateFormat dfUpdateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 	
@@ -77,6 +78,16 @@ public class ExcelGSheetsBridge {
 		List<Date> dateTurni = torneo.getSchedaTorneo().getDataTurni();
 		if (organizzatore != null && dateTurni != null && !dateTurni.isEmpty()){
 			result = dfIdTorneo.format(dateTurni.get(0))+" - "+organizzatore;
+		}
+		return result;
+	}
+	
+	public static String obtainYearTorneo(Torneo torneo){
+		String result = null;
+		String organizzatore = torneo.getSchedaTorneo().getOrganizzatore();
+		List<Date> dateTurni = torneo.getSchedaTorneo().getDataTurni();
+		if (organizzatore != null && dateTurni != null && !dateTurni.isEmpty()){
+			result = dfYearTorneo.format(dateTurni.get(dateTurni.size() -1));
 		}
 		return result;
 	}

@@ -218,7 +218,7 @@ public class MatchAnalyzer {
 			//for (ClubDTO clubAvversario: scontriDiretti.keySet()){
 				Map.Entry<ClubDTO, Integer> entryScontri = iterScontriDiretti.next();
 				ClubDTO clubAvversario = entryScontri.getKey();
-				if (!club.equals(clubAvversario)){
+				if (club != null && !club.equals(clubAvversario)){
 					Integer numeroScontriClubVsClub = entryScontri.getValue();
 					if (!(numeroScontriClubVsClub > maxAvversari || numeroScontriClubVsClub < minAvversari)){
 						iterScontriDiretti.remove();

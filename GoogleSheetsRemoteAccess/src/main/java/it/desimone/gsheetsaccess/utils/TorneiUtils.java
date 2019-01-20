@@ -17,12 +17,12 @@ import java.util.List;
 
 public class TorneiUtils {
 
-	public static void mergePlayer(Integer idPlayerFrom, Integer idPlayerTo){
+	public static void mergePlayer(Integer idPlayerFrom, Integer idPlayerTo, String year){
 		MyLogger.getLogger().info("Inizio merge dati da giocatore con id ["+idPlayerFrom+"] a giocatore con id ["+idPlayerTo+"]");
 		
 		try {
-			String spreadSheetIdTornei = Configurator.getTorneiSheetId();
-			String spreadSheetAnagraficaRidotta = Configurator.getAnagraficaRidottaSheetId();
+			String spreadSheetIdTornei = Configurator.getTorneiSheetId(year);
+			String spreadSheetAnagraficaRidotta = Configurator.getAnagraficaRidottaSheetId(year);
 			ClassificheRow classificheRow = new ClassificheRow();
 			classificheRow.setIdGiocatore(idPlayerFrom);
 			List<SheetRow> righeClassificaGiocatore = GSheetsInterface.findClassificaRowsByIdGiocatore(spreadSheetIdTornei, classificheRow);
@@ -98,13 +98,13 @@ public class TorneiUtils {
 	}
 	
 		
-	public static void deleteTorneo(String idTorneo){
+	public static void deleteTorneo(String idTorneo, String year){
 		MyLogger.getLogger().info("INIZIO Cancellazione del torneo ["+idTorneo+"]");
 		
 		try {
-			deletePartiteTorneoRows(idTorneo);
-			deleteClassificaTorneoRows(idTorneo);
-			deleteTorneoRow(idTorneo);
+			deletePartiteTorneoRows(idTorneo, year);
+			deleteClassificaTorneoRows(idTorneo, year);
+			deleteTorneoRow(idTorneo, year);
 		} catch (IOException e) {
 			MyLogger.getLogger().severe("Errore accedendo ai dati del torneo ["+idTorneo+"] - "+e.getMessage());
 		}
@@ -112,9 +112,9 @@ public class TorneiUtils {
 		MyLogger.getLogger().info("FINE Cancellazione del torneo ["+idTorneo+"]");
 	}
 	
-	private static void deletePartiteTorneoRows(String idTorneo) throws IOException{
+	private static void deletePartiteTorneoRows(String idTorneo, String year) throws IOException{
 		MyLogger.getLogger().info("Inizio cancellazione righe partita del torneo ["+idTorneo+"]");
-		String spreadSheetIdTornei = Configurator.getTorneiSheetId();
+		String spreadSheetIdTornei = Configurator.getTorneiSheetId(year);
 		String sheetNamePartite = PartitaRow.SHEET_PARTITE_NAME;
 		
 		//Basta un oggetto: tanto l'id del torneo è sempre lo stesso.
@@ -128,9 +128,9 @@ public class TorneiUtils {
 		}
 	}
 	
-	private static void deleteClassificaTorneoRows(String idTorneo) throws IOException{
+	private static void deleteClassificaTorneoRows(String idTorneo, String year) throws IOException{
 		MyLogger.getLogger().info("Inizio cancellazione righe classifica del torneo ["+idTorneo+"]");
-		String spreadSheetIdTornei = Configurator.getTorneiSheetId();
+		String spreadSheetIdTornei = Configurator.getTorneiSheetId(year);
 		String sheetNameClassifiche = ClassificheRow.SHEET_CLASSIFICHE;
 		
 		ClassificheRow classificheRowDiRicerca = new ClassificheRow();
@@ -143,12 +143,12 @@ public class TorneiUtils {
 		}
 	}
 	
-	private static void deleteTorneoRow(String idTorneo) throws IOException{
+	private static void deleteTorneoRow(String idTorneo, String year) throws IOException{
 		MyLogger.getLogger().info("Inizio cancellazione riga del Torneo ["+idTorneo+"]");
 		TorneiRow torneoRow = new TorneiRow();
 		torneoRow.setIdTorneo(idTorneo);
 		
-		String spreadSheetIdTornei = Configurator.getTorneiSheetId();
+		String spreadSheetIdTornei = Configurator.getTorneiSheetId(year);
 		String sheetNameTornei = TorneiRow.SHEET_TORNEI_NAME;
 		Integer torneoRowFound = GSheetsInterface.findNumTorneoRowByIdTorneo(spreadSheetIdTornei, sheetNameTornei, torneoRow);
 		

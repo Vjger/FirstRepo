@@ -87,8 +87,8 @@ public class GSheetsReaderTest {
 	}
 	
 	private static void testInsertOrUpdateGiocatore2() throws IOException{
-		String spreadSheetIdAnagraficaRidotta 	= Configurator.getAnagraficaRidottaSheetId();
-		String spreadSheetIdTornei 				= Configurator.getTorneiSheetId();
+		String spreadSheetIdAnagraficaRidotta 	= Configurator.getAnagraficaRidottaSheetId("2018");
+		String spreadSheetIdTornei 				= Configurator.getTorneiSheetId("2018");
 		String sheetNameAnagraficaRidotta 		= AnagraficaGiocatoreRidottaRow.SHEET_ANAGRAFICA_NAME;
 		String sheetNameGiocatori 				= AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME;
 		
@@ -248,7 +248,7 @@ public class GSheetsReaderTest {
 		partitaRow.setPunteggioGiocatore5(40D);
 		partitaRow.setIdGiocatoreVincitore(1);
 		
-		String spreadSheetIdTornei = Configurator.getTorneiSheetId();
+		String spreadSheetIdTornei = Configurator.getTorneiSheetId("2018");
 		String sheetNamePartite = PartitaRow.SHEET_PARTITE_NAME;
 		List<Integer> partiteRowFound = GSheetsInterface.findNumPartiteRowsByIdTorneo(spreadSheetIdTornei, partitaRow);
 

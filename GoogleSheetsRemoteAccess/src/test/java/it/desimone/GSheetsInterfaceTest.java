@@ -18,7 +18,7 @@ public class GSheetsInterfaceTest extends TestCase {
 
 	public void testCercaPartiteGiocatore() throws IOException {
 		Integer idGiocatore = 1;
-		String spreadSheetIdTornei = Configurator.getTorneiSheetId();
+		String spreadSheetIdTornei = Configurator.getTorneiSheetId("2018");
 		PartitaRow row = new PartitaRow();
 		row.setIdGiocatoreVincitore(idGiocatore);
 		
@@ -27,7 +27,7 @@ public class GSheetsInterfaceTest extends TestCase {
 	
 	public void testCercaClassificheGiocatore() throws IOException {
 		Integer idGiocatore = 1;
-		String spreadSheetIdTornei = Configurator.getTorneiSheetId();
+		String spreadSheetIdTornei = Configurator.getTorneiSheetId("2018");
 		ClassificheRow row = new ClassificheRow();
 		row.setIdGiocatore(idGiocatore);
 		
@@ -37,7 +37,7 @@ public class GSheetsInterfaceTest extends TestCase {
 	
 	public void testLeggiSheetStringString() throws IOException {
 		GoogleSheetsAccess googleSheetsAccess = new GoogleSheetsAccess();
-		String spreadSheetIdTornei = Configurator.getTorneiSheetId();
+		String spreadSheetIdTornei = Configurator.getTorneiSheetId("2018");
 		String sheetNameAnagrafica = AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME;
 		
 		Long before = System.currentTimeMillis();
@@ -55,7 +55,7 @@ public class GSheetsInterfaceTest extends TestCase {
 
 	public void testLeggiSheetStringListOfString() throws IOException{
 		GoogleSheetsAccess googleSheetsAccess = new GoogleSheetsAccess();
-		String spreadSheetIdTornei = Configurator.getTorneiSheetId();
+		String spreadSheetIdTornei = Configurator.getTorneiSheetId("2018");
 		String sheetNameAnagrafica = AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME;
 		List<String> ranges = Collections.singletonList(sheetNameAnagrafica+"!A2:G");
 		
@@ -74,7 +74,7 @@ public class GSheetsInterfaceTest extends TestCase {
 
 	public void testFindRow() throws IOException {
 		GoogleSheetsAccess googleSheetsAccess = new GoogleSheetsAccess();
-		String spreadSheetIdTornei = Configurator.getTorneiSheetId();
+		String spreadSheetIdTornei = Configurator.getTorneiSheetId("2018");
 		String sheetNameAnagrafica = AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME;
 		List<String> ranges = Collections.singletonList(sheetNameAnagrafica+"!A2:G");
 		

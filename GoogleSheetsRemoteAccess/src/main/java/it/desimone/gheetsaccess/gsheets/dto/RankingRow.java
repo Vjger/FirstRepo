@@ -85,7 +85,7 @@ public class RankingRow extends AbstractSheetRow {
 		buffer.append(id);
 		buffer.append(";");
 		buffer.append("IMPORTRANGE(\"https://docs.google.com/spreadsheets/d/");
-		buffer.append(Configurator.getTorneiSheetId()+"\";");
+		buffer.append(Configurator.getTorneiSheetId("2019")+"\";");
 		buffer.append("\""+AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME);
 		buffer.append("!A:E\"); "+(AnagraficaGiocatoreRow.ColPosition.NOME+1)+"; FALSE);");
 		buffer.append("\" \";");
@@ -93,7 +93,7 @@ public class RankingRow extends AbstractSheetRow {
 		buffer.append(id);
 		buffer.append(";");
 		buffer.append("IMPORTRANGE(\"https://docs.google.com/spreadsheets/d/");
-		buffer.append(Configurator.getTorneiSheetId()+"\";");
+		buffer.append(Configurator.getTorneiSheetId("2019")+"\";");
 		buffer.append("\""+AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME);
 		buffer.append("!A:E\"); "+(AnagraficaGiocatoreRow.ColPosition.COGNOME+1)+"; FALSE);");
 		buffer.append(")");

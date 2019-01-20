@@ -36,8 +36,10 @@ public class RisiKoDataManager extends JFrame {
     private JButton buttonPublish = new JButton("Pubblica Tornei");
     private JButton buttonDelete = new JButton("Elimina Torneo");
     private JButton buttonClear = new JButton("Clear");
+    private JLabel annoDiRiferimentoLabel = new JLabel("Anno");
+    private JTextField annoRif = new JTextField(4);
     private JLabel torneoToDeleteLabel = new JLabel("ID Torneo");
-    private JTextField torneoToDelete = new JTextField(200);
+    private JTextField torneoToDelete = new JTextField(50);
     private JLabel mergeGiocatoreDaLabel = new JLabel("Merge giocatore ID");
     private JTextField idGiocatoreDa = new JTextField(30);
     private JLabel mergeGiocatoreALabel = new JLabel("in ID");
@@ -67,53 +69,60 @@ public class RisiKoDataManager extends JFrame {
         // creates the GUI
         setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
-        constraints.gridx = 0;
+        int gridXposition = 0;
+        constraints.gridx = gridXposition++;
         constraints.gridy = 0;
         constraints.insets = new Insets(10, 10, 10, 10);
         constraints.anchor = GridBagConstraints.WEST;
          
         add(buttonPublish, constraints);
 
-        constraints.gridx = 1;
+        constraints.gridx = gridXposition++;
+        add(annoDiRiferimentoLabel, constraints);
+        annoRif.setMinimumSize(new Dimension(40,25));
+        constraints.gridx = gridXposition++;
+        add(annoRif, constraints);
+        
+        constraints.gridx = gridXposition++;
         add(torneoToDeleteLabel, constraints);
         
         //torneoToDelete.setPreferredSize(new Dimension(150,30));
         torneoToDelete.setMinimumSize(new Dimension(140,25));
-        constraints.gridx = 2;
+        constraints.gridx = gridXposition++;
         add(torneoToDelete, constraints);
       
-        constraints.gridx = 3;
+        constraints.gridx = gridXposition++;
         add(buttonDelete, constraints);
         
-        constraints.gridx = 4;
+        constraints.gridx = gridXposition++;
         add(mergeGiocatoreDaLabel, constraints);
         
-        constraints.gridx = 5;
-        idGiocatoreDa.setMinimumSize(new Dimension(30,25));
+        constraints.gridx = gridXposition++;
+        idGiocatoreDa.setMinimumSize(new Dimension(40,25));
         add(idGiocatoreDa, constraints);
         
-        constraints.gridx = 6;
+        constraints.gridx = gridXposition++;
         add(mergeGiocatoreALabel, constraints);
         
-        constraints.gridx = 7;
-        idGiocatoreA.setMinimumSize(new Dimension(30,25));
+        constraints.gridx = gridXposition++;
+        idGiocatoreA.setMinimumSize(new Dimension(40,25));
         add(idGiocatoreA, constraints);
         
-        constraints.gridx = 8;
+        constraints.gridx = gridXposition++;
         add(buttonMergeGiocatore, constraints);
         
-        constraints.gridx = 9;
+        constraints.gridx = gridXposition++;
         add(buttonClear, constraints);
         
-        constraints.gridx = 10;
+        constraints.gridx = gridXposition++;
         add(switchEnvironment, constraints);
         
-        constraints.gridx = 11;
+        constraints.gridx = gridXposition++;
         add(environmentLabel, constraints);
         
         constraints.gridx = 0;
         constraints.gridy = 1;
-        constraints.gridwidth = 12;
+        constraints.gridwidth = 14;
         constraints.fill = GridBagConstraints.BOTH;
         constraints.weightx = 1.0;
         constraints.weighty = 1.0;
@@ -131,10 +140,13 @@ public class RisiKoDataManager extends JFrame {
         buttonDelete.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
             	String idTorneo = torneoToDelete.getText();
+            	String year = annoRif.getText();
             	if (idTorneo == null || idTorneo.trim().length() == 0){
             		JOptionPane.showMessageDialog(null, "Indicare l'id del Torneo da cancellare");
+            	}else if (year == null || year.trim().length() == 0){
+                	JOptionPane.showMessageDialog(null, "Indicare l'anno del Torneo da cancellare");
             	}else{
-            		deleteTorneo(idTorneo);
+            		deleteTorneo(idTorneo, year);
             	}
             }
         });
@@ -143,14 +155,17 @@ public class RisiKoDataManager extends JFrame {
             public void actionPerformed(ActionEvent evt) {
             	String idGiocatoreDaTxt = idGiocatoreDa.getText();
             	String idGiocatoreATxt = idGiocatoreA.getText();
+            	String year = annoRif.getText();
             	if (idGiocatoreDaTxt == null || idGiocatoreDaTxt.trim().length() == 0 || idGiocatoreATxt == null || idGiocatoreATxt.trim().length() == 0){
             		JOptionPane.showMessageDialog(null, "Indicare gli ID dei giocatori di partenza ed arrivo");
+            	}else if (year == null || year.trim().length() == 0){
+                	JOptionPane.showMessageDialog(null, "Indicare l'anno del Torneo su cui agire");
             	}else{
             		Integer idGiocatoreDaInt, idGiocatoreAInt;
             		try{
             			idGiocatoreDaInt = Integer.valueOf(idGiocatoreDaTxt);
             			idGiocatoreAInt = Integer.valueOf(idGiocatoreATxt);
-                		mergeGiocatore(idGiocatoreDaInt, idGiocatoreAInt);
+                		mergeGiocatore(idGiocatoreDaInt, idGiocatoreAInt, year);
             		}catch(Exception e){
             			JOptionPane.showMessageDialog(null, "ID dei giocatori di partenza e/o di arrivo non numerici");
             		}
@@ -161,7 +176,10 @@ public class RisiKoDataManager extends JFrame {
         // adds event handler for button Clear
         buttonClear.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                // clears the text area
+            	idGiocatoreDa.setText(null);
+            	idGiocatoreA.setText(null);
+            	torneoToDelete.setText(null);
+            	// clears the text area
                 try {
                     textArea.getDocument().remove(0, textArea.getDocument().getLength());
                 } catch (BadLocationException ex) {
@@ -212,21 +230,21 @@ public class RisiKoDataManager extends JFrame {
         thread.start();
     }
     
-    private void deleteTorneo(final String idTorneo) {
+    private void deleteTorneo(final String idTorneo, final String year) {
         Thread thread = new Thread(new Runnable() {
             public void run() {
             	MyLogger.setConsoleLogLevel(Level.INFO);
-            	TorneiUtils.deleteTorneo(idTorneo);
+            	TorneiUtils.deleteTorneo(idTorneo, year);
             }
         });
         thread.start();
     }
     
-    private void mergeGiocatore(final Integer idGiocatoreDa, final Integer idGiocatoreA) {
+    private void mergeGiocatore(final Integer idGiocatoreDa, final Integer idGiocatoreA, final String year) {
         Thread thread = new Thread(new Runnable() {
             public void run() {
             	MyLogger.setConsoleLogLevel(Level.INFO);
-            	TorneiUtils.mergePlayer(idGiocatoreDa, idGiocatoreA);            }
+            	TorneiUtils.mergePlayer(idGiocatoreDa, idGiocatoreA, year);            }
         });
         thread.start();
     }

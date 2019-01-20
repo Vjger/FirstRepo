@@ -3,7 +3,9 @@ package it.desimone.gsheetsaccess.common;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import com.google.api.services.drive.model.File;
 
@@ -58,8 +60,9 @@ public class GDriveUtils {
 		MyLogger.getLogger().info("INIZIO backup");
 		
 		try {
-			String spreadSheetIdTornei = Configurator.getTorneiSheetId();
-			String spreadSheetIdAnagrafiche = Configurator.getAnagraficaRidottaSheetId();
+			String thisYear = Integer.toString(GregorianCalendar.getInstance().get(Calendar.YEAR));
+			String spreadSheetIdTornei = Configurator.getTorneiSheetId(thisYear);
+			String spreadSheetIdAnagrafiche = Configurator.getAnagraficaRidottaSheetId(thisYear);
 			String backupsFolderId = Configurator.getBackupsFolderId();
 			String suffix = "_"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 			GoogleDriveAccess googleDriveAccess = new GoogleDriveAccess();

@@ -238,7 +238,7 @@ public class ExcelAccess{
 				try{
 					giocatore = getGiocatoreFromRow(row);
 				}catch(Exception me){
-					throw new MyException(me,"Riga n° "+(i+1)+" della scheda "+SCHEDA_ISCRITTI);
+					throw new MyException(me," Riga n° "+(i+1)+" della scheda "+SCHEDA_ISCRITTI);
 				}
 				if (giocatore != null && giocatore.getId() != null && giocatore.getId().equals(id)){
 					return giocatore;
@@ -278,6 +278,12 @@ public class ExcelAccess{
 					if (cellaDataTurno != null){
 						try{
 							Date dataTurno = cellaDataTurno.getDateCellValue();
+							try{
+								DateUtils.formatDate(dataTurno);
+							}catch(IllegalArgumentException iae){
+								MyLogger.getLogger().severe("Errore nel parsing della data del turno "+(indexDate -6)+" della scheda "+SCHEDA_TORNEO+": "+ iae.getMessage());
+								throw new MyException("Errore di formato della data del turno "+(indexDate -6)+" della scheda "+SCHEDA_TORNEO+": impostarla nel formato dd/mm/aaaa");
+							}
 							if (dataTurno != null){
 								dataTurni.add(dataTurno);
 							}
@@ -401,11 +407,19 @@ public class ExcelAccess{
 			Cell cellaDataDiNascita   = row.getCell(posizioneDataDiNascita);
 			if (cellaDataDiNascita != null){
 				dataDiNascita = cellaDataDiNascita.getDateCellValue();
-				dataDiNascita = DateUtils.normalizeDate(dataDiNascita);
+				if (dataDiNascita != null){
+					try{
+						DateUtils.formatDate(dataDiNascita);
+					}catch(IllegalArgumentException iae){
+						MyLogger.getLogger().severe("Errore nel parsing della data di nascita a riga "+(row.getRowNum()+1)+" della scheda "+SCHEDA_ISCRITTI+": "+ iae.getMessage());
+						throw new MyException("Errore di formato della data di nascita a riga "+(row.getRowNum()+1)+" della scheda "+SCHEDA_ISCRITTI+": impostarla nel formato dd/mm/aaaa");
+					}
+					dataDiNascita = DateUtils.normalizeDate(dataDiNascita);
+				}
 			}
 		}catch(IllegalStateException ise){
 			MyLogger.getLogger().severe("Errore nel parsing della data di nascita a riga "+(row.getRowNum()+1)+" della scheda "+SCHEDA_ISCRITTI+": "+ ise.getMessage());
-			throw new MyException(ise,"Errore di formato della data di nascita a riga "+(row.getRowNum()+1)+" della scheda "+SCHEDA_ISCRITTI);
+			throw new MyException(ise,"Errore di formato della data di nascita a riga "+(row.getRowNum()+1)+" della scheda "+SCHEDA_ISCRITTI+": impostarla nel formato dd/mm/aaaa");
 		}
 		String regione = determinaValoreCella(row, posizioneRegione);
 		String club = determinaValoreCella(row, posizioneClub);

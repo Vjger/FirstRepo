@@ -141,9 +141,9 @@ public class RankingCalculator {
 	private static Map<Integer, List<ElementoRanking>> mapGiocatoreVSTornei() throws IOException{
 		
 		Map<Integer, List<ElementoRanking>> torneiPerGiocatore = new HashMap<Integer, List<ElementoRanking>>();
-		
-		List<TorneiRow> tornei = getAllTornei();
-		List<ClassificheRow> classifiche = getAllClassifiche();
+		String year = "2019";
+		List<TorneiRow> tornei = getAllTornei(year);
+		List<ClassificheRow> classifiche = getAllClassifiche(year);
 		
 		for (ClassificheRow classificaRow: classifiche){
 			Integer idGiocatore = classificaRow.getIdGiocatore();
@@ -171,9 +171,9 @@ public class RankingCalculator {
 		MyLogger.getLogger().entering("RankingCalculator", "getScoreGiocatori");
 		
 		List<ScoreGiocatore> torneiPerGiocatore = new ArrayList<ScoreGiocatore>();
-		
-		List<TorneiRow> tornei = getAllTornei();
-		List<ClassificheRow> classifiche = getAllClassifiche();
+		String year = "2019";
+		List<TorneiRow> tornei = getAllTornei(year);
+		List<ClassificheRow> classifiche = getAllClassifiche(year);
 		
 		TorneiRow torneoRowSonda = new TorneiRow();
 		for (ClassificheRow classificaRow: classifiche){
@@ -200,14 +200,14 @@ public class RankingCalculator {
 		return torneiPerGiocatore;
 	}
 	
-	private static List<ClassificheRow> getAllClassifiche() throws IOException{
-		String spreadSheetIdTornei = Configurator.getTorneiSheetId();
+	private static List<ClassificheRow> getAllClassifiche(String year) throws IOException{
+		String spreadSheetIdTornei = Configurator.getTorneiSheetId(year);
 		List<ClassificheRow> result = GSheetsInterface.getAllRows(spreadSheetIdTornei, SheetRowType.Classifica);	
 		return result;
 	}
 	
-	private static List<TorneiRow> getAllTornei() throws IOException{
-		String spreadSheetIdTornei = Configurator.getTorneiSheetId();
+	private static List<TorneiRow> getAllTornei(String year) throws IOException{
+		String spreadSheetIdTornei = Configurator.getTorneiSheetId(year);
 		List<TorneiRow> result = GSheetsInterface.getAllRows(spreadSheetIdTornei, SheetRowType.Torneo);	
 		return result;
 	}

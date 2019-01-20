@@ -107,7 +107,8 @@ public class ReportPublisherLegacy {
 	private static void insertOrUpdateTorneo(Torneo torneo) throws IOException{
 		TorneiRow torneoRow = ExcelGSheetsBridge.getTorneoRowByTorneo(torneo);
 		
-		String spreadSheetIdTornei = Configurator.getTorneiSheetId();
+		String year = ExcelGSheetsBridge.obtainYearTorneo(torneo);
+		String spreadSheetIdTornei = Configurator.getTorneiSheetId(year);
 		String sheetNameTornei = TorneiRow.SHEET_TORNEI_NAME;
 		SheetRow torneoRowFound = GSheetsInterface.findSheetRowByKey(spreadSheetIdTornei, sheetNameTornei, torneoRow);
 		
@@ -126,8 +127,9 @@ public class ReportPublisherLegacy {
 		Map<Integer, Integer> mappaIdExcelVsIdGSheets = null;
 		SheetRow[][] anagrafiche = ExcelGSheetsBridge.getAnagraficheRowByTorneo(torneo);
 
-		String spreadSheetIdAnagraficaRidotta 	= Configurator.getAnagraficaRidottaSheetId();
-		String spreadSheetIdTornei 				= Configurator.getTorneiSheetId();
+		String year = ExcelGSheetsBridge.obtainYearTorneo(torneo);
+		String spreadSheetIdAnagraficaRidotta 	= Configurator.getAnagraficaRidottaSheetId(year);
+		String spreadSheetIdTornei 				= Configurator.getTorneiSheetId(year);
 		String sheetNameAnagraficaRidotta 		= AnagraficaGiocatoreRidottaRow.SHEET_ANAGRAFICA_NAME;
 		String sheetNameGiocatori 				= AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME;
 		
@@ -194,7 +196,8 @@ public class ReportPublisherLegacy {
 	private static void deleteAndInsertPartita(Torneo torneo, Map<Integer, Integer> mappaIdExcelVsIdGSheets) throws IOException{
 		List<SheetRow> partiteRow = ExcelGSheetsBridge.getPartiteRowByTorneo(torneo, mappaIdExcelVsIdGSheets);
 		
-		String spreadSheetIdTornei = Configurator.getTorneiSheetId();
+		String year = ExcelGSheetsBridge.obtainYearTorneo(torneo);
+		String spreadSheetIdTornei = Configurator.getTorneiSheetId(year);
 		String sheetNamePartite = PartitaRow.SHEET_PARTITE_NAME;
 		
 		//Basta un oggetto: tanto l'id del torneo è sempre lo stesso.
@@ -217,7 +220,8 @@ public class ReportPublisherLegacy {
 		List<SheetRow> partiteRow = ExcelGSheetsBridge.getPartiteRowByTorneo(torneo, mappaIdExcelVsIdGSheets);
 		List<SheetRow> classificaRows = ExcelGSheetsBridge.getClassificaRowsByTorneo(torneo, mappaIdExcelVsIdGSheets, partiteRow);
 		
-		String spreadSheetIdTornei = Configurator.getTorneiSheetId();
+		String year = ExcelGSheetsBridge.obtainYearTorneo(torneo);
+		String spreadSheetIdTornei = Configurator.getTorneiSheetId(year);
 		String sheetNameClassifiche = ClassificheRow.SHEET_CLASSIFICHE;
 		
 		ClassificheRow classificheRowDiRicerca = new ClassificheRow();

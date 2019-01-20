@@ -26,7 +26,7 @@ public class GDriveUtilsTest {
 	
 	public static void testRestore(){
 		try {
-			String anagraficaRidottaId = Configurator.getAnagraficaRidottaSheetId();
+			String anagraficaRidottaId = Configurator.getAnagraficaRidottaSheetId("2018");
 			String backupAnagraficaRidottaId = "1AhXrPvb32l6Lt04AjaG2nqvaoMoOvyONszhb3H0Xc8o";
 			GDriveUtils.restore(anagraficaRidottaId, backupAnagraficaRidottaId);
 		} catch (Exception e) {

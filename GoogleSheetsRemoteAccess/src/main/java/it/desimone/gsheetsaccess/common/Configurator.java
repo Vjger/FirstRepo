@@ -71,15 +71,15 @@ private static Environment environment;
 		return folderId;
 	}
 	
-	public static String getAnagraficaRidottaSheetId(){
-		String folderId = ((String)properties.get("spreadSheetIdAnagraficaRidotta"));
+	public static String getAnagraficaRidottaSheetId(String year){
+		String folderId = ((String)properties.get("spreadSheetIdAnagraficaRidotta"+year));
 		if (folderId != null) folderId = folderId.trim();
 		MyLogger.getLogger().finest("ID Anagrafica Ridotta:<<"+folderId+">>");
 		return folderId;
 	}
 
-	public static String getTorneiSheetId(){
-		String folderId = ((String)properties.get("spreadSheetIdTornei"));
+	public static String getTorneiSheetId(String year){
+		String folderId = ((String)properties.get("spreadSheetIdTornei"+year));
 		if (folderId != null) folderId = folderId.trim();
 		MyLogger.getLogger().finest("ID Tornei:<<"+folderId+">>");
 		return folderId;

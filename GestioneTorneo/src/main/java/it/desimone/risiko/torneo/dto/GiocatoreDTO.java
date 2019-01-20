@@ -1,6 +1,10 @@
 package it.desimone.risiko.torneo.dto;
 
+import it.desimone.utils.DateUtils;
+
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class GiocatoreDTO implements Comparable{
 	
@@ -8,10 +12,19 @@ public class GiocatoreDTO implements Comparable{
 	public static final GiocatoreDTO ANONIMO;
 
 	static{
+		Calendar cal = GregorianCalendar.getInstance();
+		cal.set(Calendar.DAY_OF_MONTH, 1);
+		cal.set(Calendar.MONTH, Calendar.JANUARY);
+		cal.set(Calendar.YEAR, 2019);
+		Date birthGhostDate = cal.getTime();
+		birthGhostDate = DateUtils.normalizeDate(birthGhostDate);
+		
 		FITTIZIO = new GiocatoreDTO();
 		FITTIZIO.setId(-1);
 		FITTIZIO.setNome("The");
 		FITTIZIO.setCognome("Ghost");
+		FITTIZIO.setDataDiNascita(birthGhostDate);
+		
 		//FITTIZIO.setEmail("TheGhost@theghost.it");
 		
 		ANONIMO = new GiocatoreDTO();
