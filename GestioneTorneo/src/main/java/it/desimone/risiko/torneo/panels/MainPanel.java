@@ -172,8 +172,8 @@ public class MainPanel extends JFrame implements ActionListener {
 					excelAccess.scriviClassifica(getTipoTorneo());
 					if (getTipoTorneo() == TipoTorneo.TorneoASquadre){
 						excelAccess.scriviClassificaASquadre(getTipoTorneo());
+						//excelAccess.scriviStatistiche();
 					}
-					//excelAccess.scriviStatistiche();
 					excelAccess.closeFileExcel();
 					MyLogger.getLogger().info("***  Fine calcolo classifica per tipo Torneo "+getTipoTorneo()+" versione "+HelpMenu.VERSIONE+" ***");
 					String message = "Fine Elaborazione"; // \n"+Logger.getLog();
@@ -203,7 +203,9 @@ public class MainPanel extends JFrame implements ActionListener {
 						pdfUtils.stampaPartiteRisiko(partiteTurno, String.valueOf(numeroTurno));
 						pdfUtils.closeDocument();
 					}
-					//excelAccess.scriviStatistiche();
+					if (getTipoTorneo() == TipoTorneo.TorneoASquadre){
+						excelAccess.scriviStatistiche();
+					}
 					excelAccess.scriviLog(MyLogger.getListLogStream());
 					excelAccess.closeFileExcel();
 					String message = "Fine Elaborazione\n";

@@ -295,19 +295,44 @@ public class GSheetsInterface {
 
     	String sheetNameDataAnalysis = AnagraficaGiocatoreRidottaRow.SHEET_DATA_ANALYSIS_NAME;
     	
-		List<List<Object>> values = new ArrayList<List<Object>>();
+//		List<List<Object>> values = new ArrayList<List<Object>>();
     	int indexStartingRow = 8;
-    	int numeroRiga = indexStartingRow;
+//    	int numeroRiga = indexStartingRow;
 		String rangeRicerca = sheetNameDataAnalysis+"!A"+indexStartingRow+":D"+(indexStartingRow+sheetRows.size()-1);
+//    	for (AnagraficaGiocatoreRidottaRow sheetRow: sheetRows){
+//			//List<Object> rigaRicerca = Arrays.asList(new Object[]{sheetRow.getNome().trim(), sheetRow.getCognome().trim(), sheetRow.getEmail().trim(), getQueryAnagraficaRidotta(numeroRiga)});
+//			List<Object> rigaRicerca = Arrays.asList(new Object[]{sheetRow.getNome().trim(), sheetRow.getCognome().trim(), sheetRow.getDataDiNascita().trim(), getQueryAnagraficaRidotta(numeroRiga)});
+//			values.add(rigaRicerca);
+//			numeroRiga++;
+//    	}
+//		data.add(new ValueRange().setRange(rangeRicerca).setValues(values));
+//    	Integer updatedRows = getGoogleSheetsInstance().updateRows(spreadSheetId, data, true);
+		
+    	//Parte anagrafica
+		List<List<Object>> valuesA = new ArrayList<List<Object>>();
+		String rangeRicercaA = sheetNameDataAnalysis+"!A"+indexStartingRow+":C"+(indexStartingRow+sheetRows.size()-1);
     	for (AnagraficaGiocatoreRidottaRow sheetRow: sheetRows){
 			//List<Object> rigaRicerca = Arrays.asList(new Object[]{sheetRow.getNome().trim(), sheetRow.getCognome().trim(), sheetRow.getEmail().trim(), getQueryAnagraficaRidotta(numeroRiga)});
-			List<Object> rigaRicerca = Arrays.asList(new Object[]{sheetRow.getNome().trim(), sheetRow.getCognome().trim(), sheetRow.getDataDiNascita().trim(), getQueryAnagraficaRidotta(numeroRiga)});
-			values.add(rigaRicerca);
+			List<Object> rigaRicerca = Arrays.asList(new Object[]{sheetRow.getNome().trim(), sheetRow.getCognome().trim(), sheetRow.getDataDiNascita().trim()});
+			valuesA.add(rigaRicerca);
+    	}
+		data.add(new ValueRange().setRange(rangeRicercaA).setValues(valuesA));
+    	Integer updatedRowsA = getGoogleSheetsInstance().updateRows(spreadSheetId, data, false);
+    	
+    	//Parte formule
+		List<List<Object>> valuesF = new ArrayList<List<Object>>();
+    	int numeroRiga = indexStartingRow;
+		String rangeRicercaF = sheetNameDataAnalysis+"!D"+indexStartingRow+":D"+(indexStartingRow+sheetRows.size()-1);
+    	for (AnagraficaGiocatoreRidottaRow sheetRow: sheetRows){
+			//List<Object> rigaRicerca = Arrays.asList(new Object[]{sheetRow.getNome().trim(), sheetRow.getCognome().trim(), sheetRow.getEmail().trim(), getQueryAnagraficaRidotta(numeroRiga)});
+			List<Object> rigaRicerca = Arrays.asList(new Object[]{getQueryAnagraficaRidotta(numeroRiga)});
+			valuesF.add(rigaRicerca);
 			numeroRiga++;
     	}
-		data.add(new ValueRange().setRange(rangeRicerca).setValues(values));
-    	Integer updatedRows = getGoogleSheetsInstance().updateRows(spreadSheetId, data, true);
-		
+    	data.clear();
+		data.add(new ValueRange().setRange(rangeRicercaF).setValues(valuesF));
+    	Integer updatedRowsF = getGoogleSheetsInstance().updateRows(spreadSheetId, data, true);
+    	
     	String range = AnagraficaGiocatoreRidottaRow.SHEET_DATA_ANALYSIS_NAME+"!"+"D"+indexStartingRow+":D"+(indexStartingRow+sheetRows.size()-1);
 		List<String> ranges = Collections.singletonList(range);
 		
