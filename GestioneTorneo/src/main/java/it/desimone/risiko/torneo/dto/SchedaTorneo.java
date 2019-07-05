@@ -15,7 +15,8 @@ public class SchedaTorneo {
 	private List<Date> dataTurni;
 	
 	public enum TipoTorneo{
-		  RADUNO_NAZIONALE("Raduno Nazionale")
+		  CAMPIONATO_NAZIONALE("Campionato Nazionale")
+		, RADUNO_NAZIONALE("Raduno Nazionale")
 		, MASTER("Torneo Master")
 		, OPEN("Torneo Open")
 		, CAMPIONATO("Campionato Periodico")

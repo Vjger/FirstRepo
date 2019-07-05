@@ -121,6 +121,11 @@ public class AnagraficaGiocatoreRidottaRow extends AbstractSheetRow{
 		this.updateTime = updateTime;
 	}
 
-	
+	@Override
+	public String toString() {
+		return "[id=" + id + ", nome=" + nome
+				+ ", cognome=" + cognome + ", dataDiNascita=" + dataDiNascita
+				+ "]";
+	}
 	
 }

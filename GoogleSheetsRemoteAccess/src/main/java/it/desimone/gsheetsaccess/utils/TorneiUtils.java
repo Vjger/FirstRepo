@@ -5,6 +5,7 @@ import it.desimone.gheetsaccess.gsheets.dto.AnagraficaGiocatoreRow;
 import it.desimone.gheetsaccess.gsheets.dto.ClassificheRow;
 import it.desimone.gheetsaccess.gsheets.dto.PartitaRow;
 import it.desimone.gheetsaccess.gsheets.dto.SheetRow;
+import it.desimone.gheetsaccess.gsheets.dto.TabellinoGiocatore;
 import it.desimone.gheetsaccess.gsheets.dto.TorneiRow;
 import it.desimone.gsheetsaccess.common.Configurator;
 import it.desimone.gsheetsaccess.gsheets.facade.GSheetsInterface;
@@ -17,6 +18,41 @@ import java.util.List;
 
 public class TorneiUtils {
 
+	
+	public static TabellinoGiocatore[] getTabelliniPlayer(Integer idPlayerFrom, Integer idPlayerTo, String year){
+		MyLogger.getLogger().info("Inizio estrazione tabellini giocatore con id ["+idPlayerFrom+"] e id ["+idPlayerTo+"] per l'anno "+year);
+		TabellinoGiocatore tabellinoGiocatoreFrom = getTabellinoPlayer(idPlayerFrom, year);
+		TabellinoGiocatore tabellinoGiocatoreTo = getTabellinoPlayer(idPlayerTo, year);
+		
+		return new TabellinoGiocatore[]{tabellinoGiocatoreFrom, tabellinoGiocatoreTo};
+	}
+	
+	private static TabellinoGiocatore getTabellinoPlayer(Integer idPlayer, String year){
+		MyLogger.getLogger().info("Inizio estrazione tabellini giocatore con id ["+idPlayer+"] per l'anno "+year);
+		TabellinoGiocatore tabellinoGiocatore = null;
+		
+		try {
+			String spreadSheetIdTornei = Configurator.getTorneiSheetId(year);
+			String spreadSheetAnagraficaRidotta = Configurator.getAnagraficaRidottaSheetId(year);
+
+			PartitaRow partitaRow = new PartitaRow();
+			partitaRow.setIdGiocatoreVincitore(idPlayer);
+			List<SheetRow> righePartiteGiocatore = GSheetsInterface.findPartiteRowsByIdGiocatore(spreadSheetIdTornei, partitaRow);
+			MyLogger.getLogger().info("Estratte "+(righePartiteGiocatore==null?0:righePartiteGiocatore.size())+" righe Partita per il giocatore con ID ["+idPlayer+"]");
+
+			AnagraficaGiocatoreRidottaRow anagraficaGiocatoreRow = new AnagraficaGiocatoreRidottaRow();
+			anagraficaGiocatoreRow.setId(idPlayer);
+			List<AnagraficaGiocatoreRidottaRow> anagraficheRidotteRowFound = GSheetsInterface.findAnagraficheRidotteById2(spreadSheetAnagraficaRidotta, Collections.singletonList(anagraficaGiocatoreRow));
+			
+			tabellinoGiocatore = new TabellinoGiocatore((AnagraficaGiocatoreRidottaRow) ((anagraficheRidotteRowFound != null && !anagraficheRidotteRowFound.isEmpty())?anagraficheRidotteRowFound.get(0):null), righePartiteGiocatore);
+			
+		}catch(Exception e){
+			MyLogger.getLogger().severe("Errore accedendo ai dati "+e.getMessage());
+		}
+		
+		return tabellinoGiocatore;
+	}
+	
 	public static void mergePlayer(Integer idPlayerFrom, Integer idPlayerTo, String year){
 		MyLogger.getLogger().info("Inizio merge dati da giocatore con id ["+idPlayerFrom+"] a giocatore con id ["+idPlayerTo+"]");
 		

@@ -1,5 +1,7 @@
 package it.desimone.gsheetsaccess.ui;
 
+import it.desimone.gheetsaccess.gsheets.dto.PartitaRow;
+import it.desimone.gheetsaccess.gsheets.dto.TabellinoGiocatore;
 import it.desimone.gsheetsaccess.ReportPublisher;
 import it.desimone.gsheetsaccess.common.Configurator;
 import it.desimone.gsheetsaccess.utils.TorneiUtils;
@@ -13,6 +15,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.PrintStream;
 import java.util.Date;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Level;
 
 import javax.swing.JButton;
@@ -165,7 +169,12 @@ public class RisiKoDataManager extends JFrame {
             		try{
             			idGiocatoreDaInt = Integer.valueOf(idGiocatoreDaTxt);
             			idGiocatoreAInt = Integer.valueOf(idGiocatoreATxt);
-                		mergeGiocatore(idGiocatoreDaInt, idGiocatoreAInt, year);
+                		//mergeGiocatore(idGiocatoreDaInt, idGiocatoreAInt, year);
+            			try{
+            				confirmMerge(idGiocatoreDaInt, idGiocatoreAInt, year);
+            			}catch(Exception e){
+            				JOptionPane.showMessageDialog(null, e.getClass().getName()+" "+e.getMessage());
+            			}
             		}catch(Exception e){
             			JOptionPane.showMessageDialog(null, "ID dei giocatori di partenza e/o di arrivo non numerici");
             		}
@@ -238,6 +247,39 @@ public class RisiKoDataManager extends JFrame {
             }
         });
         thread.start();
+    }
+    
+    private void confirmMerge(final Integer idGiocatoreDa, final Integer idGiocatoreA, final String year) {
+        MyLogger.setConsoleLogLevel(Level.INFO);
+        TabellinoGiocatore[] torneiGiocati = TorneiUtils.getTabelliniPlayer(idGiocatoreDa, idGiocatoreA, year); 
+        StringBuilder buffer = new StringBuilder();
+        buffer.append("Il giocatore "+torneiGiocati[0].getAnagraficaRidottaGiocatoreRowFrom()+" ha giocato i seguenti tornei \n");
+        Set<String> torneiFrom = new TreeSet<String>();
+        if (torneiGiocati[0].getPartiteGiocate() != null){
+	        for (PartitaRow partita: torneiGiocati[0].getPartiteGiocate()){
+	        	torneiFrom.add(partita.getIdTorneo());
+	        }
+	        for (String torneoFrom: torneiFrom){
+	        	buffer.append(torneoFrom+"\n");
+	        }
+        }
+        buffer.append("Il giocatore "+torneiGiocati[1].getAnagraficaRidottaGiocatoreRowFrom()+" ha giocato i seguenti tornei \n");
+        Set<String> torneiTo = new TreeSet<String>();
+        if (torneiGiocati[1].getPartiteGiocate() != null){
+	        for (PartitaRow partita: torneiGiocati[1].getPartiteGiocate()){
+	        	torneiTo.add(partita.getIdTorneo());
+	        }
+	        for (String torneoTo: torneiTo){
+	        	buffer.append(torneoTo+"\n");
+	        }
+        }
+        buffer.append("\n Confermi il merge dei dati dal giocatore con id ["+idGiocatoreDa+"] a quello con id ["+idGiocatoreA+"]?");
+        
+        int response = JOptionPane.showConfirmDialog(null, buffer.toString(), "Conferma merge", JOptionPane.YES_NO_OPTION);
+        
+        if (response == JOptionPane.OK_OPTION){
+        	mergeGiocatore(idGiocatoreDa, idGiocatoreA, year);
+        }
     }
     
     private void mergeGiocatore(final Integer idGiocatoreDa, final Integer idGiocatoreA, final String year) {

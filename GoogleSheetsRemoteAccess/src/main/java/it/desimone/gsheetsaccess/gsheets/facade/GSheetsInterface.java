@@ -398,6 +398,68 @@ public class GSheetsInterface {
 		return sheetRows;
 	}
 	
+	
+	public static List<AnagraficaGiocatoreRidottaRow> findAnagraficheRidotteById2(String spreadSheetId, List<AnagraficaGiocatoreRidottaRow> sheetRows) throws IOException{
+    	List<ValueRange> data = new ArrayList<ValueRange>();
+
+    	String sheetNameDataAnalysis = AnagraficaGiocatoreRidottaRow.SHEET_DATA_ANALYSIS_NAME;
+    	
+		List<List<Object>> values = new ArrayList<List<Object>>();
+    	int indexStartingRow = 8;
+    	int numeroRiga = indexStartingRow;
+		String rangeRicerca = sheetNameDataAnalysis+"!A"+indexStartingRow+":B"+(indexStartingRow+sheetRows.size()-1);
+    	for (AnagraficaGiocatoreRidottaRow sheetRow: sheetRows){
+			List<Object> rigaRicerca = Arrays.asList(new Object[]{sheetRow.getId(), getQueryAnagraficaRidotta2(numeroRiga)});
+			values.add(rigaRicerca);
+			numeroRiga++;
+    	}
+		data.add(new ValueRange().setRange(rangeRicerca).setValues(values));
+    	Integer updatedRows = getGoogleSheetsInstance().updateRows(spreadSheetId, data, true);
+		
+    	String range = AnagraficaGiocatoreRidottaRow.SHEET_DATA_ANALYSIS_NAME+"!"+"B"+indexStartingRow+":G"+(indexStartingRow+sheetRows.size()-1);
+		List<String> ranges = Collections.singletonList(range);
+		
+		List<List<Object>> queryResponses = getGoogleSheetsInstance().leggiSheet(spreadSheetId, ranges);
+		
+		if (queryResponses != null && !queryResponses.isEmpty()){
+			int index = 0;
+			for (List<Object> queryResponse: queryResponses){
+				
+				String valueQuery = (String)queryResponse.get(0);
+				try{
+					Integer id = Integer.valueOf(valueQuery);
+					sheetRows.get(index).setId(id);
+				}catch(NumberFormatException ne){
+					MyLogger.getLogger().info("Not found: "+valueQuery);
+				}
+				valueQuery = (String)queryResponse.get(1);
+				sheetRows.get(index).setNome(valueQuery);
+
+				valueQuery = (String)queryResponse.get(2);
+				sheetRows.get(index).setCognome(valueQuery);
+				
+				valueQuery = (String)queryResponse.get(3);
+				sheetRows.get(index).setDataDiNascita(valueQuery);
+				
+				valueQuery = (String)queryResponse.get(4);
+				sheetRows.get(index).setUpdateTime(valueQuery);
+				
+				valueQuery = (String)queryResponse.get(5);
+				try{
+					Integer numRow = Integer.valueOf(valueQuery);
+					sheetRows.get(index).setSheetRowNumber(numRow);
+				}catch(NumberFormatException ne){
+					MyLogger.getLogger().info("Not found: "+valueQuery);
+				}
+				index++;
+			}
+		}
+		
+		getGoogleSheetsInstance().clearRows(spreadSheetId, Collections.singletonList(rangeRicerca));
+		
+		return sheetRows;
+	}
+	
 	public static List<SheetRow> findAnagraficheByKey(String spreadSheetId, List<SheetRow> sheetRows) throws IOException{
     	List<ValueRange> data = new ArrayList<ValueRange>();
 
@@ -511,6 +573,11 @@ public class GSheetsInterface {
 	private static String getQueryAnagraficaRidotta(Integer numeroRiga){
 		//String query = "=QUERY(ANAGRAFICA!A2:E;ʺSELECT A WHERE upper(B) = upper('ʺ&A"+numeroRiga+"&ʺ') AND upper(C) = upper('ʺ&B"+numeroRiga+"&ʺ') AND upper(D) = upper('ʺ&C"+numeroRiga+"&ʺ')ʺ; -1)";
 		return "=FILTER(ANAGRAFICA!A2:F; upper(ANAGRAFICA!B2:B) = upper(A"+numeroRiga+"); upper(ANAGRAFICA!C2:C) = upper(B"+numeroRiga+"); upper(ANAGRAFICA!D2:D) = upper(C"+numeroRiga+"))";
+	}
+
+	private static String getQueryAnagraficaRidotta2(Integer numeroRiga){
+		//String query = "=QUERY(ANAGRAFICA!A2:E;ʺSELECT A WHERE upper(B) = upper('ʺ&A"+numeroRiga+"&ʺ') AND upper(C) = upper('ʺ&B"+numeroRiga+"&ʺ') AND upper(D) = upper('ʺ&C"+numeroRiga+"&ʺ')ʺ; -1)";
+		return "=FILTER(ANAGRAFICA!A2:F; upper(ANAGRAFICA!A2:A) = upper(A"+numeroRiga+"))";
 	}
 	
 	public static SheetRow findSheetRowByLineNumber(String spreadSheetId, String sheetName, SheetRow sheetRow) throws IOException{
