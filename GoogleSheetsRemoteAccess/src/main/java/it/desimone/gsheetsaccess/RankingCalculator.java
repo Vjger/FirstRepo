@@ -1,12 +1,12 @@
 package it.desimone.gsheetsaccess;
 
-import it.desimone.gheetsaccess.gsheets.dto.ClassificheRow;
-import it.desimone.gheetsaccess.gsheets.dto.RankingRow;
-import it.desimone.gheetsaccess.gsheets.dto.RankingRow.ContributoRanking;
-import it.desimone.gheetsaccess.gsheets.dto.SheetRow;
-import it.desimone.gheetsaccess.gsheets.dto.SheetRowFactory.SheetRowType;
-import it.desimone.gheetsaccess.gsheets.dto.TorneiRow;
 import it.desimone.gsheetsaccess.common.Configurator;
+import it.desimone.gsheetsaccess.gsheets.dto.ClassificheRow;
+import it.desimone.gsheetsaccess.gsheets.dto.RankingRow;
+import it.desimone.gsheetsaccess.gsheets.dto.SheetRow;
+import it.desimone.gsheetsaccess.gsheets.dto.TorneiRow;
+import it.desimone.gsheetsaccess.gsheets.dto.RankingRow.ContributoRanking;
+import it.desimone.gsheetsaccess.gsheets.dto.SheetRowFactory.SheetRowType;
 import it.desimone.gsheetsaccess.gsheets.facade.GSheetsInterface;
 import it.desimone.risiko.torneo.dto.SchedaTorneo.TipoTorneo;
 import it.desimone.utils.MyLogger;

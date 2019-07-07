@@ -1,4 +1,4 @@
-package it.desimone.gheetsaccess.gsheets.dto;
+package it.desimone.gsheetsaccess.gsheets.dto;
 
 public class SheetRowFactory {
 

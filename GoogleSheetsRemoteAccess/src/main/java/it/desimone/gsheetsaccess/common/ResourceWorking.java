@@ -28,6 +28,13 @@ public class ResourceWorking {
 		return ROOT+File.separator+"working"+File.separator+"error";
 	}
 	
+	public static String tabellinoLoaderInputAreaPath(){
+		return ROOT+File.separator+"working"+File.separator+"input"+File.separator+"tabellinoLoader";
+	}
+	public static String tabellinoLoaderOutputAreaPath(){
+		return ROOT+File.separator+"working"+File.separator+"output"+File.separator+"tabellinoLoader";
+	}
+	
 	public static String googleClientSecretPath(){
 		return ROOT+File.separator+"resources"+File.separator+"google"+File.separator+googleClientSecret;
 	}

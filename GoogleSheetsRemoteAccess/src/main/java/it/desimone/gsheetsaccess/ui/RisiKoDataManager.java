@@ -1,9 +1,10 @@
 package it.desimone.gsheetsaccess.ui;
 
-import it.desimone.gheetsaccess.gsheets.dto.PartitaRow;
-import it.desimone.gheetsaccess.gsheets.dto.TabellinoGiocatore;
 import it.desimone.gsheetsaccess.ReportPublisher;
 import it.desimone.gsheetsaccess.common.Configurator;
+import it.desimone.gsheetsaccess.gsheets.dto.PartitaRow;
+import it.desimone.gsheetsaccess.gsheets.dto.TabellinoGiocatore;
+import it.desimone.gsheetsaccess.gsheets.dto.TorneiRow;
 import it.desimone.gsheetsaccess.utils.TorneiUtils;
 import it.desimone.utils.MyLogger;
 
@@ -255,23 +256,23 @@ public class RisiKoDataManager extends JFrame {
         StringBuilder buffer = new StringBuilder();
         buffer.append("Il giocatore "+torneiGiocati[0].getAnagraficaRidottaGiocatoreRowFrom()+" ha giocato i seguenti tornei \n");
         Set<String> torneiFrom = new TreeSet<String>();
-        if (torneiGiocati[0].getPartiteGiocate() != null){
-	        for (PartitaRow partita: torneiGiocati[0].getPartiteGiocate()){
-	        	torneiFrom.add(partita.getIdTorneo());
-	        }
-	        for (String torneoFrom: torneiFrom){
-	        	buffer.append(torneoFrom+"\n");
-	        }
+        if (torneiGiocati[0].getTorneiGiocati() != null){
+//	        for (PartitaRow partita: torneiGiocati[0].getPartiteGiocate()){
+//	        	torneiFrom.add(partita.getIdTorneo());
+//	        }
+//	        for (String torneoFrom: torneiFrom){
+//	        	buffer.append(torneoFrom+"\n");
+//	        }
+        	for (TorneiRow torneoRow: torneiGiocati[0].getTorneiGiocati()){
+        		buffer.append(torneoRow.getIdTorneo()+"\n");
+        	}
         }
         buffer.append("Il giocatore "+torneiGiocati[1].getAnagraficaRidottaGiocatoreRowFrom()+" ha giocato i seguenti tornei \n");
         Set<String> torneiTo = new TreeSet<String>();
-        if (torneiGiocati[1].getPartiteGiocate() != null){
-	        for (PartitaRow partita: torneiGiocati[1].getPartiteGiocate()){
-	        	torneiTo.add(partita.getIdTorneo());
-	        }
-	        for (String torneoTo: torneiTo){
-	        	buffer.append(torneoTo+"\n");
-	        }
+        if (torneiGiocati[1].getTorneiGiocati() != null){
+        	for (TorneiRow torneoRow: torneiGiocati[1].getTorneiGiocati()){
+        		buffer.append(torneoRow.getIdTorneo()+"\n");
+        	}
         }
         buffer.append("\n Confermi il merge dei dati dal giocatore con id ["+idGiocatoreDa+"] a quello con id ["+idGiocatoreA+"]?");
         

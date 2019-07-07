@@ -1,6 +1,6 @@
 package it.desimone.gsheetsaccess;
 
-import it.desimone.gheetsaccess.gsheets.dto.TorneiRow;
+import it.desimone.gsheetsaccess.gsheets.dto.TorneiRow;
 
 public class ElementoRanking {
 	private TorneiRow torneo;

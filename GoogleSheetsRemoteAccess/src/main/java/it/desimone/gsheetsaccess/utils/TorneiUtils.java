@@ -1,20 +1,22 @@
 package it.desimone.gsheetsaccess.utils;
 
-import it.desimone.gheetsaccess.gsheets.dto.AnagraficaGiocatoreRidottaRow;
-import it.desimone.gheetsaccess.gsheets.dto.AnagraficaGiocatoreRow;
-import it.desimone.gheetsaccess.gsheets.dto.ClassificheRow;
-import it.desimone.gheetsaccess.gsheets.dto.PartitaRow;
-import it.desimone.gheetsaccess.gsheets.dto.SheetRow;
-import it.desimone.gheetsaccess.gsheets.dto.TabellinoGiocatore;
-import it.desimone.gheetsaccess.gsheets.dto.TorneiRow;
 import it.desimone.gsheetsaccess.common.Configurator;
+import it.desimone.gsheetsaccess.gsheets.dto.AnagraficaGiocatoreRidottaRow;
+import it.desimone.gsheetsaccess.gsheets.dto.AnagraficaGiocatoreRow;
+import it.desimone.gsheetsaccess.gsheets.dto.ClassificheRow;
+import it.desimone.gsheetsaccess.gsheets.dto.PartitaRow;
+import it.desimone.gsheetsaccess.gsheets.dto.SheetRow;
+import it.desimone.gsheetsaccess.gsheets.dto.TabellinoGiocatore;
+import it.desimone.gsheetsaccess.gsheets.dto.TorneiRow;
 import it.desimone.gsheetsaccess.gsheets.facade.GSheetsInterface;
 import it.desimone.utils.MyLogger;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class TorneiUtils {
 
@@ -27,8 +29,8 @@ public class TorneiUtils {
 		return new TabellinoGiocatore[]{tabellinoGiocatoreFrom, tabellinoGiocatoreTo};
 	}
 	
-	private static TabellinoGiocatore getTabellinoPlayer(Integer idPlayer, String year){
-		MyLogger.getLogger().info("Inizio estrazione tabellini giocatore con id ["+idPlayer+"] per l'anno "+year);
+	public static TabellinoGiocatore getTabellinoPlayer(Integer idPlayer, String year){
+		MyLogger.getLogger().info("Inizio estrazione tabellino giocatore con id ["+idPlayer+"] per l'anno "+year);
 		TabellinoGiocatore tabellinoGiocatore = null;
 		
 		try {
@@ -40,11 +42,29 @@ public class TorneiUtils {
 			List<SheetRow> righePartiteGiocatore = GSheetsInterface.findPartiteRowsByIdGiocatore(spreadSheetIdTornei, partitaRow);
 			MyLogger.getLogger().info("Estratte "+(righePartiteGiocatore==null?0:righePartiteGiocatore.size())+" righe Partita per il giocatore con ID ["+idPlayer+"]");
 
+			Set<TorneiRow> torneiGiocati = new HashSet<TorneiRow>();
+			if (righePartiteGiocatore != null && !righePartiteGiocatore.isEmpty()){
+				String sheetNameTornei = TorneiRow.SHEET_TORNEI_NAME;
+				for (SheetRow matchRow: righePartiteGiocatore){
+					String idTorneo = ((PartitaRow) matchRow).getIdTorneo();
+					
+					TorneiRow torneoRow = new TorneiRow();
+					torneoRow.setIdTorneo(idTorneo);
+
+					if (!torneiGiocati.contains(torneoRow)){
+						torneoRow = (TorneiRow) GSheetsInterface.findTorneoRowByIdTorneo(spreadSheetIdTornei, sheetNameTornei, torneoRow);
+						if (torneoRow != null){
+							torneiGiocati.add(torneoRow);
+						}
+					}
+				}
+			}
+			
 			AnagraficaGiocatoreRidottaRow anagraficaGiocatoreRow = new AnagraficaGiocatoreRidottaRow();
 			anagraficaGiocatoreRow.setId(idPlayer);
 			List<AnagraficaGiocatoreRidottaRow> anagraficheRidotteRowFound = GSheetsInterface.findAnagraficheRidotteById2(spreadSheetAnagraficaRidotta, Collections.singletonList(anagraficaGiocatoreRow));
 			
-			tabellinoGiocatore = new TabellinoGiocatore((AnagraficaGiocatoreRidottaRow) ((anagraficheRidotteRowFound != null && !anagraficheRidotteRowFound.isEmpty())?anagraficheRidotteRowFound.get(0):null), righePartiteGiocatore);
+			tabellinoGiocatore = new TabellinoGiocatore((AnagraficaGiocatoreRidottaRow) ((anagraficheRidotteRowFound != null && !anagraficheRidotteRowFound.isEmpty())?anagraficheRidotteRowFound.get(0):null), righePartiteGiocatore, torneiGiocati);
 			
 		}catch(Exception e){
 			MyLogger.getLogger().severe("Errore accedendo ai dati "+e.getMessage());

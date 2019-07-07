@@ -8,12 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import it.desimone.gheetsaccess.gsheets.dto.AnagraficaGiocatoreRidottaRow;
-import it.desimone.gheetsaccess.gsheets.dto.AnagraficaGiocatoreRow;
-import it.desimone.gheetsaccess.gsheets.dto.ClassificheRow;
-import it.desimone.gheetsaccess.gsheets.dto.PartitaRow;
-import it.desimone.gheetsaccess.gsheets.dto.SheetRow;
-import it.desimone.gheetsaccess.gsheets.dto.TorneiRow;
+import it.desimone.gsheetsaccess.gsheets.dto.AnagraficaGiocatoreRidottaRow;
+import it.desimone.gsheetsaccess.gsheets.dto.AnagraficaGiocatoreRow;
+import it.desimone.gsheetsaccess.gsheets.dto.ClassificheRow;
+import it.desimone.gsheetsaccess.gsheets.dto.PartitaRow;
+import it.desimone.gsheetsaccess.gsheets.dto.SheetRow;
+import it.desimone.gsheetsaccess.gsheets.dto.TorneiRow;
 import it.desimone.risiko.torneo.dto.GiocatoreDTO;
 import it.desimone.risiko.torneo.dto.Partita;
 import it.desimone.risiko.torneo.dto.SchedaTorneo;

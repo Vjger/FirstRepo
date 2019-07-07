@@ -1,12 +1,5 @@
 package it.desimone.gsheetsaccess;
 
-import it.desimone.gheetsaccess.gsheets.dto.AnagraficaGiocatoreRidottaRow;
-import it.desimone.gheetsaccess.gsheets.dto.AnagraficaGiocatoreRow;
-import it.desimone.gheetsaccess.gsheets.dto.ClassificheRow;
-import it.desimone.gheetsaccess.gsheets.dto.PartitaRow;
-import it.desimone.gheetsaccess.gsheets.dto.ReportElaborazioneRow;
-import it.desimone.gheetsaccess.gsheets.dto.SheetRow;
-import it.desimone.gheetsaccess.gsheets.dto.TorneiRow;
 import it.desimone.gsheetsaccess.common.Configurator;
 import it.desimone.gsheetsaccess.common.ExcelValidationException;
 import it.desimone.gsheetsaccess.common.GDriveUtils;
@@ -14,6 +7,13 @@ import it.desimone.gsheetsaccess.gdrive.file.GDriveDownloader;
 import it.desimone.gsheetsaccess.gdrive.file.ReportAnalyzer;
 import it.desimone.gsheetsaccess.gdrive.file.ReportDriveData;
 import it.desimone.gsheetsaccess.googleaccess.GmailAccess;
+import it.desimone.gsheetsaccess.gsheets.dto.AnagraficaGiocatoreRidottaRow;
+import it.desimone.gsheetsaccess.gsheets.dto.AnagraficaGiocatoreRow;
+import it.desimone.gsheetsaccess.gsheets.dto.ClassificheRow;
+import it.desimone.gsheetsaccess.gsheets.dto.PartitaRow;
+import it.desimone.gsheetsaccess.gsheets.dto.ReportElaborazioneRow;
+import it.desimone.gsheetsaccess.gsheets.dto.SheetRow;
+import it.desimone.gsheetsaccess.gsheets.dto.TorneiRow;
 import it.desimone.gsheetsaccess.gsheets.facade.ExcelGSheetsBridge;
 import it.desimone.gsheetsaccess.gsheets.facade.GSheetsInterface;
 import it.desimone.risiko.torneo.dto.GiocatoreDTO;

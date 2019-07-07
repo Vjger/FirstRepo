@@ -1,14 +1,14 @@
 package it.desimone.gsheetsaccess.gsheets.facade;
 
-import it.desimone.gheetsaccess.gsheets.dto.AbstractSheetRow;
-import it.desimone.gheetsaccess.gsheets.dto.AnagraficaGiocatoreRidottaRow;
-import it.desimone.gheetsaccess.gsheets.dto.AnagraficaGiocatoreRow;
-import it.desimone.gheetsaccess.gsheets.dto.ClassificheRow;
-import it.desimone.gheetsaccess.gsheets.dto.PartitaRow;
-import it.desimone.gheetsaccess.gsheets.dto.SheetRow;
-import it.desimone.gheetsaccess.gsheets.dto.SheetRowFactory;
-import it.desimone.gheetsaccess.gsheets.dto.TorneiRow;
 import it.desimone.gsheetsaccess.googleaccess.GoogleSheetsAccess;
+import it.desimone.gsheetsaccess.gsheets.dto.AbstractSheetRow;
+import it.desimone.gsheetsaccess.gsheets.dto.AnagraficaGiocatoreRidottaRow;
+import it.desimone.gsheetsaccess.gsheets.dto.AnagraficaGiocatoreRow;
+import it.desimone.gsheetsaccess.gsheets.dto.ClassificheRow;
+import it.desimone.gsheetsaccess.gsheets.dto.PartitaRow;
+import it.desimone.gsheetsaccess.gsheets.dto.SheetRow;
+import it.desimone.gsheetsaccess.gsheets.dto.SheetRowFactory;
+import it.desimone.gsheetsaccess.gsheets.dto.TorneiRow;
 import it.desimone.utils.MyLogger;
 
 import java.io.IOException;
@@ -119,6 +119,12 @@ public class GSheetsInterface {
 		return result;
 	}
 	
+	public static SheetRow findTorneoRowByIdTorneo(String spreadSheetId, String sheetName, SheetRow sheetRow) throws IOException{
+		String query = getQueryTorneo(((TorneiRow) sheetRow).getIdTorneo());
+		SheetRow result = findTorneoByIdTorneo(spreadSheetId, sheetRow, query);
+		return result;
+	}
+	
 	public static List<Integer> findNumPartiteRowsByIdTorneo(String spreadSheetId, SheetRow sheetRow) throws IOException{
 		String query = getQueryPartiteTorneo(((PartitaRow) sheetRow).getIdTorneo());
 		List<Integer> numRows = findNumRowsByIdTorneo(spreadSheetId, sheetRow, query);
@@ -167,6 +173,33 @@ public class GSheetsInterface {
 
 		getGoogleSheetsInstance().clearRows(spreadSheetId, Collections.singletonList(rangeRicerca));
 		return numRows;
+	}
+	
+	private static SheetRow findTorneoByIdTorneo(String spreadSheetId, SheetRow sheetRow, String query) throws IOException{
+    	List<ValueRange> data = new ArrayList<ValueRange>();
+
+    	String sheetNameDataAnalysis = AbstractSheetRow.SHEET_DATA_ANALYSIS_NAME;
+    	
+		List<List<Object>> values = new ArrayList<List<Object>>();
+
+		String rangeRicerca = sheetNameDataAnalysis+"!A1:A1";
+
+		List<Object> rigaFormula = Arrays.asList(new Object[]{query});
+		values.add(rigaFormula);
+		
+		data.add(new ValueRange().setRange(rangeRicerca).setValues(values));
+    	Integer updatedRows = getGoogleSheetsInstance().updateRows(spreadSheetId, data, true);
+		String columnLetterNumRows = toAlphabetic(sheetRow.getSheetRowNumberColPosition());
+		List<String> ranges = Collections.singletonList(AbstractSheetRow.SHEET_DATA_ANALYSIS_NAME+"!A"+":"+columnLetterNumRows);
+		
+		List<List<Object>> queryResponses = getGoogleSheetsInstance().leggiSheet(spreadSheetId, ranges);
+		
+		if (queryResponses != null && !queryResponses.isEmpty()){
+			sheetRow.setData(queryResponses.get(0));
+		}
+
+		getGoogleSheetsInstance().clearRows(spreadSheetId, Collections.singletonList(rangeRicerca));
+		return sheetRow;
 	}
 	
 	public static List<SheetRow> findClassificaRowsByIdGiocatore(String spreadSheetId, SheetRow sheetRow) throws IOException{
@@ -425,32 +458,35 @@ public class GSheetsInterface {
 			int index = 0;
 			for (List<Object> queryResponse: queryResponses){
 				
-				String valueQuery = (String)queryResponse.get(0);
-				try{
-					Integer id = Integer.valueOf(valueQuery);
-					sheetRows.get(index).setId(id);
-				}catch(NumberFormatException ne){
-					MyLogger.getLogger().info("Not found: "+valueQuery);
-				}
-				valueQuery = (String)queryResponse.get(1);
-				sheetRows.get(index).setNome(valueQuery);
-
-				valueQuery = (String)queryResponse.get(2);
-				sheetRows.get(index).setCognome(valueQuery);
+//				String valueQuery = (String)queryResponse.get(0);
+//				try{
+//					Integer id = Integer.valueOf(valueQuery);
+//					sheetRows.get(index).setId(id);
+//				}catch(NumberFormatException ne){
+//					MyLogger.getLogger().info("Not found: "+valueQuery);
+//				}
+//				valueQuery = (String)queryResponse.get(1);
+//				sheetRows.get(index).setNome(valueQuery);
+//
+//				valueQuery = (String)queryResponse.get(2);
+//				sheetRows.get(index).setCognome(valueQuery);
+//				
+//				valueQuery = (String)queryResponse.get(3);
+//				sheetRows.get(index).setDataDiNascita(valueQuery);
+//				
+//				valueQuery = (String)queryResponse.get(4);
+//				sheetRows.get(index).setUpdateTime(valueQuery);
+//				
+//				valueQuery = (String)queryResponse.get(5);
+//				try{
+//					Integer numRow = Integer.valueOf(valueQuery);
+//					sheetRows.get(index).setSheetRowNumber(numRow);
+//				}catch(NumberFormatException ne){
+//					MyLogger.getLogger().info("Not found: "+valueQuery);
+//				}
 				
-				valueQuery = (String)queryResponse.get(3);
-				sheetRows.get(index).setDataDiNascita(valueQuery);
-				
-				valueQuery = (String)queryResponse.get(4);
-				sheetRows.get(index).setUpdateTime(valueQuery);
-				
-				valueQuery = (String)queryResponse.get(5);
-				try{
-					Integer numRow = Integer.valueOf(valueQuery);
-					sheetRows.get(index).setSheetRowNumber(numRow);
-				}catch(NumberFormatException ne){
-					MyLogger.getLogger().info("Not found: "+valueQuery);
-				}
+				SheetRow row = sheetRows.get(index);
+				row.setData(queryResponse);
 				index++;
 			}
 		}

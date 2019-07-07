@@ -1,7 +1,8 @@
-package it.desimone.gheetsaccess.gsheets.dto;
+package it.desimone.gsheetsaccess.gsheets.dto;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class TabellinoGiocatore {
 
@@ -9,7 +10,9 @@ public class TabellinoGiocatore {
 	
 	private List<PartitaRow> partiteGiocate;
 	
-	public TabellinoGiocatore(AnagraficaGiocatoreRidottaRow anagraficaRidottaGiocatoreRowFrom, List<SheetRow> partiteGiocate) {
+	private Set<TorneiRow> torneiGiocati;
+	
+	public TabellinoGiocatore(AnagraficaGiocatoreRidottaRow anagraficaRidottaGiocatoreRowFrom, List<SheetRow> partiteGiocate, Set<TorneiRow> torneiGiocati) {
 		super();
 		this.anagraficaRidottaGiocatoreRowFrom = anagraficaRidottaGiocatoreRowFrom;
 		if (partiteGiocate != null && !partiteGiocate.isEmpty()){
@@ -18,6 +21,7 @@ public class TabellinoGiocatore {
 				this.partiteGiocate.add((PartitaRow)row);
 			}
 		}
+		this.torneiGiocati = torneiGiocati;
 	}
 
 	public AnagraficaGiocatoreRidottaRow getAnagraficaRidottaGiocatoreRowFrom() {
@@ -35,6 +39,14 @@ public class TabellinoGiocatore {
 
 	public void setPartiteGiocate(List<PartitaRow> partiteGiocate) {
 		this.partiteGiocate = partiteGiocate;
+	}
+
+	public Set<TorneiRow> getTorneiGiocati() {
+		return torneiGiocati;
+	}
+
+	public void setTorneiGiocati(Set<TorneiRow> torneiGiocati) {
+		this.torneiGiocati = torneiGiocati;
 	}
 	
 	
