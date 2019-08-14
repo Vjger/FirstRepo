@@ -27,6 +27,7 @@ public class TabellinoGiocatoreLoader {
 	private static final String playerData = "\nIl giocatore [%s] %s %s nato il %s ha giocato i seguenti tornei: ";
 	private static final String playerDataSenzaData = "\nIl giocatore [%s] %s %s ha giocato i seguenti tornei: ";
 	private static final String tournamentData = "%20s organizzato da %34s tra il %s e il %s";
+	private static final String tournamentDataRidotti = "%20s - %34s";
 
 	private static Path  inputPath = Paths.get(ResourceWorking.tabellinoLoaderInputAreaPath(), "tabellinoLoaderInput.txt");
 	private static Path outputPath = Paths.get(ResourceWorking.tabellinoLoaderOutputAreaPath(), "tabellinoLoaderOutput.txt");
@@ -61,7 +62,7 @@ public class TabellinoGiocatoreLoader {
 						bw.write(player);
 						bw.newLine();
 						for (TorneiRow torneoRow: torneiGiocati){
-							String torneo = String.format(tournamentData, torneoRow.getTipoTorneo(), torneoRow.getOrganizzatore(), torneoRow.getStartDate(), torneoRow.getEndDate());
+							String torneo = String.format(tournamentDataRidotti, torneoRow.getTipoTorneo(), torneoRow.getOrganizzatore(), torneoRow.getStartDate(), torneoRow.getEndDate());
 							//Files.write(outputPath, torneo.getBytes(), StandardOpenOption.APPEND);
 							//MyLogger.getLogger().info(torneo);
 							bw.write(torneo);

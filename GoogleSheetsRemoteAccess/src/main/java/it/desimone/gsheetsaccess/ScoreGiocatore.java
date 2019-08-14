@@ -1,12 +1,13 @@
 package it.desimone.gsheetsaccess;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ScoreGiocatore implements Comparable<ScoreGiocatore>{
 
 	private Integer idGiocatore;
-	private Double scoreRanking;
+	private BigDecimal scoreRanking;
 	private List<ElementoRanking> elementiRanking;
 	
 	public ScoreGiocatore(){
@@ -38,11 +39,11 @@ public class ScoreGiocatore implements Comparable<ScoreGiocatore>{
 		this.elementiRanking = elementiRanking;
 	}
 
-	public Double getScoreRanking() {
+	public BigDecimal getScoreRanking() {
 		return scoreRanking;
 	}
 
-	public void setScoreRanking(Double scoreRanking) {
+	public void setScoreRanking(BigDecimal scoreRanking) {
 		this.scoreRanking = scoreRanking;
 	}
 

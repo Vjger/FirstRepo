@@ -2,10 +2,12 @@ package it.desimone.gsheetsaccess;
 
 import it.desimone.gsheetsaccess.gsheets.dto.TorneiRow;
 
+import java.math.BigDecimal;
+
 public class ElementoRanking {
 	private TorneiRow torneo;
 	private Integer posizione;
-	private Double score;
+	private BigDecimal score;
 	
 	public TorneiRow getTorneo() {
 		return torneo;
@@ -19,10 +21,10 @@ public class ElementoRanking {
 	public void setPosizione(Integer posizione) {
 		this.posizione = posizione;
 	}
-	public Double getScore() {
+	public BigDecimal getScore() {
 		return score;
 	}
-	public void setScore(Double score) {
+	public void setScore(BigDecimal score) {
 		this.score = score;
 	}
 	@Override

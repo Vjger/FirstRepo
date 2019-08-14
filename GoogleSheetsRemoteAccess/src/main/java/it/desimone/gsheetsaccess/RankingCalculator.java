@@ -1,45 +1,123 @@
 package it.desimone.gsheetsaccess;
 
 import it.desimone.gsheetsaccess.common.Configurator;
+import it.desimone.gsheetsaccess.common.Configurator.Environment;
+import it.desimone.gsheetsaccess.dto.ScorePlayer;
+import it.desimone.gsheetsaccess.dto.TorneoPubblicato;
+import it.desimone.gsheetsaccess.gsheets.dto.AnagraficaGiocatoreRow;
 import it.desimone.gsheetsaccess.gsheets.dto.ClassificheRow;
+import it.desimone.gsheetsaccess.gsheets.dto.PartitaRow;
 import it.desimone.gsheetsaccess.gsheets.dto.RankingRow;
+import it.desimone.gsheetsaccess.gsheets.dto.RankingRow.ContributoRanking;
 import it.desimone.gsheetsaccess.gsheets.dto.SheetRow;
 import it.desimone.gsheetsaccess.gsheets.dto.TorneiRow;
-import it.desimone.gsheetsaccess.gsheets.dto.RankingRow.ContributoRanking;
-import it.desimone.gsheetsaccess.gsheets.dto.SheetRowFactory.SheetRowType;
 import it.desimone.gsheetsaccess.gsheets.facade.GSheetsInterface;
+import it.desimone.gsheetsaccess.utils.TorneiUtils;
 import it.desimone.risiko.torneo.dto.SchedaTorneo.TipoTorneo;
 import it.desimone.utils.MyLogger;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 public class RankingCalculator {
 	
 	public static void main(String[] args) {
-		MyLogger.setConsoleLogLevel(Level.ALL);
+		MyLogger.setConsoleLogLevel(Level.FINE);
+		MyLogger.getLogger().info("START");
+		String year = "2019";
+		Configurator.loadConfiguration(Environment.PRODUCTION);
 		try{
-			calculate();
+			calculate(year);
 		}catch(Exception e){
 			MyLogger.getLogger().severe("Errore di accesso a google drive "+e.getMessage());
 		}
+		MyLogger.getLogger().info("END");
 	}
 	
-	public static void calculate() throws IOException{
+	public static List<ScorePlayer> elaboraTabellini(String year, List<TorneoPubblicato> torneiPubblicati){
+		List<ScorePlayer> result = null;
+		
+		if (torneiPubblicati != null && !torneiPubblicati.isEmpty()){
+			List<AnagraficaGiocatoreRow> anagraficheGiocatoriRow = TorneiUtils.getAllAnagraficheGiocatori(year);
+			result = new ArrayList<ScorePlayer>();
+			for (TorneoPubblicato torneoPubblicato: torneiPubblicati){
+				Set<Integer> idPartecipanti = torneoPubblicato.getIdPartecipanti();
+				for (Integer idPartecipante: idPartecipanti){
+					if (idPartecipante <=0){ //Si tolgono anonimi e ghost
+						continue;
+					}
+					ScorePlayer scorePlayer = null;
+					AnagraficaGiocatoreRow anagraficaSonda = new AnagraficaGiocatoreRow(idPartecipante);
+					ScorePlayer scorePlayerSonda = new ScorePlayer(anagraficaSonda);
+					Integer indexOfScorePlayer = result.indexOf(scorePlayerSonda);
+					boolean giaPresente = true;
+					if (indexOfScorePlayer >=0){
+						scorePlayer = result.get(indexOfScorePlayer);
+					}else{
+						giaPresente = false;
+						scorePlayer = scorePlayerSonda;
+						int indexAnagrafica = anagraficheGiocatoriRow.indexOf(anagraficaSonda);
+						scorePlayer.setAnagraficaGiocatore(anagraficheGiocatoriRow.get(indexAnagrafica));
+					}
+					TorneiRow torneoRow = torneoPubblicato.getTorneoRow();
+					for (PartitaRow partitaRow: torneoPubblicato.getPartite()){
+						if (TorneiUtils.haPartecipato(partitaRow, idPartecipante)){
+							scorePlayer.addPartiteGiocate();
+							if (TorneiUtils.isVincitore(partitaRow, idPartecipante)){
+								scorePlayer.addPartiteVinte();
+							}
+						}
+					}
+					if (torneoPubblicato.isConcluso()){
+						for (ClassificheRow classificheRow: torneoPubblicato.getClassifica()){
+							if (classificheRow.getIdGiocatore().equals(idPartecipante)){
+								TipoTorneo tipoTorneo = TipoTorneo.parseTipoTorneo(torneoRow.getTipoTorneo());
+								BigDecimal scoreRanking = RankingScorer.calcolaScore(classificheRow.getPosizione(), tipoTorneo, torneoRow.getNumeroTavoli(), torneoRow.getNumeroPartecipanti(), torneoRow.getNumeroTurni());
+								scorePlayer.addScoreRanking(scoreRanking);
+								scorePlayer.addTabellinoPlayer(torneoPubblicato, classificheRow.getPosizione(), scoreRanking);
+								scorePlayer.addTabellinoPerTipoTorneo(scoreRanking, tipoTorneo);
+								break;
+							}
+						}
+					}
+					if (!giaPresente){
+						result.add(scorePlayer);
+					}
+				}
+			}
+		}
+
+		Collections.sort(result, new Comparator() {
+			public int compare(final Object o1, final Object o2) {
+				int compare = 0;
+				ScorePlayer scorePlayer1 = (ScorePlayer) o1;
+				ScorePlayer scorePlayer2 = (ScorePlayer) o2; 
+				if (scorePlayer2 != null){
+					compare = scorePlayer2.getScoreRanking().compareTo(scorePlayer1.getScoreRanking());
+				}
+				return compare;
+			}
+		});
+		return result;
+	}
+	
+	public static void calculate(String year) throws IOException{
 		//Map<Integer, List<ElementoRanking>> torneiGiocatore = mapGiocatoreVSTornei();
-		List<ScoreGiocatore> scoreGiocatori = getScoreGiocatori();
+		List<ScoreGiocatore> scoreGiocatori = getScoreGiocatori(year);
 		assignScores(scoreGiocatori);
-		List<SheetRow> righeRankingOrdinate = calcolaRankingEOrdina(scoreGiocatori);
+		List<SheetRow> righeRankingOrdinate = calcolaRankingEOrdina(scoreGiocatori, year);
 		String spreadSheetIdRanking = Configurator.getRankingSheetId(); 
 		
-		GSheetsInterface.clearSheet(spreadSheetIdRanking, RankingRow.SHEET_NAME);
-		GSheetsInterface.appendRows(spreadSheetIdRanking, RankingRow.SHEET_NAME, righeRankingOrdinate);
+		GSheetsInterface.clearSheet(spreadSheetIdRanking, year);
+		GSheetsInterface.appendRows(spreadSheetIdRanking, year, righeRankingOrdinate);
 	}
 	
 	private static void assignScores(List<ScoreGiocatore> scoreGiocatori){
@@ -53,69 +131,49 @@ public class RankingCalculator {
 	}
 	
 	private static void assignScore(ElementoRanking elementoRanking){
-		Double assignedScore = 0D;
+		BigDecimal assignedScore = BigDecimal.ZERO;
 		//in teoria si può invece di implementare questo metodo implementae l'algoritmo direttamente nel getScore di ElementoRanking visto che è autoconsistente
 		TorneiRow torneoRow = elementoRanking.getTorneo();
 		TipoTorneo tipoTorneo = TipoTorneo.parseTipoTorneo(torneoRow.getTipoTorneo());
 		if (tipoTorneo != null){
 			int numeroTavoli = torneoRow.getNumeroTavoli();
+			int numeroTurni = torneoRow.getNumeroTurni();
 			int numeroPartecipanti = torneoRow.getNumeroPartecipanti();
 			int posizioneNelTorneo = elementoRanking.getPosizione();
-			assignedScore = calcolaScore(posizioneNelTorneo, tipoTorneo, numeroTavoli, numeroPartecipanti);
+			assignedScore = RankingScorer.calcolaScore(posizioneNelTorneo, tipoTorneo, numeroTavoli, numeroPartecipanti, numeroTurni);
 		}else{
 			MyLogger.getLogger().severe("Impossibile assegnare il ranking per il torneo "+torneoRow.getIdTorneo()+" perchè ha un tipoTorneo sconosciuto: "+torneoRow.getTipoTorneo());
 		}
 		elementoRanking.setScore(assignedScore);
 	}
 	
-	private static Double calcolaScore(int posizioneNelTorneo, TipoTorneo tipoTorneo, int numeroTavoli, int numeroPartecipanti){
-		Double score = 0D;
-		Integer VT = 100 + (3 * numeroTavoli);
-		Integer scoreVT = VT - posizioneNelTorneo; //Questo sicuramente dovrà cambiare
-		
-		switch (tipoTorneo) {
-		case RADUNO_NAZIONALE:
-			score = scoreVT * 50D;
-			break;
-		case MASTER:
-			score = scoreVT * 30D;
-			break;
-		case OPEN:
-			score = scoreVT * 15D;
-			break;
-		case CAMPIONATO:
-			score = scoreVT * 5D;
-			break;
-		default:
-			break;
-		}
-		
-		score += numeroPartecipanti/20;
-		
-		return score;
-	}
 	
-	private static List<SheetRow> calcolaRankingEOrdina(List<ScoreGiocatore> scoreGiocatori){
+	private static List<SheetRow> calcolaRankingEOrdina(List<ScoreGiocatore> scoreGiocatori, String year){
 		MyLogger.getLogger().entering("RankingCalculator", "calcolaRankingEOrdina");
+		List<AnagraficaGiocatoreRow> anagraficheGiocatoriRow = TorneiUtils.getAllAnagraficheGiocatori(year);
 		List<SheetRow> righeRankingOrdinate = new ArrayList<SheetRow>();
 		for (ScoreGiocatore scoreGiocatore: scoreGiocatori){
 			RankingRow rankingRow = new RankingRow();
 			rankingRow.setIdGiocatore(scoreGiocatore.getIdGiocatore());
-			Double scoreRanking = 0D;
+			AnagraficaGiocatoreRow anagraficaGiocatoreRow = findGiocatoreById(anagraficheGiocatoriRow, scoreGiocatore.getIdGiocatore());
+			if (anagraficheGiocatoriRow != null){
+				rankingRow.setNominativoGiocatore(anagraficaGiocatoreRow.getNome()+" "+anagraficaGiocatoreRow.getCognome());
+			}
+			BigDecimal scoreRanking = BigDecimal.ZERO;
 			List<ElementoRanking> elementiRanking = scoreGiocatore.getElementiRanking();
 			List<ContributoRanking> contributiRanking = new ArrayList<ContributoRanking>();
 			for (ElementoRanking elementoRanking: elementiRanking){
-				scoreRanking += elementoRanking.getScore();
+				scoreRanking = scoreRanking.add(elementoRanking.getScore());
 				ContributoRanking contributoRanking = rankingRow.new ContributoRanking();
 				contributoRanking.setIdTorneo(elementoRanking.getTorneo().getIdTorneo());
-				contributoRanking.setPuntiRanking(elementoRanking.getScore());
+				contributoRanking.setPuntiRanking(elementoRanking.getScore().doubleValue());
 				
 				contributiRanking.add(contributoRanking);
 			}
 			//TODO Eventualmente sortare i contributi ranking per idTorneo (che equivale alla data)
 			rankingRow.setContributiRanking(contributiRanking);
 			scoreGiocatore.setScoreRanking(scoreRanking);
-			rankingRow.setPuntiRanking(scoreGiocatore.getScoreRanking());
+			rankingRow.setPuntiRanking(scoreGiocatore.getScoreRanking().doubleValue());
 			righeRankingOrdinate.add(rankingRow);
 		}
 		Collections.sort(righeRankingOrdinate, new Comparator() {
@@ -138,12 +196,23 @@ public class RankingCalculator {
 		return righeRankingOrdinate;
 	}
 	
-	private static Map<Integer, List<ElementoRanking>> mapGiocatoreVSTornei() throws IOException{
+	private static AnagraficaGiocatoreRow findGiocatoreById(List<AnagraficaGiocatoreRow> anagraficheGiocatoriRow, Integer id){
+		AnagraficaGiocatoreRow result = null;
+		AnagraficaGiocatoreRow sonda = new AnagraficaGiocatoreRow();
+		sonda.setId(id);
+		Integer index = anagraficheGiocatoriRow.indexOf(sonda);
+		if (index >= 0){
+			result = anagraficheGiocatoriRow.get(index);
+		}
+		return result;
+	}
+	
+	private static Map<Integer, List<ElementoRanking>> mapGiocatoreVSTornei(){
 		
 		Map<Integer, List<ElementoRanking>> torneiPerGiocatore = new HashMap<Integer, List<ElementoRanking>>();
 		String year = "2019";
-		List<TorneiRow> tornei = getAllTornei(year);
-		List<ClassificheRow> classifiche = getAllClassifiche(year);
+		List<TorneiRow> tornei = TorneiUtils.getAllTornei(year);
+		List<ClassificheRow> classifiche = TorneiUtils.getAllClassifiche(year);
 		
 		for (ClassificheRow classificaRow: classifiche){
 			Integer idGiocatore = classificaRow.getIdGiocatore();
@@ -166,14 +235,13 @@ public class RankingCalculator {
 		return torneiPerGiocatore;
 	}
 	
-	private static List<ScoreGiocatore> getScoreGiocatori() throws IOException{
+	private static List<ScoreGiocatore> getScoreGiocatori(String year){
 		
 		MyLogger.getLogger().entering("RankingCalculator", "getScoreGiocatori");
 		
 		List<ScoreGiocatore> torneiPerGiocatore = new ArrayList<ScoreGiocatore>();
-		String year = "2019";
-		List<TorneiRow> tornei = getAllTornei(year);
-		List<ClassificheRow> classifiche = getAllClassifiche(year);
+		List<TorneiRow> tornei = TorneiUtils.getAllTornei(year);
+		List<ClassificheRow> classifiche = TorneiUtils.getAllClassifiche(year);
 		
 		TorneiRow torneoRowSonda = new TorneiRow();
 		for (ClassificheRow classificaRow: classifiche){
@@ -197,18 +265,9 @@ public class RankingCalculator {
 				scoreGiocatore.addElementoRanking(elementoRanking);
 			}
 		}
+		ScoreGiocatore scoreAnonimo = new ScoreGiocatore(0);
+		torneiPerGiocatore.remove(scoreAnonimo);
 		return torneiPerGiocatore;
 	}
-	
-	private static List<ClassificheRow> getAllClassifiche(String year) throws IOException{
-		String spreadSheetIdTornei = Configurator.getTorneiSheetId(year);
-		List<ClassificheRow> result = GSheetsInterface.getAllRows(spreadSheetIdTornei, SheetRowType.Classifica);	
-		return result;
-	}
-	
-	private static List<TorneiRow> getAllTornei(String year) throws IOException{
-		String spreadSheetIdTornei = Configurator.getTorneiSheetId(year);
-		List<TorneiRow> result = GSheetsInterface.getAllRows(spreadSheetIdTornei, SheetRowType.Torneo);	
-		return result;
-	}
+
 }

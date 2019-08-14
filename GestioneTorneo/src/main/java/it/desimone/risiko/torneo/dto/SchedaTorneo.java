@@ -19,6 +19,7 @@ public class SchedaTorneo {
 		, RADUNO_NAZIONALE("Raduno Nazionale")
 		, MASTER("Torneo Master")
 		, OPEN("Torneo Open")
+		, INTERCLUB("Torneo Interclub")		
 		, CAMPIONATO("Campionato Periodico")
 		, TORNEO_A_SQUADRE("Torneo a Squadre")
 		, TORNEO_2VS2("Torneo 2VS2")

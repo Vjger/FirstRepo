@@ -20,7 +20,7 @@ public class RankingRow extends AbstractSheetRow {
 	public static final String[] intestazione = new String[]{"POS.", "ID_GIOCATORE", "NOMINATIVO", "RANK"};
 	
 	public Integer getDataSize() {
-		return 100; //metto un numero alto perchè in realtà la dimensione sarà variabile
+		return 1000; //metto un numero alto perchè in realtà la dimensione sarà variabile
 	}
 
 	public class ContributoRanking{
@@ -56,7 +56,7 @@ public class RankingRow extends AbstractSheetRow {
 		return idGiocatore;
 	}
 	public void setIdGiocatore(Integer idGiocatore) {
-		this.nominativoGiocatore = getGiocatoreCellById(idGiocatore);
+		//this.nominativoGiocatore = getGiocatoreCellById(idGiocatore);
 		this.idGiocatore = idGiocatore;
 	}
 	public String getNominativoGiocatore() {

@@ -1,11 +1,13 @@
 package it.desimone.gsheetsaccess.utils;
 
 import it.desimone.gsheetsaccess.common.Configurator;
+import it.desimone.gsheetsaccess.dto.TorneoPubblicato;
 import it.desimone.gsheetsaccess.gsheets.dto.AnagraficaGiocatoreRidottaRow;
 import it.desimone.gsheetsaccess.gsheets.dto.AnagraficaGiocatoreRow;
 import it.desimone.gsheetsaccess.gsheets.dto.ClassificheRow;
 import it.desimone.gsheetsaccess.gsheets.dto.PartitaRow;
 import it.desimone.gsheetsaccess.gsheets.dto.SheetRow;
+import it.desimone.gsheetsaccess.gsheets.dto.SheetRowFactory.SheetRowType;
 import it.desimone.gsheetsaccess.gsheets.dto.TabellinoGiocatore;
 import it.desimone.gsheetsaccess.gsheets.dto.TorneiRow;
 import it.desimone.gsheetsaccess.gsheets.facade.GSheetsInterface;
@@ -20,6 +22,129 @@ import java.util.Set;
 
 public class TorneiUtils {
 
+	
+	public static List<TorneoPubblicato> caricamentoTornei(String year){
+		MyLogger.getLogger().info("START");
+		
+		List<TorneiRow> torneiRow = getAllTornei(year);
+		MyLogger.getLogger().info("Caricati "+torneiRow.size()+" tornei");
+		
+		List<PartitaRow> partiteRow = getAllPartite(year);
+		MyLogger.getLogger().info("Caricate "+partiteRow.size()+" partite");
+		
+		List<ClassificheRow> classificheRow = getAllClassifiche(year);
+		MyLogger.getLogger().info("Caricate "+classificheRow.size()+" righe classifica");
+		
+		List<TorneoPubblicato> result = null;
+		if (torneiRow != null){
+			result = new ArrayList<TorneoPubblicato>();
+			for (TorneiRow torneoRow: torneiRow){
+				TorneoPubblicato torneoPubblicato = new TorneoPubblicato(torneoRow);
+				result.add(torneoPubblicato);
+			}
+			
+			MyLogger.getLogger().info("Inizio associazione partite a tornei");
+			if (partiteRow != null){
+				for (PartitaRow partitaRow: partiteRow){
+					TorneiRow torneoRicerca = new TorneiRow();
+					torneoRicerca.setIdTorneo(partitaRow.getIdTorneo());
+					int index = result.indexOf(new TorneoPubblicato(torneoRicerca));
+					if (index >= 0){
+						TorneoPubblicato torneoPubblicato = result.get(index);
+						torneoPubblicato.add(partitaRow);
+					}
+				}
+			}	
+			MyLogger.getLogger().info("Inizio associazione classifiche a tornei");
+			if (classificheRow != null){
+				for (ClassificheRow classificaRow: classificheRow){
+					TorneiRow torneoRicerca = new TorneiRow();
+					torneoRicerca.setIdTorneo(classificaRow.getIdTorneo());
+					int index = result.indexOf(new TorneoPubblicato(torneoRicerca));
+					if (index >= 0){
+						TorneoPubblicato torneoPubblicato = result.get(index);
+						torneoPubblicato.add(classificaRow);
+					}
+				}
+			}
+		}
+
+		MyLogger.getLogger().info("END");
+		
+		return result;
+	}
+	
+	public static List<TorneiRow> getAllTornei(String year){
+		String spreadSheetIdTornei = Configurator.getTorneiSheetId(year);
+		List<TorneiRow> result = null;
+		try{
+			result = GSheetsInterface.getAllRows(spreadSheetIdTornei, SheetRowType.Torneo);
+		}catch(IOException ioe){
+			MyLogger.getLogger().severe("Eccezione: "+ioe.getMessage());
+		}
+		return result;
+	}
+	
+	public static List<PartitaRow> getAllPartite(String year){
+		String spreadSheetIdTornei = Configurator.getTorneiSheetId(year);
+		List<PartitaRow> result = null;
+		try{
+			result = GSheetsInterface.getAllRows(spreadSheetIdTornei, SheetRowType.Partita);
+		}catch(IOException ioe){
+			MyLogger.getLogger().severe("Eccezione: "+ioe.getMessage());
+		}
+		return result;
+	}
+	
+	public static List<ClassificheRow> getAllClassifiche(String year){
+		String spreadSheetIdTornei = Configurator.getTorneiSheetId(year);
+		List<ClassificheRow> result = null;
+		try{
+			result = GSheetsInterface.getAllRows(spreadSheetIdTornei, SheetRowType.Classifica);
+		}catch(IOException ioe){
+			MyLogger.getLogger().severe("Eccezione: "+ioe.getMessage());
+		}	
+		return result;
+	}
+	
+	public static List<AnagraficaGiocatoreRow> getAllAnagraficheGiocatori(String year){
+		String spreadSheetIdTornei = Configurator.getTorneiSheetId(year);
+		List<AnagraficaGiocatoreRow> result = null;
+		try{
+			result = GSheetsInterface.getAllRows(spreadSheetIdTornei, SheetRowType.AnagraficaGiocatore);
+		}catch(IOException ioe){
+			MyLogger.getLogger().severe("Eccezione: "+ioe.getMessage());
+		}	
+		return result;
+	}
+	
+	public static List<AnagraficaGiocatoreRidottaRow> getAllAnagraficheGiocatoriRidotte(String year){
+		String spreadSheetIdAnagrafiche = Configurator.getAnagraficaRidottaSheetId(year);
+		List<AnagraficaGiocatoreRidottaRow> result = null;
+		try{
+			result = GSheetsInterface.getAllRows(spreadSheetIdAnagrafiche, SheetRowType.AnagraficaGiocatoreRidotta);
+		}catch(IOException ioe){
+			MyLogger.getLogger().severe("Eccezione: "+ioe.getMessage());
+		}	
+		return result;
+	}
+	
+	public static boolean haPartecipato(PartitaRow partitaRow, Integer idPlayer){
+		boolean result = 
+				( partitaRow.getIdGiocatore1()!= null && partitaRow.getIdGiocatore1().equals(idPlayer) )
+			||  ( partitaRow.getIdGiocatore2()!= null && partitaRow.getIdGiocatore2().equals(idPlayer) )
+			||  ( partitaRow.getIdGiocatore3()!= null && partitaRow.getIdGiocatore3().equals(idPlayer) )
+			||  ( partitaRow.getIdGiocatore4()!= null && partitaRow.getIdGiocatore4().equals(idPlayer) )
+			||  ( partitaRow.getIdGiocatore5()!= null && partitaRow.getIdGiocatore5().equals(idPlayer) );
+		return result;
+	}
+	
+	public static boolean isVincitore(PartitaRow partitaRow, Integer idPlayer){
+		boolean result = 
+				partitaRow.getIdGiocatoreVincitore()!= null && partitaRow.getIdGiocatoreVincitore().equals(idPlayer);
+		return result;
+	}
+	
 	
 	public static TabellinoGiocatore[] getTabelliniPlayer(Integer idPlayerFrom, Integer idPlayerTo, String year){
 		MyLogger.getLogger().info("Inizio estrazione tabellini giocatore con id ["+idPlayerFrom+"] e id ["+idPlayerTo+"] per l'anno "+year);

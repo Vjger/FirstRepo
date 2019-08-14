@@ -652,8 +652,15 @@ public class GSheetsInterface {
 	
 		if (sheetRows != null && !sheetRows.isEmpty()){
 			List<List<Object>> rowData = new ArrayList<List<Object>>();
+			int index = 0;
 			for (SheetRow row: sheetRows){
-				rowData.add(row.getData());
+				try{
+					rowData.add(row.getData());
+					index++;
+				}catch(ArrayIndexOutOfBoundsException aioe){
+					MyLogger.getLogger().severe("indice: "+index);
+					throw aioe;
+				}
 			}
 			getGoogleSheetsInstance().appendDataToSheet(spreadSheetId, sheetName, rowData);
 		}
