@@ -16,7 +16,7 @@ public class ScorePlayer implements Comparable<ScorePlayer>{
 
 	private AnagraficaGiocatoreRow anagraficaGiocatore;
 	private BigDecimal scoreRanking = BigDecimal.ZERO;
-	private Set<TabellinoPlayer> tabelliniPlayer = new TreeSet<ScorePlayer.TabellinoPlayer>(TabellinoPlayer.comparatorPerIdTorneo);
+	private Set<TabellinoPlayer> tabelliniPlayer = new TreeSet<ScorePlayer.TabellinoPlayer>(/*TabellinoPlayer.comparatorPerIdTorneo*/);
 	private Map<TipoTorneo, TabellinoPerTipoTorneo> tabelliniPerTipoTorneo = new HashMap<SchedaTorneo.TipoTorneo, ScorePlayer.TabellinoPerTipoTorneo>();
 	private Integer partiteGiocate = 0;
 	private Integer partiteVinte = 0;
@@ -53,7 +53,7 @@ public class ScorePlayer implements Comparable<ScorePlayer>{
 		return true;
 	}
 
-	public static class TabellinoPlayer{
+	public static class TabellinoPlayer implements Comparable<TabellinoPlayer>{
 		private TorneoPubblicato torneo;
 		private Integer posizioneRaggiunta;
 		private BigDecimal scoreRanking;
@@ -90,6 +90,40 @@ public class ScorePlayer implements Comparable<ScorePlayer>{
 				return o1.getTorneo().getTorneoRow().getIdTorneo().compareTo(o2.getTorneo().getTorneoRow().getIdTorneo());
 			}
 		};
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result
+					+ ((torneo == null) ? 0 : torneo.hashCode());
+			return result;
+		}
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			TabellinoPlayer other = (TabellinoPlayer) obj;
+			if (torneo == null) {
+				if (other.torneo != null)
+					return false;
+			} else if (!torneo.equals(other.torneo))
+				return false;
+			return true;
+		}
+		@Override
+		public int compareTo(TabellinoPlayer o) {
+			String thisIdTorneo = this.torneo.getIdTorneo();
+			String otherIdTorneo = o.getTorneo().getIdTorneo();
+			int result = thisIdTorneo.compareTo(otherIdTorneo);
+			return result;
+		}
+		
+		
 	}
 	
 	public void addTabellinoPlayer(TorneoPubblicato torneo, Integer posizioneRaggiunta, BigDecimal scoreRanking){

@@ -2,6 +2,7 @@ package it.desimone.gsheetsaccess.htmlpublisher;
 
 import it.desimone.gsheetsaccess.RankingCalculator;
 import it.desimone.gsheetsaccess.common.Configurator;
+import it.desimone.gsheetsaccess.common.ResourceWorking;
 import it.desimone.gsheetsaccess.common.Configurator.Environment;
 import it.desimone.gsheetsaccess.dto.ScorePlayer;
 import it.desimone.gsheetsaccess.dto.TorneoPubblicato;
@@ -32,7 +33,6 @@ public class HtmlPublisher {
 		
 		rankingPublisher("2019");
 		
-		
 		MyLogger.getLogger().info("Fine elaborazione");
 	}
 	
@@ -44,12 +44,13 @@ public class HtmlPublisher {
 		
 		MyLogger.getLogger().info("Inizio scrittura file");
 	    Properties p = new Properties();
-	    p.setProperty("resource.loader.file.path", "C:\\GIT Repositories\\FirstRepo\\GoogleSheetsRemoteAccess\\resources\\velocity");
+	    p.setProperty("resource.loader.file.path", ResourceWorking.velocityTemplatePath());
 	    Velocity.init( p );
 
 		VelocityContext context = new VelocityContext();
 
 		context.put( "scorePlayers", tabellini );
+		context.put( "styleGenerator", StyleGenerator.class);
 
 		Template template = null;
 
@@ -65,7 +66,7 @@ public class HtmlPublisher {
 			MyLogger.getLogger().severe(e.getMessage());
 		}
 
-		File ranking = new File("C:\\Users\\mds\\Desktop\\Test Report\\Ranking.html");
+		File ranking = new File("C:\\Users\\mds\\Desktop\\Ranking\\ranking.html");
 		FileWriter writer;
 		try {
 			writer = new FileWriter(ranking);

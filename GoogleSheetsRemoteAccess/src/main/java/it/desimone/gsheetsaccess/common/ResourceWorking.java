@@ -39,6 +39,10 @@ public class ResourceWorking {
 		return ROOT+File.separator+"resources"+File.separator+"google"+File.separator+googleClientSecret;
 	}
 	
+	public static String velocityTemplatePath(){
+		return ROOT+File.separator+"resources"+File.separator+"velocity";
+	}
+	
 	public static File googleCredentials(){
 		return new java.io.File(ROOT+File.separator+"resources"+File.separator+"google", ".credentials/RisiKo Data Manager");
 	}
