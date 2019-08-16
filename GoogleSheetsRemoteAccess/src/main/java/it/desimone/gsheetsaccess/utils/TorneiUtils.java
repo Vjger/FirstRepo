@@ -23,6 +23,18 @@ import java.util.Set;
 public class TorneiUtils {
 
 	
+	public static AnagraficaGiocatoreRow findAnagraficaById(List<AnagraficaGiocatoreRow> anagrafiche, Integer id){
+		if (anagrafiche == null || id == null) return null;
+		AnagraficaGiocatoreRow result = null;
+		AnagraficaGiocatoreRow anagraficaSonda = new AnagraficaGiocatoreRow();
+		anagraficaSonda.setId(id);
+		int index = anagrafiche.indexOf(anagraficaSonda);
+		if (index >=0){
+			result = anagrafiche.get(index);
+		}
+		return result;
+	}
+	
 	public static List<TorneoPubblicato> caricamentoTornei(String year){
 		MyLogger.getLogger().info("START");
 		

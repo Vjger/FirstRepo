@@ -280,6 +280,29 @@ public class PartitaRow extends AbstractSheetRow {
 		this.punteggioGiocatore5 = punteggioGiocatore5;
 	}
 
+	
+	private Integer getPunteggioIntero(Double punteggio){
+		Integer result = null;
+		if (punteggio != null){
+			result = punteggio.intValue();
+		}
+		return result;
+	}
+	public Integer getPunteggioGiocatore1Int(){
+		return getPunteggioIntero(punteggioGiocatore1);
+	}
+	public Integer getPunteggioGiocatore2Int(){
+		return getPunteggioIntero(punteggioGiocatore2);
+	}	
+	public Integer getPunteggioGiocatore3Int(){
+		return getPunteggioIntero(punteggioGiocatore3);
+	}	
+	public Integer getPunteggioGiocatore4Int(){
+		return getPunteggioIntero(punteggioGiocatore4);
+	}	
+	public Integer getPunteggioGiocatore5Int(){
+		return getPunteggioIntero(punteggioGiocatore5);
+	}
 	public Integer getIdGiocatoreVincitore() {
 		return idGiocatoreVincitore;
 	}
@@ -298,10 +321,10 @@ public class PartitaRow extends AbstractSheetRow {
 	}
 	
 	public String getNominativoVincitore() {
-		if (idGiocatoreVincitore != null){
+		if (idGiocatoreVincitore != null && nominativoVincitore == null){
 			return getGiocatoreCellById(idGiocatoreVincitore);
 		}else{
-			return null;
+			return nominativoVincitore;
 		}
 	}
 
@@ -310,10 +333,10 @@ public class PartitaRow extends AbstractSheetRow {
 	}
 
 	public String getNominativoGiocatore1() {
-		if (idGiocatore1 != null){
+		if (idGiocatore1 != null && nominativoGiocatore1 == null){
 			return getGiocatoreCellById(idGiocatore1);
 		}else{
-			return null;
+			return nominativoGiocatore1;
 		}
 	}
 
@@ -322,10 +345,10 @@ public class PartitaRow extends AbstractSheetRow {
 	}
 
 	public String getNominativoGiocatore2() {
-		if (idGiocatore2 != null){
+		if (idGiocatore2 != null && nominativoGiocatore2 == null){
 			return getGiocatoreCellById(idGiocatore2);
 		}else{
-			return null;
+			return nominativoGiocatore2;
 		}
 	}
 
@@ -334,10 +357,10 @@ public class PartitaRow extends AbstractSheetRow {
 	}
 
 	public String getNominativoGiocatore3() {
-		if (idGiocatore3 != null){
+		if (idGiocatore3 != null && nominativoGiocatore3 == null){
 			return getGiocatoreCellById(idGiocatore3);
 		}else{
-			return null;
+			return nominativoGiocatore3;
 		}
 	}
 
@@ -346,10 +369,10 @@ public class PartitaRow extends AbstractSheetRow {
 	}
 
 	public String getNominativoGiocatore4() {
-		if (idGiocatore4 != null){
+		if (idGiocatore4 != null && nominativoGiocatore4 == null){
 			return getGiocatoreCellById(idGiocatore4);
 		}else{
-			return null;
+			return nominativoGiocatore4;
 		}
 	}
 
@@ -358,10 +381,10 @@ public class PartitaRow extends AbstractSheetRow {
 	}
 
 	public String getNominativoGiocatore5() {
-		if (idGiocatore5 != null){
+		if (idGiocatore5 != null && nominativoGiocatore5 == null){
 			return getGiocatoreCellById(idGiocatore5);
 		}else{
-			return null;
+			return nominativoGiocatore5;
 		}
 	}
 
