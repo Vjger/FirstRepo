@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>$torneo.torneoRow.tipoTorneo organizzato da $torneo.torneoRow.organizzatore il $torneo.torneoRow.startDate</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--===============================================================================================-->	
+	<link rel="icon" type="image/png" href="images/icons/favicon.ico"/>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/perfect-scrollbar/perfect-scrollbar.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="css/util.css">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+<!--===============================================================================================-->
+</head>
+<body>
+	
+	<div class="limiter">
+		<div class="container-table100">			
+			<div class="wrap-220">
+			<table>
+				#set( $numeroTrn = 0)
+				#foreach( $partita in $torneo.partite )
+					#if ($partita.numeroTurno != $numeroTrn)
+					#if ($numeroTrn != 0)
+					</tr>
+					#end
+						#set ( $numeroTrn = $partita.numeroTurno)
+					<tr>
+					#end
+					<td>
+				<div class="table100 ver1 m-b-110">
+
+					<div class="table100-head">
+						<table>
+							<thead>
+							<tr class="head">
+									<th class="column1">#</th>
+									<th class="column2">Tavolo $partita.numeroTavolo</th>
+									<th class="column3">Punti</th>
+								</tr>
+							</thead>
+						</table>
+					</div>
+
+					<div class="table100-body js-pscroll">
+						<table>
+							<tbody>
+								<tr class="body">
+								#if ($partita.idGiocatore1 == $partita.idGiocatoreVincitore)
+									<td class="column1" style="color: red">$partita.idGiocatore1</td>
+									<td class="column2" style="color: red; white-space: nowrap">$partita.nominativoGiocatore1</td>
+									<td class="column3" style="color: red">$partita.punteggioGiocatore1Int</td>
+								#else
+									<td class="column1">$partita.idGiocatore1</td>
+									<td class="column2" style="white-space: nowrap">$partita.nominativoGiocatore1</td>
+									<td class="column3">$partita.punteggioGiocatore1Int</td>
+								#end
+								</tr>
+								<tr class="body">
+								#if ($partita.idGiocatore2 == $partita.idGiocatoreVincitore)
+									<td class="column1" style="color: red">$partita.idGiocatore2</td>
+									<td class="column2" style="color: red; white-space: nowrap">$partita.nominativoGiocatore2</td>
+									<td class="column3" style="color: red">$partita.punteggioGiocatore2Int</td>
+								#else
+									<td class="column1">$partita.idGiocatore2</td>
+									<td class="column2" style="white-space: nowrap">$partita.nominativoGiocatore2</td>
+									<td class="column3">$partita.punteggioGiocatore2Int</td>
+								#end
+								</tr>								
+								<tr class="body">
+								#if ($partita.idGiocatore3 == $partita.idGiocatoreVincitore)
+									<td class="column1" style="color: red">$partita.idGiocatore3</td>
+									<td class="column2" style="color: red; white-space: nowrap">$partita.nominativoGiocatore3</td>
+									<td class="column3" style="color: red">$partita.punteggioGiocatore3Int</td>
+								#else
+									<td class="column1">$partita.idGiocatore3</td>
+									<td class="column2" style="white-space: nowrap">$partita.nominativoGiocatore3</td>
+									<td class="column3">$partita.punteggioGiocatore3Int</td>
+								#end
+								</tr>		
+								<tr class="body">
+								#if ($partita.idGiocatore4 && $partita.idGiocatore4 == $partita.idGiocatoreVincitore)
+									<td class="column1" style="color: red">$partita.idGiocatore4</td>
+									<td class="column2" style="color: red; white-space: nowrap">$partita.nominativoGiocatore4</td>
+									<td class="column3" style="color: red">$partita.punteggioGiocatore4Int</td>
+								#else
+									#if ($partita.idGiocatore4)		
+									<td class="column1">$partita.idGiocatore4</td>
+									<td class="column2" style="white-space: nowrap">$partita.nominativoGiocatore4</td>
+									<td class="column3">$partita.punteggioGiocatore4Int</td>
+									#else
+									<td class="column1"></td>
+									<td class="column2"></td>
+									<td class="column3"></td>
+									#end	
+								#end									
+								</tr>	
+								<tr class="body">
+								#if ($partita.idGiocatore5 && $partita.idGiocatore5 == $partita.idGiocatoreVincitore)
+									<td class="column1" style="color: red">$partita.idGiocatore5</td>
+									<td class="column2" style="color: red">$partita.nominativoGiocatore5</td>
+									<td class="column3" style="color: red">$partita.punteggioGiocatore5Int</td>
+								#else
+									#if ($partita.idGiocatore5)
+									<td class="column1">$partita.idGiocatore5</td>
+									<td class="column2">$partita.nominativoGiocatore5</td>
+									<td class="column3">$partita.punteggioGiocatore5Int</td>
+									#else
+									<td class="column1"></td>
+									<td class="column2"></td>
+									<td class="column3"></td>
+									#end
+								#end
+								</tr>
+
+							</tbody>
+						</table>
+					</div>
+
+				</div>
+				</td>
+								#end
+								</tr></table>
+			</div>
+		</div>
+	</div>
+
+
+<!--===============================================================================================-->	
+	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/bootstrap/js/popper.js"></script>
+	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/select2/select2.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+	<script>
+		$('.js-pscroll').each(function(){
+			var ps = new PerfectScrollbar(this);
+
+			$(window).on('resize', function(){
+				ps.update();
+			})
+		});
+			
+		
+	</script>
+<!--===============================================================================================-->
+	<script src="js/main.js"></script>
+
+</body>
+</html>

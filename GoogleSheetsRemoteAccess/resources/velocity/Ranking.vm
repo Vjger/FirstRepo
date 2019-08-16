@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Ranking</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--===============================================================================================-->	
+	<link rel="icon" type="image/png" href="images/icons/favicon.ico"/>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/perfect-scrollbar/perfect-scrollbar.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="css/util.css">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+<!--===============================================================================================-->
+</head>
+<body>
+	<script>
+		function toggle(numeroRiga) {
+		  var x = document.getElementById("tabellino"+numeroRiga);
+		  if (x.style.display === "none") {
+			x.style.display = "";
+			document.getElementById("plusminus"+numeroRiga).src='images/icons/minus.png';
+		  } else {
+			x.style.display = "none";
+			document.getElementById("plusminus"+numeroRiga).src='images/icons/plus.png';
+		  }
+		}
+	</script>
+	
+	<div class="limiter">
+		<div class="container-table100">			
+			<div class="wrap-table100"  style="width: 1600px">
+				<div class="table100 ver1 m-b-110"  style="width: 1600px">
+						<table>
+							<thead>
+							<tr class="head">
+									<th class="column10" colspan="5"></th>
+									<th class="column10" colspan="2">Raduno nazionale</th>
+									<th class="column10" colspan="2">Torneo Master</th>		
+									<th class="column10" colspan="2">Torneo Open</th>						
+									<th class="column10" colspan="2">Torneo Interclub</th>
+									<th class="column10" colspan="2">Campionato periodico</th>								
+									<th class="column10" colspan="4"></th>								
+								</tr>
+								<tr class="head">
+									<th class="column10"></th>
+									<th class="column10">Pos.</th>
+									<th class="column10">Id</th>
+									<th>Nominativo</th>
+									<th class="column10">Punti Ranking</th>
+									<th class="column10">disputati</th>
+									<th class="column10">Pti Rnk</th>
+									<th class="column10">disputati</th>		
+									<th class="column10">Pti Rnk</th>
+									<th class="column10">disputati</th>								
+									<th class="column10">Pti Rnk</th>
+									<th class="column10">disputati</th>	
+									<th class="column10">Pti Rnk</th>
+									<th class="column10">disputati</th>	
+									<th class="column10">Pti Rnk</th>								
+									<th class="column10">Tornei giocati</th>
+									<th class="column10">Partite giocate</th>
+									<th class="column10">Partite vinte</th>
+									<th class="column10">Media Vittoria</th>									
+								</tr>
+							</thead>
+							<tbody>
+
+								#foreach( $scorePlayer in $scorePlayers )
+							
+								#if ($foreach.count % 2 == 1)
+								<tr class="body" style="background-color: #e6e600;">
+								#else
+								<tr class="body" style="background-color: #ffff00;">
+								#end
+									<td class="column10" onclick="toggle($scorePlayer.getAnagraficaGiocatore().getId())"><img id="plusminus$scorePlayer.getAnagraficaGiocatore().getId()" src="images/icons/plus.png" title="Espandi il tabellino"> </td>
+									<td class="column10">$foreach.count</td>
+									<td class="column10">$scorePlayer.getAnagraficaGiocatore().getId()</td>
+									<td>$scorePlayer.getAnagraficaGiocatore().getNome() $scorePlayer.getAnagraficaGiocatore().getCognome()</td>
+									<td class="column10">$scorePlayer.getScoreRanking()</td>
+									<td class="column10">$scorePlayer.getTabellinoRaduniNazionali().numeroTorneiDisputati</td>
+									<td class="column10">$scorePlayer.getTabellinoRaduniNazionali().scoreRanking</td>
+									<td class="column10">$scorePlayer.getTabellinoTorneiMaster().numeroTorneiDisputati</td>
+									<td class="column10">$scorePlayer.getTabellinoTorneiMaster().scoreRanking</td>
+									<td class="column10">$scorePlayer.getTabellinoTorneiOpen().numeroTorneiDisputati</td>
+									<td class="column10">$scorePlayer.getTabellinoTorneiOpen().scoreRanking</td>
+									<td class="column10">$scorePlayer.getTabellinoTorneiTorneiInterclub().numeroTorneiDisputati</td>
+									<td class="column10">$scorePlayer.getTabellinoTorneiTorneiInterclub().scoreRanking</td>		
+									<td class="column10">$scorePlayer.getTabellinoCampionatiPeriodici().numeroTorneiDisputati</td>
+									<td class="column10">$scorePlayer.getTabellinoCampionatiPeriodici().scoreRanking</td>								
+									<td class="column10">$scorePlayer.tabelliniPlayer.size()</td>
+									<td class="column10">$scorePlayer.partiteGiocate</td>
+									<td class="column10">$scorePlayer.partiteVinte</td>
+									#set( $percentualeVittorie = $scorePlayer.partiteVinte * 100 / $scorePlayer.partiteGiocate )
+									<td class="column10">$percentualeVittorie%</td>									
+								</tr>
+								<tr class="body" id="tabellino$scorePlayer.getAnagraficaGiocatore().getId()" style="display: none;">
+									<td class="column10" colspan="4"></td>
+									<td class="column10" colspan="15">
+										<table>
+											<thead>
+											<tr class="head">
+												<th class="column10">Organizzatore</th>
+												<th class="column10">Torneo</th>
+												<th class="column10">Data Inizio</th>
+												<th class="column10">Data Fine</th>
+												<th class="column10">Posizione</th>
+												<th class="column10">Pti Rnk</th>								
+											</tr>
+											</thead>
+											<tbody>
+											#foreach( $tabellinoPlayer in $scorePlayer.tabelliniPlayer )
+										
+											<tr class="body">
+												<td class="column10" style="$styleGenerator.getStyle($tabellinoPlayer.torneo.torneoRow.tipoTorneo)"><img src="images/loghi/rcu/${tabellinoPlayer.torneo.torneoRow.organizzatore} (Custom).png" title="$tabellinoPlayer.torneo.torneoRow.organizzatore" alt="$tabellinoPlayer.torneo.torneoRow.organizzatore"></td>
+												<td class="column10" style="$styleGenerator.getStyle($tabellinoPlayer.torneo.torneoRow.tipoTorneo)">$tabellinoPlayer.torneo.torneoRow.tipoTorneo</td>
+												<td class="column10" style="$styleGenerator.getStyle($tabellinoPlayer.torneo.torneoRow.tipoTorneo)">$tabellinoPlayer.torneo.torneoRow.startDate</td>
+												<td class="column10" style="$styleGenerator.getStyle($tabellinoPlayer.torneo.torneoRow.tipoTorneo)">$tabellinoPlayer.torneo.torneoRow.endDate</td>
+												<td class="column10" style="$styleGenerator.getStyle($tabellinoPlayer.torneo.torneoRow.tipoTorneo)">$tabellinoPlayer.posizioneRaggiunta°</td>
+												<td class="column10" style="$styleGenerator.getStyle($tabellinoPlayer.torneo.torneoRow.tipoTorneo)">$tabellinoPlayer.scoreRanking</td>							
+											</tr>
+											#end
+											</tbody>
+										</table>
+									</td>
+								</tr>
+								
+								#end
+
+							</tbody>
+						</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+<!--===============================================================================================-->	
+	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/bootstrap/js/popper.js"></script>
+	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/select2/select2.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+	<script>
+		$('.js-pscroll').each(function(){
+			var ps = new PerfectScrollbar(this);
+
+			$(window).on('resize', function(){
+				ps.update();
+			})
+		});
+			
+		
+	</script>
+<!--===============================================================================================-->
+	<script src="js/main.js"></script>
+
+</body>
+</html>

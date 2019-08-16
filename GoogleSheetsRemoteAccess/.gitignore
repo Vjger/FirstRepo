@@ -1,3 +1,6 @@
 /target
-/resources/
 /.settings
+/log
+/working
+.classpath
+.gitignore
