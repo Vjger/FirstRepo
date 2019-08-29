@@ -77,9 +77,9 @@
 								#foreach( $scorePlayer in $scorePlayers )
 							
 								#if ($foreach.count % 2 == 1)
-								<tr class="body" style="background-color: #e6e600;">
+								<tr class="body" style="background-color: #ffecb3;">
 								#else
-								<tr class="body" style="background-color: #ffff00;">
+								<tr class="body" style="background-color: #ffdf80;">
 								#end
 									<td class="column10" onclick="toggle($scorePlayer.getAnagraficaGiocatore().getId())"><img id="plusminus$scorePlayer.getAnagraficaGiocatore().getId()" src="images/icons/plus.png" title="Espandi il tabellino"> </td>
 									<td class="column10">$foreach.count</td>

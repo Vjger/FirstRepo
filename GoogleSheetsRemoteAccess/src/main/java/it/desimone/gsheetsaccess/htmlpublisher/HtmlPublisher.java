@@ -158,7 +158,7 @@ public class HtmlPublisher {
 		Template template = null;
 
 		try{
-		  template = Velocity.getTemplate("Torneo.vm");
+		  template = Velocity.getTemplate("Torneo2.vm");
 		}catch( ResourceNotFoundException rnfe ){
 			MyLogger.getLogger().severe(rnfe.getMessage());
 		}catch( ParseErrorException pee ){
