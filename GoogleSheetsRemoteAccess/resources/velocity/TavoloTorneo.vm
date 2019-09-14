@@ -42,11 +42,11 @@
 								#end
 								</tr>		
 								<tr class="body">
-								#if ($partita.idGiocatore4 && $partita.idGiocatore4 == $partita.idGiocatoreVincitore)
+								#if (($partita.idGiocatore4 >= -1) && ($partita.idGiocatore4 == $partita.idGiocatoreVincitore))
 									<td class="column6" style="color: red; white-space: nowrap">$partita.nominativoGiocatore4</td>
 									<td class="column3" style="color: red">$partita.punteggioGiocatore4Int</td>
 								#else
-									#if ($partita.idGiocatore4)		
+									#if ($partita.idGiocatore4 >= -1)		
 									<td class="column6" style="white-space: nowrap">$partita.nominativoGiocatore4</td>
 									<td class="column3">$partita.punteggioGiocatore4Int</td>
 									#else
@@ -56,11 +56,11 @@
 								#end									
 								</tr>	
 								<tr class="body">
-								#if ($partita.idGiocatore5 && $partita.idGiocatore5 == $partita.idGiocatoreVincitore)
+								#if (($partita.idGiocatore5 >= -1) && ($partita.idGiocatore5 == $partita.idGiocatoreVincitore))
 									<td class="column6" style="color: red">$partita.nominativoGiocatore5</td>
 									<td class="column3" style="color: red">$partita.punteggioGiocatore5Int</td>
 								#else
-									#if ($partita.idGiocatore5)
+									#if ($partita.idGiocatore5 >= -1)
 									<td class="column6">$partita.nominativoGiocatore5</td>
 									<td class="column3">$partita.punteggioGiocatore5Int</td>
 									#else

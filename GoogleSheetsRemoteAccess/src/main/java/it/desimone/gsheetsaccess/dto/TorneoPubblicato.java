@@ -97,7 +97,21 @@ public class TorneoPubblicato {
 	}
 
 	public boolean isConcluso() {
-		return classifica != null && !classifica.isEmpty();
+		//return classifica != null && !classifica.isEmpty();
+		boolean concluso = false;
+		
+		int numeroTurni = torneoRow.getNumeroTurni();
+		
+		if (partite != null){
+			for (PartitaRow partita: partite){
+				if (partita != null && partita.getNumeroTurno() == numeroTurni){
+					concluso = true;
+					break;
+				}
+			}
+		}
+		
+		return concluso;
 	}
 	
 	

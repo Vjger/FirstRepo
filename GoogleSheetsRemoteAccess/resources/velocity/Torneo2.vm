@@ -76,9 +76,11 @@
 				</td>
 				</tr></table>
 			</div>
-			<div class="wrap-220" style="width: 1000px">
-				#parse("ClassificaTorneo.vm")
-			</div>
+			#if($torneo.classifica)
+				<div class="wrap-220" style="width: 1000px">
+					#parse("ClassificaTorneo.vm")
+				</div>
+			#end
 		</div>
 	</div>
 

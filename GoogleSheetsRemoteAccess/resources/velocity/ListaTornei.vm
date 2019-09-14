@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Ranking</title>
+	<title>Tornei</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 <!--===============================================================================================-->	
@@ -37,24 +37,37 @@
 									<th class="column10">Data Inizio</th>
 									<th class="column10">Data Fine</th>
 									<th class="column10">Partecipanti</th>
-									<th class="column10">Turni</th>
+									<th class="column10">Turni previsti</th>
 									<th class="column10">Tavoli</th>	
 									<th class="column10">Concluso</th>								
+									<th class="column10"><img src="images/icons/note.jpg" title="note" alt="note"></th>	
 								</tr>
 							</thead>
 							<tbody>
 							#foreach( $torneo in $tornei )
 								#set( $stileCella = $styleGenerator.getStyle($torneo.torneoRow.tipoTorneo))
+								#set ($urlTorneo = $htmlPublisher.getTorneoPage($torneo.torneoRow.idTorneo)+".html" )
 								<tr class="body">
-									<td class="column10" style="$stileCella"><img src="images/loghi/rcu/${torneo.torneoRow.organizzatore} (Custom).png" title="$tabellinoPlayer.torneo.torneoRow.organizzatore" alt="$torneo.torneoRow.organizzatore"></td>
-									<td class="column10" style="$stileCella">$torneo.torneoRow.nomeTorneo</td>
+									<td class="column10" style="$stileCella"><img src="images/loghi/rcu/${torneo.torneoRow.organizzatore} (Custom).png" title="$torneo.torneoRow.organizzatore" alt="$torneo.torneoRow.organizzatore"></td>
+									<td class="column10" style="$stileCella"><a style="color: inherit; cursor: pointer;"  href="TORNEI/$urlTorneo" target="_blank">$torneo.torneoRow.nomeTorneo</a></td>
 									<td class="column10" style="$stileCella">$torneo.torneoRow.sede</td>
 									<td class="column10" style="$stileCella">$torneo.torneoRow.startDate</td>
 									<td class="column10" style="$stileCella">$torneo.torneoRow.endDate</td>
 									<td class="column10" style="$stileCella">$torneo.torneoRow.numeroPartecipanti</td>
 									<td class="column10" style="$stileCella">$torneo.torneoRow.numeroTurni</td>	
 									<td class="column10" style="$stileCella">$torneo.torneoRow.numeroTavoli</td>
-									<td class="column10" style="$stileCella">$torneo.concluso</td>									
+									<td class="column10" style="$stileCella">
+										#if($torneo.concluso)
+											<img src="images/icons/concluso.png" title="concluso" alt="concluso">
+										#else
+											<img src="images/icons/nonConcluso.png" title="non concluso" alt="non concluso">
+										#end
+									</td>	
+									<td class="column10" style="$stileCella">
+										#if($torneo.torneoRow.note)
+											<img src="images/icons/note.jpg" title="$torneo.torneoRow.note" alt="note">
+										#end 
+									</td>	
 								</tr>
 							#end
 							</tbody>

@@ -27,6 +27,8 @@ import org.apache.velocity.exception.MethodInvocationException;
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
 
+import com.itextpdf.text.log.SysoLogger;
+
 public class HtmlPublisher {
 	
 	private static final String FOLDER_PATH = "C:\\Users\\mds\\Desktop\\RisiKo Pages";
@@ -230,6 +232,7 @@ public class HtmlPublisher {
 
 		context.put( "tornei", torneiPubblicati );
 		context.put( "styleGenerator", StyleGenerator.class);
+		context.put( "htmlPublisher", HtmlPublisher.class);
 	
 		File listaTornei = new File(FOLDER_PATH, "listaTornei.html");
 		FileWriter writer = null;

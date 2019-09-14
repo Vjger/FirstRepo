@@ -24,7 +24,16 @@ public class StyleGenerator {
 			style = "color: #000000; text-shadow: 1px 1px 0 #ffffff; background-color: #ffff00;";
 			break;
 		case CAMPIONATO:
-			style = "color: #ffffff; background-color: #00b300;";
+			style = "color: #ffffff; background-color: #00cc00;"; //#00b300;";
+			break;
+		case TORNEO_A_SQUADRE:
+			style = "color: #ffffff; text-shadow: 1px 1px 0 #000000; background-color: #cc00ff;";
+			break;
+		case TORNEO_2VS2:
+			style = "color: #ffffff; background-color: #ffb3ec;";
+			break;
+		case AMICHEVOLI:
+			style = "color: #000000; text-shadow: 1px 1px 0 #ffffff; background-color: #00ffff;";
 			break;
 		default:
 			style = "color: #000000; text-shadow: 1px 1px 0 #ffffff; background-color: #00ffff;";
