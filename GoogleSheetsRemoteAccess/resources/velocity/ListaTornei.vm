@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Ranking</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--===============================================================================================-->	
+	<link rel="icon" type="image/png" href="images/icons/favicon.ico"/>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/perfect-scrollbar/perfect-scrollbar.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="css/util.css">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+<!--===============================================================================================-->
+</head>
+<body>
+	
+	<div class="limiter">
+		<div class="container-table100">			
+			<div class="wrap-table100" style="width: 1200px">
+				<div class="table100 ver1 m-b-110" style="width: 1200px">
+						<div style="text-align: center;"><img src="images/ranking.png"></div>
+						<table>
+							<thead>
+								<tr class="head">
+									<th class="column10">Organizzatore</th>
+									<th class="column10">Nome Torneo</th>
+									<th class="column10">Sede</th>
+									<th class="column10">Data Inizio</th>
+									<th class="column10">Data Fine</th>
+									<th class="column10">Partecipanti</th>
+									<th class="column10">Turni</th>
+									<th class="column10">Tavoli</th>	
+									<th class="column10">Concluso</th>								
+								</tr>
+							</thead>
+							<tbody>
+							#foreach( $torneo in $tornei )
+								#set( $stileCella = $styleGenerator.getStyle($torneo.torneoRow.tipoTorneo))
+								<tr class="body">
+									<td class="column10" style="$stileCella"><img src="images/loghi/rcu/${torneo.torneoRow.organizzatore} (Custom).png" title="$tabellinoPlayer.torneo.torneoRow.organizzatore" alt="$torneo.torneoRow.organizzatore"></td>
+									<td class="column10" style="$stileCella">$torneo.torneoRow.nomeTorneo</td>
+									<td class="column10" style="$stileCella">$torneo.torneoRow.sede</td>
+									<td class="column10" style="$stileCella">$torneo.torneoRow.startDate</td>
+									<td class="column10" style="$stileCella">$torneo.torneoRow.endDate</td>
+									<td class="column10" style="$stileCella">$torneo.torneoRow.numeroPartecipanti</td>
+									<td class="column10" style="$stileCella">$torneo.torneoRow.numeroTurni</td>	
+									<td class="column10" style="$stileCella">$torneo.torneoRow.numeroTavoli</td>
+									<td class="column10" style="$stileCella">$torneo.concluso</td>									
+								</tr>
+							#end
+							</tbody>
+						</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+<!--===============================================================================================-->	
+	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/bootstrap/js/popper.js"></script>
+	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/select2/select2.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+	<script>
+		$('.js-pscroll').each(function(){
+			var ps = new PerfectScrollbar(this);
+
+			$(window).on('resize', function(){
+				ps.update();
+			})
+		});
+			
+		
+	</script>
+<!--===============================================================================================-->
+	<script src="js/main.js"></script>
+
+</body>
+</html>

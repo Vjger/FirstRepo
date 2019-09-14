@@ -4,6 +4,7 @@ import it.desimone.gsheetsaccess.dto.TorneoPubblicato;
 import it.desimone.gsheetsaccess.gsheets.dto.PartitaRow;
 import it.desimone.gsheetsaccess.gsheets.dto.TorneiRow;
 import it.desimone.gsheetsaccess.htmlpublisher.HtmlPublisher;
+import it.desimone.risiko.torneo.dto.SchedaTorneo.TipoTorneo;
 import it.desimone.utils.MyLogger;
 
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public class HtmlPublisherTest {
 		
 		TorneiRow torneoRow = new TorneiRow();
 		torneoRow.setIdTorneo("20181105 - SABAUDIA [RCU]");
+		torneoRow.setTipoTorneo(TipoTorneo.MASTER.name());
 		
 		List<PartitaRow> partite = new ArrayList<PartitaRow>();
 		PartitaRow partita1 = new PartitaRow();

@@ -5,26 +5,36 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 <!--===============================================================================================-->	
-	<link rel="icon" type="image/png" href="images/icons/favicon.ico"/>
+	<link rel="icon" type="../image/png" href="images/icons/favicon.ico"/>
 <!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="../vendor/bootstrap/css/bootstrap.min.css">
 <!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="../fonts/font-awesome-4.7.0/css/font-awesome.min.css">
 <!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+	<link rel="stylesheet" type="text/css" href="../vendor/animate/animate.css">
 <!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+	<link rel="stylesheet" type="text/css" href="../vendor/select2/select2.min.css">
 <!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/perfect-scrollbar/perfect-scrollbar.css">
+	<link rel="stylesheet" type="text/css" href="../vendor/perfect-scrollbar/perfect-scrollbar.css">
 <!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="css/util.css">
-	<link rel="stylesheet" type="text/css" href="css/main.css">
+	<link rel="stylesheet" type="text/css" href="../css/util.css">
+	<link rel="stylesheet" type="text/css" href="../css/main.css">
 <!--===============================================================================================-->
 </head>
 <body>
 	
-	<div class="limiter">
-		<div class="container-table100">			
+	<div class="limiterTorneo">
+		<div class="container-table100">
+
+			<table class="table10 ver1" style="$styleGenerator.getStyle($torneo.torneoRow.tipoTorneo); width="98%"">
+				<tr>
+					<td rowspan="2"><img src="../images/loghi/rcu/loghi50px_vert/${torneo.torneoRow.organizzatore}.png" title="$torneo.torneoRow.organizzatore" alt="$torneo.torneoRow.organizzatore"></td>
+					<td>$torneo.torneoRow.tipoTorneo - $torneo.torneoRow.nomeTorneo</td>
+				</tr>
+				<tr>
+					<td>Dal $torneo.torneoRow.startDate al $torneo.torneoRow.endDate - Turni: $torneo.torneoRow.numeroTurni - Partecipanti: $torneo.torneoRow.numeroPartecipanti</td>
+				</tr>
+			</table>		
 			<div class="wrap-220">
 				<table> <!-- tabella turni -->
 				#set( $numeroTrn = 0)
@@ -33,36 +43,41 @@
 					#if ($partita.numeroTurno != $numeroTrn)
 						#set( $counterPartite = 0)
 						#if ($numeroTrn != 0)
-						</tr></table> <!-- chiusura tabella partite -->
+						</tr></table></div> <!-- chiusura tabella partite -->
 						</td>
-						<!--
 						</tr>  <!-- chiusura riga turno -->
 						<tr>
-						-->
-						<td style="padding-top: 50px;"> <!-- apertura nuovo turno -->
+						<td style="padding-top: 25px;"> <!-- apertura nuovo turno -->
 						<!-- Inizio tabella partite -->
-						<table style="background-color: blue;"><tr><th colspan="5">Turno $partita.numeroTurno</th></tr><tr>
+						<div class="table10 ver1">Turno $partita.numeroTurno - $partita.dataTurno</div>
+						<div style="padding: 5px;">
+						<table><tr>
 						#else
-						<tr><td style="padding-top: 50px;"> <!-- primo turno -->
+						<tr><td style="padding-top: 25px;"> <!-- primo turno -->
 						<!-- Inizio tabella partite -->
-						<table style="background-color: blue;"><tr><th colspan="5">Turno $partita.numeroTurno</th></tr><tr>
+						<div class="table10 ver1">Turno $partita.numeroTurno - $partita.dataTurno</div>
+						<div style="padding: 5px;">
+						<table><tr>
 						#end
 						#set ( $numeroTrn = $partita.numeroTurno)
 					#end
 					#set ( $counterPartite = $counterPartite + 1)
-					#if ($counterPartite % 6 == 0)
+					#if ($counterPartite % 5 == 0)
 						#set( $counterPartite = 1)
 							</tr> <!-- chiusura riga tabella partite -->
 						<!-- Inizio riga tabella partite -->
 						<tr>
 					#end
-					<td width="300px">
+					<td>
 					#parse("TavoloTorneo.vm")
 					</td>
 				#end
-				</tr></table> <!-- chiusura tabella partite -->
+				</tr></table></div> <!-- chiusura tabella partite -->
 				</td>
 				</tr></table>
+			</div>
+			<div class="wrap-220" style="width: 1000px">
+				#parse("ClassificaTorneo.vm")
 			</div>
 		</div>
 	</div>

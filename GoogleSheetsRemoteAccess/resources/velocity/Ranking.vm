@@ -39,6 +39,7 @@
 		<div class="container-table100">			
 			<div class="wrap-table100"  style="width: 1600px">
 				<div class="table100 ver1 m-b-110"  style="width: 1600px">
+						<div style="text-align: center;"><img src="images/ranking.png"></div>
 						<table>
 							<thead>
 							<tr class="head">
@@ -77,14 +78,14 @@
 								#foreach( $scorePlayer in $scorePlayers )
 							
 								#if ($foreach.count % 2 == 1)
-								<tr class="body" style="background-color: #ffecb3;">
+								<tr class="body" style="background-color: #ffecb3; font-weight: bold;">
 								#else
-								<tr class="body" style="background-color: #ffdf80;">
+								<tr class="body" style="background-color: #ffdf80; font-weight: bold;">
 								#end
 									<td class="column10" onclick="toggle($scorePlayer.getAnagraficaGiocatore().getId())"><img id="plusminus$scorePlayer.getAnagraficaGiocatore().getId()" src="images/icons/plus.png" title="Espandi il tabellino"> </td>
 									<td class="column10">$foreach.count</td>
 									<td class="column10">$scorePlayer.getAnagraficaGiocatore().getId()</td>
-									<td>$scorePlayer.getAnagraficaGiocatore().getNome() $scorePlayer.getAnagraficaGiocatore().getCognome()</td>
+									<td>$Capitalize.capitalize($scorePlayer.getAnagraficaGiocatore().getNome()) $Capitalize.capitalize($scorePlayer.getAnagraficaGiocatore().getCognome())</td>
 									<td class="column10">$scorePlayer.getScoreRanking()</td>
 									<td class="column10">$scorePlayer.getTabellinoRaduniNazionali().numeroTorneiDisputati</td>
 									<td class="column10">$scorePlayer.getTabellinoRaduniNazionali().scoreRanking</td>
