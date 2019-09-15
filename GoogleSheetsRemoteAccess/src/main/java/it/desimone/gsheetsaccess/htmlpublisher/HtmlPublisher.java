@@ -16,6 +16,8 @@ import it.desimone.utils.MyLogger;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -26,8 +28,6 @@ import org.apache.velocity.app.Velocity;
 import org.apache.velocity.exception.MethodInvocationException;
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
-
-import com.itextpdf.text.log.SysoLogger;
 
 public class HtmlPublisher {
 	
@@ -42,6 +42,15 @@ public class HtmlPublisher {
 		
 		MyLogger.getLogger().info("Inizio estrazione tornei pubblicati");
 		List<TorneoPubblicato> torneiPubblicati = TorneiUtils.caricamentoTornei(year);
+	
+		Collections.sort(torneiPubblicati, new Comparator<TorneoPubblicato>() {
+
+			@Override
+			public int compare(TorneoPubblicato o1, TorneoPubblicato o2) {
+				// TODO Auto-generated method stub
+				return o2.getIdTorneo().compareTo(o1.getIdTorneo());
+			}
+		});
 		
 		listaTorneiPublisher(torneiPubblicati);
 		
@@ -208,7 +217,8 @@ public class HtmlPublisher {
 
 	public static void listaTorneiPublisher(List<TorneoPubblicato> torneiPubblicati){
 		
-		MyLogger.getLogger().info("Inizio scrittura file");
+		MyLogger.getLogger().info("Inizio scrittura file. Primo Torneo: "+torneiPubblicati.get(0).getIdTorneo());
+		MyLogger.getLogger().info("Inizio scrittura file. Ultimo Torneo: "+torneiPubblicati.get(torneiPubblicati.size()-1).getIdTorneo());
 	    Properties p = new Properties();
 	    p.setProperty("resource.loader.file.path", ResourceWorking.velocityTemplatePath());
 	    p.setProperty("runtime.log.logsystem.log4j.logger","HtmlPublisher");

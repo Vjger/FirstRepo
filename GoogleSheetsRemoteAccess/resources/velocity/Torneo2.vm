@@ -28,7 +28,7 @@
 
 			<table class="table10 ver1" style="$styleGenerator.getStyle($torneo.torneoRow.tipoTorneo); width="98%"">
 				<tr>
-					<td rowspan="2"><img src="../images/loghi/rcu/loghi50px_vert/${torneo.torneoRow.organizzatore}.png" title="$torneo.torneoRow.organizzatore" alt="$torneo.torneoRow.organizzatore"></td>
+					<td rowspan="2"><img src="../images/loghi/rcu/loghi100px_vert/${torneo.torneoRow.organizzatore}.png" title="$torneo.torneoRow.organizzatore" alt="$torneo.torneoRow.organizzatore"></td>
 					<td>$torneo.torneoRow.tipoTorneo - $torneo.torneoRow.nomeTorneo</td>
 				</tr>
 				<tr>
