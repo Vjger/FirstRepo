@@ -131,6 +131,7 @@ public class HtmlPublisher {
 		context.put( "scorePlayers", tabellini );
 		context.put( "styleGenerator", StyleGenerator.class);
 		context.put( "Capitalize", Capitalize.class);
+		context.put( "htmlPublisher", HtmlPublisher.class);
 
 		Template template = null;
 
@@ -262,7 +263,7 @@ public class HtmlPublisher {
 	}
 	
 	public static String getTorneoPage(String idTorneo){
-		return idTorneo.replaceAll("\\s+", "");
+		return idTorneo.replaceAll("\\s+", "").replaceAll("\\[", "_").replaceAll("\\]", "_");
 	}
 	
 }
