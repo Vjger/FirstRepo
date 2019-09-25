@@ -1,5 +1,6 @@
 package it.desimone.gsheetsaccess.htmlpublisher;
 
+import it.desimone.ftputils.AlterVistaUtil;
 import it.desimone.gsheetsaccess.RankingCalculator;
 import it.desimone.gsheetsaccess.common.Configurator;
 import it.desimone.gsheetsaccess.common.Configurator.Environment;
@@ -9,6 +10,7 @@ import it.desimone.gsheetsaccess.dto.TorneoPubblicato;
 import it.desimone.gsheetsaccess.gsheets.dto.AnagraficaGiocatoreRow;
 import it.desimone.gsheetsaccess.gsheets.dto.ClassificheRow;
 import it.desimone.gsheetsaccess.gsheets.dto.PartitaRow;
+import it.desimone.gsheetsaccess.gsheets.facade.ExcelGSheetsBridge;
 import it.desimone.gsheetsaccess.utils.TorneiUtils;
 import it.desimone.utils.Capitalize;
 import it.desimone.utils.MyLogger;
@@ -16,8 +18,14 @@ import it.desimone.utils.MyLogger;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -51,16 +59,20 @@ public class HtmlPublisher {
 				return o2.getIdTorneo().compareTo(o1.getIdTorneo());
 			}
 		});
-		
-		listaTorneiPublisher(torneiPubblicati);
+		File listaTornei = new File(FOLDER_PATH, "listaTornei.html");
+		listaTorneiPublisher(torneiPubblicati, listaTornei);
 		
 		MyLogger.getLogger().info("Inizio elaborazione tabellini");
 		List<ScorePlayer> tabellini = RankingCalculator.elaboraTabellini(year, torneiPubblicati);
 		
 		assegnaNominativiAPartita(torneiPubblicati, year);
 		
-		rankingPublisher(torneiPubblicati, tabellini);
-		torneiPublisher(torneiPubblicati);
+		File ranking = new File(FOLDER_PATH,"ranking.html");
+		rankingPublisher(torneiPubblicati, tabellini, ranking);
+		File folderTornei = new File(FOLDER_PATH+File.separator+"TORNEI");
+		List<File> torneiHtml = torneiPublisher(torneiPubblicati, folderTornei);
+		
+		uploadFiles(ranking, listaTornei, torneiHtml);
 		
 		MyLogger.getLogger().info("Fine elaborazione");
 	}
@@ -119,7 +131,7 @@ public class HtmlPublisher {
 		}		
 	}
 	
-	public static void rankingPublisher(List<TorneoPubblicato> torneiPubblicati, List<ScorePlayer> tabellini){
+	public static void rankingPublisher(List<TorneoPubblicato> torneiPubblicati, List<ScorePlayer> tabellini, File ranking){
 
 		MyLogger.getLogger().info("Inizio scrittura file");
 	    Properties p = new Properties();
@@ -147,7 +159,7 @@ public class HtmlPublisher {
 			MyLogger.getLogger().severe(e.getMessage());
 		}
 
-		File ranking = new File(FOLDER_PATH,"ranking.html");
+
 		FileWriter writer = null;
 		try {
 			writer = new FileWriter(ranking);
@@ -164,7 +176,7 @@ public class HtmlPublisher {
 		}
 	}
 	
-	public static void torneiPublisher(List<TorneoPubblicato> torneiPubblicati){
+	public static List<File> torneiPublisher(List<TorneoPubblicato> torneiPubblicati, File folderTornei){
 		
 //        BasicConfigurator.configure();
 //        Logger log = Logger.getLogger( "HtmlPublisher" );
@@ -192,31 +204,60 @@ public class HtmlPublisher {
 			MyLogger.getLogger().severe(e.getMessage());
 		}
 
-		for (TorneoPubblicato torneo: torneiPubblicati){
-			MyLogger.getLogger().info("Inizio elaborazione torneo "+torneo.getIdTorneo());
-
-			context.put( "torneo", torneo );
-			context.put( "styleGenerator", StyleGenerator.class);
-		
-			File ranking = new File(FOLDER_PATH+File.separator+"TORNEI", getTorneoPage(torneo.getIdTorneo())+".html");
-			FileWriter writer = null;
+		String lastDateString = ResourceWorking.getLastTournamentDate("2019");
+		Date lastDate = null;
+		if (lastDateString != null && !lastDateString.trim().isEmpty()){
 			try {
-				writer = new FileWriter(ranking);
-				template.merge( context, writer );
-			} catch (IOException e) {
-				MyLogger.getLogger().severe(e.getMessage());
-			}finally{
-				try {
-					writer.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				lastDate = ExcelGSheetsBridge.dfUpdateTime.parse(lastDateString);
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
+		List<File> result = new ArrayList<File>();
+		Calendar primoGennaio2019 = GregorianCalendar.getInstance();
+		primoGennaio2019.set(Calendar.DAY_OF_MONTH, 1);
+		primoGennaio2019.set(Calendar.MONTH, Calendar.JANUARY);
+		primoGennaio2019.set(Calendar.YEAR, 2019);
+		Date maxDate = primoGennaio2019.getTime();
+		for (TorneoPubblicato torneo: torneiPubblicati){
+			MyLogger.getLogger().info("Inizio elaborazione torneo "+torneo.getIdTorneo());
+			try {
+				Date updateTime = ExcelGSheetsBridge.dfUpdateTime.parse(torneo.getTorneoRow().getUpdateTime());
+				if (lastDate == null || updateTime.after(lastDate)){
+					context.put( "torneo", torneo );
+					context.put( "styleGenerator", StyleGenerator.class);
+				
+					File torneoHtml = new File(folderTornei, getTorneoPage(torneo.getIdTorneo())+".html");
+					FileWriter writer = null;
+					try {
+						writer = new FileWriter(torneoHtml);
+						template.merge( context, writer );
+						result.add(torneoHtml);
+						if (maxDate.before(updateTime)){
+							maxDate = updateTime;
+						}
+					} catch (IOException e) {
+						MyLogger.getLogger().severe(e.getMessage());
+					}finally{
+						try {
+							writer.close();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		ResourceWorking.setLastTournamentDate("2019", ExcelGSheetsBridge.dfUpdateTime.format(maxDate));
+		return result;
 	}
 
-	public static void listaTorneiPublisher(List<TorneoPubblicato> torneiPubblicati){
+	public static void listaTorneiPublisher(List<TorneoPubblicato> torneiPubblicati, File listaTornei){
 		
 		MyLogger.getLogger().info("Inizio scrittura file. Primo Torneo: "+torneiPubblicati.get(0).getIdTorneo());
 		MyLogger.getLogger().info("Inizio scrittura file. Ultimo Torneo: "+torneiPubblicati.get(torneiPubblicati.size()-1).getIdTorneo());
@@ -245,7 +286,7 @@ public class HtmlPublisher {
 		context.put( "styleGenerator", StyleGenerator.class);
 		context.put( "htmlPublisher", HtmlPublisher.class);
 	
-		File listaTornei = new File(FOLDER_PATH, "listaTornei.html");
+		
 		FileWriter writer = null;
 		try {
 			writer = new FileWriter(listaTornei);
@@ -262,8 +303,14 @@ public class HtmlPublisher {
 		}
 	}
 	
+	private static void uploadFiles(File ranking, File listaTornei, List<File> torneiHtml){
+		AlterVistaUtil.uploadInRoot(Collections.singletonList(ranking));
+		AlterVistaUtil.uploadInRoot(Collections.singletonList(listaTornei));
+		AlterVistaUtil.uploadInTornei(torneiHtml);
+	}
+	
 	public static String getTorneoPage(String idTorneo){
-		return idTorneo.replaceAll("\\s+", "").replaceAll("\\[", "_").replaceAll("\\]", "_");
+		return idTorneo.replaceAll("\\s+", "").replaceAll("\\[", "_").replaceAll("\\]", "_").replaceAll("!", "");
 	}
 	
 }

@@ -186,5 +186,11 @@
 	 	<artifactId>GestioneTorneo</artifactId>
 	 	<version>2.1.2</version>
 	 </dependency>
+	 
+	 <dependency>
+	 	<groupId>it.desimone</groupId>
+	 	<artifactId>FtpUtility</artifactId>
+	 	<version>1.0.0</version>
+	 </dependency>
   </dependencies>  
 </project>

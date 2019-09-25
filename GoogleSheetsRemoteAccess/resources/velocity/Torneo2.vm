@@ -25,7 +25,8 @@
 	
 	<div class="limiterTorneo">
 		<div class="container-table100">
-
+			<table>
+			<tr><td> <!-- riga intestazione -->
 			<table class="table10 ver1" style="$styleGenerator.getStyle($torneo.torneoRow.tipoTorneo); width="98%"">
 				<tr>
 					<td rowspan="2"><img src="../images/loghi/rcu/loghi100px_vert/${torneo.torneoRow.organizzatore}.png" title="$torneo.torneoRow.organizzatore" alt="$torneo.torneoRow.organizzatore"></td>
@@ -34,7 +35,9 @@
 				<tr>
 					<td>Dal $torneo.torneoRow.startDate al $torneo.torneoRow.endDate - Turni: $torneo.torneoRow.numeroTurni - Partecipanti: $torneo.torneoRow.numeroPartecipanti</td>
 				</tr>
-			</table>		
+			</table>
+			</td></tr>		
+			<tr><td> <!-- riga partite -->
 			<div class="wrap-220">
 				<table> <!-- tabella turni -->
 				#set( $numeroTrn = 0)
@@ -76,11 +79,15 @@
 				</td>
 				</tr></table>
 			</div>
+			</td></tr>		
 			#if($torneo.classifica)
+				<tr><td> <!-- riga classifica -->
 				<div class="wrap-220" style="width: 1000px">
 					#parse("ClassificaTorneo.vm")
 				</div>
+			</td></tr>		
 			#end
+			</table>
 		</div>
 	</div>
 

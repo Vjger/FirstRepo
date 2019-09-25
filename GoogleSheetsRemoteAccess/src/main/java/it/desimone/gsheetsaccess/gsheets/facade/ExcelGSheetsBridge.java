@@ -27,7 +27,7 @@ public class ExcelGSheetsBridge {
 	private static final DateFormat dfIdTorneo = new SimpleDateFormat("yyyyMMdd");
 	private static final DateFormat dfYearTorneo = new SimpleDateFormat("yyyy");
 	private static final DateFormat dfDateTorneo = new SimpleDateFormat("dd/MM/yyyy");
-	private static final DateFormat dfUpdateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+	public static final DateFormat dfUpdateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 	
 	public static TorneiRow getTorneoRowByTorneo(Torneo torneo){
 		if (torneo == null || torneo.getSchedaTorneo() == null){

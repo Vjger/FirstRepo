@@ -40,7 +40,7 @@
 									<th class="column10">Turni previsti</th>
 									<th class="column10">Tavoli</th>	
 									<th class="column10">Concluso</th>								
-									<th class="column10"><img src="images/icons/note.jpg" title="note" alt="note"></th>	
+									<th class="column10"><img src="images/icons/note.png" title="note" alt="note"></th>	
 								</tr>
 							</thead>
 							<tbody>
@@ -65,7 +65,7 @@
 									</td>	
 									<td class="column10" style="$stileCella">
 										#if($torneo.torneoRow.note)
-											<img src="images/icons/note.jpg" title="$torneo.torneoRow.note" alt="note">
+											<img src="images/icons/note.png" title="$torneo.torneoRow.note" alt="note">
 										#end 
 									</td>	
 								</tr>

@@ -3,6 +3,10 @@ package it.desimone.gsheetsaccess.common;
 import it.desimone.utils.MyLogger;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Properties;
 
 public class ResourceWorking {
 	
@@ -47,5 +51,41 @@ public class ResourceWorking {
 		return new java.io.File(ROOT+File.separator+"resources"+File.separator+"google", ".credentials/RisiKo Data Manager");
 	}
 	
+	private static Properties tournamentsDataProperties(){
+		Properties props = new Properties();
+		FileInputStream propertiesStream = null;
+		try {
+			propertiesStream = new FileInputStream(new File(ROOT+File.separator+"working"+File.separator+"htmlpublisher"+File.separator+"tournamentsdata.properties"));
+			props.load(propertiesStream);
+		} catch (IOException e) {
+			MyLogger.getLogger().severe("IOException nel caricamento del file di Properties: "+e.getMessage());
+		} finally {
+			if (propertiesStream != null) {
+				try {
+					propertiesStream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return props;
+	}
+	
+	public static String getLastTournamentDate(String year){
+		return tournamentsDataProperties().getProperty("lastupdatedate"+year);
+	}
+	
+	public static void setLastTournamentDate(String year, String value){
+		FileOutputStream out = null; 
+
+		try{
+			out = new FileOutputStream(new File(ROOT+File.separator+"working"+File.separator+"htmlpublisher"+File.separator+"tournamentsdata.properties"));
+			tournamentsDataProperties().setProperty("lastupdatedate"+year, value);
+			tournamentsDataProperties().store(out, null);
+			out.close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
 	
 }

@@ -102,7 +102,7 @@ public class HtmlPublisherTest {
 		torneo.setPartite(partite);
 		
 		tornei.add(torneo);
-		HtmlPublisher.torneiPublisher(tornei);
+		//HtmlPublisher.torneiPublisher(tornei);
 	}
 	
 }
