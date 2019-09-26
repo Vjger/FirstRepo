@@ -18,7 +18,9 @@ import it.desimone.utils.MyLogger;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -40,6 +42,9 @@ import org.apache.velocity.exception.ResourceNotFoundException;
 public class HtmlPublisher {
 	
 	private static final String FOLDER_PATH = "C:\\Users\\mds\\Desktop\\RisiKo Pages";
+	public static final DateFormat lastUpdateTimeFormat = new SimpleDateFormat("dd/MM/yyyyHHmmss");
+	
+	private static Date maxDate = null;
 
 	public static void main(String[] args) {
 		MyLogger.setConsoleLogLevel(Level.INFO);
@@ -70,10 +75,14 @@ public class HtmlPublisher {
 		File ranking = new File(FOLDER_PATH,"ranking.html");
 		rankingPublisher(torneiPubblicati, tabellini, ranking);
 		File folderTornei = new File(FOLDER_PATH+File.separator+"TORNEI");
-		List<File> torneiHtml = torneiPublisher(torneiPubblicati, folderTornei);
+		List<File> torneiHtml = torneiPublisher(year, torneiPubblicati, folderTornei);
 		
-		uploadFiles(ranking, listaTornei, torneiHtml);
-		
+		try{
+			uploadFiles(ranking, listaTornei, torneiHtml);
+			ResourceWorking.setLastTournamentDate(year, lastUpdateTimeFormat.format(maxDate));
+		}catch(IOException ioe){
+			MyLogger.getLogger().severe("Errore nel ftp dei file: "+ioe.getMessage());
+		}
 		MyLogger.getLogger().info("Fine elaborazione");
 	}
 	
@@ -176,7 +185,7 @@ public class HtmlPublisher {
 		}
 	}
 	
-	public static List<File> torneiPublisher(List<TorneoPubblicato> torneiPubblicati, File folderTornei){
+	public static List<File> torneiPublisher(String year, List<TorneoPubblicato> torneiPubblicati, File folderTornei){
 		
 //        BasicConfigurator.configure();
 //        Logger log = Logger.getLogger( "HtmlPublisher" );
@@ -204,22 +213,17 @@ public class HtmlPublisher {
 			MyLogger.getLogger().severe(e.getMessage());
 		}
 
-		String lastDateString = ResourceWorking.getLastTournamentDate("2019");
+		String lastDateString = ResourceWorking.getLastTournamentDate(year);
 		Date lastDate = null;
 		if (lastDateString != null && !lastDateString.trim().isEmpty()){
 			try {
-				lastDate = ExcelGSheetsBridge.dfUpdateTime.parse(lastDateString);
+				lastDate = lastUpdateTimeFormat.parse(lastDateString);
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 		List<File> result = new ArrayList<File>();
-		Calendar primoGennaio2019 = GregorianCalendar.getInstance();
-		primoGennaio2019.set(Calendar.DAY_OF_MONTH, 1);
-		primoGennaio2019.set(Calendar.MONTH, Calendar.JANUARY);
-		primoGennaio2019.set(Calendar.YEAR, 2019);
-		Date maxDate = primoGennaio2019.getTime();
 		for (TorneoPubblicato torneo: torneiPubblicati){
 			MyLogger.getLogger().info("Inizio elaborazione torneo "+torneo.getIdTorneo());
 			try {
@@ -234,7 +238,7 @@ public class HtmlPublisher {
 						writer = new FileWriter(torneoHtml);
 						template.merge( context, writer );
 						result.add(torneoHtml);
-						if (maxDate.before(updateTime)){
+						if (maxDate == null || maxDate.before(updateTime)){
 							maxDate = updateTime;
 						}
 					} catch (IOException e) {
@@ -253,7 +257,6 @@ public class HtmlPublisher {
 				e.printStackTrace();
 			}
 		}
-		ResourceWorking.setLastTournamentDate("2019", ExcelGSheetsBridge.dfUpdateTime.format(maxDate));
 		return result;
 	}
 
@@ -303,10 +306,10 @@ public class HtmlPublisher {
 		}
 	}
 	
-	private static void uploadFiles(File ranking, File listaTornei, List<File> torneiHtml){
-		AlterVistaUtil.uploadInRoot(Collections.singletonList(ranking));
-		AlterVistaUtil.uploadInRoot(Collections.singletonList(listaTornei));
+	private static void uploadFiles(File ranking, File listaTornei, List<File> torneiHtml) throws IOException{
 		AlterVistaUtil.uploadInTornei(torneiHtml);
+		AlterVistaUtil.uploadInRoot(Collections.singletonList(listaTornei));
+		AlterVistaUtil.uploadInRoot(Collections.singletonList(ranking));
 	}
 	
 	public static String getTorneoPage(String idTorneo){

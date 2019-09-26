@@ -21,27 +21,18 @@ public class AlterVistaUtil {
 
 	}
 
-	public static void uploadInRoot(List<File> files){
+	public static void uploadInRoot(List<File> files)  throws IOException{
 		FtpClient client = new FtpClient(HOST, 21, USERNAME, PASSWORD);
-		try {
 			client.open();
 			client.uploadFiles(ROOT, files);
 			client.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
 	}
-	public static void uploadInTornei(List<File> files){
+	public static void uploadInTornei(List<File> files) throws IOException{
 		FtpClient client = new FtpClient(HOST, 21, USERNAME, PASSWORD);
-		try {
 			client.open();
 			client.changeDirectory(ROOT);
 			client.uploadFiles("TORNEI", files);
 			client.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 }

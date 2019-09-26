@@ -77,15 +77,18 @@ public class ResourceWorking {
 	
 	public static void setLastTournamentDate(String year, String value){
 		FileOutputStream out = null; 
-
+		Properties props = tournamentsDataProperties();
 		try{
 			out = new FileOutputStream(new File(ROOT+File.separator+"working"+File.separator+"htmlpublisher"+File.separator+"tournamentsdata.properties"));
-			tournamentsDataProperties().setProperty("lastupdatedate"+year, value);
-			tournamentsDataProperties().store(out, null);
+			props.setProperty("lastupdatedate"+year, value);
+			props.store(out, null);
 			out.close();
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 	}
 	
+	public static void main(String[] args){
+		setLastTournamentDate("2019", "pippo");
+	}
 }
