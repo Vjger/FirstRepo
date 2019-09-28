@@ -22,14 +22,13 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Level;
 
 import org.apache.velocity.Template;
@@ -60,8 +59,16 @@ public class HtmlPublisher {
 
 			@Override
 			public int compare(TorneoPubblicato o1, TorneoPubblicato o2) {
-				// TODO Auto-generated method stub
-				return o2.getIdTorneo().compareTo(o1.getIdTorneo());
+				int result = 0;
+				try{
+					Date endDate1 = ExcelGSheetsBridge.dfDateTorneo.parse(o1.getTorneoRow().getEndDate());
+					Date endDate2 = ExcelGSheetsBridge.dfDateTorneo.parse(o2.getTorneoRow().getEndDate());
+					result = endDate2.compareTo(endDate1);
+				}catch(ParseException pe){
+					MyLogger.getLogger().severe(pe.getMessage());
+				}
+				//return o2.getIdTorneo().compareTo(o1.getIdTorneo());
+				return result;
 			}
 		});
 		File listaTornei = new File(FOLDER_PATH, "listaTornei.html");
@@ -79,7 +86,9 @@ public class HtmlPublisher {
 		
 		try{
 			uploadFiles(ranking, listaTornei, torneiHtml);
-			ResourceWorking.setLastTournamentDate(year, lastUpdateTimeFormat.format(maxDate));
+			if (maxDate != null){
+				ResourceWorking.setLastTournamentDate(year, lastUpdateTimeFormat.format(maxDate));
+			}
 		}catch(IOException ioe){
 			MyLogger.getLogger().severe("Errore nel ftp dei file: "+ioe.getMessage());
 		}
@@ -264,6 +273,12 @@ public class HtmlPublisher {
 		
 		MyLogger.getLogger().info("Inizio scrittura file. Primo Torneo: "+torneiPubblicati.get(0).getIdTorneo());
 		MyLogger.getLogger().info("Inizio scrittura file. Ultimo Torneo: "+torneiPubblicati.get(torneiPubblicati.size()-1).getIdTorneo());
+		
+		Set<String> clubs = new TreeSet<String>();
+		for (TorneoPubblicato torneo: torneiPubblicati){
+			clubs.add(torneo.getTorneoRow().getOrganizzatore());
+		}
+		
 	    Properties p = new Properties();
 	    p.setProperty("resource.loader.file.path", ResourceWorking.velocityTemplatePath());
 	    p.setProperty("runtime.log.logsystem.log4j.logger","HtmlPublisher");
@@ -286,6 +301,7 @@ public class HtmlPublisher {
 		}
 
 		context.put( "tornei", torneiPubblicati );
+		context.put( "clubs", clubs );
 		context.put( "styleGenerator", StyleGenerator.class);
 		context.put( "htmlPublisher", HtmlPublisher.class);
 	

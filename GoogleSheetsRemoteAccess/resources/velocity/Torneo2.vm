@@ -5,7 +5,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 <!--===============================================================================================-->	
-	<link rel="icon" type="../image/png" href="images/icons/favicon.ico"/>
+	<link rel="icon" type="../image/png" href="images/icons/rosso_45px.ico"/>
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="../vendor/bootstrap/css/bootstrap.min.css">
 <!--===============================================================================================-->
@@ -29,8 +29,9 @@
 			<tr><td> <!-- riga intestazione -->
 			<table class="table10 ver1" style="$styleGenerator.getStyle($torneo.torneoRow.tipoTorneo); width="98%"">
 				<tr>
-					<td rowspan="2"><img src="../images/loghi/rcu/loghi100px_vert/${torneo.torneoRow.organizzatore}.png" title="$torneo.torneoRow.organizzatore" alt="$torneo.torneoRow.organizzatore"></td>
+					<td rowspan="2"><a href="../index.html"><img src="../images/icons/home.png"></a></td>
 					<td>$torneo.torneoRow.tipoTorneo - $torneo.torneoRow.nomeTorneo</td>
+					<td rowspan="2"><img src="../images/loghi/rcu/loghi100px_vert/${torneo.torneoRow.organizzatore}.png" title="$torneo.torneoRow.organizzatore" alt="$torneo.torneoRow.organizzatore"></td>					
 				</tr>
 				<tr>
 					<td>Dal $torneo.torneoRow.startDate al $torneo.torneoRow.endDate - Turni: $torneo.torneoRow.numeroTurni - Partecipanti: $torneo.torneoRow.numeroPartecipanti</td>

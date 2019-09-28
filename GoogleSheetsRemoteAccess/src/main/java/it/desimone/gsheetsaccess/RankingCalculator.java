@@ -77,15 +77,22 @@ public class RankingCalculator {
 						}
 					}
 					if (torneoPubblicato.isConcluso()){
-						for (ClassificheRow classificheRow: torneoPubblicato.getClassifica()){
-							if (classificheRow.getIdGiocatore().equals(idPartecipante)){
-								TipoTorneo tipoTorneo = TipoTorneo.parseTipoTorneo(torneoRow.getTipoTorneo());
-								BigDecimal scoreRanking = RankingScorer.calcolaScore(classificheRow.getPosizione(), tipoTorneo, torneoRow.getNumeroTavoli(), torneoRow.getNumeroPartecipanti(), torneoRow.getNumeroTurni());
-								scorePlayer.addScoreRanking(scoreRanking);
-								scorePlayer.addTabellinoPlayer(torneoPubblicato, classificheRow.getPosizione(), scoreRanking);
-								scorePlayer.addTabellinoPerTipoTorneo(scoreRanking, tipoTorneo);
-								break;
+						if (torneoPubblicato.getClassifica() != null && !torneoPubblicato.getClassifica().isEmpty()){
+							for (ClassificheRow classificheRow: torneoPubblicato.getClassifica()){
+								if (classificheRow.getIdGiocatore().equals(idPartecipante)){
+									TipoTorneo tipoTorneo = TipoTorneo.parseTipoTorneo(torneoRow.getTipoTorneo());
+									BigDecimal scoreRanking = RankingScorer.calcolaScore(classificheRow.getPosizione(), tipoTorneo, torneoRow.getNumeroTavoli(), torneoRow.getNumeroPartecipanti(), torneoRow.getNumeroTurni());
+									scorePlayer.addScoreRanking(scoreRanking);
+									scorePlayer.addTabellinoPlayer(torneoPubblicato, classificheRow.getPosizione(), scoreRanking);
+									scorePlayer.addTabellinoPerTipoTorneo(scoreRanking, tipoTorneo);
+									break;
+								}
 							}
+						}else{
+							//Ha partecipato ma non c'è classifica
+							TipoTorneo tipoTorneo = TipoTorneo.parseTipoTorneo(torneoRow.getTipoTorneo());
+							scorePlayer.addTabellinoPlayer(torneoPubblicato, null, BigDecimal.ZERO);
+							scorePlayer.addTabellinoPerTipoTorneo(BigDecimal.ZERO, tipoTorneo);
 						}
 					}
 					if (!giaPresente){

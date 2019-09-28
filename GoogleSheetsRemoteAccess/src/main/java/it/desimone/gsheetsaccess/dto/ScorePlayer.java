@@ -78,7 +78,7 @@ public class ScorePlayer implements Comparable<ScorePlayer>{
 			this.posizioneRaggiunta = posizioneRaggiunta;
 		}
 		public BigDecimal getScoreRanking() {
-			return scoreRanking.setScale(2, RoundingMode.HALF_DOWN);
+			return scoreRanking.setScale(1, RoundingMode.HALF_DOWN);
 		}
 		public void setScoreRanking(BigDecimal scoreRanking) {
 			this.scoreRanking = scoreRanking;
@@ -151,7 +151,7 @@ public class ScorePlayer implements Comparable<ScorePlayer>{
 			this.numeroTorneiDisputati = numeroTorneiDisputati;
 		}
 		public BigDecimal getScoreRanking() {
-			return scoreRanking.setScale(2, RoundingMode.HALF_DOWN);
+			return scoreRanking.setScale(1, RoundingMode.HALF_DOWN);
 		}
 		public void addScoreRanking(BigDecimal score) {
 			scoreRanking = scoreRanking.add(score);
@@ -202,7 +202,7 @@ public class ScorePlayer implements Comparable<ScorePlayer>{
 	}
 	
 	public BigDecimal getScoreRanking() {
-		return scoreRanking.setScale(2, RoundingMode.HALF_DOWN);
+		return scoreRanking.setScale(1, RoundingMode.HALF_DOWN);
 	}
 
 	public void setScoreRanking(BigDecimal scoreRanking) {

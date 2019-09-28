@@ -5,7 +5,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 <!--===============================================================================================-->	
-	<link rel="icon" type="image/png" href="images/icons/favicon.ico"/>
+	<link rel="icon" type="image/png" href="images/loghi/173-1735698_png-file-svg-ranking-icon-png.png"/>
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
 <!--===============================================================================================-->
@@ -37,8 +37,9 @@
 	
 	<div class="limiter">
 		<div class="container-table100">			
-			<div class="wrap-table100"  style="width: 1600px">
-				<div class="table100 ver1 m-b-110"  style="width: 1600px">
+			<div class="wrap-table100"  style="width: 1366px" >
+				<div class="table100 ver1 m-b-110" style="padding-top: 5px;">
+						<div><a href="index.html"><img src="images/icons/home.png"></a></div>
 						<div style="text-align: center;"><img src="images/loghi/ranking_360x171.png"></div>
 						<table>
 							<thead>
@@ -84,7 +85,7 @@
 								#end
 									<td class="column10" onclick="toggle($scorePlayer.getAnagraficaGiocatore().getId())"><img id="plusminus$scorePlayer.getAnagraficaGiocatore().getId()" src="images/icons/plus.png" title="Espandi il tabellino"> </td>
 									<td class="column10">$foreach.count</td>
-									<td class="column10">$scorePlayer.getAnagraficaGiocatore().getId()</td>
+									<td class="column10"><a name="$scorePlayer.getAnagraficaGiocatore().getId()">$scorePlayer.getAnagraficaGiocatore().getId()</a></td>
 									<td>$Capitalize.capitalize($scorePlayer.getAnagraficaGiocatore().getNome()) $Capitalize.capitalize($scorePlayer.getAnagraficaGiocatore().getCognome())</td>
 									<td class="column10">$scorePlayer.getScoreRanking()</td>
 									<td class="column10">$scorePlayer.getTabellinoRaduniNazionali().numeroTorneiDisputati</td>
@@ -125,7 +126,12 @@
 												<td class="column10" style="$styleGenerator.getStyle($tabellinoPlayer.torneo.torneoRow.tipoTorneo)"><a style="color: inherit; cursor: pointer;"  href="TORNEI/$urlTorneo" target="_blank">$tabellinoPlayer.torneo.torneoRow.nomeTorneo</a></td>
 												<td class="column10" style="$styleGenerator.getStyle($tabellinoPlayer.torneo.torneoRow.tipoTorneo)">$tabellinoPlayer.torneo.torneoRow.startDate</td>
 												<td class="column10" style="$styleGenerator.getStyle($tabellinoPlayer.torneo.torneoRow.tipoTorneo)">$tabellinoPlayer.torneo.torneoRow.endDate</td>
-												<td class="column10" style="$styleGenerator.getStyle($tabellinoPlayer.torneo.torneoRow.tipoTorneo)">$tabellinoPlayer.posizioneRaggiunta°</td>
+												<td class="column10" style="$styleGenerator.getStyle($tabellinoPlayer.torneo.torneoRow.tipoTorneo)">#if($tabellinoPlayer.posizioneRaggiunta)
+																																						$tabellinoPlayer.posizioneRaggiunta°
+																																					#else
+																																						/
+																																					#end
+																																					</td>
 												<td class="column10" style="$styleGenerator.getStyle($tabellinoPlayer.torneo.torneoRow.tipoTorneo)">$tabellinoPlayer.scoreRanking</td>							
 											</tr>
 											#end
