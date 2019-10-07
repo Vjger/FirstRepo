@@ -7,10 +7,15 @@ import java.util.List;
 
 public class AlterVistaUtil {
 
-	private static final String ROOT = "RisiKo";
-	private static final String HOST = "ftp.marcodesimone.altervista.org";
-	private static final String USERNAME = "marcodesimone";
-	private static final String PASSWORD = "V4qsduw7YScF";
+//	private static final String ROOT = "RisiKo";
+//	private static final String HOST = "ftp.marcodesimone.altervista.org";
+//	private static final String USERNAME = "marcodesimone";
+//	private static final String PASSWORD = "V4qsduw7YScF";
+	
+	private static final String ROOT = "/";
+	private static final String HOST = "ftp.rcu.altervista.org";
+	private static final String USERNAME = "rcu";
+	private static final String PASSWORD = "Ar44Q6hjgtdm";
 	
 	public static void main(String[] args) throws IOException {
 		FtpClient client = new FtpClient("ftp.marcodesimone.altervista.org", 21, "marcodesimone", "V4qsduw7YScF");
@@ -29,10 +34,12 @@ public class AlterVistaUtil {
 
 	}
 	public static void uploadInTornei(List<File> files) throws IOException{
-		FtpClient client = new FtpClient(HOST, 21, USERNAME, PASSWORD);
+		for (File file: files){
+			FtpClient client = new FtpClient(HOST, 21, USERNAME, PASSWORD);
 			client.open();
 			client.changeDirectory(ROOT);
-			client.uploadFiles("TORNEI", files);
+			client.uploadFiles("TORNEI", Collections.singletonList(file));
 			client.close();
+		}
 	}
 }

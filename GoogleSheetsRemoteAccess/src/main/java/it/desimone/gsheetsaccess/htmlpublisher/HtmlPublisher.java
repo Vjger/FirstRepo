@@ -40,7 +40,7 @@ import org.apache.velocity.exception.ResourceNotFoundException;
 
 public class HtmlPublisher {
 	
-	private static final String FOLDER_PATH = "C:\\Users\\mds\\Desktop\\RisiKo Pages";
+	public static final String FOLDER_PATH = "C:\\Users\\mds\\Desktop\\RisiKo Pages";
 	public static final DateFormat lastUpdateTimeFormat = new SimpleDateFormat("dd/MM/yyyyHHmmss");
 	
 	private static Date maxDate = null;
@@ -75,12 +75,12 @@ public class HtmlPublisher {
 		listaTorneiPublisher(torneiPubblicati, listaTornei);
 		
 		MyLogger.getLogger().info("Inizio elaborazione tabellini");
-		List<ScorePlayer> tabellini = RankingCalculator.elaboraTabellini(year, torneiPubblicati);
+		List<ScorePlayer> tabellini = RankingCalculator.elaboraTabellini(year, torneiPubblicati, null);
 		
 		assegnaNominativiAPartita(torneiPubblicati, year);
 		
 		File ranking = new File(FOLDER_PATH,"ranking.html");
-		rankingPublisher(torneiPubblicati, tabellini, ranking);
+		rankingPublisher(tabellini, ranking);
 		File folderTornei = new File(FOLDER_PATH+File.separator+"TORNEI");
 		List<File> torneiHtml = torneiPublisher(year, torneiPubblicati, folderTornei);
 		
@@ -149,7 +149,7 @@ public class HtmlPublisher {
 		}		
 	}
 	
-	public static void rankingPublisher(List<TorneoPubblicato> torneiPubblicati, List<ScorePlayer> tabellini, File ranking){
+	public static void rankingPublisher(List<ScorePlayer> tabellini, File ranking){
 
 		MyLogger.getLogger().info("Inizio scrittura file");
 	    Properties p = new Properties();
@@ -211,7 +211,7 @@ public class HtmlPublisher {
 		Template template = null;
 
 		try{
-		  template = Velocity.getTemplate("Torneo2.vm");
+		  template = Velocity.getTemplate("Torneo.vm");
 		}catch( ResourceNotFoundException rnfe ){
 			MyLogger.getLogger().severe(rnfe.getMessage());
 		}catch( ParseErrorException pee ){

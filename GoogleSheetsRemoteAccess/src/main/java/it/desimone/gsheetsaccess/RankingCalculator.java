@@ -42,7 +42,7 @@ public class RankingCalculator {
 		MyLogger.getLogger().info("END");
 	}
 	
-	public static List<ScorePlayer> elaboraTabellini(String year, List<TorneoPubblicato> torneiPubblicati){
+	public static List<ScorePlayer> elaboraTabellini(String year, List<TorneoPubblicato> torneiPubblicati, List<Integer> whiteList){
 		List<ScorePlayer> result = null;
 		
 		if (torneiPubblicati != null && !torneiPubblicati.isEmpty()){
@@ -51,7 +51,7 @@ public class RankingCalculator {
 			for (TorneoPubblicato torneoPubblicato: torneiPubblicati){
 				Set<Integer> idPartecipanti = torneoPubblicato.getIdPartecipanti();
 				for (Integer idPartecipante: idPartecipanti){
-					if (idPartecipante <=0){ //Si tolgono anonimi e ghost
+					if (idPartecipante <=0 || (whiteList != null && !whiteList.isEmpty() && !whiteList.contains(idPartecipante))){ //Si tolgono anonimi e ghost
 						continue;
 					}
 					ScorePlayer scorePlayer = null;

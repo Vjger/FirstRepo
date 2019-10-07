@@ -5,132 +5,90 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 <!--===============================================================================================-->	
-	<link rel="icon" type="image/png" href="images/icons/favicon.ico"/>
+	<link rel="icon" type="../image/png" href="images/icons/rosso_45px.ico"/>
 <!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="../vendor/bootstrap/css/bootstrap.min.css">
 <!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="../fonts/font-awesome-4.7.0/css/font-awesome.min.css">
 <!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+	<link rel="stylesheet" type="text/css" href="../vendor/animate/animate.css">
 <!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+	<link rel="stylesheet" type="text/css" href="../vendor/select2/select2.min.css">
 <!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/perfect-scrollbar/perfect-scrollbar.css">
+	<link rel="stylesheet" type="text/css" href="../vendor/perfect-scrollbar/perfect-scrollbar.css">
 <!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="css/util.css">
-	<link rel="stylesheet" type="text/css" href="css/main.css">
+	<link rel="stylesheet" type="text/css" href="../css/util.css">
+	<link rel="stylesheet" type="text/css" href="../css/main.css">
 <!--===============================================================================================-->
 </head>
 <body>
 	
-	<div class="limiter">
-		<div class="container-table100">			
-			<div class="wrap-220">
+	<div class="limiterTorneo">
+		<div class="container-table100">
 			<table>
+			<tr><td> <!-- riga intestazione -->
+			<table class="table10 ver1" style="$styleGenerator.getStyle($torneo.torneoRow.tipoTorneo); width="98%"">
+				<tr>
+					<td rowspan="2"><a href="../index.html"><img src="../images/icons/home.png"></a></td>
+					<td>$torneo.torneoRow.tipoTorneo - $torneo.torneoRow.nomeTorneo</td>
+					<td rowspan="2"><img src="../images/loghi/rcu/loghi100px_vert/${torneo.torneoRow.organizzatore}.png" title="$torneo.torneoRow.organizzatore" alt="$torneo.torneoRow.organizzatore"></td>					
+				</tr>
+				<tr>
+					<td>Dal $torneo.torneoRow.startDate al $torneo.torneoRow.endDate - Turni: $torneo.torneoRow.numeroTurni - Partecipanti: $torneo.torneoRow.numeroPartecipanti</td>
+				</tr>
+			</table>
+			</td></tr>		
+			<tr><td> <!-- riga partite -->
+			<div class="wrap-220">
+				<table> <!-- tabella turni -->
 				#set( $numeroTrn = 0)
+				#set( $counterPartite = 0)
 				#foreach( $partita in $torneo.partite )
 					#if ($partita.numeroTurno != $numeroTrn)
+						#set( $counterPartite = 0)
 						#if ($numeroTrn != 0)
-						</tr>
+						</tr></table></div> <!-- chiusura tabella partite -->
+						</td>
+						</tr>  <!-- chiusura riga turno -->
+						<tr>
+						<td style="padding-top: 25px;"> <!-- apertura nuovo turno -->
+						<!-- Inizio tabella partite -->
+						<div class="table10 ver1">Turno $partita.numeroTurno - $partita.dataTurno</div>
+						<div style="padding: 5px;">
+						<table><tr>
+						#else
+						<tr><td style="padding-top: 25px;"> <!-- primo turno -->
+						<!-- Inizio tabella partite -->
+						<div class="table10 ver1">Turno $partita.numeroTurno - $partita.dataTurno</div>
+						<div style="padding: 5px;">
+						<table><tr>
 						#end
 						#set ( $numeroTrn = $partita.numeroTurno)
+					#end
+					#set ( $counterPartite = $counterPartite + 1)
+					#if ($counterPartite % 5 == 0)
+						#set( $counterPartite = 1)
+							</tr> <!-- chiusura riga tabella partite -->
+						<!-- Inizio riga tabella partite -->
 						<tr>
 					#end
 					<td>
-				<div class="table100 ver1 m-b-110">
-
-					<div class="table100-head">
-						<table>
-							<thead>
-							<tr class="head">
-									<th class="column1">#</th>
-									<th class="column2">Tavolo $partita.numeroTavolo</th>
-									<th class="column3">Punti</th>
-								</tr>
-							</thead>
-						</table>
-					</div>
-
-					<div class="table100-body js-pscroll">
-						<table>
-							<tbody>
-								<tr class="body">
-								#if ($partita.idGiocatore1 == $partita.idGiocatoreVincitore)
-									<td class="column1" style="color: red">$partita.idGiocatore1</td>
-									<td class="column2" style="color: red; white-space: nowrap">$partita.nominativoGiocatore1</td>
-									<td class="column3" style="color: red">$partita.punteggioGiocatore1Int</td>
-								#else
-									<td class="column1">$partita.idGiocatore1</td>
-									<td class="column2" style="white-space: nowrap">$partita.nominativoGiocatore1</td>
-									<td class="column3">$partita.punteggioGiocatore1Int</td>
-								#end
-								</tr>
-								<tr class="body">
-								#if ($partita.idGiocatore2 == $partita.idGiocatoreVincitore)
-									<td class="column1" style="color: red">$partita.idGiocatore2</td>
-									<td class="column2" style="color: red; white-space: nowrap">$partita.nominativoGiocatore2</td>
-									<td class="column3" style="color: red">$partita.punteggioGiocatore2Int</td>
-								#else
-									<td class="column1">$partita.idGiocatore2</td>
-									<td class="column2" style="white-space: nowrap">$partita.nominativoGiocatore2</td>
-									<td class="column3">$partita.punteggioGiocatore2Int</td>
-								#end
-								</tr>								
-								<tr class="body">
-								#if ($partita.idGiocatore3 == $partita.idGiocatoreVincitore)
-									<td class="column1" style="color: red">$partita.idGiocatore3</td>
-									<td class="column2" style="color: red; white-space: nowrap">$partita.nominativoGiocatore3</td>
-									<td class="column3" style="color: red">$partita.punteggioGiocatore3Int</td>
-								#else
-									<td class="column1">$partita.idGiocatore3</td>
-									<td class="column2" style="white-space: nowrap">$partita.nominativoGiocatore3</td>
-									<td class="column3">$partita.punteggioGiocatore3Int</td>
-								#end
-								</tr>		
-								<tr class="body">
-								#if ($partita.idGiocatore4 && $partita.idGiocatore4 == $partita.idGiocatoreVincitore)
-									<td class="column1" style="color: red">$partita.idGiocatore4</td>
-									<td class="column2" style="color: red; white-space: nowrap">$partita.nominativoGiocatore4</td>
-									<td class="column3" style="color: red">$partita.punteggioGiocatore4Int</td>
-								#else
-									#if ($partita.idGiocatore4)		
-									<td class="column1">$partita.idGiocatore4</td>
-									<td class="column2" style="white-space: nowrap">$partita.nominativoGiocatore4</td>
-									<td class="column3">$partita.punteggioGiocatore4Int</td>
-									#else
-									<td class="column1"></td>
-									<td class="column2"></td>
-									<td class="column3"></td>
-									#end	
-								#end									
-								</tr>	
-								<tr class="body">
-								#if ($partita.idGiocatore5 && $partita.idGiocatore5 == $partita.idGiocatoreVincitore)
-									<td class="column1" style="color: red">$partita.idGiocatore5</td>
-									<td class="column2" style="color: red">$partita.nominativoGiocatore5</td>
-									<td class="column3" style="color: red">$partita.punteggioGiocatore5Int</td>
-								#else
-									#if ($partita.idGiocatore5)
-									<td class="column1">$partita.idGiocatore5</td>
-									<td class="column2">$partita.nominativoGiocatore5</td>
-									<td class="column3">$partita.punteggioGiocatore5Int</td>
-									#else
-									<td class="column1"></td>
-									<td class="column2"></td>
-									<td class="column3"></td>
-									#end
-								#end
-								</tr>
-
-							</tbody>
-						</table>
-					</div>
-
-				</div>
+					#parse("TavoloTorneo.vm")
+					</td>
+				#end
+				</tr></table></div> <!-- chiusura tabella partite -->
 				</td>
-								#end
-								</tr></table>
+				</tr></table>
 			</div>
+			</td></tr>		
+			#if($torneo.classifica)
+				<tr><td> <!-- riga classifica -->
+				<div class="wrap-220" style="width: 1000px">
+					#parse("ClassificaTorneo.vm")
+				</div>
+			</td></tr>		
+			#end
+			</table>
 		</div>
 	</div>
 
