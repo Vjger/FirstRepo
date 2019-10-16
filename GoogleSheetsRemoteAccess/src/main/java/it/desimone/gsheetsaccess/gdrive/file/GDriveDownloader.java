@@ -30,7 +30,7 @@ public class GDriveDownloader {
     			List<File> availableFolders = googleDriveAccess.getSubFolders(parentFolderId);
     			if (availableFolders != null && !availableFolders.isEmpty()){
     				for (File folder: availableFolders){
-    					MyLogger.getLogger().info("Folder "+folder.getName());
+    					MyLogger.getLogger().finer("Folder "+folder.getName());
     					PermissionList permissionList = googleDriveAccess.getFolderPermissionList(folder.getId()); 
     					List<Permission> permissions = permissionList.getPermissions();
     					List<String> emailAddresses = null;

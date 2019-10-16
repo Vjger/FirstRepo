@@ -40,7 +40,7 @@ public class ReportPublisher {
 	
 	public static void publish() {
 		//MyLogger.setConsoleLogLevel(Level.INFO);
-
+		MyLogger.getLogger().info("INIZIO Elaborazione");
 		try{
 			List<ReportDriveData> publishedReport = GDriveDownloader.downloadReport(true);
 			if (publishedReport != null && !publishedReport.isEmpty()){
@@ -73,7 +73,10 @@ public class ReportPublisher {
 					String reportElaborazioniId = Configurator.getReportElaborazioniSheetId();
 					GSheetsInterface.appendRows(reportElaborazioniId, ReportElaborazioneRow.SHEET_NAME, reportElaborazioni);
 				}
+			}else{
+				MyLogger.getLogger().info("Nessun report da elaborare");
 			}
+			MyLogger.getLogger().info("FINE Elaborazione");
 		}catch(Exception e){
 			MyLogger.getLogger().severe("Errore di accesso a google drive "+e.getMessage());
 			sendErrorMail(null, e.getMessage());

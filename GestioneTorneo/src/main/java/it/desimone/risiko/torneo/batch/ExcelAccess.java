@@ -391,7 +391,9 @@ public class ExcelAccess{
 		GiocatoreDTO giocatore = new GiocatoreDTO();
 		Short id = null;
 		try{
-			id 			= (short)row.getCell(posizioneId).getNumericCellValue();
+			Cell cellId = row.getCell(posizioneId);
+			if (cellId == null) return null;
+			id 			= (short)cellId.getNumericCellValue();
 		}catch(NumberFormatException nfe){
 			throw new MyException(nfe,"Colonna ID con valore non numerico");
 		}catch(IllegalStateException ise){
@@ -1319,7 +1321,7 @@ public class ExcelAccess{
 		//Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi(false);
 		List<Partita[]> listaPartiteTotali = new ArrayList<Partita[]>();
 		for (int i = 1; ; i++){
-			Partita[] partiteTurnoi = loadPartite(i,false,TipoTorneo.TorneoGufo);
+			Partita[] partiteTurnoi = loadPartite(i,true,TipoTorneo.TorneoGufo);
 			if (partiteTurnoi == null){break;}
 			listaPartiteTotali.add(partiteTurnoi);
 		}

@@ -48,7 +48,10 @@ public class HtmlPublisher {
 	public static void main(String[] args) {
 		MyLogger.setConsoleLogLevel(Level.INFO);
 		Configurator.loadConfiguration(Environment.PRODUCTION);
-		
+		publish();
+	}
+	
+	public static void publish() {
 		MyLogger.getLogger().info("Inizio elaborazione");
 		String year = "2019";
 		

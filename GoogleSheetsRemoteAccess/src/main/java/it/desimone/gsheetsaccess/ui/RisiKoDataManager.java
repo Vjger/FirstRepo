@@ -2,9 +2,9 @@ package it.desimone.gsheetsaccess.ui;
 
 import it.desimone.gsheetsaccess.ReportPublisher;
 import it.desimone.gsheetsaccess.common.Configurator;
-import it.desimone.gsheetsaccess.gsheets.dto.PartitaRow;
 import it.desimone.gsheetsaccess.gsheets.dto.TabellinoGiocatore;
 import it.desimone.gsheetsaccess.gsheets.dto.TorneiRow;
+import it.desimone.gsheetsaccess.htmlpublisher.HtmlPublisher;
 import it.desimone.gsheetsaccess.utils.TorneiUtils;
 import it.desimone.utils.MyLogger;
 
@@ -39,6 +39,7 @@ public class RisiKoDataManager extends JFrame {
     private JButton switchEnvironment = new JButton("Switch");
     private JLabel environmentLabel = new JLabel(Configurator.getEnvironment().name());
     private JButton buttonPublish = new JButton("Pubblica Tornei");
+    private JButton buttonPublishHtml = new JButton("Pubblica Html");
     private JButton buttonDelete = new JButton("Elimina Torneo");
     private JButton buttonClear = new JButton("Clear");
     private JLabel annoDiRiferimentoLabel = new JLabel("Anno");
@@ -83,6 +84,21 @@ public class RisiKoDataManager extends JFrame {
         add(buttonPublish, constraints);
 
         constraints.gridx = gridXposition++;
+        add(buttonPublishHtml, constraints);
+        
+        constraints.gridx = gridXposition++;
+        add(buttonClear, constraints);
+        
+        constraints.gridx = gridXposition++;
+        add(switchEnvironment, constraints);
+        
+        constraints.gridx = gridXposition++;
+        add(environmentLabel, constraints);
+        
+        gridXposition = 0;
+        constraints.gridy++;
+        
+        constraints.gridx = gridXposition++;
         add(annoDiRiferimentoLabel, constraints);
         annoRif.setMinimumSize(new Dimension(40,25));
         constraints.gridx = gridXposition++;
@@ -116,18 +132,12 @@ public class RisiKoDataManager extends JFrame {
         constraints.gridx = gridXposition++;
         add(buttonMergeGiocatore, constraints);
         
-        constraints.gridx = gridXposition++;
-        add(buttonClear, constraints);
-        
-        constraints.gridx = gridXposition++;
-        add(switchEnvironment, constraints);
-        
-        constraints.gridx = gridXposition++;
-        add(environmentLabel, constraints);
+
         
         constraints.gridx = 0;
-        constraints.gridy = 1;
-        constraints.gridwidth = 14;
+        constraints.gridy = 2;
+        constraints.gridwidth = 10;
+        //constraints.gridheight = 4;
         constraints.fill = GridBagConstraints.BOTH;
         constraints.weightx = 1.0;
         constraints.weighty = 1.0;
@@ -139,6 +149,13 @@ public class RisiKoDataManager extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 //printLog();
                 publish();
+            }
+        });
+        
+        buttonPublishHtml.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                //printLog();
+                publishHtml();
             }
         });
         
@@ -235,6 +252,16 @@ public class RisiKoDataManager extends JFrame {
             public void run() {
             	MyLogger.setConsoleLogLevel(Level.INFO);
             	ReportPublisher.main(null);
+            }
+        });
+        thread.start();
+    }
+    
+    private void publishHtml() {
+        Thread thread = new Thread(new Runnable() {
+            public void run() {
+            	MyLogger.setConsoleLogLevel(Level.INFO);
+            	HtmlPublisher.publish();
             }
         });
         thread.start();
