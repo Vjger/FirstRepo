@@ -1,11 +1,13 @@
 package it.desimone.gsheetsaccess.common;
 
+import it.desimone.utils.MyLogger;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
-
-import it.desimone.utils.MyLogger;
 
 public class Configurator {
 	
@@ -77,7 +79,38 @@ private static Environment environment;
 		MyLogger.getLogger().finest("ID Anagrafica Ridotta:<<"+folderId+">>");
 		return folderId;
 	}
+	
+	public static String getAnagraficaRidottaSheetId(){
+		String folderId = ((String)properties.get("spreadSheetIdAnagraficaRidotta"+2019));
+		if (folderId != null) folderId = folderId.trim();
+		MyLogger.getLogger().finest("ID Anagrafica Ridotta:<<"+folderId+">>");
+		return folderId;
+	}
 
+	public static List<String> getTorneiSheetIds(){
+		Integer startingYear = 2019;
+		List<String> torneiSheetIds = new ArrayList<String>();
+		String torneoSheetId = getTorneiSheetId(startingYear.toString());
+		while (torneoSheetId != null){
+			torneiSheetIds.add(torneoSheetId);
+			startingYear++;
+			torneoSheetId = getTorneiSheetId(startingYear.toString());
+		}
+		return torneiSheetIds;
+	}
+	
+	public static List<Integer> getTorneiYears(){
+		Integer startingYear = 2019;
+		List<Integer> torneiYears = new ArrayList<Integer>();
+		String torneoSheetId = getTorneiSheetId(startingYear.toString());
+		while (torneoSheetId != null){
+			torneiYears.add(startingYear);
+			startingYear++;
+			torneoSheetId = getTorneiSheetId(startingYear.toString());
+		}
+		return torneiYears;
+	}
+	
 	public static String getTorneiSheetId(String year){
 		String folderId = ((String)properties.get("spreadSheetIdTornei"+year));
 		if (folderId != null) folderId = folderId.trim();

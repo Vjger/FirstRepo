@@ -62,7 +62,7 @@ public class GDriveUtils {
 		try {
 			String thisYear = Integer.toString(GregorianCalendar.getInstance().get(Calendar.YEAR));
 			String spreadSheetIdTornei = Configurator.getTorneiSheetId(thisYear);
-			String spreadSheetIdAnagrafiche = Configurator.getAnagraficaRidottaSheetId(thisYear);
+			String spreadSheetIdAnagrafiche = Configurator.getAnagraficaRidottaSheetId();
 			String backupsFolderId = Configurator.getBackupsFolderId();
 			String suffix = "_"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 			GoogleDriveAccess googleDriveAccess = new GoogleDriveAccess();

@@ -15,10 +15,15 @@ import it.desimone.utils.MyLogger;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
+
+import org.apache.xmlbeans.impl.common.Levenshtein;
 
 public class TorneiUtils {
 
@@ -130,8 +135,8 @@ public class TorneiUtils {
 		return result;
 	}
 	
-	public static List<AnagraficaGiocatoreRidottaRow> getAllAnagraficheGiocatoriRidotte(String year){
-		String spreadSheetIdAnagrafiche = Configurator.getAnagraficaRidottaSheetId(year);
+	public static List<AnagraficaGiocatoreRidottaRow> getAllAnagraficheGiocatoriRidotte(){
+		String spreadSheetIdAnagrafiche = Configurator.getAnagraficaRidottaSheetId();
 		List<AnagraficaGiocatoreRidottaRow> result = null;
 		try{
 			result = GSheetsInterface.getAllRows(spreadSheetIdAnagrafiche, SheetRowType.AnagraficaGiocatoreRidotta);
@@ -172,7 +177,7 @@ public class TorneiUtils {
 		
 		try {
 			String spreadSheetIdTornei = Configurator.getTorneiSheetId(year);
-			String spreadSheetAnagraficaRidotta = Configurator.getAnagraficaRidottaSheetId(year);
+			String spreadSheetAnagraficaRidotta = Configurator.getAnagraficaRidottaSheetId();
 
 			PartitaRow partitaRow = new PartitaRow();
 			partitaRow.setIdGiocatoreVincitore(idPlayer);
@@ -215,7 +220,7 @@ public class TorneiUtils {
 		
 		try {
 			String spreadSheetIdTornei = Configurator.getTorneiSheetId(year);
-			String spreadSheetAnagraficaRidotta = Configurator.getAnagraficaRidottaSheetId(year);
+			String spreadSheetAnagraficaRidotta = Configurator.getAnagraficaRidottaSheetId();
 			ClassificheRow classificheRow = new ClassificheRow();
 			classificheRow.setIdGiocatore(idPlayerFrom);
 			List<SheetRow> righeClassificaGiocatore = GSheetsInterface.findClassificaRowsByIdGiocatore(spreadSheetIdTornei, classificheRow);
@@ -354,4 +359,140 @@ public class TorneiUtils {
 		}
 	}
 			
+	public static List<AnagraficaGiocatoreRidottaRow> findOrphansSlow(){
+		List<AnagraficaGiocatoreRidottaRow> result = new ArrayList<AnagraficaGiocatoreRidottaRow>();
+		
+		List<AnagraficaGiocatoreRidottaRow> allPlayers = getAllAnagraficheGiocatoriRidotte();
+		
+		MyLogger.getLogger().info("In esame "+allPlayers.size()+" giocatori");
+		
+		int counter = 0;
+		for (AnagraficaGiocatoreRidottaRow anagraficaGiocatoreRidottaRow: allPlayers){
+			counter++;
+			boolean isOrphan = true;
+			for (String spreadSheetIdTornei: Configurator.getTorneiSheetIds()){
+				Integer idGiocatore = anagraficaGiocatoreRidottaRow.getId();
+				ClassificheRow classificheRow = new ClassificheRow();
+				classificheRow.setIdGiocatore(idGiocatore);
+				PartitaRow partitaRow = new PartitaRow();
+				partitaRow.setIdGiocatoreVincitore(idGiocatore);
+				try{
+					List<SheetRow> righeClassificaGiocatore = GSheetsInterface.findClassificaRowsByIdGiocatore(spreadSheetIdTornei, classificheRow);
+					List<SheetRow> righePartiteGiocatore = GSheetsInterface.findPartiteRowsByIdGiocatore(spreadSheetIdTornei, partitaRow);
+					
+					if ( (righeClassificaGiocatore != null && !righeClassificaGiocatore.isEmpty())
+					  || (righePartiteGiocatore != null    && !righePartiteGiocatore.isEmpty())
+					  ){
+						isOrphan = false;
+						break;
+					}
+				}catch(Exception e){
+					MyLogger.getLogger().severe(e.getMessage());
+				}
+			}
+			if (isOrphan){
+				result.add(anagraficaGiocatoreRidottaRow);
+			}
+			if (counter%10 == 0){
+				MyLogger.getLogger().info("In esame il "+counter+"° giocatore; per ora "+result.size()+" orfani");
+			}
+		}
+		
+		return result;
+	}
+	
+	
+	public static List<AnagraficaGiocatoreRidottaRow> findOrphansInMemory(){
+		List<AnagraficaGiocatoreRidottaRow> result = new ArrayList<AnagraficaGiocatoreRidottaRow>();
+		
+		List<AnagraficaGiocatoreRidottaRow> allPlayers = getAllAnagraficheGiocatoriRidotte();
+		
+		List<PartitaRow> partiteRow = new ArrayList<PartitaRow>();
+		
+		List<ClassificheRow> classificheRow = new ArrayList<ClassificheRow>();
+		
+		for (Integer year: Configurator.getTorneiYears()){
+			partiteRow.addAll(getAllPartite(year.toString()));
+			classificheRow.addAll(getAllClassifiche(year.toString()));
+		}
+		MyLogger.getLogger().info("In esame "+allPlayers.size()+" giocatori");
+		MyLogger.getLogger().info("Caricate "+partiteRow.size()+" partite");
+		MyLogger.getLogger().info("Caricate "+classificheRow.size()+" righe classifica");
+		
+		int counter = 0;
+		for (AnagraficaGiocatoreRidottaRow anagraficaGiocatoreRidottaRow: allPlayers){
+			Integer idGiocatore = anagraficaGiocatoreRidottaRow.getId();
+			counter++;
+			boolean isOrphan = true;
+			Iterator<PartitaRow> itPartitaRow = partiteRow.iterator();
+			while(itPartitaRow.hasNext() && isOrphan){
+				PartitaRow partitaRow = itPartitaRow.next();
+				
+				isOrphan = (partitaRow.getIdGiocatore1() == null || !partitaRow.getIdGiocatore1().equals(idGiocatore))
+						&& (partitaRow.getIdGiocatore2() == null || !partitaRow.getIdGiocatore2().equals(idGiocatore))
+						&& (partitaRow.getIdGiocatore3() == null || !partitaRow.getIdGiocatore3().equals(idGiocatore))
+						&& (partitaRow.getIdGiocatore4() == null || !partitaRow.getIdGiocatore4().equals(idGiocatore))
+						&& (partitaRow.getIdGiocatore5() == null || !partitaRow.getIdGiocatore5().equals(idGiocatore));
+			}
+			if (isOrphan){
+				Iterator<ClassificheRow> itClassificaRow = classificheRow.iterator();
+				while(itClassificaRow.hasNext() && isOrphan){
+					ClassificheRow classificaRow = itClassificaRow.next();
+					
+					isOrphan = classificaRow.getIdGiocatore() == null || !classificaRow.getIdGiocatore().equals(idGiocatore);
+				}	
+			}
+			
+			if (isOrphan){
+				result.add(anagraficaGiocatoreRidottaRow);
+			}
+//			if (counter%100 == 0){
+//				MyLogger.getLogger().info("In esame il "+counter+"° giocatore; per ora "+result.size()+" orfani");
+//			}
+		}
+		MyLogger.getLogger().info("Trovati "+result.size()+" orfani");
+		return result;
+	}
+	
+	public static void findClone(){
+	
+		List<AnagraficaGiocatoreRidottaRow> allPlayers = getAllAnagraficheGiocatoriRidotte();
+		
+		List<AnagraficaGiocatoreRidottaRow> orfani = findOrphansInMemory();
+		
+		allPlayers.removeAll(orfani);
+		
+		Object[][] cloni = new Object[100][3];
+		
+		int indexCloni = 0;
+		for (int i = 0; i < allPlayers.size(); i++){
+			for (int j = i+1; j < allPlayers.size(); j++){
+					AnagraficaGiocatoreRidottaRow anagI = allPlayers.get(i);
+					AnagraficaGiocatoreRidottaRow anagJ = allPlayers.get(j);
+					String stringI = (anagI.getNome()+anagI.getCognome()).toLowerCase()+anagI.getDataDiNascita();
+					String stringJ = (anagJ.getNome()+anagJ.getCognome()).toLowerCase()+anagJ.getDataDiNascita();
+					int indexL = Levenshtein.distance(stringI, stringJ);
+					//int indexLV = it.desimone.gsheetsaccess.utils.Levenshtein.calculateFast(stringI, stringJ);
+					if (indexL <= 4){
+						cloni[indexCloni][0] = anagI;
+						cloni[indexCloni][1] = anagJ;
+						cloni[indexCloni][2] = indexL;
+						
+						indexCloni++;
+					}
+			}
+		}
+		System.out.println("Trovati "+indexCloni+" cloni");
+		Set<AnagraficaGiocatoreRidottaRow> cloniSingoli = new HashSet<AnagraficaGiocatoreRidottaRow>();
+		for (Object[] clone: cloni){
+			cloniSingoli.add((AnagraficaGiocatoreRidottaRow)clone[0]);
+			cloniSingoli.add((AnagraficaGiocatoreRidottaRow)clone[1]);
+			System.out.println(clone[0]+" - "+clone[1]+" - "+clone[2]);
+		}
+		
+		System.out.println("Trovati "+cloniSingoli.size()+" cloni singoli");
+		for (AnagraficaGiocatoreRidottaRow clone: cloniSingoli){
+			System.out.println(clone);
+		}
+	}
 }

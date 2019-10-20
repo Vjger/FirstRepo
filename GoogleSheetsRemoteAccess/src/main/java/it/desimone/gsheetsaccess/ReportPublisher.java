@@ -138,7 +138,7 @@ public class ReportPublisher {
 		
 		String year = ExcelGSheetsBridge.obtainYearTorneo(torneo);
 
-		String spreadSheetIdAnagraficaRidotta 	= Configurator.getAnagraficaRidottaSheetId(year);
+		String spreadSheetIdAnagraficaRidotta 	= Configurator.getAnagraficaRidottaSheetId();
 		String spreadSheetIdTornei 				= Configurator.getTorneiSheetId(year);
 		String sheetNameAnagraficaRidotta 		= AnagraficaGiocatoreRidottaRow.SHEET_ANAGRAFICA_NAME;
 		String sheetNameGiocatori 				= AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME;
