@@ -402,11 +402,9 @@ public class TorneiUtils {
 	}
 	
 	
-	public static List<AnagraficaGiocatoreRidottaRow> findOrphansInMemory(){
+	public static List<AnagraficaGiocatoreRidottaRow> findOrphansInMemory(List<AnagraficaGiocatoreRidottaRow> allPlayers){
 		List<AnagraficaGiocatoreRidottaRow> result = new ArrayList<AnagraficaGiocatoreRidottaRow>();
-		
-		List<AnagraficaGiocatoreRidottaRow> allPlayers = getAllAnagraficheGiocatoriRidotte();
-		
+			
 		List<PartitaRow> partiteRow = new ArrayList<PartitaRow>();
 		
 		List<ClassificheRow> classificheRow = new ArrayList<ClassificheRow>();
@@ -454,15 +452,15 @@ public class TorneiUtils {
 		return result;
 	}
 	
-	public static void findClone(){
+	public static Set<AnagraficaGiocatoreRidottaRow> findClone(){
 	
 		List<AnagraficaGiocatoreRidottaRow> allPlayers = getAllAnagraficheGiocatoriRidotte();
 		
-		List<AnagraficaGiocatoreRidottaRow> orfani = findOrphansInMemory();
+		List<AnagraficaGiocatoreRidottaRow> orfani = findOrphansInMemory(allPlayers);
 		
 		allPlayers.removeAll(orfani);
 		
-		Object[][] cloni = new Object[100][3];
+		Object[][] cloni = new Object[500][3];
 		
 		int indexCloni = 0;
 		for (int i = 0; i < allPlayers.size(); i++){
@@ -482,17 +480,17 @@ public class TorneiUtils {
 					}
 			}
 		}
-		System.out.println("Trovati "+indexCloni+" cloni");
+		MyLogger.getLogger().info("Trovati "+indexCloni+" cloni");
 		Set<AnagraficaGiocatoreRidottaRow> cloniSingoli = new HashSet<AnagraficaGiocatoreRidottaRow>();
-		for (Object[] clone: cloni){
+		for (int i=0; i < indexCloni; i++){
+			Object[] clone = cloni[i];
 			cloniSingoli.add((AnagraficaGiocatoreRidottaRow)clone[0]);
 			cloniSingoli.add((AnagraficaGiocatoreRidottaRow)clone[1]);
-			System.out.println(clone[0]+" - "+clone[1]+" - "+clone[2]);
+			MyLogger.getLogger().finest(clone[0]+" - "+clone[1]+" - "+clone[2]);
 		}
 		
-		System.out.println("Trovati "+cloniSingoli.size()+" cloni singoli");
-		for (AnagraficaGiocatoreRidottaRow clone: cloniSingoli){
-			System.out.println(clone);
-		}
+		MyLogger.getLogger().info("Trovati "+cloniSingoli.size()+" cloni singoli");
+		
+		return cloniSingoli;
 	}
 }

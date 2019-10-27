@@ -7,6 +7,7 @@ import it.desimone.gsheetsaccess.common.Configurator.Environment;
 import it.desimone.gsheetsaccess.common.ResourceWorking;
 import it.desimone.gsheetsaccess.dto.ScorePlayer;
 import it.desimone.gsheetsaccess.dto.TorneoPubblicato;
+import it.desimone.gsheetsaccess.gsheets.dto.AnagraficaGiocatoreRidottaRow;
 import it.desimone.gsheetsaccess.gsheets.dto.AnagraficaGiocatoreRow;
 import it.desimone.gsheetsaccess.gsheets.dto.ClassificheRow;
 import it.desimone.gsheetsaccess.gsheets.dto.PartitaRow;
@@ -48,10 +49,10 @@ public class HtmlPublisher {
 	public static void main(String[] args) {
 		MyLogger.setConsoleLogLevel(Level.INFO);
 		Configurator.loadConfiguration(Environment.PRODUCTION);
-		publish();
+		publish(false);
 	}
 	
-	public static void publish() {
+	public static void publish(boolean withUpload) {
 		MyLogger.getLogger().info("Inizio elaborazione");
 		String year = "2019";
 		
@@ -87,13 +88,18 @@ public class HtmlPublisher {
 		File folderTornei = new File(FOLDER_PATH+File.separator+"TORNEI");
 		List<File> torneiHtml = torneiPublisher(year, torneiPubblicati, folderTornei);
 		
-		try{
-			uploadFiles(ranking, listaTornei, torneiHtml);
-			if (maxDate != null){
-				ResourceWorking.setLastTournamentDate(year, lastUpdateTimeFormat.format(maxDate));
+		File doppioniSospetti = new File(FOLDER_PATH, "anagraficheDaVerificare.html");
+		doppioniSospetti(tabellini, doppioniSospetti);
+		
+		if (withUpload){
+			try{
+				uploadFiles(ranking, listaTornei, doppioniSospetti, torneiHtml);
+				if (maxDate != null){
+					ResourceWorking.setLastTournamentDate(year, lastUpdateTimeFormat.format(maxDate));
+				}
+			}catch(IOException ioe){
+				MyLogger.getLogger().severe("Errore nel ftp dei file: "+ioe.getMessage());
 			}
-		}catch(IOException ioe){
-			MyLogger.getLogger().severe("Errore nel ftp dei file: "+ioe.getMessage());
 		}
 		MyLogger.getLogger().info("Fine elaborazione");
 	}
@@ -179,7 +185,6 @@ public class HtmlPublisher {
 		}catch( Exception e ){
 			MyLogger.getLogger().severe(e.getMessage());
 		}
-
 
 		FileWriter writer = null;
 		try {
@@ -325,9 +330,77 @@ public class HtmlPublisher {
 		}
 	}
 	
-	private static void uploadFiles(File ranking, File listaTornei, List<File> torneiHtml) throws IOException{
+	public static void doppioniSospetti(List<ScorePlayer> tabellini, File anagraficheDaVerificare){
+		MyLogger.getLogger().info("Verifica doppioni sospetti");
+		Set<AnagraficaGiocatoreRidottaRow> sospettiCloni = TorneiUtils.findClone(); 
+		List<ScorePlayer> tabelliniSospetti = null;
+		if (sospettiCloni != null){
+			tabelliniSospetti = new ArrayList<ScorePlayer>();
+			for (AnagraficaGiocatoreRidottaRow anagraficaGiocatoreRidottaRow: sospettiCloni){
+				AnagraficaGiocatoreRow anagraficaSonda = new AnagraficaGiocatoreRow(anagraficaGiocatoreRidottaRow.getId());
+				ScorePlayer scorePlayerSonda = new ScorePlayer(anagraficaSonda);
+				int index = tabellini.indexOf(scorePlayerSonda);
+				if (index >= 0){
+					ScorePlayer found = tabellini.get(index);
+					tabelliniSospetti.add(found);
+					MyLogger.getLogger().finest("Cercato: "+anagraficaGiocatoreRidottaRow+" Trovato: "+found);
+				}
+			}
+			
+			Collections.sort(tabelliniSospetti, new Comparator<ScorePlayer>() {
+				@Override
+				public int compare(ScorePlayer s1, ScorePlayer s2) {
+					return s1.getAnagraficaGiocatore().getCognome().toLowerCase().compareTo(s2.getAnagraficaGiocatore().getCognome().toLowerCase());
+				}
+			});
+				
+		    Properties p = new Properties();
+		    p.setProperty("resource.loader.file.path", ResourceWorking.velocityTemplatePath());
+		    Velocity.init( p );
+
+			VelocityContext context = new VelocityContext();
+
+			context.put( "scorePlayers", tabelliniSospetti );
+			context.put( "styleGenerator", StyleGenerator.class);
+			context.put( "Capitalize", Capitalize.class);
+			context.put( "htmlPublisher", HtmlPublisher.class);
+
+			Template template = null;
+
+			try{
+			  template = Velocity.getTemplate("TabellinoGiocatore.vm");
+			}catch( ResourceNotFoundException rnfe ){
+				MyLogger.getLogger().severe(rnfe.getMessage());
+			}catch( ParseErrorException pee ){
+				MyLogger.getLogger().severe(pee.getMessage());
+			}catch( MethodInvocationException mie ){
+				MyLogger.getLogger().severe(mie.getMessage());
+			}catch( Exception e ){
+				MyLogger.getLogger().severe(e.getMessage());
+			}
+
+			FileWriter writer = null;
+			try {
+				writer = new FileWriter(anagraficheDaVerificare);
+				template.merge( context, writer );
+			} catch (IOException e) {
+				MyLogger.getLogger().severe(e.getMessage());
+			}finally{
+				try {
+					writer.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+		}
+	}
+	
+	private static void uploadFiles(File ranking, File listaTornei, File doppioniSospetti, List<File> torneiHtml) throws IOException{
 		AlterVistaUtil.uploadInTornei(torneiHtml);
 		AlterVistaUtil.uploadInRoot(Collections.singletonList(listaTornei));
+		AlterVistaUtil.uploadInRoot(Collections.singletonList(doppioniSospetti));
 		AlterVistaUtil.uploadInRoot(Collections.singletonList(ranking));
 	}
 	

@@ -52,6 +52,15 @@ public class ScorePlayer implements Comparable<ScorePlayer>{
 			return false;
 		return true;
 	}
+	
+	
+
+	@Override
+	public String toString() {
+		return "ScorePlayer [anagraficaGiocatore=" + anagraficaGiocatore + "]";
+	}
+
+
 
 	public static class TabellinoPlayer implements Comparable<TabellinoPlayer>{
 		private TorneoPubblicato torneo;

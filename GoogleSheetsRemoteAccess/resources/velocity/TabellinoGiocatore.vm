@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
 	<title>Doppioni</title>
+	<!-- -->
 	<meta charset="UTF-8">
+	<!-- -->
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 <!--===============================================================================================-->	
 	<link rel="icon" type="image/png" href="images/loghi/173-1735698_png-file-svg-ranking-icon-png.png"/>
@@ -23,17 +25,37 @@
 </head>
 <body>
 	
+	<script>
+	function toggle() {
+		var x = document.getElementsByName("tornei");
+		 if (x[0].style.display === "none") {
+			document.getElementById("plusminus").src='images/icons/minus.png';
+		  } else {
+			document.getElementById("plusminus").src='images/icons/plus.png';
+		  }
+		var i;
+		for (i = 0; i < x.length; i++) {
+		  if (x[i].style.display === "none") {
+			x[i].style.display = "";
+		  } else {
+			x[i].style.display = "none";
+		  }
+		}
+	}
+	</script>
+	
 	<div class="limiter">
 		<div class="container-table100">			
-			<div class="wrap-table100"  style="width: 566px" >
+			<div class="wrap-table100"  style="width: 580px" >
 				<div class="table100 ver1 m-b-110" style="padding-top: 5px;">
+						<div><a href="index.html"><img src="images/icons/home.png"></a></div>
 						<div style="text-align: center;"><h1>Possibili Doppioni</h1></div>
 						<table>
 							<thead>
 							<tr class="head">
 									<th class="column10">Id</th>
 									<th class="column10">Nominativo</th>
-									<th class="column10">Torneo</th>					
+									<th class="column10" colspan="2">Eventi disputati<p onclick="toggle()"><img id="plusminus" src="images/icons/plus.png" title="Espandi il tabellino"></p></th>					
 								</tr>
 							</thead>
 							<tbody>
@@ -45,17 +67,29 @@
 									#end
 										<td class="column10"><a name="$scorePlayer.getAnagraficaGiocatore().getId()">$scorePlayer.getAnagraficaGiocatore().getId()</a></td>
 										<td>$Capitalize.capitalize($scorePlayer.getAnagraficaGiocatore().getNome()) $Capitalize.capitalize($scorePlayer.getAnagraficaGiocatore().getCognome())</td>
-										<td><table>
-									#foreach( $tabellinoPlayer in $scorePlayer.tabelliniPlayer )
-									#set ($urlTorneo = $htmlPublisher.getTorneoPage($tabellinoPlayer.torneo.torneoRow.idTorneo)+".html" )
-										<tr>
-										<td class="column10" style="$styleGenerator.getStyle($tabellinoPlayer.torneo.torneoRow.tipoTorneo)"><img src="images/loghi/rcu/${tabellinoPlayer.torneo.torneoRow.organizzatore} (Custom).png" title="$tabellinoPlayer.torneo.torneoRow.organizzatore" alt="$tabellinoPlayer.torneo.torneoRow.organizzatore"></td>
-										<td class="column10" style="$styleGenerator.getStyle($tabellinoPlayer.torneo.torneoRow.tipoTorneo)"><a style="color: inherit; cursor: pointer;"  href="TORNEI/$urlTorneo" target="_blank">$tabellinoPlayer.torneo.torneoRow.nomeTorneo</a></td>
-										<td class="column10" style="$styleGenerator.getStyle($tabellinoPlayer.torneo.torneoRow.tipoTorneo)">$tabellinoPlayer.torneo.torneoRow.startDate</td>
-										<td class="column10" style="$styleGenerator.getStyle($tabellinoPlayer.torneo.torneoRow.tipoTorneo)">$tabellinoPlayer.torneo.torneoRow.endDate</td>
-										<td class="column10" style="$styleGenerator.getStyle($tabellinoPlayer.torneo.torneoRow.tipoTorneo)">#if($tabellinoPlayer.posizioneRaggiunta)$tabellinoPlayer.posizioneRaggiunta°#else/#end</td>
-										</tr>
-									#end
+										<td>$scorePlayer.tabelliniPlayer.size()</td>
+										<td><table><tr name="tornei" style="display: none;">
+										#foreach( $tabellinoPlayer in $scorePlayer.tabelliniPlayer )
+
+										#if ($foreach.count % 1 == 0)
+											</tr>
+											<tr name="tornei" style="display: none;">
+										#end
+										#set ($urlTorneo = $htmlPublisher.getTorneoPage($tabellinoPlayer.torneo.torneoRow.idTorneo)+".html" )
+											<td class="column10" style="$styleGenerator.getStyle($tabellinoPlayer.torneo.torneoRow.tipoTorneo)"><img src="images/loghi/rcu/${tabellinoPlayer.torneo.torneoRow.organizzatore} (Custom).png" title="$tabellinoPlayer.torneo.torneoRow.organizzatore" alt="$tabellinoPlayer.torneo.torneoRow.organizzatore"></td>
+											<td class="column10" style="$styleGenerator.getStyle($tabellinoPlayer.torneo.torneoRow.tipoTorneo)"><a style="color: inherit; cursor: pointer;"  href="TORNEI/$urlTorneo" target="_blank">$tabellinoPlayer.torneo.torneoRow.nomeTorneo</a></td>
+											<td class="column10" style="$styleGenerator.getStyle($tabellinoPlayer.torneo.torneoRow.tipoTorneo)">$tabellinoPlayer.torneo.torneoRow.startDate</td>
+											<td class="column10" style="$styleGenerator.getStyle($tabellinoPlayer.torneo.torneoRow.tipoTorneo)">$tabellinoPlayer.torneo.torneoRow.endDate</td>
+											<td class="column10" style="$styleGenerator.getStyle($tabellinoPlayer.torneo.torneoRow.tipoTorneo)">
+											#if($tabellinoPlayer.posizioneRaggiunta)
+												$tabellinoPlayer.posizioneRaggiunta°
+											#else
+												/
+											#end
+											</td>
+					
+										#end
+									</tr>
 									</table></td>
 								</tr>
 								#end

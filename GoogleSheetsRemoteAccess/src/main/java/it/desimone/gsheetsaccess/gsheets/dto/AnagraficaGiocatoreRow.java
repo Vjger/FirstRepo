@@ -151,6 +151,12 @@ public class AnagraficaGiocatoreRow extends AbstractSheetRow{
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return "AnagraficaGiocatoreRow [id=" + id + ", nome=" + nome
+				+ ", cognome=" + cognome + "]";
+	}
+
 	
 	
 }

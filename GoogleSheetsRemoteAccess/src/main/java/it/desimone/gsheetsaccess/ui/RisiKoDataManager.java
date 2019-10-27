@@ -261,7 +261,7 @@ public class RisiKoDataManager extends JFrame {
         Thread thread = new Thread(new Runnable() {
             public void run() {
             	MyLogger.setConsoleLogLevel(Level.INFO);
-            	HtmlPublisher.publish();
+            	HtmlPublisher.publish(true);
             }
         });
         thread.start();
