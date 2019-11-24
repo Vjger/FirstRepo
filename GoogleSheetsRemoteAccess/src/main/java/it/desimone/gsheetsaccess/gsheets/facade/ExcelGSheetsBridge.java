@@ -93,6 +93,7 @@ public class ExcelGSheetsBridge {
 	}
 	
 	public static SheetRow[][] getAnagraficheRowByTorneo(Torneo torneo){
+		MyLogger.getLogger().entering("ExcelGSheetsBridge", "getAnagraficheRowByTorneo");
 		if (torneo == null || torneo.getPartecipanti() == null){
 			return null;
 		}
@@ -130,11 +131,13 @@ public class ExcelGSheetsBridge {
 			result[index][0] = anagraficaGiocatoreRidottaRow;
 			result[index][1] = anagraficaGiocatoreRow;
 		}
-		
+		MyLogger.getLogger().exiting("ExcelGSheetsBridge", "getAnagraficheRowByTorneo");
 		return result;
 	}
 	
 	public static List<SheetRow> getPartiteRowByTorneo(Torneo torneo, Map<Integer, Integer> idPlayersMap){
+		MyLogger.getLogger().entering("ExcelGSheetsBridge", "getPartiteRowByTorneo");
+		
 		if (torneo == null || torneo.getSchedeTurno() == null || torneo.getSchedeTurno().isEmpty() || idPlayersMap.isEmpty()){
 			return null;
 		}
@@ -183,7 +186,7 @@ public class ExcelGSheetsBridge {
 				}
 			}
 		}
-		
+		MyLogger.getLogger().exiting("ExcelGSheetsBridge", "getPartiteRowByTorneo");
 		return result;
 	}
 	
@@ -209,6 +212,8 @@ public class ExcelGSheetsBridge {
 	
 	
 	public static List<SheetRow> getClassificaRowsByTorneo(Torneo torneo, Map<Integer, Integer> idPlayersMap, List<SheetRow> partiteRow){
+		MyLogger.getLogger().entering("ExcelGSheetsBridge", "getClassificaRowsByTorneo");
+		
 		if (torneo == null || torneo.getSchedaClassifica() == null || torneo.getSchedaClassifica().getClassifica() == null || torneo.getSchedaClassifica().getClassifica().isEmpty()){
 			return null;
 		}
@@ -231,7 +236,7 @@ public class ExcelGSheetsBridge {
 			
 			result.add(classificheRow);
 		}
-		
+		MyLogger.getLogger().exiting("ExcelGSheetsBridge", "getClassificaRowsByTorneo");
 		return result;
 	}
 	

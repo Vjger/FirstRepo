@@ -21,6 +21,7 @@
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="css/util.css">
 	<link rel="stylesheet" type="text/css" href="css/main.css">
+	<link rel="stylesheet" type="text/css" href="css/buttons.css">		
 <!--===============================================================================================-->
 </head>
 <body>
@@ -41,8 +42,14 @@
 		<div class="container-table100">			
 			<div class="wrap-table100"  style="width: 1366px" >
 				<div class="table100 ver1 m-b-110" style="padding-top: 5px;">
-						<div><a href="index.html"><img src="images/icons/home.png"></a><a href="anagraficheDaVerificare.html"><img src="images/icons/cloni.png" title="anagrafiche da verificare"></a></div>
-						<div style="text-align: center;"><img src="images/loghi/ranking_360x171.png"></div>
+						<div><a href="index.html"><img src="images/icons/home.png"></a>
+							<a href="anagraficheDaVerificare.html"><img src="images/icons/cloni.png" title="anagrafiche da verificare"></a>
+							#foreach( $year in $years )
+								#set ($urlRanking = "ranking"+$year+".html")
+								<a href="$urlRanking" class="rankingYearButton">$year</a>
+							#end						
+						</div>
+						<div style="text-align: center;"><img src="images/loghi/ranking_360x171.png"><div class="yearButton">$year</div></div>
 						<table>
 							<thead>
 							<tr class="head">

@@ -15,13 +15,11 @@ import it.desimone.utils.MyLogger;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.apache.xmlbeans.impl.common.Levenshtein;
 
@@ -50,7 +48,7 @@ public class TorneiUtils {
 		MyLogger.getLogger().info("Caricate "+partiteRow.size()+" partite");
 		
 		List<ClassificheRow> classificheRow = getAllClassifiche(year);
-		MyLogger.getLogger().info("Caricate "+classificheRow.size()+" righe classifica");
+		MyLogger.getLogger().info("Caricate "+(classificheRow==null?0:classificheRow.size())+" righe classifica");
 		
 		List<TorneoPubblicato> result = null;
 		if (torneiRow != null){
@@ -411,7 +409,10 @@ public class TorneiUtils {
 		
 		for (Integer year: Configurator.getTorneiYears()){
 			partiteRow.addAll(getAllPartite(year.toString()));
-			classificheRow.addAll(getAllClassifiche(year.toString()));
+			List<ClassificheRow> classificheYear = getAllClassifiche(year.toString());
+			if (classificheYear != null){//A inizio anno potrebbero essere vuote
+				classificheRow.addAll(classificheYear);
+			}
 		}
 		MyLogger.getLogger().info("In esame "+allPlayers.size()+" giocatori");
 		MyLogger.getLogger().info("Caricate "+partiteRow.size()+" partite");

@@ -90,7 +90,9 @@
 		                    <include>working/</include>
 		                  </includes>
 		                  <excludes>
+		                  <!-- 
 		                  	<exclude>resources/*.png</exclude>
+		                 	-->
 		                  	<exclude>resources/*.pdf</exclude>
 		                  	<exclude>resources/*.xls</exclude>
 		                  	<exclude>resources/*.gitignore</exclude>

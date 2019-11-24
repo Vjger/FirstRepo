@@ -19,6 +19,7 @@
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="css/util.css">
 	<link rel="stylesheet" type="text/css" href="css/main.css">
+	<link rel="stylesheet" type="text/css" href="css/buttons.css">	
 <!--===============================================================================================-->
 </head>
 <body>
@@ -47,8 +48,14 @@
 		<div class="container-table100">			
 			<div class="wrap-table100" style="width: 1200px">
 				<div class="table100 ver1 m-b-110" style="width: 1200px; padding-top: 5px;">
-						<div><a href="index.html"><img src="images/icons/home.png"></a></div>
-						<div style="text-align: center;"><img src="images/loghi/tornei_360x171.png"></div>
+						<div>
+							<a href="index.html"><img src="images/icons/home.png"></a>
+							#foreach( $year in $years )
+								#set ($urlListaTornei = "listaTornei"+$year+".html")
+								<a href="$urlListaTornei" class="tournamentsYearButton">$year</a>
+							#end
+						</div>
+						<div style="text-align: center;"><img src="images/loghi/tornei_360x171.png"><div class="yearButton">$year</div></div>
 						<table>
 							<thead>
 								<tr class="head">

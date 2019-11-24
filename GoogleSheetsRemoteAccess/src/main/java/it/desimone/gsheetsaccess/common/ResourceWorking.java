@@ -47,6 +47,10 @@ public class ResourceWorking {
 		return ROOT+File.separator+"resources"+File.separator+"velocity";
 	}
 	
+	public static String htmlPagesPath(){
+		return ROOT+File.separator+"working"+File.separator+"htmlPages";
+	}
+	
 	public static File googleCredentials(){
 		return new java.io.File(ROOT+File.separator+"resources"+File.separator+"google", ".credentials/RisiKo Data Manager");
 	}

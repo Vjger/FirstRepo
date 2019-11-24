@@ -6,9 +6,11 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.logging.Level;
 
 import com.google.api.services.drive.model.File;
 
+import it.desimone.gsheetsaccess.common.Configurator.Environment;
 import it.desimone.gsheetsaccess.gdrive.file.ReportDriveData;
 import it.desimone.gsheetsaccess.googleaccess.GoogleDriveAccess;
 import it.desimone.utils.MyException;
@@ -92,5 +94,30 @@ public class GDriveUtils {
 		}
 		
 		MyLogger.getLogger().info("FINE restore");
+	}
+	
+	public static void cloneTornei(String year) throws Exception{
+		MyLogger.getLogger().info("INIZIO cloneTornei");
+		String spreadSheetIdTemplateTornei = null;
+		try {
+			spreadSheetIdTemplateTornei = Configurator.getTemplateTorneiSheetId();
+			GoogleDriveAccess googleDriveAccess = new GoogleDriveAccess();
+
+			File backupFileTornei = googleDriveAccess.copyFile(spreadSheetIdTemplateTornei, "Tornei "+year);
+			MyLogger.getLogger().info("Copia di "+backupFileTornei.getId()+" - "+backupFileTornei.getName());
+			
+			Configurator.setTorneiSheetId(year, backupFileTornei.getId());
+		}catch(Exception e){
+			MyLogger.getLogger().severe("Errore clonazione di "+spreadSheetIdTemplateTornei+": "+e.getMessage());
+			throw e;
+		}
+		
+		MyLogger.getLogger().info("FINE cloneTornei");
+	}
+	
+	public static void main(String[] args) throws Exception {
+		MyLogger.setConsoleLogLevel(Level.INFO);
+		Configurator.loadConfiguration(Environment.STAGE);
+		GDriveUtils.cloneTornei("2020");
 	}
 }

@@ -131,6 +131,21 @@ public class GoogleDriveAccess extends RisikoDataManagerAccess{
         return file;
     }
     
+    public File copyFile(String fileId, String newName) throws IOException{
+    	File file = null;
+        Drive service = getDriveService();
+
+        if (service != null){
+        	Drive.Files driveFiles = service.files();
+        	if (driveFiles != null){
+        		file = driveFiles.get(fileId).setFields("parents, name").execute();
+        		file.setName(newName);
+	        	file = driveFiles.copy(fileId, file).execute();
+        	}
+        }
+        return file;
+    }
+    
     public File findOrCreateFolderIfNotExists(String parentFolderId, String folderName) throws IOException{
     	File folderFound = null;
     	

@@ -41,18 +41,63 @@ import org.apache.velocity.exception.ResourceNotFoundException;
 
 public class HtmlPublisher {
 	
-	public static final String FOLDER_PATH = "C:\\Users\\mds\\Desktop\\RisiKo Pages";
+	public static final String FOLDER_PATH = ResourceWorking.htmlPagesPath();
 	public static final DateFormat lastUpdateTimeFormat = new SimpleDateFormat("dd/MM/yyyyHHmmss");
 	
 	private static Date maxDate = null;
+	private static List<Integer> years;
 
+	public static class FilesToPublish{
+		
+		private String year;
+		private File ranking;
+		private File listaTornei;
+		private List<File> tornei;
+		private List<ScorePlayer> tabellini;
+		
+		public FilesToPublish(String year){
+			this.year = year;
+		}
+		public String getYear() {
+			return year;
+		}
+		public void setYear(String year) {
+			this.year = year;
+		}
+		public File getRanking() {
+			return ranking;
+		}
+		public void setRanking(File ranking) {
+			this.ranking = ranking;
+		}
+		public File getListaTornei() {
+			return listaTornei;
+		}
+		public void setListaTornei(File listaTornei) {
+			this.listaTornei = listaTornei;
+		}
+		public List<File> getTornei() {
+			return tornei;
+		}
+		public void setTornei(List<File> tornei) {
+			this.tornei = tornei;
+		}
+		public List<ScorePlayer> getTabellini() {
+			return tabellini;
+		}
+		public void setTabellini(List<ScorePlayer> tabellini) {
+			this.tabellini = tabellini;
+		}
+	}
+	
 	public static void main(String[] args) {
 		MyLogger.setConsoleLogLevel(Level.INFO);
 		Configurator.loadConfiguration(Environment.PRODUCTION);
 		publish(false);
 	}
 	
-	public static void publish(boolean withUpload) {
+	
+	public static void publish_old(boolean withUpload) {
 		MyLogger.getLogger().info("Inizio elaborazione");
 		String year = "2019";
 		
@@ -76,7 +121,7 @@ public class HtmlPublisher {
 			}
 		});
 		File listaTornei = new File(FOLDER_PATH, "listaTornei.html");
-		listaTorneiPublisher(torneiPubblicati, listaTornei);
+		listaTorneiPublisher(torneiPubblicati, listaTornei, year);
 		
 		MyLogger.getLogger().info("Inizio elaborazione tabellini");
 		List<ScorePlayer> tabellini = RankingCalculator.elaboraTabellini(year, torneiPubblicati, null);
@@ -84,7 +129,7 @@ public class HtmlPublisher {
 		assegnaNominativiAPartita(torneiPubblicati, year);
 		
 		File ranking = new File(FOLDER_PATH,"ranking.html");
-		rankingPublisher(tabellini, ranking);
+		rankingPublisher(tabellini, ranking, year);
 		File folderTornei = new File(FOLDER_PATH+File.separator+"TORNEI");
 		List<File> torneiHtml = torneiPublisher(year, torneiPubblicati, folderTornei);
 		
@@ -104,6 +149,95 @@ public class HtmlPublisher {
 		MyLogger.getLogger().info("Fine elaborazione");
 	}
 	
+	public static void publish(boolean withUpload) {
+		MyLogger.getLogger().info("Inizio elaborazione");
+		
+		years = Configurator.getTorneiYears();
+		List<FilesToPublish> fileDaPubblicare = new ArrayList<FilesToPublish>();
+		for (Integer year: years){
+			MyLogger.getLogger().info("INIZIO Elaborazione Tornei del "+year);
+			
+			FilesToPublish filesToPublish = publishPerYear(year.toString());
+			fileDaPubblicare.add(filesToPublish);
+			
+			MyLogger.getLogger().info("FINE Elaborazione Tornei del "+year);
+		}
+		
+		File doppioniSospetti = new File(FOLDER_PATH, "anagraficheDaVerificare.html");
+		List<ScorePlayer> allTabellini = new ArrayList<ScorePlayer>();
+		for (FilesToPublish fileToPublish: fileDaPubblicare){
+			
+			allTabellini.addAll(fileToPublish.getTabellini());
+		
+			if (withUpload){
+				try{
+					uploadFiles(fileToPublish.getRanking(), fileToPublish.getListaTornei(), fileToPublish.getTornei());
+					if (maxDate != null){
+						ResourceWorking.setLastTournamentDate(fileToPublish.getYear(), lastUpdateTimeFormat.format(maxDate));
+					}
+				}catch(IOException ioe){
+					MyLogger.getLogger().severe("Errore nel ftp dei file: "+ioe.getMessage());
+				}
+			}
+		}
+		doppioniSospetti(allTabellini, doppioniSospetti);
+		if (withUpload){
+			try {
+				AlterVistaUtil.uploadInRoot(Collections.singletonList(doppioniSospetti));
+			} catch (IOException ioe) {
+				MyLogger.getLogger().severe("Errore nel ftp dei file: "+ioe.getMessage());
+			}
+		}
+		MyLogger.getLogger().info("Fine elaborazione");
+	}
+	
+	
+	public static FilesToPublish publishPerYear(String year) {
+		MyLogger.getLogger().info("Inizio elaborazione");
+		
+		MyLogger.getLogger().info("Inizio estrazione tornei pubblicati");
+		List<TorneoPubblicato> torneiPubblicati = TorneiUtils.caricamentoTornei(year);
+	
+		Collections.sort(torneiPubblicati, new Comparator<TorneoPubblicato>() {
+
+			@Override
+			public int compare(TorneoPubblicato o1, TorneoPubblicato o2) {
+				int result = 0;
+				try{
+					Date endDate1 = ExcelGSheetsBridge.dfDateTorneo.parse(o1.getTorneoRow().getEndDate());
+					Date endDate2 = ExcelGSheetsBridge.dfDateTorneo.parse(o2.getTorneoRow().getEndDate());
+					result = endDate2.compareTo(endDate1);
+				}catch(ParseException pe){
+					MyLogger.getLogger().severe(pe.getMessage());
+				}
+				//return o2.getIdTorneo().compareTo(o1.getIdTorneo());
+				return result;
+			}
+		});
+		File listaTornei = new File(FOLDER_PATH, "listaTornei"+year+".html");
+		listaTorneiPublisher(torneiPubblicati, listaTornei, year);
+		
+		MyLogger.getLogger().info("Inizio elaborazione tabellini");
+		List<ScorePlayer> tabellini = RankingCalculator.elaboraTabellini(year, torneiPubblicati, null);
+		
+		assegnaNominativiAPartita(torneiPubblicati, year);
+		
+		File ranking = new File(FOLDER_PATH,"ranking"+year+".html");
+		rankingPublisher(tabellini, ranking, year);
+		File folderTornei = new File(FOLDER_PATH+File.separator+"TORNEI");
+		List<File> torneiHtml = torneiPublisher(year, torneiPubblicati, folderTornei);
+		
+		MyLogger.getLogger().info("Fine elaborazione");
+		
+		FilesToPublish filesToPublish = new FilesToPublish(year);
+		filesToPublish.setListaTornei(listaTornei);
+		filesToPublish.setRanking(ranking);
+		filesToPublish.setTornei(torneiHtml);
+		filesToPublish.setTabellini(tabellini);
+		
+		return filesToPublish;
+	}
+				
 	private static void assegnaNominativiAPartita(List<TorneoPubblicato> torneiPubblicati, String year){
 		List<AnagraficaGiocatoreRow> anagraficheGiocatoriRow = TorneiUtils.getAllAnagraficheGiocatori(year);
 		
@@ -158,15 +292,18 @@ public class HtmlPublisher {
 		}		
 	}
 	
-	public static void rankingPublisher(List<ScorePlayer> tabellini, File ranking){
+	public static void rankingPublisher(List<ScorePlayer> tabellini, File ranking, String year){
 
 		MyLogger.getLogger().info("Inizio scrittura file");
 	    Properties p = new Properties();
+	    p.setProperty("input.encoding", "UTF-8");
 	    p.setProperty("resource.loader.file.path", ResourceWorking.velocityTemplatePath());
 	    Velocity.init( p );
 
 		VelocityContext context = new VelocityContext();
 
+		context.put( "year", year );
+		context.put( "years", years );
 		context.put( "scorePlayers", tabellini );
 		context.put( "styleGenerator", StyleGenerator.class);
 		context.put( "Capitalize", Capitalize.class);
@@ -175,7 +312,7 @@ public class HtmlPublisher {
 		Template template = null;
 
 		try{
-		  template = Velocity.getTemplate("Ranking.vm");
+		  template = Velocity.getTemplate("Ranking.vm", "UTF-8");
 		}catch( ResourceNotFoundException rnfe ){
 			MyLogger.getLogger().severe(rnfe.getMessage());
 		}catch( ParseErrorException pee ){
@@ -210,6 +347,7 @@ public class HtmlPublisher {
 		
 		MyLogger.getLogger().info("Inizio scrittura file");
 	    Properties p = new Properties();
+	    p.setProperty("input.encoding", "UTF-8");
 	    p.setProperty("resource.loader.file.path", ResourceWorking.velocityTemplatePath());
         p.setProperty("runtime.log.logsystem.log4j.logger","HtmlPublisher");
 	    
@@ -219,7 +357,7 @@ public class HtmlPublisher {
 		Template template = null;
 
 		try{
-		  template = Velocity.getTemplate("Torneo.vm");
+		  template = Velocity.getTemplate("Torneo.vm", "UTF-8");
 		}catch( ResourceNotFoundException rnfe ){
 			MyLogger.getLogger().severe(rnfe.getMessage());
 		}catch( ParseErrorException pee ){
@@ -277,7 +415,7 @@ public class HtmlPublisher {
 		return result;
 	}
 
-	public static void listaTorneiPublisher(List<TorneoPubblicato> torneiPubblicati, File listaTornei){
+	public static void listaTorneiPublisher(List<TorneoPubblicato> torneiPubblicati, File listaTornei, String year){
 		
 		MyLogger.getLogger().info("Inizio scrittura file. Primo Torneo: "+torneiPubblicati.get(0).getIdTorneo());
 		MyLogger.getLogger().info("Inizio scrittura file. Ultimo Torneo: "+torneiPubblicati.get(torneiPubblicati.size()-1).getIdTorneo());
@@ -288,6 +426,7 @@ public class HtmlPublisher {
 		}
 		
 	    Properties p = new Properties();
+	    p.setProperty("input.encoding", "UTF-8");
 	    p.setProperty("resource.loader.file.path", ResourceWorking.velocityTemplatePath());
 	    p.setProperty("runtime.log.logsystem.log4j.logger","HtmlPublisher");
 	    
@@ -297,7 +436,7 @@ public class HtmlPublisher {
 		Template template = null;
 
 		try{
-		  template = Velocity.getTemplate("ListaTornei.vm");
+		  template = Velocity.getTemplate("ListaTornei.vm", "UTF-8");
 		}catch( ResourceNotFoundException rnfe ){
 			MyLogger.getLogger().severe(rnfe.getMessage());
 		}catch( ParseErrorException pee ){
@@ -308,6 +447,8 @@ public class HtmlPublisher {
 			MyLogger.getLogger().severe(e.getMessage());
 		}
 
+		context.put( "year", year );
+		context.put( "years", years );
 		context.put( "tornei", torneiPubblicati );
 		context.put( "clubs", clubs );
 		context.put( "styleGenerator", StyleGenerator.class);
@@ -355,6 +496,7 @@ public class HtmlPublisher {
 			});
 				
 		    Properties p = new Properties();
+		    p.setProperty("input.encoding", "UTF-8");
 		    p.setProperty("resource.loader.file.path", ResourceWorking.velocityTemplatePath());
 		    Velocity.init( p );
 
@@ -368,7 +510,7 @@ public class HtmlPublisher {
 			Template template = null;
 
 			try{
-			  template = Velocity.getTemplate("TabellinoGiocatore.vm");
+			  template = Velocity.getTemplate("TabellinoGiocatore.vm", "UTF-8");
 			}catch( ResourceNotFoundException rnfe ){
 				MyLogger.getLogger().severe(rnfe.getMessage());
 			}catch( ParseErrorException pee ){
@@ -401,6 +543,12 @@ public class HtmlPublisher {
 		AlterVistaUtil.uploadInTornei(torneiHtml);
 		AlterVistaUtil.uploadInRoot(Collections.singletonList(listaTornei));
 		AlterVistaUtil.uploadInRoot(Collections.singletonList(doppioniSospetti));
+		AlterVistaUtil.uploadInRoot(Collections.singletonList(ranking));
+	}
+	
+	private static void uploadFiles(File ranking, File listaTornei, List<File> torneiHtml) throws IOException{
+		AlterVistaUtil.uploadInTornei(torneiHtml);
+		AlterVistaUtil.uploadInRoot(Collections.singletonList(listaTornei));
 		AlterVistaUtil.uploadInRoot(Collections.singletonList(ranking));
 	}
 	

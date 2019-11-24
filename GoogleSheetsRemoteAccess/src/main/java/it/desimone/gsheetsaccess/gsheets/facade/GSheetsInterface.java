@@ -110,12 +110,14 @@ public class GSheetsInterface {
 	
 	
 	public static Integer findNumTorneoRowByIdTorneo(String spreadSheetId, String sheetName, SheetRow sheetRow) throws IOException{
+		MyLogger.getLogger().entering("GSheetsInterface", "findNumTorneoRowByIdTorneo");
 		Integer result = null;
 		String query = getQueryTorneo(((TorneiRow) sheetRow).getIdTorneo());
 		List<Integer> numRows = findNumRowsByIdTorneo(spreadSheetId, sheetRow, query);
 		if (numRows != null){
 			result = numRows.get(0);
 		}
+		MyLogger.getLogger().exiting("GSheetsInterface", "findNumTorneoRowByIdTorneo");
 		return result;
 	}
 	
@@ -126,14 +128,18 @@ public class GSheetsInterface {
 	}
 	
 	public static List<Integer> findNumPartiteRowsByIdTorneo(String spreadSheetId, SheetRow sheetRow) throws IOException{
+		MyLogger.getLogger().entering("GSheetsInterface", "findNumPartiteRowsByIdTorneo");
 		String query = getQueryPartiteTorneo(((PartitaRow) sheetRow).getIdTorneo());
 		List<Integer> numRows = findNumRowsByIdTorneo(spreadSheetId, sheetRow, query);
+		MyLogger.getLogger().exiting("GSheetsInterface", "findNumPartiteRowsByIdTorneo");
 		return numRows;
 	}
 	
 	public static List<Integer> findClassificaRowsByIdTorneo(String spreadSheetId, SheetRow sheetRow) throws IOException{
+		MyLogger.getLogger().entering("GSheetsInterface", "findClassificaRowsByIdTorneo");
 		String query = getQueryClassificaTorneo(((ClassificheRow) sheetRow).getIdTorneo());
 		List<Integer> numRows = findNumRowsByIdTorneo(spreadSheetId, sheetRow, query);
+		MyLogger.getLogger().exiting("GSheetsInterface", "findClassificaRowsByIdTorneo");
 		return numRows;
 	}
 	
@@ -324,6 +330,8 @@ public class GSheetsInterface {
 	}
 	
 	public static List<AnagraficaGiocatoreRidottaRow> findAnagraficheRidotteByKey(String spreadSheetId, List<AnagraficaGiocatoreRidottaRow> sheetRows) throws IOException{
+		MyLogger.getLogger().entering("GSheetsInterface", "findAnagraficheRidotteByKey");
+		
     	List<ValueRange> data = new ArrayList<ValueRange>();
 
     	String sheetNameDataAnalysis = AnagraficaGiocatoreRidottaRow.SHEET_DATA_ANALYSIS_NAME;
@@ -386,7 +394,7 @@ public class GSheetsInterface {
 		}
 		
 		getGoogleSheetsInstance().clearRows(spreadSheetId, Collections.singletonList(rangeRicerca));
-		
+		MyLogger.getLogger().exiting("GSheetsInterface", "findAnagraficheRidotteByKey");
 		return sheetRows;
 	}
 	
@@ -497,6 +505,8 @@ public class GSheetsInterface {
 	}
 	
 	public static List<SheetRow> findAnagraficheByKey(String spreadSheetId, List<SheetRow> sheetRows) throws IOException{
+		MyLogger.getLogger().entering("GSheetsInterface", "findAnagraficheByKey");
+		
     	List<ValueRange> data = new ArrayList<ValueRange>();
 
     	String sheetNameDataAnalysis = AbstractSheetRow.SHEET_DATA_ANALYSIS_NAME;
@@ -520,19 +530,24 @@ public class GSheetsInterface {
 		if (queryResponses != null && !queryResponses.isEmpty()){
 			int index = 0;
 			for (List<Object> queryResponse: queryResponses){
-				String valueQuery = (String)queryResponse.get(0);
-				try{
-					Integer numRow = Integer.valueOf(valueQuery);
-					sheetRows.get(index).setSheetRowNumber(numRow);
-				}catch(NumberFormatException ne){
-					MyLogger.getLogger().info("Not found: "+valueQuery);
+				if (queryResponse != null && !queryResponse.isEmpty()){
+					Object o = queryResponse.get(0);
+					if (o != null){
+						String valueQuery = (String)o;
+						try{
+							Integer numRow = Integer.valueOf(valueQuery);
+							sheetRows.get(index).setSheetRowNumber(numRow);
+						}catch(NumberFormatException ne){
+							MyLogger.getLogger().info("Not found: "+valueQuery);
+						}
+					}
 				}
 				index++;
 			}
 		}
 
 		getGoogleSheetsInstance().clearRows(spreadSheetId, Collections.singletonList(rangeRicerca));
-		
+		MyLogger.getLogger().exiting("GSheetsInterface", "findAnagraficheByKey");
 		return sheetRows;
 	}
 	
@@ -645,11 +660,13 @@ public class GSheetsInterface {
 	}
 	
 	public static void deleteRowsByNumRow(String spreadSheetId, String sheetName, List<Integer> sheetRows) throws IOException{
+		MyLogger.getLogger().entering("GSheetsInterface", "deleteRowsByNumRow");
 		getGoogleSheetsInstance().deleteRows(spreadSheetId, sheetName, sheetRows);
+		MyLogger.getLogger().exiting("GSheetsInterface", "deleteRowsByNumRow");
 	}
 	
 	public static void appendRows(String spreadSheetId, String sheetName, List<SheetRow> sheetRows) throws IOException{
-	
+		MyLogger.getLogger().entering("GSheetsInterface", "appendRows");
 		if (sheetRows != null && !sheetRows.isEmpty()){
 			List<List<Object>> rowData = new ArrayList<List<Object>>();
 			int index = 0;
@@ -664,13 +681,16 @@ public class GSheetsInterface {
 			}
 			getGoogleSheetsInstance().appendDataToSheet(spreadSheetId, sheetName, rowData);
 		}
+		MyLogger.getLogger().exiting("GSheetsInterface", "appendRows");
 	}
 	
 	public static Integer findMaxIdAnagrafica(String spreadSheetId) throws IOException{
+		MyLogger.getLogger().entering("GSheetsInterface", "findMaxIdAnagrafica");
 		List<String> ranges = Collections.singletonList(AnagraficaGiocatoreRidottaRow.SHEET_DATA_ANALYSIS_NAME+"!"+"B2");
 		
 		List<List<Object>> data = getGoogleSheetsInstance().leggiSheet(spreadSheetId, ranges);
 
+		MyLogger.getLogger().exiting("GSheetsInterface", "findMaxIdAnagrafica");
 		return (Integer) Integer.valueOf((String)data.get(0).get(0));
 	}
 	
@@ -692,6 +712,7 @@ public class GSheetsInterface {
 	}
 	
     public static Integer updateRows(String spreadsheetId, String sheetName, List<SheetRow> rows, boolean userEntered) throws IOException{
+		MyLogger.getLogger().entering("GSheetsInterface", "updateRows");
     	if (rows == null || rows.isEmpty()) return null;
     	
     	List<ValueRange> data = new ArrayList<ValueRange>();
@@ -703,7 +724,7 @@ public class GSheetsInterface {
     	}
     	
     	Integer updatedRows = getGoogleSheetsInstance().updateRows(spreadsheetId, data, userEntered);
-    	
+		MyLogger.getLogger().exiting("GSheetsInterface", "updateRows");
     	return updatedRows;
     }
 	

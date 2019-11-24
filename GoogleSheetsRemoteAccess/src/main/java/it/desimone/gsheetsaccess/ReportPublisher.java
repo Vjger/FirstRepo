@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -85,6 +86,8 @@ public class ReportPublisher {
 
 	
 	private static void sendErrorMail(ReportDriveData reportDriveData, String errorMessage){
+		MyLogger.getLogger().entering("ReportPublisher", "sendErrorMail");
+		
 		GmailAccess gmailAccess = new GmailAccess();
 		String subject = "ERRORE NELL'ELABORAZIONE DEI REPORT";
 		String[] to = {"risiko.it@gmail.com"};
@@ -103,21 +106,32 @@ public class ReportPublisher {
 		} catch (IOException e) {
 			MyLogger.getLogger().severe("Error sending mail to "+to+": "+e.getMessage());
 		}
+		MyLogger.getLogger().exiting("ReportPublisher", "sendErrorMail");
 	}
 	
-	public static void pubblicaTorneo(Torneo torneo) throws IOException{
+	public static void pubblicaTorneo(Torneo torneo) throws Exception{
+		MyLogger.getLogger().entering("ReportPublisher", "pubblicaTorneo");
+		
 		insertOrUpdateTorneo(torneo);
 		Map<Integer, Integer> mappaIdExcelVsIdGSheets = insertOrUpdateGiocatori(torneo);
 		deleteAndInsertPartita(torneo, mappaIdExcelVsIdGSheets);
 		deleteAndInsertClassifica(torneo, mappaIdExcelVsIdGSheets);
+		
+		MyLogger.getLogger().exiting("ReportPublisher", "pubblicaTorneo");
 	}
 	
 	
-	private static void insertOrUpdateTorneo(Torneo torneo) throws IOException{
+	private static void insertOrUpdateTorneo(Torneo torneo) throws Exception{
+		MyLogger.getLogger().entering("ReportPublisher", "insertOrUpdateTorneo");
+		
 		TorneiRow torneoRow = ExcelGSheetsBridge.getTorneoRowByTorneo(torneo);
 		
 		String year = ExcelGSheetsBridge.obtainYearTorneo(torneo);
 		String spreadSheetIdTornei = Configurator.getTorneiSheetId(year);
+		if (spreadSheetIdTornei == null){
+			GDriveUtils.cloneTornei(year);
+			spreadSheetIdTornei = Configurator.getTorneiSheetId(year);
+		}
 		String sheetNameTornei = TorneiRow.SHEET_TORNEI_NAME;
 		Integer torneoRowFound = GSheetsInterface.findNumTorneoRowByIdTorneo(spreadSheetIdTornei, sheetNameTornei, torneoRow);
 		
@@ -129,10 +143,13 @@ public class ReportPublisher {
 		}else{
 			GSheetsInterface.appendRows(spreadSheetIdTornei, sheetNameTornei, Collections.singletonList((SheetRow)torneoRow));
 		}
+		MyLogger.getLogger().exiting("ReportPublisher", "insertOrUpdateTorneo");
 	}
 	
 	
 	private static Map<Integer, Integer> insertOrUpdateGiocatori(Torneo torneo) throws IOException{
+		MyLogger.getLogger().entering("ReportPublisher", "insertOrUpdateGiocatori");
+		
 		Map<Integer, Integer> mappaIdExcelVsIdGSheets = null;
 		SheetRow[][] anagrafiche = ExcelGSheetsBridge.getAnagraficheRowByTorneo(torneo);
 		
@@ -183,6 +200,14 @@ public class ReportPublisher {
 			}
 			if (!anagraficheDaAggiornare.isEmpty()){
 				List<SheetRow> anagraficheDaAggiornareRowFound = GSheetsInterface.findAnagraficheByKey(spreadSheetIdTornei, anagraficheDaAggiornare);
+				Iterator<SheetRow> iterator = anagraficheDaAggiornare.iterator();
+				while (iterator.hasNext()){
+					SheetRow anagraficaIpoteticamenteDaAggiornare = iterator.next();
+					if (anagraficaIpoteticamenteDaAggiornare.getSheetRowNumber() == null){
+						anagraficheDaAggiungere.add(anagraficaIpoteticamenteDaAggiornare);
+						iterator.remove();
+					}
+				}
 				GSheetsInterface.updateRows(spreadSheetIdTornei, sheetNameGiocatori, anagraficheDaAggiornareRowFound, true);
 				MyLogger.getLogger().info("Aggiornate "+anagraficheDaAggiornare.size()+" anagrafiche");
 			}
@@ -191,12 +216,14 @@ public class ReportPublisher {
 				MyLogger.getLogger().info("Aggiunte "+anagraficheDaAggiungere.size()+" anagrafiche");
 			}
 		}
-		
+		MyLogger.getLogger().exiting("ReportPublisher", "insertOrUpdateGiocatori");
 		return mappaIdExcelVsIdGSheets;	
 	}
 
 	
 	private static void deleteAndInsertPartita(Torneo torneo, Map<Integer, Integer> mappaIdExcelVsIdGSheets) throws IOException{
+		MyLogger.getLogger().entering("ReportPublisher", "deleteAndInsertPartita");
+		
 		List<SheetRow> partiteRow = ExcelGSheetsBridge.getPartiteRowByTorneo(torneo, mappaIdExcelVsIdGSheets);
 		
 		String year = ExcelGSheetsBridge.obtainYearTorneo(torneo);
@@ -218,9 +245,13 @@ public class ReportPublisher {
 			MyLogger.getLogger().info("Inserimento di "+partiteRow.size()+" partite del torneo "+torneo);
 			GSheetsInterface.appendRows(spreadSheetIdTornei, sheetNamePartite, partiteRow);
 		}
+		
+		MyLogger.getLogger().exiting("ReportPublisher", "deleteAndInsertPartita");
 	}
 
 	private static void deleteAndInsertClassifica(Torneo torneo, Map<Integer, Integer> mappaIdExcelVsIdGSheets) throws IOException{
+		MyLogger.getLogger().entering("ReportPublisher", "deleteAndInsertClassifica");
+		
 		List<SheetRow> partiteRow = ExcelGSheetsBridge.getPartiteRowByTorneo(torneo, mappaIdExcelVsIdGSheets);
 		List<SheetRow> classificaRows = ExcelGSheetsBridge.getClassificaRowsByTorneo(torneo, mappaIdExcelVsIdGSheets, partiteRow);
 		
@@ -243,6 +274,7 @@ public class ReportPublisher {
 				GSheetsInterface.appendRows(spreadSheetIdTornei, sheetNameClassifiche, classificaRows);
 			}
 		}
+		MyLogger.getLogger().exiting("ReportPublisher", "deleteAndInsertClassifica");
 	}
 	
 }

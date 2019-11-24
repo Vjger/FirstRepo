@@ -4,6 +4,7 @@ import it.desimone.utils.MyLogger;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,6 +67,29 @@ private static Environment environment;
 		return environment;
 	}
 	
+	public static void setProperty(String key, String value){
+		String configFileName = null;
+		switch (environment) {
+		case STAGE:
+			configFileName = CONFIG_FILE_STAGE;
+			break;
+		case PRODUCTION:
+			configFileName = CONFIG_FILE_PROD;
+			break;
+		default:
+			break;
+		}
+		FileOutputStream out = null; 
+		try{
+			out = new FileOutputStream(new File(PATH_CONFIGURATION+File.separator+configFileName));
+			properties.setProperty(key, value);
+			properties.store(out, null);
+			out.close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
 	public static String getRCUFolderId(){
 		String folderId = ((String)properties.get("rcuFolderId"));
 		if (folderId != null) folderId = folderId.trim();
@@ -117,6 +141,10 @@ private static Environment environment;
 		MyLogger.getLogger().finest("ID Tornei:<<"+folderId+">>");
 		return folderId;
 	}
+	
+	public static void setTorneiSheetId(String year, String spreadSheetIdTornei){
+		setProperty("spreadSheetIdTornei"+year, spreadSheetIdTornei);
+	}
 		
 	public static String getDoneFolderId(){
 		String folderId = ((String)properties.get("DONEFolderId"));
@@ -151,5 +179,12 @@ private static Environment environment;
 		if (sheetId != null) sheetId = sheetId.trim();
 		MyLogger.getLogger().finest("Backups Folder:<<"+sheetId+">>");
 		return sheetId;
+	}
+	
+	public static String getTemplateTorneiSheetId(){
+		String folderId = ((String)properties.get("spreadSheetIdTemplateTornei"));
+		if (folderId != null) folderId = folderId.trim();
+		MyLogger.getLogger().finest("ID Template Tornei:<<"+folderId+">>");
+		return folderId;
 	}
 }
