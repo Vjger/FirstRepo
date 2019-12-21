@@ -1,6 +1,5 @@
 package it.desimone.gsheetsaccess.batch;
 
-import it.desimone.gsheetsaccess.RankingCalculator;
 import it.desimone.gsheetsaccess.common.ResourceWorking;
 import it.desimone.gsheetsaccess.dto.ScorePlayer;
 import it.desimone.gsheetsaccess.dto.TorneoPubblicato;
@@ -9,6 +8,7 @@ import it.desimone.gsheetsaccess.gsheets.dto.TabellinoGiocatore;
 import it.desimone.gsheetsaccess.gsheets.dto.TorneiRow;
 import it.desimone.gsheetsaccess.htmlpublisher.HtmlPublisher;
 import it.desimone.gsheetsaccess.htmlpublisher.StyleGenerator;
+import it.desimone.gsheetsaccess.ranking.RankingCalculator;
 import it.desimone.gsheetsaccess.utils.TorneiUtils;
 import it.desimone.utils.Capitalize;
 import it.desimone.utils.MyLogger;

@@ -1,4 +1,4 @@
-package it.desimone.gsheetsaccess;
+package it.desimone.gsheetsaccess.ranking;
 
 import it.desimone.gsheetsaccess.gsheets.dto.TorneiRow;
 

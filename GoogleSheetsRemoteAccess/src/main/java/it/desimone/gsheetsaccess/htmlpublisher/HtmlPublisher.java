@@ -1,7 +1,6 @@
 package it.desimone.gsheetsaccess.htmlpublisher;
 
 import it.desimone.ftputils.AlterVistaUtil;
-import it.desimone.gsheetsaccess.RankingCalculator;
 import it.desimone.gsheetsaccess.common.Configurator;
 import it.desimone.gsheetsaccess.common.Configurator.Environment;
 import it.desimone.gsheetsaccess.common.ResourceWorking;
@@ -12,6 +11,8 @@ import it.desimone.gsheetsaccess.gsheets.dto.AnagraficaGiocatoreRow;
 import it.desimone.gsheetsaccess.gsheets.dto.ClassificheRow;
 import it.desimone.gsheetsaccess.gsheets.dto.PartitaRow;
 import it.desimone.gsheetsaccess.gsheets.facade.ExcelGSheetsBridge;
+import it.desimone.gsheetsaccess.ranking.RankingCalculator;
+import it.desimone.gsheetsaccess.ranking.RankingData;
 import it.desimone.gsheetsaccess.utils.TorneiUtils;
 import it.desimone.utils.Capitalize;
 import it.desimone.utils.MyLogger;
@@ -124,7 +125,9 @@ public class HtmlPublisher {
 		listaTorneiPublisher(torneiPubblicati, listaTornei, year);
 		
 		MyLogger.getLogger().info("Inizio elaborazione tabellini");
-		List<ScorePlayer> tabellini = RankingCalculator.elaboraTabellini(year, torneiPubblicati, null);
+		//List<ScorePlayer> tabellini = RankingCalculator.elaboraTabellini(year, torneiPubblicati, null);
+		RankingData rankingData = RankingCalculator.elaboraRanking(year, torneiPubblicati, null);
+		List<ScorePlayer> tabellini = rankingData.getTabellini();
 		
 		assegnaNominativiAPartita(torneiPubblicati, year);
 		

@@ -1,5 +1,7 @@
 package it.desimone.gsheetsaccess;
 
+import it.desimone.gsheetsaccess.ranking.ElementoRanking;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;

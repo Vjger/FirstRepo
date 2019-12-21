@@ -23,6 +23,7 @@ public class SchedaTorneo {
 		, CAMPIONATO("Campionato Periodico")
 		, TORNEO_A_SQUADRE("Torneo a Squadre")
 		, TORNEO_2VS2("Torneo 2VS2")
+		, TORNEO_A_INVITI("Torneo a Inviti")
 		, AMICHEVOLI("Amichevoli");
 		TipoTorneo(String tipoTorneo){
 			this.tipoTorneo = tipoTorneo;

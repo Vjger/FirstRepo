@@ -50,6 +50,10 @@ public class ResourceWorking {
 	public static String htmlPagesPath(){
 		return ROOT+File.separator+"working"+File.separator+"htmlPages";
 	}
+
+	public static String rankingThresholds(){
+		return ROOT+File.separator+"working"+File.separator+"ranking"+File.separator+"RankingThresholds.xml";
+	}
 	
 	public static File googleCredentials(){
 		return new java.io.File(ROOT+File.separator+"resources"+File.separator+"google", ".credentials/RisiKo Data Manager");

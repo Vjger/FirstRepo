@@ -6,8 +6,10 @@ import it.desimone.risiko.torneo.dto.SchedaTorneo.TipoTorneo;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -142,6 +144,7 @@ public class ScorePlayer implements Comparable<ScorePlayer>{
 	
 	public static class TabellinoPerTipoTorneo{
 		private Integer numeroTorneiDisputati = 0;
+		private List<BigDecimal> scoreRankings = new ArrayList<BigDecimal>();
 		private BigDecimal scoreRanking = BigDecimal.ZERO;
 		
 		public TabellinoPerTipoTorneo(Integer numeroTorneiDisputati,
@@ -164,9 +167,13 @@ public class ScorePlayer implements Comparable<ScorePlayer>{
 		}
 		public void addScoreRanking(BigDecimal score) {
 			scoreRanking = scoreRanking.add(score);
+			scoreRankings.add(score);
 		}
 		public void setScoreRanking(BigDecimal scoreRanking) {
 			this.scoreRanking = scoreRanking;
+		}
+		public List<BigDecimal> getScoreRankings() {
+			return scoreRankings;
 		}
 	}
 
@@ -181,7 +188,7 @@ public class ScorePlayer implements Comparable<ScorePlayer>{
 		tabelliniPerTipoTorneo.put(tipoTorneo, tabellinoPerTipoTorneo);
 	}
 	
-	private TabellinoPerTipoTorneo getTabellino(TipoTorneo tipoTorneo){
+	public TabellinoPerTipoTorneo getTabellino(TipoTorneo tipoTorneo){
 		TabellinoPerTipoTorneo result = tabelliniPerTipoTorneo.get(tipoTorneo);
 		if (result == null){
 			result = new TabellinoPerTipoTorneo(0, BigDecimal.ZERO);

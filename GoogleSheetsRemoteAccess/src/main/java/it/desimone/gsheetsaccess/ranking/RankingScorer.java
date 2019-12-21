@@ -1,26 +1,27 @@
-package it.desimone.gsheetsaccess;
+package it.desimone.gsheetsaccess.ranking;
 
 import it.desimone.risiko.torneo.dto.SchedaTorneo.TipoTorneo;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 public class RankingScorer {
 	
 	private static final BigDecimal unoPUNTOdue = new BigDecimal(1.2);
+	private static final Integer NUMERO_TAVOLI_MINIMO_2020 = 5;
 
-	public static BigDecimal calcolaScore(int posizioneNelTorneo, TipoTorneo tipoTorneo, int numeroTavoli, int numeroPartecipanti,int numeroTurni){
+	public static BigDecimal calcolaScore(String year, int posizioneNelTorneo, TipoTorneo tipoTorneo, int numeroTavoli, int numeroPartecipanti,int numeroTurni){
 		BigDecimal score = BigDecimal.ZERO;
 		BigDecimal b = BigDecimal.ONE;
 		
-		BigDecimal VT = a(posizioneNelTorneo).multiply(new BigDecimal(100).add(b.multiply(new BigDecimal(numeroTavoli)))).multiply(classe(tipoTorneo, numeroTurni));
-
-		if (posizioneNelTorneo == 1){
-			score = VT;
-		}else{
-			score = VT.multiply(new BigDecimal(Math.exp(-posizioneNelTorneo/20.0)));
-		}
-		
+		if (year.equals("2019") || numeroTavoli >= NUMERO_TAVOLI_MINIMO_2020){
+			BigDecimal VT = a(posizioneNelTorneo).multiply(new BigDecimal(100).add(b.multiply(new BigDecimal(numeroTavoli)))).multiply(classe(tipoTorneo, numeroTurni));
+	
+			if (posizioneNelTorneo == 1){
+				score = VT;
+			}else{
+				score = VT.multiply(new BigDecimal(Math.exp(-posizioneNelTorneo/20.0)));
+			}
+		}		
 		return score;
 	}
 	
