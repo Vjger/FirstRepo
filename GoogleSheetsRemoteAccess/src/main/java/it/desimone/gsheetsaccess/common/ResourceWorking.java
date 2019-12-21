@@ -52,7 +52,7 @@ public class ResourceWorking {
 	}
 
 	public static String rankingThresholds(){
-		return ROOT+File.separator+"working"+File.separator+"ranking"+File.separator+"RankingThresholds.xml";
+		return ROOT+File.separator+"resources"+File.separator+"RankingThresholds.xml";
 	}
 	
 	public static File googleCredentials(){
