@@ -42,4 +42,8 @@ public class StyleGenerator {
 		return style;
 	}
 	
+	public static String getStyle(TipoTorneo tipoTorneo){
+		return getStyle(tipoTorneo.getTipoTorneo());
+	}
+	
 }

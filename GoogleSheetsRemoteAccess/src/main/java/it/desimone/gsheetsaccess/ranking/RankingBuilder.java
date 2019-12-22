@@ -46,23 +46,23 @@ public class RankingBuilder {
 
 	public static void main (String[] args){
 		RankingThresholds rankingThresholds2019 = new RankingThresholds();
-		rankingThresholds2019.addThresholds(TipoTorneo.CAMPIONATO, new Thresholds(1, new BigDecimal(100)));
-		rankingThresholds2019.addThresholds(TipoTorneo.INTERCLUB, new Thresholds(1, new BigDecimal(100)));
-		rankingThresholds2019.addThresholds(TipoTorneo.OPEN, new Thresholds(1, new BigDecimal(100)));
-		rankingThresholds2019.addThresholds(TipoTorneo.MASTER, new Thresholds(1, new BigDecimal(100)));
-		rankingThresholds2019.addThresholds(TipoTorneo.RADUNO_NAZIONALE, new Thresholds(1, new BigDecimal(100)));
+		rankingThresholds2019.addThresholds(TipoTorneo.CAMPIONATO, new Thresholds(1,1, new BigDecimal(100)));
+		rankingThresholds2019.addThresholds(TipoTorneo.INTERCLUB, new Thresholds(1,1, new BigDecimal(100)));
+		rankingThresholds2019.addThresholds(TipoTorneo.OPEN, new Thresholds(1,1, new BigDecimal(100)));
+		rankingThresholds2019.addThresholds(TipoTorneo.MASTER, new Thresholds(1,1, new BigDecimal(100)));
+		rankingThresholds2019.addThresholds(TipoTorneo.RADUNO_NAZIONALE, new Thresholds(1,1, new BigDecimal(100)));
 		mappingScorers.put("2019", rankingThresholds2019);
 		RankingThresholds rankingThresholds2020 = new RankingThresholds();
-		rankingThresholds2020.addThresholds(TipoTorneo.CAMPIONATO, new Thresholds(1, new BigDecimal(100)));
-		rankingThresholds2020.addThresholds(TipoTorneo.INTERCLUB, new Thresholds(1, new BigDecimal(20)));
-		rankingThresholds2020.addThresholds(TipoTorneo.OPEN, new Thresholds(4, new BigDecimal(20)));
-		rankingThresholds2020.addThresholds(TipoTorneo.MASTER, new Thresholds(3, new BigDecimal(25)));
-		rankingThresholds2020.addThresholds(TipoTorneo.RADUNO_NAZIONALE, new Thresholds(1, new BigDecimal(33.3)));
+		rankingThresholds2020.addThresholds(TipoTorneo.CAMPIONATO, new Thresholds(5,1, new BigDecimal(100)));
+		rankingThresholds2020.addThresholds(TipoTorneo.INTERCLUB, new Thresholds(5,1, new BigDecimal(20)));
+		rankingThresholds2020.addThresholds(TipoTorneo.OPEN, new Thresholds(5,4, new BigDecimal(20)));
+		rankingThresholds2020.addThresholds(TipoTorneo.MASTER, new Thresholds(5,3, new BigDecimal(25)));
+		rankingThresholds2020.addThresholds(TipoTorneo.RADUNO_NAZIONALE, new Thresholds(5,1, new BigDecimal(33.3)));
 		mappingScorers.put("2020", rankingThresholds2020);
 		XStream xStream = new XStream();
 		String thresholds = xStream.toXML(mappingScorers);
 		
-		//System.out.println(thresholds);
+		System.out.println(thresholds);
 		
 		File thresholdsFile = new File("C:\\Users\\mds\\Desktop\\RankingThresholds.xml");
 		

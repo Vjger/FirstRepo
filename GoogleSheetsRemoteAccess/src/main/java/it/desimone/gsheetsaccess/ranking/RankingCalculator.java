@@ -135,7 +135,7 @@ public class RankingCalculator {
 				TipoTorneo tipoTorneo = TipoTorneo.parseTipoTorneo(torneoPubblicato.getTorneoRow().getTipoTorneo());
 				if (mappaConteggiTipoTorneo.containsKey(tipoTorneo)){
 					Integer counter = mappaConteggiTipoTorneo.get(tipoTorneo);
-					counter++;
+					mappaConteggiTipoTorneo.put(tipoTorneo, ++counter);
 				}
 			}
 		}

@@ -10,13 +10,21 @@ import java.util.Set;
 public class RankingThresholds {
 	private Map<TipoTorneo, Thresholds> sogliePerTipoTorneo = new HashMap<TipoTorneo, Thresholds>();
 	static class Thresholds{
+		private Integer minTables;
 		private Integer minTournaments;
 		private BigDecimal maxPercentage;
-		public Thresholds(Integer minTournaments,
-				BigDecimal maxPercentage) {
+		public Thresholds(Integer minTables, Integer minTournaments, BigDecimal maxPercentage) {
 			super();
+			this.minTables = minTables;
 			this.minTournaments = minTournaments;
 			this.maxPercentage = maxPercentage;
+		}
+		
+		public Integer getMinTables() {
+			return minTables;
+		}
+		public void setMinTables(Integer minTables) {
+			this.minTables = minTables;
 		}
 		public Integer getMinTournaments() {
 			return minTournaments;
@@ -30,13 +38,12 @@ public class RankingThresholds {
 		public void setMaxPercentage(BigDecimal maxPercentage) {
 			this.maxPercentage = maxPercentage;
 		}
+
 		@Override
 		public String toString() {
-			return "Thresholds [minTournaments=" + minTournaments
-					+ ", maxPercentage=" + maxPercentage + "]";
+			return "Thresholds [minTables=" + minTables + ", minTournaments="
+					+ minTournaments + ", maxPercentage=" + maxPercentage + "]";
 		}
-		
-		
 	}
 	public void addThresholds(TipoTorneo tipoTorneo, Thresholds thresholds){
 		sogliePerTipoTorneo.put(tipoTorneo, thresholds);

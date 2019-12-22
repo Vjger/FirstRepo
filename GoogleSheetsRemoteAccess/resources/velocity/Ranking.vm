@@ -52,13 +52,41 @@
 						<div style="text-align: center;"><img src="images/loghi/ranking_360x171.png"><div class="yearButton">$year</div></div>
 						<table>
 							<thead>
-							<tr class="head">
+								<tr class="head">
 									<th class="column10" colspan="5"></th>
-									<th class="column10" colspan="2">Raduno nazionale</th>
-									<th class="column10" colspan="2">Torneo Master</th>		
-									<th class="column10" colspan="2">Torneo Open</th>						
-									<th class="column10" colspan="2">Torneo Interclub</th>
-									<th class="column10" colspan="2">Campionato periodico</th>								
+									<th class="column10" colspan="2" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "RADUNO_NAZIONALE"))">Raduno nazionale</th>
+									<th class="column10" colspan="2" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "MASTER"))">Torneo Master</th>		
+									<th class="column10" colspan="2" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "OPEN"))">Torneo Open</th>						
+									<th class="column10" colspan="2" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "INTERCLUB"))">Torneo Interclub</th>
+									<th class="column10" colspan="2" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "CAMPIONATO"))">Campionato periodico</th>								
+									<th class="column10" colspan="4"></th>								
+								</tr>
+								<tr class="head">
+									<th class="column10" colspan="5"></th>
+									<th class="column10" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "RADUNO_NAZIONALE"))"><img src="images/icons/total.png" title="Totale"></th>
+									<th class="column10" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "RADUNO_NAZIONALE"))"><img src="images/icons/barrier.png" title="Limite"></th>
+									<th class="column10" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "MASTER"))"><img src="images/icons/total.png" title="Totale"></th>
+									<th class="column10" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "MASTER"))"><img src="images/icons/barrier.png" title="Limite"></th>
+									<th class="column10" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "OPEN"))"><img src="images/icons/total.png" title="Totale"></th>
+									<th class="column10" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "OPEN"))"><img src="images/icons/barrier.png" title="Limite"></th>
+									<th class="column10" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "INTERCLUB"))"><img src="images/icons/total.png" title="Totale"></th>
+									<th class="column10" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "INTERCLUB"))"><img src="images/icons/barrier.png" title="Limite"></th>
+									<th class="column10" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "CAMPIONATO"))"><img src="images/icons/total.png" title="Totale"></th>
+									<th class="column10" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "CAMPIONATO"))"><img src="images/icons/barrier.png" title="Limite"></th>									
+									<th class="column10" colspan="4"></th>									
+								</tr>
+								<tr class="head">
+									<th class="column10" colspan="5"></th>
+									<th class="column10" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "RADUNO_NAZIONALE"))">$mappaConteggiTipoTorneo.get($Enum.valueOf($TipoTorneo, "RADUNO_NAZIONALE"))</th>
+									<th class="column10" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "RADUNO_NAZIONALE"))">$mappaSoglieTipoTorneo.get($Enum.valueOf($TipoTorneo, "RADUNO_NAZIONALE"))</th>
+									<th class="column10" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "MASTER"))">$mappaConteggiTipoTorneo.get($Enum.valueOf($TipoTorneo, "MASTER"))</th>
+									<th class="column10" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "MASTER"))">$mappaSoglieTipoTorneo.get($Enum.valueOf($TipoTorneo, "MASTER"))</th>
+									<th class="column10" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "OPEN"))">$mappaConteggiTipoTorneo.get($Enum.valueOf($TipoTorneo, "OPEN"))</th>
+									<th class="column10" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "OPEN"))">$mappaSoglieTipoTorneo.get($Enum.valueOf($TipoTorneo, "OPEN"))</th>
+									<th class="column10" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "INTERCLUB"))">$mappaConteggiTipoTorneo.get($Enum.valueOf($TipoTorneo, "INTERCLUB"))</th>
+									<th class="column10" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "INTERCLUB"))">$mappaSoglieTipoTorneo.get($Enum.valueOf($TipoTorneo, "INTERCLUB"))</th>
+									<th class="column10" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "CAMPIONATO"))">$mappaConteggiTipoTorneo.get($Enum.valueOf($TipoTorneo, "CAMPIONATO"))</th>
+									<th class="column10" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "CAMPIONATO"))">$mappaSoglieTipoTorneo.get($Enum.valueOf($TipoTorneo, "CAMPIONATO"))</th>																												
 									<th class="column10" colspan="4"></th>								
 								</tr>
 								<tr class="head">
@@ -67,16 +95,16 @@
 									<th class="column10">Id</th>
 									<th>Nominativo</th>
 									<th class="column10">Punti Ranking</th>
-									<th class="column10">disputati</th>
-									<th class="column10">Pti Rnk</th>
-									<th class="column10">disputati</th>		
-									<th class="column10">Pti Rnk</th>
-									<th class="column10">disputati</th>								
-									<th class="column10">Pti Rnk</th>
-									<th class="column10">disputati</th>	
-									<th class="column10">Pti Rnk</th>
-									<th class="column10">disputati</th>	
-									<th class="column10">Pti Rnk</th>								
+									<th class="column10" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "RADUNO_NAZIONALE"))">disputati</th>
+									<th class="column10" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "RADUNO_NAZIONALE"))">Pti Rnk</th>
+									<th class="column10" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "MASTER"))">disputati</th>		
+									<th class="column10" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "MASTER"))">Pti Rnk</th>
+									<th class="column10" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "OPEN"))">disputati</th>								
+									<th class="column10" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "OPEN"))">Pti Rnk</th>
+									<th class="column10" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "INTERCLUB"))">disputati</th>	
+									<th class="column10" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "INTERCLUB"))">Pti Rnk</th>
+									<th class="column10" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "CAMPIONATO"))">disputati</th>	
+									<th class="column10" style="$styleGenerator.getStyle($Enum.valueOf($TipoTorneo, "CAMPIONATO"))">Pti Rnk</th>								
 									<th class="column10">Tornei giocati</th>
 									<th class="column10">Partite giocate</th>
 									<th class="column10">Partite vinte</th>

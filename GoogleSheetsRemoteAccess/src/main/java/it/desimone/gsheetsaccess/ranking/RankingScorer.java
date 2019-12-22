@@ -1,5 +1,6 @@
 package it.desimone.gsheetsaccess.ranking;
 
+import it.desimone.gsheetsaccess.ranking.RankingThresholds.Thresholds;
 import it.desimone.risiko.torneo.dto.SchedaTorneo.TipoTorneo;
 
 import java.math.BigDecimal;
@@ -7,13 +8,12 @@ import java.math.BigDecimal;
 public class RankingScorer {
 	
 	private static final BigDecimal unoPUNTOdue = new BigDecimal(1.2);
-	private static final Integer NUMERO_TAVOLI_MINIMO_2020 = 5;
 
 	public static BigDecimal calcolaScore(String year, int posizioneNelTorneo, TipoTorneo tipoTorneo, int numeroTavoli, int numeroPartecipanti,int numeroTurni){
 		BigDecimal score = BigDecimal.ZERO;
 		BigDecimal b = BigDecimal.ONE;
 		
-		if (year.equals("2019") || numeroTavoli >= NUMERO_TAVOLI_MINIMO_2020){
+		if (hasMinimuNumberTables(year, tipoTorneo, numeroTavoli)){
 			BigDecimal VT = a(posizioneNelTorneo).multiply(new BigDecimal(100).add(b.multiply(new BigDecimal(numeroTavoli)))).multiply(classe(tipoTorneo, numeroTurni));
 	
 			if (posizioneNelTorneo == 1){
@@ -23,6 +23,16 @@ public class RankingScorer {
 			}
 		}		
 		return score;
+	}
+	
+	private static boolean hasMinimuNumberTables(String year, TipoTorneo tipoTorneo, int numeroTavoli){
+		boolean result = false;
+		RankingThresholds rankingThresholds = RankingBuilder.getRankingThreshold(year);
+		Thresholds thresholds = rankingThresholds.getThresholds(tipoTorneo);
+		if (thresholds != null){
+			result = numeroTavoli >= thresholds.getMinTables();
+		}
+		return result;
 	}
 	
 	private static BigDecimal a(int posizione){

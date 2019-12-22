@@ -151,7 +151,8 @@ public class ScorePlayer implements Comparable<ScorePlayer>{
 				BigDecimal scoreRanking) {
 			super();
 			this.numeroTorneiDisputati = numeroTorneiDisputati;
-			this.scoreRanking = scoreRanking;
+			//this.scoreRanking = scoreRanking;
+			addScoreRanking(scoreRanking);
 		}
 		public Integer getNumeroTorneiDisputati() {
 			return numeroTorneiDisputati;

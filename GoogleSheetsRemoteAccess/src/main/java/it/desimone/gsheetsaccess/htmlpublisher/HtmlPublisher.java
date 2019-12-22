@@ -14,6 +14,7 @@ import it.desimone.gsheetsaccess.gsheets.facade.ExcelGSheetsBridge;
 import it.desimone.gsheetsaccess.ranking.RankingCalculator;
 import it.desimone.gsheetsaccess.ranking.RankingData;
 import it.desimone.gsheetsaccess.utils.TorneiUtils;
+import it.desimone.risiko.torneo.dto.SchedaTorneo.TipoTorneo;
 import it.desimone.utils.Capitalize;
 import it.desimone.utils.MyLogger;
 
@@ -96,62 +97,7 @@ public class HtmlPublisher {
 		Configurator.loadConfiguration(Environment.PRODUCTION);
 		publish(false);
 	}
-	
-	
-	public static void publish_old(boolean withUpload) {
-		MyLogger.getLogger().info("Inizio elaborazione");
-		String year = "2019";
-		
-		MyLogger.getLogger().info("Inizio estrazione tornei pubblicati");
-		List<TorneoPubblicato> torneiPubblicati = TorneiUtils.caricamentoTornei(year);
-	
-		Collections.sort(torneiPubblicati, new Comparator<TorneoPubblicato>() {
 
-			@Override
-			public int compare(TorneoPubblicato o1, TorneoPubblicato o2) {
-				int result = 0;
-				try{
-					Date endDate1 = ExcelGSheetsBridge.dfDateTorneo.parse(o1.getTorneoRow().getEndDate());
-					Date endDate2 = ExcelGSheetsBridge.dfDateTorneo.parse(o2.getTorneoRow().getEndDate());
-					result = endDate2.compareTo(endDate1);
-				}catch(ParseException pe){
-					MyLogger.getLogger().severe(pe.getMessage());
-				}
-				//return o2.getIdTorneo().compareTo(o1.getIdTorneo());
-				return result;
-			}
-		});
-		File listaTornei = new File(FOLDER_PATH, "listaTornei.html");
-		listaTorneiPublisher(torneiPubblicati, listaTornei, year);
-		
-		MyLogger.getLogger().info("Inizio elaborazione tabellini");
-		//List<ScorePlayer> tabellini = RankingCalculator.elaboraTabellini(year, torneiPubblicati, null);
-		RankingData rankingData = RankingCalculator.elaboraRanking(year, torneiPubblicati, null);
-		List<ScorePlayer> tabellini = rankingData.getTabellini();
-		
-		assegnaNominativiAPartita(torneiPubblicati, year);
-		
-		File ranking = new File(FOLDER_PATH,"ranking.html");
-		rankingPublisher(tabellini, ranking, year);
-		File folderTornei = new File(FOLDER_PATH+File.separator+"TORNEI");
-		List<File> torneiHtml = torneiPublisher(year, torneiPubblicati, folderTornei);
-		
-		File doppioniSospetti = new File(FOLDER_PATH, "anagraficheDaVerificare.html");
-		doppioniSospetti(tabellini, doppioniSospetti);
-		
-		if (withUpload){
-			try{
-				uploadFiles(ranking, listaTornei, doppioniSospetti, torneiHtml);
-				if (maxDate != null){
-					ResourceWorking.setLastTournamentDate(year, lastUpdateTimeFormat.format(maxDate));
-				}
-			}catch(IOException ioe){
-				MyLogger.getLogger().severe("Errore nel ftp dei file: "+ioe.getMessage());
-			}
-		}
-		MyLogger.getLogger().info("Fine elaborazione");
-	}
-	
 	public static void publish(boolean withUpload) {
 		MyLogger.getLogger().info("Inizio elaborazione");
 		
@@ -221,12 +167,14 @@ public class HtmlPublisher {
 		listaTorneiPublisher(torneiPubblicati, listaTornei, year);
 		
 		MyLogger.getLogger().info("Inizio elaborazione tabellini");
-		List<ScorePlayer> tabellini = RankingCalculator.elaboraTabellini(year, torneiPubblicati, null);
+//		List<ScorePlayer> tabellini = RankingCalculator.elaboraTabellini(year, torneiPubblicati, null);
+		RankingData rankingData = RankingCalculator.elaboraRanking(year, torneiPubblicati, null);
+		List<ScorePlayer> tabellini = rankingData.getTabellini();
 		
 		assegnaNominativiAPartita(torneiPubblicati, year);
 		
 		File ranking = new File(FOLDER_PATH,"ranking"+year+".html");
-		rankingPublisher(tabellini, ranking, year);
+		rankingPublisher(tabellini, ranking, year, rankingData);
 		File folderTornei = new File(FOLDER_PATH+File.separator+"TORNEI");
 		List<File> torneiHtml = torneiPublisher(year, torneiPubblicati, folderTornei);
 		
@@ -295,7 +243,7 @@ public class HtmlPublisher {
 		}		
 	}
 	
-	public static void rankingPublisher(List<ScorePlayer> tabellini, File ranking, String year){
+	public static void rankingPublisher(List<ScorePlayer> tabellini, File ranking, String year, RankingData rankingData){
 
 		MyLogger.getLogger().info("Inizio scrittura file");
 	    Properties p = new Properties();
@@ -307,6 +255,10 @@ public class HtmlPublisher {
 
 		context.put( "year", year );
 		context.put( "years", years );
+		context.put( "mappaSoglieTipoTorneo", rankingData.getMappaSoglieTipoTorneo() );
+		context.put( "mappaConteggiTipoTorneo", rankingData.getMappaConteggiTipoTorneo() );
+		context.put( "TipoTorneo", TipoTorneo.class );
+		context.put( "Enum", Enum.class);
 		context.put( "scorePlayers", tabellini );
 		context.put( "styleGenerator", StyleGenerator.class);
 		context.put( "Capitalize", Capitalize.class);
