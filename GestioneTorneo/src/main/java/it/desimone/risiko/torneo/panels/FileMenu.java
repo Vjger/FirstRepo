@@ -26,6 +26,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
@@ -283,11 +284,11 @@ public class FileMenu extends JMenu {
 		columnScheda.setPreferredWidth(150);
 		TableColumn columnMessage = jTableColumnModel.getColumn(1);
 		columnMessage.setPreferredWidth(850);
-		JScrollPane scrollPane = new JScrollPane(errorTable);
-		scrollPane.setPreferredSize(new Dimension(1000, 500));
+		JScrollPane scrollPane = new JScrollPane(errorTable, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+		scrollPane.setPreferredSize(new Dimension(100, 500));
 		errorTable.setFillsViewportHeight(true);
 		//Integer response = JOptionPane.showConfirmDialog(null, scrollPane, "Confermi di voler procedere nonostante i messaggi indicati?", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-		Integer response = JOptionPane.showOptionDialog(null, scrollPane, "Confermi di voler procedere nonostante i messaggi indicati?", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, new String[]{"Pubblica con giocatori anonimi", "Annulla"}, null);
+		Integer response = JOptionPane.showOptionDialog(null, scrollPane, "Confermi di voler procedere nonostante i messaggi indicati?", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, new String[]{"Pubblica ugualmente", "Annulla"}, null);
 		return response == JOptionPane.OK_OPTION;
 	}
 	

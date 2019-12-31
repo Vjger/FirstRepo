@@ -22,7 +22,9 @@ public class TorneiUtilsTest {
 //			MyLogger.getLogger().info(orfano.toString());
 //		}
 		
-		TorneiUtils.findClone();
+		TorneiUtils.printScorePlayers("2019");
+		
+		System.out.println("END");
 	}
 
 }

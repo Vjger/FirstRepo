@@ -105,6 +105,7 @@ public class ExcelAccess{
 	short posizioneRegione 		= 6;
 	//short posizioneEmail 		= 7;
 	short posizioneDataDiNascita= 7;
+	short posizioneIdNazionale	= 8;
 
 	private Workbook foglioTorneo;
 	private CreationHelper creationHelper;
@@ -395,8 +396,10 @@ public class ExcelAccess{
 			if (cellId == null) return null;
 			id 			= (short)cellId.getNumericCellValue();
 		}catch(NumberFormatException nfe){
+			MyLogger.getLogger().info("Colonna ID Nazionale con valore non numerico: "+nfe.getMessage());
 			throw new MyException(nfe,"Colonna ID con valore non numerico");
 		}catch(IllegalStateException ise){
+			MyLogger.getLogger().info("Colonna ID Nazionale con valore non numerico: "+ise.getMessage());
 			throw new MyException(ise,"Colonna ID con valore non numerico");
 		}
 		
@@ -461,6 +464,21 @@ public class ExcelAccess{
 			}
 		}
 		giocatore.setPresenteTorneo(presenza!=null&&presenza.equalsIgnoreCase("SI"));		
+		
+		Integer idNazionale = null;
+		try{
+			Cell cellIdNazionale = row.getCell(posizioneIdNazionale);
+			if (cellIdNazionale != null){
+				idNazionale 	= (int)cellIdNazionale.getNumericCellValue();
+			}
+		}catch(NumberFormatException nfe){
+			MyLogger.getLogger().info("Colonna ID Nazionale con valore non numerico: "+nfe.getMessage());
+			throw new MyException(nfe,"Colonna ID Nazionale con valore non numerico");
+		}catch(IllegalStateException ise){
+			MyLogger.getLogger().info("Colonna ID Nazionale con valore non numerico: "+ise.getMessage());
+			//throw new MyException(ise,"Colonna ID Nazionale con valore non numerico");
+		}
+		giocatore.setIdNazionale(idNazionale);
 		return giocatore;
 	}
 	
@@ -705,6 +723,26 @@ public class ExcelAccess{
 			}
 		}
 		return turni;
+	}
+	
+	public SchedaTurno leggiSchedaTurno(String sheetName){
+		SchedaTurno schedaTurno = null;
+		try{
+			String numeroTurno = sheetName.substring(0, sheetName.indexOf(ExcelAccess.SCHEDA_TURNO_SUFFIX));
+			if (numeroTurno != null){
+				numeroTurno = numeroTurno.trim();
+				Integer numeroTurnoInt = Integer.valueOf(numeroTurno);
+				Partita[] partite = loadPartite(numeroTurnoInt, true, null);
+				schedaTurno = new SchedaTurno();
+				schedaTurno.setNumeroTurno(numeroTurnoInt);
+				schedaTurno.setPartite(partite);
+
+			}
+		}catch(Exception e){
+			MyLogger.getLogger().severe("Errore nella lettura delle schede Turni: "+e.getMessage());
+			throw new MyException(e);
+		}
+		return schedaTurno;
 	}
 	
 	private Partita[] loadPartite(String nomeTurno, boolean withGhost, TipoTorneo tipoTorneo){

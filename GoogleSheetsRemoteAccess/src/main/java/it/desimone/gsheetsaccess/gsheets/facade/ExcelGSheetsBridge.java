@@ -109,7 +109,11 @@ public class ExcelGSheetsBridge {
 				anagraficaGiocatoreRidottaRow.setNome(giocatore.getNome().trim());
 				anagraficaGiocatoreRidottaRow.setCognome(giocatore.getCognome().trim());
 				//anagraficaGiocatoreRidottaRow.setEmail(giocatore.getEmail().trim());
-				anagraficaGiocatoreRidottaRow.setDataDiNascita(dfDateTorneo.format(giocatore.getDataDiNascita()));
+				anagraficaGiocatoreRidottaRow.setDataDiNascita(dfDateTorneo.format(giocatore.getDataDiNascita()));	
+			}else if (giocatore.getIdNazionale() != null){
+				anagraficaGiocatoreRidottaRow.setNome(giocatore.getNome().trim());
+				anagraficaGiocatoreRidottaRow.setCognome(giocatore.getCognome().trim());
+				anagraficaGiocatoreRidottaRow.setId(giocatore.getIdNazionale());
 			}else{
 				anagraficaGiocatoreRidottaRow.setNome(AnagraficaGiocatoreRidottaRow.NOME_ANONIMO);
 				anagraficaGiocatoreRidottaRow.setCognome(AnagraficaGiocatoreRidottaRow.COGNOME_ANONIMO);
@@ -120,6 +124,10 @@ public class ExcelGSheetsBridge {
 			if (giocatore.getDataDiNascita() != null){
 				anagraficaGiocatoreRow.setNome(giocatore.getNome().trim());
 				anagraficaGiocatoreRow.setCognome(giocatore.getCognome().trim());
+			}else if (giocatore.getIdNazionale() != null){
+				anagraficaGiocatoreRow.setNome(giocatore.getNome().trim());
+				anagraficaGiocatoreRow.setCognome(giocatore.getCognome().trim());
+				anagraficaGiocatoreRow.setId(giocatore.getIdNazionale());				
 			}else{
 				anagraficaGiocatoreRow.setNome(AnagraficaGiocatoreRidottaRow.NOME_ANONIMO);
 				anagraficaGiocatoreRow.setCognome(AnagraficaGiocatoreRidottaRow.COGNOME_ANONIMO);

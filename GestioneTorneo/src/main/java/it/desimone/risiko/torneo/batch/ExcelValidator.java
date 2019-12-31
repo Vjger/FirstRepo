@@ -1,6 +1,7 @@
 package it.desimone.risiko.torneo.batch;
 
 import it.desimone.risiko.torneo.batch.ExcelValidator.ExcelValidatorMessages.Scheda;
+import it.desimone.risiko.torneo.batch.ExcelValidator.ExcelValidatorMessages.Severity;
 import it.desimone.risiko.torneo.dto.GiocatoreDTO;
 import it.desimone.risiko.torneo.dto.Partita;
 import it.desimone.risiko.torneo.dto.SchedaClassifica;
@@ -313,7 +314,7 @@ public class ExcelValidator {
 //					if (StringUtils.isNullOrEmpty(giocatore.getEmail())){
 //						result.add(new ExcelValidatorMessages(Scheda.ISCRITTI, "L'indirizzo email del giocatore "+giocatore+" non è indicato"));
 //					}
-					if (giocatore.getDataDiNascita() == null){
+					if (giocatore.getDataDiNascita() == null && giocatore.getIdNazionale() == null){
 						result.add(new ExcelValidatorMessages(Scheda.ISCRITTI, "La data di nascita del giocatore "+giocatore+" non è indicata: verrà trattato come anonimo", ExcelValidatorMessages.Severity.WARNING));
 					}
 					int frequency = Collections.frequency(partecipantiEffettivi, giocatore);
@@ -414,7 +415,7 @@ public class ExcelValidator {
 		
 		boolean giocatoUltimoTurno = schedaTorneo != null 
 				&& schedaTorneo.getNumeroTurni() > 0 
-				&& excelAccess.checkSheet(excelAccess.getNomeTurno(schedaTorneo.getNumeroTurni()));
+				&& excelAccess.checkSheet(ExcelAccess.getNomeTurno(schedaTorneo.getNumeroTurni()));
 		
 		if (giocatoUltimoTurno 
 		&& TipoTorneo.prevedeClassifica(schedaTorneo.getTipoTorneo()) 
@@ -439,6 +440,35 @@ public class ExcelValidator {
 							}
 							if (rigaClassifica.getPunteggioFinaleGiocatore() == null){
 								result.add(new ExcelValidatorMessages(Scheda.CLASSIFICA_RIDOTTA, "Non è indicato il punteggio finale del giocatore nella 4° colonna della "+counterRiga+"° riga"));
+							}
+						}
+					}
+					if (giocatoUltimoTurno && TipoTorneo.prevedeClassifica(schedaTorneo.getTipoTorneo())) {
+						String nomeUltimoTurno = ExcelAccess.getNomeTurno(schedaTorneo.getNumeroTurni());
+						SchedaTurno ultimoTurno = excelAccess.leggiSchedaTurno(nomeUltimoTurno);
+						if (ultimoTurno != null){
+							Partita[] partite = ultimoTurno.getPartite();
+							if (partite != null && partite.length == 1){ //Possibile finale
+								Partita possibileFinale = partite[0];
+								Set<GiocatoreDTO> possibiliFinalisti = possibileFinale.getGiocatori();
+								for (GiocatoreDTO possibileFinalista: possibiliFinalisti){
+									Integer posizionePossibileFinalista = possibileFinale.getPosizione(possibileFinalista);
+									Integer posizioneGiocatoreInClassifica = null;
+									for (RigaClassifica rigaClassifica: giocatoriInClassifica){
+										if (rigaClassifica.getIdGiocatore().equals(possibileFinalista.getId())){
+											posizioneGiocatoreInClassifica = rigaClassifica.getPosizioneGiocatore();
+											break;
+										}
+									}
+									if (posizioneGiocatoreInClassifica != null){
+										if (posizionePossibileFinalista != posizioneGiocatoreInClassifica){
+											result.add(new ExcelValidatorMessages(Scheda.CLASSIFICA_RIDOTTA
+													, "Il giocatore con ID "+possibileFinalista.getId()+" sembrerebbe aver disputato una Finale ed essere arrivato "+posizionePossibileFinalista+"° ma in classifica risulta "+posizioneGiocatoreInClassifica+"°. Confermi che il "+nomeUltimoTurno+" non è una Finale?", Severity.WARNING));
+										}
+									}else{
+										result.add(new ExcelValidatorMessages(Scheda.CLASSIFICA_RIDOTTA, "Non è presente il giocatore con ID "+possibileFinalista.getId()));
+									}
+								}
 							}
 						}
 					}

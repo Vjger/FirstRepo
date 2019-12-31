@@ -625,6 +625,11 @@ public class GSheetsInterface {
 		//String query = "=QUERY(ANAGRAFICA!A2:E;ʺSELECT A WHERE upper(B) = upper('ʺ&A"+numeroRiga+"&ʺ') AND upper(C) = upper('ʺ&B"+numeroRiga+"&ʺ') AND upper(D) = upper('ʺ&C"+numeroRiga+"&ʺ')ʺ; -1)";
 		return "=FILTER(ANAGRAFICA!A2:F; upper(ANAGRAFICA!B2:B) = upper(A"+numeroRiga+"); upper(ANAGRAFICA!C2:C) = upper(B"+numeroRiga+"); upper(ANAGRAFICA!D2:D) = upper(C"+numeroRiga+"))";
 	}
+	
+	private static String getQueryAnagraficaRidottaByID(Integer numeroRiga){
+		String query = "=FILTER("+AnagraficaGiocatoreRidottaRow.SHEET_ANAGRAFICA_NAME+"!A2:F; "+AnagraficaGiocatoreRidottaRow.SHEET_ANAGRAFICA_NAME+"!A2:A = A"+numeroRiga+")";
+		return query;
+	}
 
 	private static String getQueryAnagraficaRidotta2(Integer numeroRiga){
 		//String query = "=QUERY(ANAGRAFICA!A2:E;ʺSELECT A WHERE upper(B) = upper('ʺ&A"+numeroRiga+"&ʺ') AND upper(C) = upper('ʺ&B"+numeroRiga+"&ʺ') AND upper(D) = upper('ʺ&C"+numeroRiga+"&ʺ')ʺ; -1)";

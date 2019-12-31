@@ -15,23 +15,29 @@ public class SchedaTorneo {
 	private List<Date> dataTurni;
 	
 	public enum TipoTorneo{
-		  CAMPIONATO_NAZIONALE("Campionato Nazionale")
-		, RADUNO_NAZIONALE("Raduno Nazionale")
-		, MASTER("Torneo Master")
-		, OPEN("Torneo Open")
-		, INTERCLUB("Torneo Interclub")		
-		, CAMPIONATO("Campionato Periodico")
-		, TORNEO_A_SQUADRE("Torneo a Squadre")
-		, TORNEO_2VS2("Torneo 2VS2")
-		, TORNEO_A_INVITI("Torneo a Inviti")
-		, AMICHEVOLI("Amichevoli");
-		TipoTorneo(String tipoTorneo){
+		  CAMPIONATO_NAZIONALE("Campionato Nazionale", "CNI")
+		, RADUNO_NAZIONALE("Raduno Nazionale", "RDN")
+		, MASTER("Torneo Master", "MST")
+		, OPEN("Torneo Open", "OPN")
+		, INTERCLUB("Torneo Interclub", "ITC")		
+		, CAMPIONATO("Campionato Periodico", "CPP")
+		, TORNEO_A_SQUADRE("Torneo a Squadre", "SQD")
+		, TORNEO_2VS2("Torneo 2VS2", "2V2")
+		, TORNEO_A_INVITI("Torneo a Inviti", "IVT")
+		, AMICHEVOLI("Amichevoli", "AMC");
+		TipoTorneo(String tipoTorneo, String acronimo){
 			this.tipoTorneo = tipoTorneo;
+			this.acronimo = acronimo;
 		}
 		String tipoTorneo;
+		String acronimo;
 		public String getTipoTorneo() {
 			return tipoTorneo;
 		}
+		public String getAcronimo() {
+			return acronimo;
+		}
+
 		public static TipoTorneo parseTipoTorneo(String tipologiaTorneo){
 			TipoTorneo result = null;
 			if (tipologiaTorneo != null){

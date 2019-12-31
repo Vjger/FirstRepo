@@ -25,7 +25,7 @@ public class RankingScorer {
 		return score;
 	}
 	
-	private static boolean hasMinimuNumberTables(String year, TipoTorneo tipoTorneo, int numeroTavoli){
+	public static boolean hasMinimuNumberTables(String year, TipoTorneo tipoTorneo, int numeroTavoli){
 		boolean result = false;
 		RankingThresholds rankingThresholds = RankingBuilder.getRankingThreshold(year);
 		Thresholds thresholds = rankingThresholds.getThresholds(tipoTorneo);

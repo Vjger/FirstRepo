@@ -133,7 +133,7 @@ public class RankingCalculator {
 		for (TorneoPubblicato torneoPubblicato: torneiPubblicati){
 			if (torneoPubblicato.isConcluso() && torneoPubblicato.getClassifica() != null && !torneoPubblicato.getClassifica().isEmpty()){
 				TipoTorneo tipoTorneo = TipoTorneo.parseTipoTorneo(torneoPubblicato.getTorneoRow().getTipoTorneo());
-				if (mappaConteggiTipoTorneo.containsKey(tipoTorneo)){
+				if (mappaConteggiTipoTorneo.containsKey(tipoTorneo) && RankingScorer.hasMinimuNumberTables(year, tipoTorneo, torneoPubblicato.getTorneoRow().getNumeroTavoli())){
 					Integer counter = mappaConteggiTipoTorneo.get(tipoTorneo);
 					mappaConteggiTipoTorneo.put(tipoTorneo, ++counter);
 				}

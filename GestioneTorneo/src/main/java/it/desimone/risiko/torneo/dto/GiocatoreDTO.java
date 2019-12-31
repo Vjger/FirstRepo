@@ -43,6 +43,7 @@ public class GiocatoreDTO implements Comparable{
 	private String cognome;
 	private String email;
 	private Date dataDiNascita;
+	private Integer idNazionale;
 	private String nick;
 	private RegioneDTO regioneProvenienza;
 	private ClubDTO clubProvenienza;
@@ -81,8 +82,8 @@ public class GiocatoreDTO implements Comparable{
 		boolean stessoCognome = (this.cognome == null && giocatore.getCognome() == null) || (this.cognome != null && giocatore.getCognome() != null && this.cognome.trim().equalsIgnoreCase(giocatore.getCognome().trim()));
 		//boolean stessaMail = (this.email == null && giocatore.getEmail() == null) || (this.email != null && giocatore.getEmail() != null && this.email.trim().equalsIgnoreCase(giocatore.getEmail().trim()));
 		boolean stessaDataDiNascita = (this.dataDiNascita == null && giocatore.getDataDiNascita() == null) || (this.dataDiNascita != null && giocatore.getDataDiNascita() != null && this.dataDiNascita.equals(giocatore.getDataDiNascita()));
-		
-		return stessoNome && stessoCognome && stessaDataDiNascita; //stessaMail;
+		boolean stessoIdNazionale = (this.idNazionale == null && giocatore.getIdNazionale() == null) || (this.idNazionale != null && giocatore.getIdNazionale() != null && this.idNazionale.equals(giocatore.getIdNazionale()));
+		return stessoNome && stessoCognome && (stessaDataDiNascita || stessoIdNazionale); //stessaMail;
 	}
 
 	public int hashCode(){
@@ -182,6 +183,14 @@ public class GiocatoreDTO implements Comparable{
 
 	public void setDataDiNascita(Date dataDiNascita) {
 		this.dataDiNascita = dataDiNascita;
+	}
+	
+	public Integer getIdNazionale() {
+		return idNazionale;
+	}
+
+	public void setIdNazionale(Integer idNazionale) {
+		this.idNazionale = idNazionale;
 	}
 
 	public Boolean isFissoAlTipoDiTavolo() {

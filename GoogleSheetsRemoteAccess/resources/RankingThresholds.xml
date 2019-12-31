@@ -1,6 +1,6 @@
 <tree-map>
   <entry>
-    <string>2018</string>
+    <string>2019</string>
     <it.desimone.gsheetsaccess.ranking.RankingThresholds>
       <sogliePerTipoTorneo>
         <entry>
@@ -47,15 +47,15 @@
     </it.desimone.gsheetsaccess.ranking.RankingThresholds>
   </entry>
    <entry>
-    <string>2019</string>
+    <string>2020</string>
     <it.desimone.gsheetsaccess.ranking.RankingThresholds>
       <sogliePerTipoTorneo>
         <entry>
           <it.desimone.risiko.torneo.dto.SchedaTorneo_-TipoTorneo>OPEN</it.desimone.risiko.torneo.dto.SchedaTorneo_-TipoTorneo>
           <it.desimone.gsheetsaccess.ranking.RankingThresholds_-Thresholds>
             <minTables>5</minTables>
-            <minTournaments>6</minTournaments>
-            <maxPercentage>20</maxPercentage>
+            <minTournaments>3</minTournaments>
+            <maxPercentage>13.5</maxPercentage>
           </it.desimone.gsheetsaccess.ranking.RankingThresholds_-Thresholds>
         </entry>
         <entry>
@@ -63,14 +63,14 @@
           <it.desimone.gsheetsaccess.ranking.RankingThresholds_-Thresholds>
             <minTables>5</minTables>
             <minTournaments>1</minTournaments>
-            <maxPercentage>20</maxPercentage>
+            <maxPercentage>33.3</maxPercentage>
           </it.desimone.gsheetsaccess.ranking.RankingThresholds_-Thresholds>
         </entry>
         <entry>
           <it.desimone.risiko.torneo.dto.SchedaTorneo_-TipoTorneo>MASTER</it.desimone.risiko.torneo.dto.SchedaTorneo_-TipoTorneo>
           <it.desimone.gsheetsaccess.ranking.RankingThresholds_-Thresholds>
             <minTables>5</minTables>
-            <minTournaments>4</minTournaments>
+            <minTournaments>3</minTournaments>
             <maxPercentage>30</maxPercentage>
           </it.desimone.gsheetsaccess.ranking.RankingThresholds_-Thresholds>
         </entry>
@@ -78,7 +78,7 @@
           <it.desimone.risiko.torneo.dto.SchedaTorneo_-TipoTorneo>RADUNO_NAZIONALE</it.desimone.risiko.torneo.dto.SchedaTorneo_-TipoTorneo>
           <it.desimone.gsheetsaccess.ranking.RankingThresholds_-Thresholds>
             <minTables>5</minTables>
-            <minTournaments>2</minTournaments>
+            <minTournaments>1</minTournaments>
             <maxPercentage>33.3</maxPercentage>
           </it.desimone.gsheetsaccess.ranking.RankingThresholds_-Thresholds>
         </entry>
@@ -86,8 +86,8 @@
           <it.desimone.risiko.torneo.dto.SchedaTorneo_-TipoTorneo>CAMPIONATO</it.desimone.risiko.torneo.dto.SchedaTorneo_-TipoTorneo>
           <it.desimone.gsheetsaccess.ranking.RankingThresholds_-Thresholds>
             <minTables>5</minTables>
-            <minTournaments>5</minTournaments>
-            <maxPercentage>0</maxPercentage>
+            <minTournaments>1</minTournaments>
+            <maxPercentage>100</maxPercentage>
           </it.desimone.gsheetsaccess.ranking.RankingThresholds_-Thresholds>
         </entry>
       </sogliePerTipoTorneo>

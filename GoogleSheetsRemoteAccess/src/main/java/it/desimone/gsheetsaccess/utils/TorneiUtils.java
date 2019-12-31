@@ -1,6 +1,8 @@
 package it.desimone.gsheetsaccess.utils;
 
 import it.desimone.gsheetsaccess.common.Configurator;
+import it.desimone.gsheetsaccess.dto.ScorePlayer;
+import it.desimone.gsheetsaccess.dto.ScorePlayer.TabellinoPlayer;
 import it.desimone.gsheetsaccess.dto.TorneoPubblicato;
 import it.desimone.gsheetsaccess.gsheets.dto.AnagraficaGiocatoreRidottaRow;
 import it.desimone.gsheetsaccess.gsheets.dto.AnagraficaGiocatoreRow;
@@ -11,11 +13,18 @@ import it.desimone.gsheetsaccess.gsheets.dto.SheetRowFactory.SheetRowType;
 import it.desimone.gsheetsaccess.gsheets.dto.TabellinoGiocatore;
 import it.desimone.gsheetsaccess.gsheets.dto.TorneiRow;
 import it.desimone.gsheetsaccess.gsheets.facade.GSheetsInterface;
+import it.desimone.gsheetsaccess.ranking.RankingCalculator;
+import it.desimone.risiko.torneo.dto.SchedaTorneo.TipoTorneo;
+import it.desimone.utils.Capitalize;
 import it.desimone.utils.MyLogger;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -493,5 +502,79 @@ public class TorneiUtils {
 		MyLogger.getLogger().info("Trovati "+cloniSingoli.size()+" cloni singoli");
 		
 		return cloniSingoli;
+	}
+	
+	public static void printScorePlayers(String year){
+		List<TorneoPubblicato> torneiPubblicati = TorneiUtils.caricamentoTornei(year);
+		List<ScorePlayer> tabellini = RankingCalculator.elaboraTabellini(year, torneiPubblicati, null);
+		
+		tabellini.sort(new Comparator<ScorePlayer>() {
+
+			@Override
+			public int compare(ScorePlayer o1, ScorePlayer o2) {
+				String nominativo1 = o1.getAnagraficaGiocatore().getCognome().toLowerCase()+o1.getAnagraficaGiocatore().getNome().toLowerCase();
+				String nominativo2 = o2.getAnagraficaGiocatore().getCognome().toLowerCase()+o2.getAnagraficaGiocatore().getNome().toLowerCase();
+				return nominativo1.compareTo(nominativo2);
+			}
+			
+		});
+		
+		PrintWriter out = null;
+		
+		try{
+			out = new PrintWriter("C:\\Users\\mds\\Desktop\\ScorePlayer.csv","UTF-8");
+			for (ScorePlayer scorePlayer: tabellini){
+				String line = buildLine(scorePlayer);
+				out.write(line);
+			}
+		}catch(IOException ioe){
+			MyLogger.getLogger().severe(ioe.getMessage());
+		}finally{
+			out.close();
+		}
+
+	}
+	
+	private static String buildLine(ScorePlayer scorePlayer){
+		Set<TabellinoPlayer> tab1 = scorePlayer.getTabelliniPlayer();
+		List<TabellinoPlayer> lTab1 = new ArrayList<ScorePlayer.TabellinoPlayer>(tab1);
+		StringBuilder buffer = new StringBuilder();
+		buffer.append(Capitalize.capitalizeSingleString(scorePlayer.getAnagraficaGiocatore().getNome().trim()));
+		buffer.append(" ");
+		buffer.append(Capitalize.capitalizeSingleString(scorePlayer.getAnagraficaGiocatore().getCognome().trim()));
+		buffer.append(";");
+		buffer.append(scorePlayer.getAnagraficaGiocatore().getId());
+		buffer.append(";");
+		if (lTab1.size() >=1){
+			TabellinoPlayer tabellino = lTab1.get(lTab1.size() -1);
+			TorneiRow torneoRow = tabellino.getTorneo().getTorneoRow();
+			buffer.append(torneoRow.getOrganizzatore());
+			buffer.append(" - ");
+			buffer.append(torneoRow.getNomeTorneo());
+			buffer.append(" - ");
+			buffer.append(TipoTorneo.parseTipoTorneo(torneoRow.getTipoTorneo()).getAcronimo());
+		}
+		buffer.append(";");
+		if (lTab1.size() >=2){
+			TabellinoPlayer tabellino = lTab1.get(lTab1.size() -2);
+			TorneiRow torneoRow = tabellino.getTorneo().getTorneoRow();
+			buffer.append(torneoRow.getOrganizzatore());
+			buffer.append(" - ");
+			buffer.append(torneoRow.getNomeTorneo());
+			buffer.append(" - ");
+			buffer.append(TipoTorneo.parseTipoTorneo(torneoRow.getTipoTorneo()).getAcronimo());
+		}
+		buffer.append(";");
+		if (lTab1.size() >=3){
+			TabellinoPlayer tabellino = lTab1.get(lTab1.size() -3);
+			TorneiRow torneoRow = tabellino.getTorneo().getTorneoRow();
+			buffer.append(torneoRow.getOrganizzatore());
+			buffer.append(" - ");
+			buffer.append(torneoRow.getNomeTorneo());
+			buffer.append(" - ");
+			buffer.append(TipoTorneo.parseTipoTorneo(torneoRow.getTipoTorneo()).getAcronimo());
+		}
+		buffer.append("\n");
+		return buffer.toString();
 	}
 }
