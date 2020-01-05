@@ -10,6 +10,7 @@ import it.desimone.gsheetsaccess.gsheets.dto.SheetRow;
 import it.desimone.gsheetsaccess.gsheets.dto.SheetRowFactory;
 import it.desimone.gsheetsaccess.gsheets.dto.TorneiRow;
 import it.desimone.utils.MyLogger;
+import it.desimone.utils.StringUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -396,6 +397,89 @@ public class GSheetsInterface {
 		getGoogleSheetsInstance().clearRows(spreadSheetId, Collections.singletonList(rangeRicerca));
 		MyLogger.getLogger().exiting("GSheetsInterface", "findAnagraficheRidotteByKey");
 		return sheetRows;
+	}
+	
+	public static List<AnagraficaGiocatoreRidottaRow> findAnagraficheRidotteByKeyOrIdNazionale(String spreadSheetId, List<AnagraficaGiocatoreRidottaRow> sheetRows) throws IOException{
+		MyLogger.getLogger().entering("GSheetsInterface", "findAnagraficheRidotteByKeyOrIdNazionale");
+		
+		List<AnagraficaGiocatoreRidottaRow> result = new ArrayList<AnagraficaGiocatoreRidottaRow>(sheetRows);
+		
+    	List<ValueRange> data = new ArrayList<ValueRange>();
+
+    	String sheetNameDataAnalysis = AnagraficaGiocatoreRidottaRow.SHEET_DATA_ANALYSIS_NAME;
+    	
+    	int indexStartingRow = 8;
+		String rangeRicerca = sheetNameDataAnalysis+"!A"+indexStartingRow+":D"+(indexStartingRow+sheetRows.size()-1);
+		
+    	//Parte anagrafica
+		List<List<Object>> valuesA = new ArrayList<List<Object>>();
+		String rangeRicercaA = sheetNameDataAnalysis+"!A"+indexStartingRow+":C"+(indexStartingRow+sheetRows.size()-1);
+    	for (AnagraficaGiocatoreRidottaRow sheetRow: sheetRows){
+    		List<Object> rigaRicerca = null;
+    		if (sheetRow.getId() != null && StringUtils.isNullOrEmpty(sheetRow.getDataDiNascita())){ //Se viene comunque impostata la data di nascita essa prevale sull'indicazione dell'ID
+    			rigaRicerca = Arrays.asList(new Object[]{sheetRow.getId()});
+    		}else{
+    			rigaRicerca = Arrays.asList(new Object[]{sheetRow.getNome().trim(), sheetRow.getCognome().trim(), sheetRow.getDataDiNascita().trim()});
+    		}
+			valuesA.add(rigaRicerca);
+		}
+		data.add(new ValueRange().setRange(rangeRicercaA).setValues(valuesA));
+    	Integer updatedRowsA = getGoogleSheetsInstance().updateRows(spreadSheetId, data, false);
+    	
+    	//Parte formule
+		List<List<Object>> valuesF = new ArrayList<List<Object>>();
+    	int numeroRiga = indexStartingRow;
+		String rangeRicercaF = sheetNameDataAnalysis+"!D"+indexStartingRow+":D"+(indexStartingRow+sheetRows.size()-1);
+    	for (AnagraficaGiocatoreRidottaRow sheetRow: sheetRows){
+    		List<Object> rigaRicerca = null;
+    		if (sheetRow.getId() != null && StringUtils.isNullOrEmpty(sheetRow.getDataDiNascita())){ //Se viene comunque impostata la data di nascita essa prevale sull'indicazione dell'ID
+    			rigaRicerca = Arrays.asList(new Object[]{getQueryAnagraficaRidottaByID(numeroRiga)});
+    		}else{
+    			rigaRicerca = Arrays.asList(new Object[]{getQueryAnagraficaRidotta(numeroRiga)});
+    		}
+			valuesF.add(rigaRicerca);
+			numeroRiga++;
+    	}
+    	data.clear();
+		data.add(new ValueRange().setRange(rangeRicercaF).setValues(valuesF));
+    	Integer updatedRowsF = getGoogleSheetsInstance().updateRows(spreadSheetId, data, true);
+    	
+    	String range = AnagraficaGiocatoreRidottaRow.SHEET_DATA_ANALYSIS_NAME+"!"+"D"+indexStartingRow+":D"+(indexStartingRow+sheetRows.size()-1);
+		List<String> ranges = Collections.singletonList(range);
+		
+		List<List<Object>> queryResponses = getGoogleSheetsInstance().leggiSheet(spreadSheetId, ranges);
+		
+		if (queryResponses != null && !queryResponses.isEmpty()){
+			int index = 0;
+			for (List<Object> queryResponse: queryResponses){
+				if (queryResponse != null){
+					if (queryResponse.size() >=1){
+						String idQuery = (String)queryResponse.get(0);
+						try{
+							Integer idAnagrafica = Integer.valueOf(idQuery);
+							result.get(index).setId(idAnagrafica);
+						}catch(NumberFormatException ne){
+							MyLogger.getLogger().fine("Not found: "+idQuery);
+						}
+					}
+					if (queryResponse.size() >=3){
+						String nomeResponse = (String)queryResponse.get(1);
+						String cognomeResponse = (String)queryResponse.get(2);
+						try{
+							result.get(index).setNome(nomeResponse);
+							result.get(index).setCognome(cognomeResponse);
+						}catch(Exception ne){
+							MyLogger.getLogger().fine("Not found: "+ne.getMessage());
+						}
+					}
+				}
+				index++;
+			}
+		}
+		
+		getGoogleSheetsInstance().clearRows(spreadSheetId, Collections.singletonList(rangeRicerca));
+		MyLogger.getLogger().exiting("GSheetsInterface", "findAnagraficheRidotteByKeyOrIdNazionale");
+		return result;
 	}
 	
 	public static List<AnagraficaGiocatoreRidottaRow> findAnagraficheRidotteById(String spreadSheetId, List<AnagraficaGiocatoreRidottaRow> sheetRows) throws IOException{

@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.text.DateFormat;
@@ -29,6 +30,8 @@ public class FileUtils {
 			Files.move(pathWorking, pathDone, StandardCopyOption.ATOMIC_MOVE);
 		} catch (IOException e) {
 			MyLogger.getLogger().severe("error copying "+reportDriveData+" to done: "+e.getMessage());
+		}catch(InvalidPathException ipe){
+			MyLogger.getLogger().severe("error moving "+reportDriveData+" by "+pathWorking+" to "+pathDone+": "+ipe.getMessage());
 		}
 	}
 	
@@ -44,6 +47,8 @@ public class FileUtils {
 			Files.move(pathWorking, pathDone, StandardCopyOption.ATOMIC_MOVE);
 		} catch (IOException e) {
 			MyLogger.getLogger().severe("error copying "+reportDriveData+" to error: "+e.getMessage());
+		} catch(InvalidPathException ipe){
+			MyLogger.getLogger().severe("error moving "+reportDriveData+" by "+pathWorking+" to "+pathDone+": "+ipe.getMessage());
 		}
 	}
 	

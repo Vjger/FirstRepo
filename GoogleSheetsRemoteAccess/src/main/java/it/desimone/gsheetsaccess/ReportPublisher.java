@@ -16,11 +16,14 @@ import it.desimone.gsheetsaccess.gsheets.dto.SheetRow;
 import it.desimone.gsheetsaccess.gsheets.dto.TorneiRow;
 import it.desimone.gsheetsaccess.gsheets.facade.ExcelGSheetsBridge;
 import it.desimone.gsheetsaccess.gsheets.facade.GSheetsInterface;
+import it.desimone.risiko.torneo.batch.ExcelValidator.ExcelValidatorMessages;
+import it.desimone.risiko.torneo.batch.ExcelValidator.ExcelValidatorMessages.Scheda;
 import it.desimone.risiko.torneo.dto.GiocatoreDTO;
 import it.desimone.risiko.torneo.dto.SchedaTorneo.TipoTorneo;
 import it.desimone.risiko.torneo.dto.Torneo;
 import it.desimone.utils.MyException;
 import it.desimone.utils.MyLogger;
+import it.desimone.utils.StringUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -98,7 +101,7 @@ public class ReportPublisher {
 		
 		MimeMessage mimeMessage;
 		try {
-			MyLogger.getLogger().fine("Sending mail to "+to+" with subject "+subject);
+			MyLogger.getLogger().severe("Sending mail to "+to+" with subject "+subject);
 			mimeMessage = GmailAccess.createEmail(to, null, null, null, subject, errorMessage);
 			gmailAccess.sendMessage("me", mimeMessage);
 		} catch (MessagingException e) {
@@ -147,7 +150,7 @@ public class ReportPublisher {
 	}
 	
 	
-	private static Map<Integer, Integer> insertOrUpdateGiocatori(Torneo torneo) throws IOException{
+	private static Map<Integer, Integer> insertOrUpdateGiocatori(Torneo torneo) throws IOException, ExcelValidationException{
 		MyLogger.getLogger().entering("ReportPublisher", "insertOrUpdateGiocatori");
 		
 		Map<Integer, Integer> mappaIdExcelVsIdGSheets = null;
@@ -171,11 +174,19 @@ public class ReportPublisher {
 			
 			List<AnagraficaGiocatoreRidottaRow> anagraficheDaVerificare = new ArrayList<AnagraficaGiocatoreRidottaRow>();
 			for (SheetRow[] sheetRow: anagrafiche){
-				anagraficheDaVerificare.add((AnagraficaGiocatoreRidottaRow)sheetRow[0]);
+				AnagraficaGiocatoreRidottaRow anagraficaGiocatoreRidotta = (AnagraficaGiocatoreRidottaRow)sheetRow[0];
+				anagraficheDaVerificare.add(anagraficaGiocatoreRidotta);
 			}
-			List<AnagraficaGiocatoreRidottaRow> anagraficaRowFound = GSheetsInterface.findAnagraficheRidotteByKey(spreadSheetIdAnagraficaRidotta, anagraficheDaVerificare);
+	
+			//List<AnagraficaGiocatoreRidottaRow> anagraficaRowFound = GSheetsInterface.findAnagraficheRidotteByKey(spreadSheetIdAnagraficaRidotta, anagraficheDaVerificare);
+			//Aggiungere la ricerca dei giocatori utilizzando un FILTER o un altro a seconda del fatto che ci sia o no indicato l'ID Nazionale nel report
+			List<AnagraficaGiocatoreRidottaRow> anagraficaRowFound = GSheetsInterface.findAnagraficheRidotteByKeyOrIdNazionale(spreadSheetIdAnagraficaRidotta, anagraficheDaVerificare);
 			
+			//TODO Con la nuova gestione dell'anagrafica sul report vanno fatti due controlli che prima non servivano:
+			//		1) Controllare che l'ID indicato effettivamente esista. Cioè, se io mi trovo impostato l'ID Nazionale e poi la query non lo trova, questo dovrebbe essere un errore.
+			//		2) Controllare che ci sia corrispondenza tra la coppia nome+cognome associata all'ID Nazionale e quella che risulta dal report: anche in questo caso se non c'è corrispondenza dovrebbe esserci un errore
 			if (anagraficaRowFound != null){
+				validateAnagrafiche(anagraficheDaVerificare, anagraficaRowFound);
 				Integer maxId = GSheetsInterface.findMaxIdAnagrafica(spreadSheetIdAnagraficaRidotta);
 				int index = 0;
 				for (AnagraficaGiocatoreRidottaRow anagraficaGiocatoreRidottaRow: anagraficaRowFound){
@@ -220,6 +231,25 @@ public class ReportPublisher {
 		return mappaIdExcelVsIdGSheets;	
 	}
 
+	
+	private static void validateAnagrafiche(List<AnagraficaGiocatoreRidottaRow> anagraficheDaVerificare, List<AnagraficaGiocatoreRidottaRow> anagraficaRowFound) throws ExcelValidationException{
+		List<ExcelValidatorMessages> validationErrors = new ArrayList<ExcelValidatorMessages>();
+		for (int index = 0; index < anagraficheDaVerificare.size(); index++){
+			AnagraficaGiocatoreRidottaRow anagraficaDaVerificare = anagraficheDaVerificare.get(index);
+			AnagraficaGiocatoreRidottaRow anagraficaVerificata   = anagraficaRowFound.get(index);
+			if (anagraficaDaVerificare.getId() != null && StringUtils.isNullOrEmpty(anagraficaDaVerificare.getDataDiNascita())){
+				if (anagraficaVerificata.getId() == null){
+					validationErrors.add(new ExcelValidatorMessages(Scheda.ISCRITTI, "L'idNazionale ["+anagraficaDaVerificare.getId()+"] del giocatore "+anagraficaDaVerificare.getNome()+" "+anagraficaDaVerificare.getCognome()+" non è indicato"));
+				}else if (!anagraficaDaVerificare.getNome().trim().equalsIgnoreCase(anagraficaVerificata.getNome().trim()) 
+					   || !anagraficaDaVerificare.getCognome().trim().equalsIgnoreCase(anagraficaVerificata.getCognome().trim())){
+					validationErrors.add(new ExcelValidatorMessages(Scheda.ISCRITTI, "Il nominativo "+anagraficaDaVerificare.getNome()+" "+anagraficaDaVerificare.getCognome()+" del giocatore associato all'idNazionale ["+anagraficaDaVerificare.getId()+"] non corrisponde a quello sull'Anagrafica Nazionale: "+anagraficaVerificata.getNome()+" "+anagraficaVerificata.getCognome()));
+				}
+			}
+		}
+		if (!validationErrors.isEmpty()){
+			throw new ExcelValidationException(validationErrors);
+		}
+	}
 	
 	private static void deleteAndInsertPartita(Torneo torneo, Map<Integer, Integer> mappaIdExcelVsIdGSheets) throws IOException{
 		MyLogger.getLogger().entering("ReportPublisher", "deleteAndInsertPartita");

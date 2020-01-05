@@ -96,6 +96,7 @@ public class ExcelAccess{
 	public static final String SCHEDA_STATISTICHE	= "STATISTICHE";
 		
 	String pathFileExcel;
+	private String fileName;
 	short posizioneId 			= 0;
 	short posizioneNome 		= 1;
 	short posizioneCognome 		= 2;
@@ -130,10 +131,14 @@ public class ExcelAccess{
 	public ExcelAccess(File fileExcel){
 		try {
 			pathFileExcel = fileExcel.getPath();
+			fileName = fileExcel.getName();
 		}finally{}
 	}
 	
-	
+	public String getFileName() {
+		return fileName;
+	}
+
 	public void openFileExcel(){
 		if (pathFileExcel != null){
 			try{

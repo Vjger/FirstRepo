@@ -118,7 +118,6 @@ public class RankingCalculator {
 		return result;
 	}
 	
-	//Definire l'oggetto: deve contenere i tabellini le soglie ed i contatori
 	private static RankingData filtraTabellini(String year, List<TorneoPubblicato> torneiPubblicati, List<ScorePlayer> tabellini){
 		RankingData rankingData = new RankingData();
 		//Calcolare le soglie

@@ -124,6 +124,10 @@ public class ExcelValidator {
 		List<ExcelValidatorMessages> result = new ArrayList<ExcelValidatorMessages>();
 		
 		try{
+			List<ExcelValidatorMessages> validazioneFile = validaFile();
+			if (validazioneFile != null){
+				result.addAll(validazioneFile);
+			}
 			List<ExcelValidatorMessages> validazioniSchedaTorneo = validaSchedaTorneo();
 			if (validazioniSchedaTorneo != null){
 				result.addAll(validazioniSchedaTorneo);
@@ -156,6 +160,22 @@ public class ExcelValidator {
 			excelValidatorData.addMessages(result);
 		}
 		return excelValidatorData; /*result*/
+	}
+	
+	
+	
+	public List<ExcelValidatorMessages> validaFile(){
+		String[] forbiddenChars = new String[]{"\'"};
+		
+		List<ExcelValidatorMessages> result = new ArrayList<ExcelValidatorMessages>();
+		
+		String fileName = excelAccess.getFileName();
+		for (String ch: forbiddenChars){
+			if (fileName.contains(ch)){
+				result.add(new ExcelValidatorMessages(null, "Il carattere \""+ch+"\" non è consentito nel nome del file"));
+			}
+		}
+		return result;
 	}
 	
 	/*
