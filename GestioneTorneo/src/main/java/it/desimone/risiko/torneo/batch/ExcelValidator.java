@@ -182,7 +182,7 @@ public class ExcelValidator {
 	 * Controlli incrociati da fare:
 	 * 
 	 * 1) se esiste il turno x deve essere compilata la data nella scheda Torneo
-	 * 2) verificare che tutti i giocatori che hanno giocato almeno una partita siano in classifica (però così non puoi squalificare)
+	 * 2) verificare che tutti i giocatori che hanno giocato almeno una partita siano in classifica (però così non puoi squalificare) Metterlo come warning
 	 * 3) verificare che tutti i giocatori in classifica siano nella scheda iscritti
 	 * 4) Se sono dichiarati X turni ma se ne trovano Y dove Y > X è un errore
 	 * 
@@ -249,6 +249,13 @@ public class ExcelValidator {
 								result.add(new ExcelValidatorMessages(Scheda.CLASSIFICA_RIDOTTA, "Il giocatore presente in classifica con l'ID "+rigaClassifica.getIdGiocatore()+" non risulta aver disputato alcuna partita"));
 							}
 						}
+					}
+				}
+				RigaClassifica rigaClassificaSonda = new RigaClassifica();
+				for (GiocatoreDTO partecipante: partecipantiEffettivi){
+					rigaClassificaSonda.setIdGiocatore(partecipante.getId());
+					if (!giocatoriInClassifica.contains(rigaClassificaSonda)){
+						result.add(new ExcelValidatorMessages(Scheda.CLASSIFICA_RIDOTTA, "Il giocatore con l'ID "+rigaClassificaSonda.getIdGiocatore()+" non risulta in classifica nonostante abbia giocato almeno una partita", Severity.WARNING));
 					}
 				}
 			}
@@ -457,6 +464,8 @@ public class ExcelValidator {
 							}
 							if (rigaClassifica.getPosizioneGiocatore() == null){
 								result.add(new ExcelValidatorMessages(Scheda.CLASSIFICA_RIDOTTA, "Non è indicata la posizione del giocatore nella 1° colonna della "+counterRiga+"° riga"));
+							}else if (rigaClassifica.getPosizioneGiocatore() > giocatoriInClassifica.size()){
+								result.add(new ExcelValidatorMessages(Scheda.CLASSIFICA_RIDOTTA, "A riga "+counterRiga+" è indicato un giocatore in "+rigaClassifica.getPosizioneGiocatore()+"° posizione ma i giocatori in classifica sono "+giocatoriInClassifica.size()));
 							}
 							if (rigaClassifica.getPunteggioFinaleGiocatore() == null){
 								result.add(new ExcelValidatorMessages(Scheda.CLASSIFICA_RIDOTTA, "Non è indicato il punteggio finale del giocatore nella 4° colonna della "+counterRiga+"° riga"));
