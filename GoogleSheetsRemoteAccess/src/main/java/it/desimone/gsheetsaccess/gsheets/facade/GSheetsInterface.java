@@ -402,7 +402,7 @@ public class GSheetsInterface {
 	public static List<AnagraficaGiocatoreRidottaRow> findAnagraficheRidotteByKeyOrIdNazionale(String spreadSheetId, List<AnagraficaGiocatoreRidottaRow> sheetRows) throws IOException{
 		MyLogger.getLogger().entering("GSheetsInterface", "findAnagraficheRidotteByKeyOrIdNazionale");
 		
-		List<AnagraficaGiocatoreRidottaRow> result = new ArrayList<AnagraficaGiocatoreRidottaRow>(sheetRows);
+		List<AnagraficaGiocatoreRidottaRow> result = new ArrayList<AnagraficaGiocatoreRidottaRow>(sheetRows.size());
 		
     	List<ValueRange> data = new ArrayList<ValueRange>();
 
@@ -444,7 +444,7 @@ public class GSheetsInterface {
 		data.add(new ValueRange().setRange(rangeRicercaF).setValues(valuesF));
     	Integer updatedRowsF = getGoogleSheetsInstance().updateRows(spreadSheetId, data, true);
     	
-    	String range = AnagraficaGiocatoreRidottaRow.SHEET_DATA_ANALYSIS_NAME+"!"+"D"+indexStartingRow+":D"+(indexStartingRow+sheetRows.size()-1);
+    	String range = AnagraficaGiocatoreRidottaRow.SHEET_DATA_ANALYSIS_NAME+"!"+"D"+indexStartingRow+":F"+(indexStartingRow+sheetRows.size()-1);
 		List<String> ranges = Collections.singletonList(range);
 		
 		List<List<Object>> queryResponses = getGoogleSheetsInstance().leggiSheet(spreadSheetId, ranges);
@@ -452,12 +452,13 @@ public class GSheetsInterface {
 		if (queryResponses != null && !queryResponses.isEmpty()){
 			int index = 0;
 			for (List<Object> queryResponse: queryResponses){
+				AnagraficaGiocatoreRidottaRow anagraficaGiocatoreRidottaRowResult = new AnagraficaGiocatoreRidottaRow();
 				if (queryResponse != null){
 					if (queryResponse.size() >=1){
 						String idQuery = (String)queryResponse.get(0);
 						try{
 							Integer idAnagrafica = Integer.valueOf(idQuery);
-							result.get(index).setId(idAnagrafica);
+							anagraficaGiocatoreRidottaRowResult.setId(idAnagrafica);
 						}catch(NumberFormatException ne){
 							MyLogger.getLogger().fine("Not found: "+idQuery);
 						}
@@ -466,13 +467,14 @@ public class GSheetsInterface {
 						String nomeResponse = (String)queryResponse.get(1);
 						String cognomeResponse = (String)queryResponse.get(2);
 						try{
-							result.get(index).setNome(nomeResponse);
-							result.get(index).setCognome(cognomeResponse);
+							anagraficaGiocatoreRidottaRowResult.setNome(nomeResponse);
+							anagraficaGiocatoreRidottaRowResult.setCognome(cognomeResponse);
 						}catch(Exception ne){
 							MyLogger.getLogger().fine("Not found: "+ne.getMessage());
 						}
 					}
 				}
+				result.add(anagraficaGiocatoreRidottaRowResult);
 				index++;
 			}
 		}

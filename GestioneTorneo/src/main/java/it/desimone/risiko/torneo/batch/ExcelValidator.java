@@ -255,7 +255,7 @@ public class ExcelValidator {
 				for (GiocatoreDTO partecipante: partecipantiEffettivi){
 					rigaClassificaSonda.setIdGiocatore(partecipante.getId());
 					if (!giocatoriInClassifica.contains(rigaClassificaSonda)){
-						result.add(new ExcelValidatorMessages(Scheda.CLASSIFICA_RIDOTTA, "Il giocatore con l'ID "+rigaClassificaSonda.getIdGiocatore()+" non risulta in classifica nonostante abbia giocato almeno una partita", Severity.WARNING));
+						result.add(new ExcelValidatorMessages(Scheda.CLASSIFICA_RIDOTTA, "Il giocatore con l'ID "+rigaClassificaSonda.getIdGiocatore()+" non risulta in classifica nonostante abbia giocato almeno una partita. Confermi che è stato squalificato?", Severity.WARNING));
 					}
 				}
 			}
@@ -342,7 +342,7 @@ public class ExcelValidator {
 //						result.add(new ExcelValidatorMessages(Scheda.ISCRITTI, "L'indirizzo email del giocatore "+giocatore+" non è indicato"));
 //					}
 					if (giocatore.getDataDiNascita() == null && giocatore.getIdNazionale() == null){
-						result.add(new ExcelValidatorMessages(Scheda.ISCRITTI, "La data di nascita del giocatore "+giocatore+" non è indicata: verrà trattato come anonimo", ExcelValidatorMessages.Severity.WARNING));
+						result.add(new ExcelValidatorMessages(Scheda.ISCRITTI, "Nè la data di nascita nè l'ID Nazionale del giocatore "+giocatore+" sono indicati. Confermi che deve essere trattato come anonimo?", ExcelValidatorMessages.Severity.WARNING));
 					}
 					int frequency = Collections.frequency(partecipantiEffettivi, giocatore);
 					if (!giocatore.equals(GiocatoreDTO.FITTIZIO) && frequency != 1){

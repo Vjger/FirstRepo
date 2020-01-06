@@ -239,12 +239,17 @@ public class ReportPublisher {
 			AnagraficaGiocatoreRidottaRow anagraficaVerificata   = anagraficaRowFound.get(index);
 			if (anagraficaDaVerificare.getId() != null && StringUtils.isNullOrEmpty(anagraficaDaVerificare.getDataDiNascita())){
 				if (anagraficaVerificata.getId() == null){
-					validationErrors.add(new ExcelValidatorMessages(Scheda.ISCRITTI, "L'idNazionale ["+anagraficaDaVerificare.getId()+"] del giocatore "+anagraficaDaVerificare.getNome()+" "+anagraficaDaVerificare.getCognome()+" non è indicato"));
+					validationErrors.add(new ExcelValidatorMessages(Scheda.ISCRITTI, "L'idNazionale ["+anagraficaDaVerificare.getId()+"] del giocatore "+anagraficaDaVerificare.getNome()+" "+anagraficaDaVerificare.getCognome()+" non esiste nell'Anagrafica Nazionale"));
+				}else if  (StringUtils.isNullOrEmpty(anagraficaVerificata.getNome()) 
+						|| StringUtils.isNullOrEmpty(anagraficaVerificata.getCognome())){
+						validationErrors.add(new ExcelValidatorMessages(Scheda.ISCRITTI, "Il nominativo "+anagraficaDaVerificare.getNome()+" "+anagraficaDaVerificare.getCognome()+"  ha un idNazionale ["+anagraficaDaVerificare.getId()+"] che non esiste nell'Anagrafica Nazionale"));
 				}else if (!anagraficaDaVerificare.getNome().trim().equalsIgnoreCase(anagraficaVerificata.getNome().trim()) 
 					   || !anagraficaDaVerificare.getCognome().trim().equalsIgnoreCase(anagraficaVerificata.getCognome().trim())){
 					validationErrors.add(new ExcelValidatorMessages(Scheda.ISCRITTI, "Il nominativo "+anagraficaDaVerificare.getNome()+" "+anagraficaDaVerificare.getCognome()+" del giocatore associato all'idNazionale ["+anagraficaDaVerificare.getId()+"] non corrisponde a quello sull'Anagrafica Nazionale: "+anagraficaVerificata.getNome()+" "+anagraficaVerificata.getCognome()));
 				}
 			}
+			anagraficaDaVerificare.setId(anagraficaVerificata.getId());
+			anagraficaRowFound.set(index, anagraficaDaVerificare); //ripristino i dati precedenti aggiungendo l'eventuale id trovato da query
 		}
 		if (!validationErrors.isEmpty()){
 			throw new ExcelValidationException(validationErrors);

@@ -285,7 +285,7 @@ public class FileMenu extends JMenu {
 		TableColumn columnMessage = jTableColumnModel.getColumn(1);
 		columnMessage.setPreferredWidth(850);
 		JScrollPane scrollPane = new JScrollPane(errorTable, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-		scrollPane.setPreferredSize(new Dimension(100, 500));
+		scrollPane.setPreferredSize(new Dimension(1200, 500));
 		errorTable.setFillsViewportHeight(true);
 		//Integer response = JOptionPane.showConfirmDialog(null, scrollPane, "Confermi di voler procedere nonostante i messaggi indicati?", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 		Integer response = JOptionPane.showOptionDialog(null, scrollPane, "Confermi di voler procedere nonostante i messaggi indicati?", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, new String[]{"Pubblica ugualmente", "Annulla"}, null);

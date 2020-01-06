@@ -483,7 +483,9 @@ public class ExcelAccess{
 			MyLogger.getLogger().info("Colonna ID Nazionale con valore non numerico: "+ise.getMessage());
 			//throw new MyException(ise,"Colonna ID Nazionale con valore non numerico");
 		}
-		giocatore.setIdNazionale(idNazionale);
+		if (idNazionale == null || idNazionale > 0){ //Patch messa perchè quando si legge da un xlsx le API mettono zero come valore se la cella è vuota
+			giocatore.setIdNazionale(idNazionale);
+		}
 		return giocatore;
 	}
 	
