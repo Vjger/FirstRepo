@@ -3,7 +3,6 @@ package it.desimone.risiko.torneo.batch;
 import it.desimone.risiko.torneo.dto.GiocatoreDTO;
 import it.desimone.risiko.torneo.dto.Partita;
 import it.desimone.risiko.torneo.scoreplayer.ScorePlayer;
-import it.desimone.risiko.torneo.utils.MatchAnalyzer;
 import it.desimone.risiko.torneo.utils.PrioritaSorteggio;
 import it.desimone.risiko.torneo.utils.RegioniLoader;
 import it.desimone.risiko.torneo.utils.TavoliVuotiCreator;
@@ -25,8 +24,10 @@ import java.util.Set;
 
 public class Sorteggiatore {
 	
-	public static final Integer SOGLIA_PER_RADUNO_CON_QUARTI = Configurator.getSogliaRadunoConQuarti();
-	public static final Integer SOGLIA_PER_MASTER_SPLITTATO = Configurator.getSogliaMasterSplittato();
+	public static final Integer SOGLIA_PER_RADUNO_CON_QUARTI = null; //Configurator.getSogliaRadunoConQuarti();
+	public static final Integer SOGLIA_PER_MASTER_SPLITTATO = null; //Configurator.getSogliaMasterSplittato();
+	public static final List<Integer> SOGLIE_PER_MASTER = Configurator.getSoglieMaster();
+	public static final List<Integer> SOGLIE_PER_RADUNI = Configurator.getSoglieRaduni();
 	public static final Short SEMIFINALISTI_QUALIFICATI_DIRETTAMENTE = 10;
 	public static final Short SEMIFINALISTI = 16;
 	
@@ -41,13 +42,15 @@ public class Sorteggiatore {
 //			partiteTurno = getPartiteSorteggiateRadunoNazionale(excelAccess, numeroTurno);
 //			break;
 //		case RadunoNazionale_con_quarti:
-			partiteTurno = getPartiteSorteggiateRadunoNazionaleConQuarti(excelAccess, numeroTurno);
+//			partiteTurno = getPartiteSorteggiateRadunoNazionaleConQuarti(excelAccess, numeroTurno);
+			partiteTurno = getPartiteSorteggiateRadunoNazionale2020(excelAccess, numeroTurno);
 			break;
 		case SantEufemia:
 			partiteTurno = getPartiteSorteggiateRadunoNazionaleConTavoliDa5(excelAccess, numeroTurno);
 			break;
 		case MasterRisiko:
-			partiteTurno = getPartiteSorteggiateMasterRisiko2016(excelAccess, numeroTurno);
+			partiteTurno = getPartiteSorteggiateMasterRisiko2020(excelAccess, numeroTurno);
+			//partiteTurno = getPartiteSorteggiateMasterRisiko2016(excelAccess, numeroTurno);
 			break;			
 		case MasterRisiko2015:
 			partiteTurno = getPartiteSorteggiateMasterRisiko2015(excelAccess, numeroTurno);
@@ -169,6 +172,107 @@ public class Sorteggiatore {
 		}	
 		MyLogger.getLogger().exiting("Sorteggiatore", "getPartiteSorteggiateRadunoNazionale", ArrayUtils.fromPartiteToString(partiteTurno));
 		return partiteTurno;
+	}
+	
+	private static Partita[] getPartiteSorteggiateRadunoNazionale2020(ExcelAccess excelAccess, int numeroTurno){
+		MyLogger.getLogger().entering("Sorteggiatore", "getPartiteSorteggiateRadunoNazionale");
+		Partita[] partiteTurno = null;
+		List<GiocatoreDTO> giocatoriPartecipanti = excelAccess.getListaGiocatori(true);
+		List<PrioritaSorteggio> priorita = new ArrayList<PrioritaSorteggio>();
+		switch (numeroTurno) {
+		case 1:
+			priorita.add(PrioritaSorteggio.IMPEDITO_STESSO_CLUB);
+			priorita.add(PrioritaSorteggio.IMPEDITA_STESSA_REGIONE);
+			partiteTurno = GeneratoreTavoliNew.generaPartite(giocatoriPartecipanti, null, TipoTavoli.DA_4_ED_EVENTUALMENTE_DA_5, priorita);
+			break;
+		case 2:
+			List<Partita> listaPartitePrecedenti = new ArrayList<Partita>();
+			for (int i = 1; i < numeroTurno; i++){
+				Partita[] partiteTurnoi = excelAccess.loadPartite(i,false,TipoTorneo.RadunoNazionale);
+				if (partiteTurnoi == null){
+					throw new MyException("E' stato richiesto il sorteggio per il turno "+numeroTurno+" ma non esiste il turno "+i);
+				}
+				listaPartitePrecedenti.addAll(Arrays.asList(partiteTurnoi));
+			}
+			
+			TorneiUtils.checkPartiteConPiuVincitori(listaPartitePrecedenti);
+			
+			Partita[] partitePrecedenti = listaPartitePrecedenti.toArray(new Partita[0]);
+
+			priorita.add(PrioritaSorteggio.VINCITORI_SEPARATI);
+			priorita.add(PrioritaSorteggio.IMPEDITO_STESSO_CLUB);
+			priorita.add(PrioritaSorteggio.MINIMIZZAZIONE_SCONTRI_DIRETTI);
+			partiteTurno = GeneratoreTavoliNew.generaPartite(giocatoriPartecipanti, partitePrecedenti, TipoTavoli.DA_4_ED_EVENTUALMENTE_DA_5, priorita);
+			break;
+		case 3:
+			if (isLowestRaduno(excelAccess)){
+				List<GiocatoreDTO> semifinalisti = estraiSemifinalistiLowestMasterORaduni(excelAccess, TipoTorneo.RadunoNazionale);
+				MyLogger.getLogger().finest("Semifinalisti: "+semifinalisti.toString());
+				priorita.add(PrioritaSorteggio.IMPEDITO_STESSO_CLUB);
+				priorita.add(PrioritaSorteggio.IMPEDITA_STESSA_REGIONE);
+				partiteTurno = GeneratoreTavoliNew.generaPartite(semifinalisti, null, TipoTavoli.DA_4_ED_EVENTUALMENTE_DA_5, priorita);
+			}else{
+				List<List<GiocatoreDTO>> semifinalisti = estraiSemifinalistiHigherMasterORaduni(excelAccess, TipoTorneo.RadunoNazionale);
+				MyLogger.getLogger().finest("Semifinalisti: "+semifinalisti.toString());
+				priorita.add(PrioritaSorteggio.IMPEDITO_STESSO_CLUB);
+				priorita.add(PrioritaSorteggio.IMPEDITA_STESSA_REGIONE);
+				List<Partita> semifinali = new ArrayList<Partita>();
+				for (List<GiocatoreDTO> semifinale: semifinalisti){
+					Partita[] partitaDiSemifinale = GeneratoreTavoliNew.generaPartite(semifinale, null, TipoTavoli.DA_4_ED_EVENTUALMENTE_DA_5, priorita);
+					semifinali.addAll(Arrays.asList(partitaDiSemifinale));
+				}
+				partiteTurno = semifinali.toArray(new Partita[semifinali.size()]);	
+				for (int index = 0; index < partiteTurno.length; index++){
+					partiteTurno[index].setNumeroTavolo(index+1);
+				}
+			}
+			break;
+		case 4:
+			Partita[] semifinali = excelAccess.loadPartite(3, false, TipoTorneo.RadunoNazionale);
+			if (semifinali == null){
+				throw new MyException("E' stato richiesto il sorteggio per il turno 4 ma non esiste il turno 3");
+			}
+			
+			TorneiUtils.checksPartiteConPiuVincitori(semifinali);
+			
+			switch (semifinali.length) {
+			case 2:
+				partiteTurno = estrazioneFinaleLowestMasterORaduni(excelAccess, semifinali, TipoTorneo.RadunoNazionale);
+				break;
+			default:
+				if (semifinali.length % 4 != 0){
+					throw new MyException("Il numero di semifinali trovate non è multiplo di 4: "+semifinali.length);
+				}else{
+					int numeroFinali = semifinali.length / 4;
+					partiteTurno = new Partita[numeroFinali];
+					for (int indexFinale = 1; indexFinale <= numeroFinali; indexFinale++){
+						int indexArray = 1+ (indexFinale -1)*4;
+						Partita[] semifinaliStessoGruppo = Arrays.copyOfRange(semifinali, indexArray -1, indexArray+3);
+						Partita finaleGruppo = estrazioneFinaliMasterORaduni(excelAccess, semifinaliStessoGruppo, TipoTorneo.RadunoNazionale);
+						partiteTurno[indexFinale -1] = finaleGruppo;
+						partiteTurno[indexFinale -1].setNumeroTavolo(indexFinale);
+					}
+				}
+			}
+			break;
+		default:
+			MyLogger.getLogger().severe("Turno per il tipo di Torneo Raduno Nazionale non previsto: "+numeroTurno);
+			throw new MyException("Turno per il tipo di Torneo Raduno Nazionale non previsto: "+numeroTurno);
+		}	
+		MyLogger.getLogger().exiting("Sorteggiatore", "getPartiteSorteggiateRadunoNazionale", ArrayUtils.fromPartiteToString(partiteTurno));
+		return partiteTurno;
+	}
+	
+	private static boolean isLowestRaduno(ExcelAccess excelAccess){
+		//Si devono verificare 2 condizioni: 
+		//1) numero dei giocatori che hanno disputato 2 partite è sulla soglia o sotto
+		//2) rimangono in gioco almeno 10 giocatori (nella vita non si sa mai) 
+		boolean result = false;
+		Set<GiocatoreDTO> scoresTutti = excelAccess.getPartecipantiEffettivi();
+		List<ScorePlayer> scoresPartecipanti = excelAccess.getClassificaRadunoAlSecondoTurno(true);
+		result = scoresTutti.size() <= SOGLIE_PER_RADUNI.get(0) && scoresPartecipanti.size() >= 10;
+		
+		return result;
 	}
 	
 	
@@ -862,6 +966,71 @@ public class Sorteggiatore {
 		return result;
 	}
 	
+	private static Partita[] estrazioneFinaleLowestMasterORaduni(ExcelAccess excelAccess, Partita[] semifinali, TipoTorneo tipoTorneo){
+		List<ScorePlayer> partecipanti = null;
+		List<ScorePlayer> scores = null;
+		if (tipoTorneo == TipoTorneo.MasterRisiko){
+			scores = excelAccess.getClassificaQualificazioniNazionale(false, false);
+			partecipanti = excelAccess.getClassificaQualificazioniNazionale(true, false);
+		}else if (tipoTorneo == TipoTorneo.RadunoNazionale){
+			scores = excelAccess.getClassificaRadunoAlSecondoTurno(false);
+			partecipanti = excelAccess.getClassificaRadunoAlSecondoTurno(true);
+		}
+		Partita finale = new Partita();
+		finale.setNumeroGiocatori(4);
+		finale.setNumeroTavolo(1);
+		for (Partita semifinale: semifinali){
+			for (GiocatoreDTO semifinalista: semifinale.getGiocatoriOrdinatiPerPunteggio()){
+				if (TorneiUtils.isPartecipante(partecipanti, semifinalista)){
+					MyLogger.getLogger().info("Recuperato per la finale "+semifinalista+" dalla semifinale "+semifinale.getNumeroTavolo());
+					finale.addGiocatore(semifinalista, null);
+					break;
+				}
+			}
+		}
+
+		//c'è da aggiungere il o i finalisti diretti
+
+		ScorePlayer primoInClassifica = scores.get(0);
+		boolean primoNonRitirato = primoInClassifica.getGiocatore().equals(partecipanti.get(0).getGiocatore());
+		if (primoNonRitirato){
+			GiocatoreDTO giocatore = partecipanti.get(0).getGiocatore();
+			MyLogger.getLogger().info("Qualificato direttamente per la finale "+giocatore);
+			finale.addGiocatore(giocatore, null);
+		}
+		boolean secondoNonRitirato = true;
+		ScorePlayer secondoInClassifica = scores.get(1);
+		if (primoNonRitirato){
+			secondoNonRitirato = secondoInClassifica.getGiocatore().equals(partecipanti.get(1).getGiocatore());
+		}else{
+			secondoNonRitirato = secondoInClassifica.getGiocatore().equals(partecipanti.get(0).getGiocatore());
+		}
+		if (secondoNonRitirato && semifinali.length == 2){
+			GiocatoreDTO giocatore = secondoInClassifica.getGiocatore();
+			MyLogger.getLogger().info("Qualificato direttamente per la finale "+giocatore);
+			finale.addGiocatore(giocatore, null);
+		}
+		
+		//Potrebbe essere che la finale ancora non è completa perchè tutti i semifinalisti di una semifinale si sono ritirati
+		//oppure si è ritirato il o i finalisti diretti: in tal caso va ripescato il miglior secondo (terzo o quarto) tra tutti i semifinalisti
+		if (finale.isNotComplete()){
+			List<GiocatoreDTO> giocatoriRecuperabiliOrdinati = TorneiUtils.listaDeiGiocatoriSconfittiOrdinataPerPosizioneAlTavoloEClassificaDopo2Partite(partecipanti, semifinali);
+			GiocatoreDTO semifinalistaRecuperato = null;
+			do{
+				semifinalistaRecuperato = getMigliorSemifinalista(finale, giocatoriRecuperabiliOrdinati);
+				if (semifinalistaRecuperato != null){
+					MyLogger.getLogger().info("Recuperato per la finale il semifinalista "+semifinalistaRecuperato);
+					finale.addGiocatore(semifinalistaRecuperato, null);
+				}
+			}while(finale.isNotComplete() && semifinalistaRecuperato != null);
+		}
+		
+		
+		Partita[] result = new Partita[]{finale};
+		MyLogger.getLogger().finest("Finale: "+finale);
+		return result;
+	}
+	
 	private static GiocatoreDTO getMigliorSemifinalista(Partita finale, List<GiocatoreDTO> giocatoriRecuperabiliOrdinati){
 		GiocatoreDTO migliorSemifinalista = null;
 		if (giocatoriRecuperabiliOrdinati != null){
@@ -1061,6 +1230,7 @@ public class Sorteggiatore {
 		return semifinalisti;
 	}
 	
+	
 	private static List<List<GiocatoreDTO>> estraiSemifinalistiMasterOver100(ExcelAccess excelAccess){
 		//Estraggo anche i ritirati perchè tra essi ci potrebbero essere il primo o il secondo in classifica; 
 		//fatto il test rileggo i giocatori che giocano
@@ -1240,6 +1410,342 @@ public class Sorteggiatore {
 		return semifinalisti;
 	}
 	
+
+	//Determino il numero di semifinali che dipendono da due fattori
+	//1) Il numero di semifinali previste in base alle soglie ed agli iscritti
+	//2) Il numero di partecipanti (qualora la soglia prevista dal punto 1) sia troppo alta).
+	private static int numeroSemiFinaliMasterORaduni(TipoTorneo tipoTorneo, int iscritti, int partecipanti){
+		List<Integer> soglie = null;
+		if (tipoTorneo == TipoTorneo.RadunoNazionale){
+			soglie = SOGLIE_PER_RADUNI;
+		}else if (tipoTorneo == TipoTorneo.MasterRisiko){
+			soglie = SOGLIE_PER_MASTER;
+		}else{
+			throw new IllegalArgumentException(tipoTorneo.name());
+		}
+		int result = 0;
+		boolean overbooking = true;
+		for (int index = soglie.size() -1; index >= 1; index--){
+			if (iscritti <= soglie.get(index)){
+				overbooking = false;
+				if (partecipanti >= index*16){
+					result = index;
+				}
+			}else if (partecipanti >= result*16){
+				break;
+			}
+		}
+		if (overbooking) result = soglie.size();
+
+		return result*4;
+	}
+	
+	private static List<GiocatoreDTO> estraiSemifinalistiLowestMasterORaduni(ExcelAccess excelAccess, TipoTorneo tipoTorneo){
+		//Estraggo anche i ritirati perchè tra essi ci potrebbero essere il primo o il secondo in classifica; 
+		//fatto il test rileggo i giocatori che giocano
+		//e verifico che il primo e il secondo siano ancora gli stessi di prima: in caso negativo vorrà dire 
+		//che il 1° o il 2° si è ritirato e si faranno 4 semifinali
+		List<ScorePlayer> scores = null;
+		List<ScorePlayer> partecipanti = null;
+		if (tipoTorneo == TipoTorneo.MasterRisiko){
+			scores  = excelAccess.getClassificaQualificazioniNazionale(false, false);
+			partecipanti = excelAccess.getClassificaQualificazioniNazionale(true, false);
+		}else if (tipoTorneo == TipoTorneo.RadunoNazionale){
+			scores  = excelAccess.getClassificaRadunoAlSecondoTurno(false);
+			partecipanti = excelAccess.getClassificaRadunoAlSecondoTurno(true);
+		}
+		ScorePlayer primoInClassifica = scores.get(0);
+		ScorePlayer secondoInClassifica = scores.get(1);
+		ScorePlayer terzoInClassifica = scores.get(2);
+		List<GiocatoreDTO> semifinalisti = new ArrayList<GiocatoreDTO>();
+		boolean primoConDuevittorieESolitario = primoInClassifica.getNumeroVittorie() == 2 && primoInClassifica.getPunteggioB(false).compareTo(terzoInClassifica.getPunteggioB(false)) == 1;
+		boolean secondoConDuevittorieESolitario = secondoInClassifica.getNumeroVittorie() == 2 && secondoInClassifica.getPunteggioB(false).compareTo(terzoInClassifica.getPunteggioB(false)) == 1;
+		boolean primoNonRitirato = primoInClassifica.getGiocatore().equals(partecipanti.get(0).getGiocatore());
+		boolean secondoNonRitirato = true;
+		if (primoNonRitirato){
+			secondoNonRitirato = secondoInClassifica.getGiocatore().equals(partecipanti.get(1).getGiocatore());
+		}else{
+			secondoNonRitirato = secondoInClassifica.getGiocatore().equals(partecipanti.get(0).getGiocatore());
+		}
+		if (!primoNonRitirato){
+			MyLogger.getLogger().info("Il primo giocatore risulta ritirato: "+primoInClassifica+" adesso il primo è "+partecipanti.get(0));
+		}
+		if (!secondoNonRitirato){
+			MyLogger.getLogger().info("Il secondo giocatore risulta ritirato: "+secondoInClassifica+" adesso il secondo è "+partecipanti.get(1));
+		}
+
+		MyLogger.getLogger().info("Tipo Torneo: "+tipoTorneo);
+		MyLogger.getLogger().info("primoConDuevittorieESolitario: "+primoConDuevittorieESolitario);
+		MyLogger.getLogger().info("primoNonRitirato: "+primoNonRitirato);
+		MyLogger.getLogger().info("secondoConDuevittorieESolitario: "+secondoConDuevittorieESolitario);
+		MyLogger.getLogger().info("secondoNonRitirato: "+secondoNonRitirato);
+		MyLogger.getLogger().info("Numero Vittorie Secondo in Classifica: "+secondoInClassifica.getNumeroVittorie());
+		MyLogger.getLogger().info("Numero partecipanti: "+partecipanti.size());
+		
+		if (
+			primoConDuevittorieESolitario 
+		 && primoNonRitirato 
+		 && secondoInClassifica.getNumeroVittorie() != 2 
+		 && tipoTorneo == TipoTorneo.MasterRisiko
+		 ){
+			MyLogger.getLogger().info("Tre semifinali");
+			if (scores.size() <= 12){
+				MyLogger.getLogger().severe("Impossibile elaborare le semifinali; meno di 13 giocatori: "+scores.size());
+				throw new MyException("Impossibile elaborare le semifinali; meno di 13 giocatori: "+scores.size());
+			}
+			for (int i = 1; i <=12; i++){
+				GiocatoreDTO giocatore = scores.get(i).getGiocatore();
+				if (i <= 3){ //suddivisione in 4 fasce di 3 giocatori
+					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA1);
+				}else if (i > 3 && i<=6){
+					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA2);
+				}else if (i > 6 && i<=9){
+					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA3);
+				}else{
+					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA4);
+				}
+				semifinalisti.add(giocatore);
+			}
+		}else if (
+			(primoConDuevittorieESolitario && secondoConDuevittorieESolitario && primoNonRitirato && secondoNonRitirato)
+			|| partecipanti.size() < 16
+			){
+			MyLogger.getLogger().info("Due semifinali");
+			if (partecipanti.size() <= 9){
+				MyLogger.getLogger().severe("Impossibile elaborare le semifinali; meno di 10 giocatori: "+partecipanti.size());
+				throw new MyException("Impossibile elaborare le semifinali; meno di 10 giocatori: "+partecipanti.size());
+			}
+			for (int i = 2; i <=9; i++){
+				GiocatoreDTO giocatore = partecipanti.get(i).getGiocatore();
+				if (i <= 5){ 
+					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA1);
+				}else{
+					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA2);
+				}
+				semifinalisti.add(giocatore);
+			}
+		}else{
+			MyLogger.getLogger().info("Quattro semifinali");
+			if (partecipanti.size() < 16){
+				MyLogger.getLogger().severe("Impossibile elaborare le semifinali; meno di 16 giocatori: "+partecipanti.size());
+				throw new MyException("Impossibile elaborare le semifinali; meno di 16 giocatori: "+partecipanti.size());
+			}
+			for (int i = 0; i < 16; i++){ //suddivisione in 4 fasce di 4 giocatori
+				GiocatoreDTO giocatore = partecipanti.get(i).getGiocatore();
+				if (i <= 3){
+					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA1);
+				}else if (i > 3 && i<=7){
+					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA2);
+				}else if (i > 7 && i<=11){
+					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA3);
+				}else{
+					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA4);
+				}
+				semifinalisti.add(giocatore);
+			}
+		}
+		return semifinalisti;
+	}
+	
+	
+	private static List<List<GiocatoreDTO>> estraiSemifinalistiHigherMasterORaduni(ExcelAccess excelAccess, TipoTorneo tipoTorneo){
+		Set<GiocatoreDTO> scoresTutti = excelAccess.getPartecipantiEffettivi();
+		List<ScorePlayer> partecipanti = null;
+		
+		if (tipoTorneo == TipoTorneo.MasterRisiko){
+			partecipanti = excelAccess.getClassificaQualificazioniNazionale(true, false);
+		}else if (tipoTorneo == TipoTorneo.RadunoNazionale){
+			partecipanti = excelAccess.getClassificaRadunoAlSecondoTurno(true);
+		}
+		
+		int numeroSemifinali = numeroSemiFinaliMasterORaduni(tipoTorneo, scoresTutti.size(), partecipanti.size());
+		
+		MyLogger.getLogger().info("Numero di semifinali previste: "+numeroSemifinali+" Hanno giocato ["+scoresTutti.size()+"] - partecipanti ["+partecipanti.size()+"]");
+		
+		int numeroGruppiSemifinali = numeroSemifinali / 4;
+		int numeroSemifinalisti = numeroSemifinali * 4;
+		
+		List<GiocatoreDTO>[] semifinaliArray = new List[numeroGruppiSemifinali];
+		
+		for (int indexArray = 0; indexArray < semifinaliArray.length; indexArray++){
+			semifinaliArray[indexArray] = new ArrayList<GiocatoreDTO>();
+		}
+		//Arrays.fill(semifinaliArray, new ArrayList<GiocatoreDTO>());
+		
+		for (int index = 0; index < numeroSemifinalisti; index++){
+			int semifinaleIndex = index%numeroGruppiSemifinali;
+			List<GiocatoreDTO> semifinale = semifinaliArray[semifinaleIndex];
+			GiocatoreDTO giocatore = partecipanti.get(index).getGiocatore();
+			
+			int fascia = (index / numeroSemifinali) +1;
+			
+			switch (fascia) {
+			case 1:
+				giocatore.setRegioneProvenienza(RegioniLoader.FASCIA1);
+				break;
+			case 2:
+				giocatore.setRegioneProvenienza(RegioniLoader.FASCIA2);
+				break;			
+			case 3:
+				giocatore.setRegioneProvenienza(RegioniLoader.FASCIA3);
+				break;			
+			case 4:
+				giocatore.setRegioneProvenienza(RegioniLoader.FASCIA4);
+				break;
+			default:
+				MyLogger.getLogger().severe("Fascia imprevista: "+fascia+" numeroSemifinalisti: ["+numeroSemifinalisti+"]");
+				break;
+			}
+			
+			semifinale.add(giocatore);
+		}
+
+		return Arrays.asList(semifinaliArray);
+	}
+	
+	private static Partita[] getPartiteSorteggiateMasterRisiko2020(ExcelAccess excelAccess, int numeroTurno){
+		MyLogger.getLogger().entering("Sorteggiatore", "getPartiteSorteggiateMasterRisiko2016");
+		Partita[] partiteTurno = null;
+		List<GiocatoreDTO> giocatoriPartecipanti = excelAccess.getListaGiocatori(true);
+		List<PrioritaSorteggio> priorita = new ArrayList<PrioritaSorteggio>();
+		switch (numeroTurno) {
+		case 1:
+			priorita.add(PrioritaSorteggio.IMPEDITO_STESSO_CLUB_NON_CONSIDERANDO_I_FISSI);
+			priorita.add(PrioritaSorteggio.IMPEDITO_STESSO_CLUB_CONSIDERANDO_I_FISSI);
+			partiteTurno = GeneratoreTavoliNew.generaPartite(giocatoriPartecipanti, null, TipoTavoli.DA_4_ED_EVENTUALMENTE_DA_5, priorita);
+			break;
+		case 2:
+			List<Partita> listaPartitePrecedenti = new ArrayList<Partita>();
+			for (int i = 1; i < numeroTurno; i++){
+				Partita[] partiteTurnoi = excelAccess.loadPartite(i,false,TipoTorneo.RadunoNazionale);
+				if (partiteTurnoi == null){
+					throw new MyException("E' stato richiesto il sorteggio per il turno "+numeroTurno+" ma non esiste il turno "+i);
+				}
+				listaPartitePrecedenti.addAll(Arrays.asList(partiteTurnoi));
+			}
+			
+			TorneiUtils.checkPartiteConPiuVincitori(listaPartitePrecedenti);
+			
+			Partita[] partitePrecedenti = listaPartitePrecedenti.toArray(new Partita[0]);
+			priorita.add(PrioritaSorteggio.MINIMIZZAZIONE_PARTECIPAZIONE_TAVOLO_DA_5);
+			priorita.add(PrioritaSorteggio.VINCITORI_SEPARATI);
+			priorita.add(PrioritaSorteggio.IMPEDITO_STESSO_CLUB_NON_CONSIDERANDO_I_FISSI);
+			priorita.add(PrioritaSorteggio.IMPEDITO_STESSO_CLUB_CONSIDERANDO_I_FISSI);
+			priorita.add(PrioritaSorteggio.MINIMIZZAZIONE_SCONTRI_DIRETTI);
+			partiteTurno = GeneratoreTavoliNew.generaPartite(giocatoriPartecipanti, partitePrecedenti, TipoTavoli.DA_4_ED_EVENTUALMENTE_DA_5, priorita);
+			break;
+		case 3:
+			if (isLowestMaster(excelAccess)){
+				List<GiocatoreDTO> semifinalisti = estraiSemifinalistiLowestMasterORaduni(excelAccess, TipoTorneo.MasterRisiko);
+				MyLogger.getLogger().finest("Semifinalisti: "+semifinalisti.toString());
+				priorita.add(PrioritaSorteggio.IMPEDITO_STESSO_CLUB);
+				priorita.add(PrioritaSorteggio.IMPEDITA_STESSA_REGIONE);
+				partiteTurno = GeneratoreTavoliNew.generaPartite(semifinalisti, null, TipoTavoli.DA_4_ED_EVENTUALMENTE_DA_5, priorita);
+			}else{
+				List<List<GiocatoreDTO>> semifinalisti = estraiSemifinalistiHigherMasterORaduni(excelAccess, TipoTorneo.MasterRisiko);
+				MyLogger.getLogger().finest("Semifinalisti: "+semifinalisti.toString());
+				priorita.add(PrioritaSorteggio.IMPEDITO_STESSO_CLUB);
+				priorita.add(PrioritaSorteggio.IMPEDITA_STESSA_REGIONE);
+				List<Partita> semifinali = new ArrayList<Partita>();
+				for (List<GiocatoreDTO> semifinale: semifinalisti){
+					Partita[] partitaDiSemifinale = GeneratoreTavoliNew.generaPartite(semifinale, null, TipoTavoli.DA_4_ED_EVENTUALMENTE_DA_5, priorita);
+					semifinali.addAll(Arrays.asList(partitaDiSemifinale));
+				}
+				partiteTurno = semifinali.toArray(new Partita[semifinali.size()]);				
+			}
+			break;
+		case 4:
+			Partita[] semifinali = excelAccess.loadPartite(3, false, TipoTorneo.MasterRisiko);
+			if (semifinali == null){
+				throw new MyException("E' stato richiesto il sorteggio per il turno 4 ma non esiste il turno 3");
+			}
+			
+			TorneiUtils.checksPartiteConPiuVincitori(semifinali);
+			
+			switch (semifinali.length) {
+			case 2:
+			case 3:
+				partiteTurno = estrazioneFinaleLowestMasterORaduni(excelAccess, semifinali, TipoTorneo.MasterRisiko);
+				break;
+			default:
+				if (semifinali.length % 4 != 0){
+					throw new MyException("Il numero di semifinali trovate non è multiplo di 4: "+semifinali.length);
+				}else{
+					int numeroFinali = semifinali.length / 4;
+					partiteTurno = new Partita[numeroFinali];
+					for (int indexFinale = 1; indexFinale <= numeroFinali; indexFinale++){
+						int indexArray = 1+ (indexFinale -1)*4;
+						Partita[] semifinaliStessoGruppo = Arrays.copyOfRange(semifinali, indexArray -1, indexArray+3);
+						Partita finaleGruppo = estrazioneFinaliMasterORaduni(excelAccess, semifinaliStessoGruppo, TipoTorneo.MasterRisiko);
+						partiteTurno[indexFinale -1] = finaleGruppo;
+					}
+				}
+			}
+			break;
+		default:
+			MyLogger.getLogger().severe("Turno per il tipo di Torneo Qualificazioni Risiko non previsto: "+numeroTurno);
+			throw new MyException("Turno per il tipo di Torneo Qualificazioni Risiko non previsto: "+numeroTurno);
+		}	
+		MyLogger.getLogger().exiting("Sorteggiatore", "getPartiteSorteggiateMasterRisiko2016", ArrayUtils.fromPartiteToString(partiteTurno));
+		return partiteTurno;
+	}
+	
+	
+	private static Partita estrazioneFinaliMasterORaduni(ExcelAccess excelAccess, Partita[] semifinali, TipoTorneo tipoTorneo){
+		List<ScorePlayer> partecipanti = null;
+		switch (tipoTorneo) {
+		case MasterRisiko:
+			partecipanti = excelAccess.getClassificaQualificazioniNazionale(true, false);
+			break;
+		case RadunoNazionale:
+			partecipanti = excelAccess.getClassificaRadunoAlSecondoTurno(true);
+			break;
+		default:
+			break;
+		}
+
+		Partita finale = new Partita();
+		finale.setNumeroGiocatori(4);
+		finale.setNumeroTavolo(1);
+		for (Partita semifinale: semifinali){
+			for (GiocatoreDTO semifinalista: semifinale.getGiocatoriOrdinatiPerPunteggio()){
+				if (TorneiUtils.isPartecipante(partecipanti, semifinalista)){
+					MyLogger.getLogger().info("Recuperato per la finale "+semifinalista+" dalla semifinale "+semifinale.getNumeroTavolo());
+					finale.addGiocatore(semifinalista, null);
+					break;
+				}
+			}
+		}
+
+		//Potrebbe essere che la finale ancora non è completa perchè tutti i semifinalisti di una semifinale si sono ritirati
+		//In tal caso va ripescato il miglior secondo (terzo o quarto) tra tutti i semifinalisti
+		if (finale.isNotComplete()){
+			List<GiocatoreDTO> giocatoriRecuperabiliOrdinati = TorneiUtils.listaDeiGiocatoriSconfittiOrdinataPerPosizioneAlTavoloEClassificaDopo2Partite(partecipanti, semifinali);
+			GiocatoreDTO semifinalistaRecuperato = null;
+			do{
+				semifinalistaRecuperato = getMigliorSemifinalista(finale, giocatoriRecuperabiliOrdinati);
+				if (semifinalistaRecuperato != null){
+					MyLogger.getLogger().info("Recuperato per la finale il semifinalista "+semifinalistaRecuperato);
+					finale.addGiocatore(semifinalistaRecuperato, null);
+				}
+			}while(finale.isNotComplete() && semifinalistaRecuperato != null);
+		}
+		
+		MyLogger.getLogger().finest("Finale: "+finale);
+		return finale;
+	}
+	
+	private static boolean isLowestMaster(ExcelAccess excelAccess){
+		//Si devono verificare 2 condizioni: 
+		//1) numero dei giocatori che hanno disputato 2 partite è sulla soglia o sotto
+		//2) rimangono in gioco almeno 10 giocatori (nella vita non si sa mai) 
+		boolean result = false;
+		Set<GiocatoreDTO> scoresTutti = excelAccess.getPartecipantiEffettivi();
+		List<ScorePlayer> scoresPartecipanti = excelAccess.getClassificaQualificazioniNazionale(true, false);
+		result = scoresTutti.size() <= SOGLIE_PER_MASTER.get(0) && scoresPartecipanti.size() >= 10;
+		
+		return result;
+	}
 	
 	private static Partita[] getPartiteSorteggiateNazionaleRisiko(ExcelAccess excelAccess, int numeroTurno){
 		MyLogger.getLogger().entering("Sorteggiatore", "getPartiteSorteggiateNazionaleRisiko");

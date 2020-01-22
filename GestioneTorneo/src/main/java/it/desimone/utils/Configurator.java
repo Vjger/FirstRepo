@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 public class Configurator {
@@ -62,6 +64,44 @@ private volatile static Properties properties = new Properties();
 			MyLogger.getLogger().severe("Errore nel parsing della soglia:<<"+soglia+">>");
 		}
 		return result;
+	}
+	
+	public static List<Integer> getSoglieMaster(){
+		List<Integer> listaSoglie = null;
+		String soglieMaster = ((String)properties.get("soglieMaster"));
+		if (soglieMaster != null) soglieMaster = soglieMaster.trim();
+		try{
+			String[] soglie = soglieMaster.split(",");
+			if (soglie != null == soglie.length > 0){
+				listaSoglie = new ArrayList<Integer>();
+				for (String soglia: soglie){
+					listaSoglie.add(Integer.valueOf(soglia));
+				}
+				MyLogger.getLogger().finest("Soglie master :<<"+listaSoglie+">>");
+			}
+		}catch(Exception e){
+			MyLogger.getLogger().severe("Errore nel parsing delle soglie dei master:<<"+soglieMaster+">>");
+		}
+		return listaSoglie;
+	}
+	
+	public static List<Integer> getSoglieRaduni(){
+		List<Integer> listaSoglie = null;
+		String soglieRaduni = ((String)properties.get("soglieRaduni"));
+		if (soglieRaduni != null) soglieRaduni = soglieRaduni.trim();
+		try{
+			String[] soglie = soglieRaduni.split(",");
+			if (soglie != null == soglie.length > 0){
+				listaSoglie = new ArrayList<Integer>();
+				for (String soglia: soglie){
+					listaSoglie.add(Integer.valueOf(soglia));
+				}
+				MyLogger.getLogger().finest("Soglie raduni :<<"+listaSoglie+">>");
+			}
+		}catch(Exception e){
+			MyLogger.getLogger().severe("Errore nel parsing delle soglie dei raduni:<<"+soglieRaduni+">>");
+		}
+		return listaSoglie;
 	}
 	
 	public static Boolean getDefaultVincitoreUnico(){

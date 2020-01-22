@@ -480,10 +480,10 @@ public class ExcelAccess{
 			MyLogger.getLogger().info("Colonna ID Nazionale con valore non numerico: "+nfe.getMessage());
 			throw new MyException(nfe,"Colonna ID Nazionale con valore non numerico");
 		}catch(IllegalStateException ise){
-			MyLogger.getLogger().info("Colonna ID Nazionale con valore non numerico: "+ise.getMessage());
+			//MyLogger.getLogger().finer("Colonna ID Nazionale con valore non numerico al ID "+id+": "+ise.getMessage());
 			//throw new MyException(ise,"Colonna ID Nazionale con valore non numerico");
 		}
-		if (idNazionale == null || idNazionale > 0){ //Patch messa perchè quando si legge da un xlsx le API mettono zero come valore se la cella è vuota
+		if (idNazionale == null || idNazionale > 0 || (nome != null && nome.equalsIgnoreCase(GiocatoreDTO.ANONIMO.getNome()) && cognome != null && cognome.equalsIgnoreCase(GiocatoreDTO.ANONIMO.getCognome()))){ //Patch messa perchè quando si legge da un xlsx le API mettono zero come valore se la cella è vuota
 			giocatore.setIdNazionale(idNazionale);
 		}
 		return giocatore;

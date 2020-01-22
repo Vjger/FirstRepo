@@ -473,33 +473,7 @@ public class ExcelValidator {
 						}
 					}
 					if (giocatoUltimoTurno && TipoTorneo.prevedeClassifica(schedaTorneo.getTipoTorneo())) {
-						String nomeUltimoTurno = ExcelAccess.getNomeTurno(schedaTorneo.getNumeroTurni());
-						SchedaTurno ultimoTurno = excelAccess.leggiSchedaTurno(nomeUltimoTurno);
-						if (ultimoTurno != null){
-							Partita[] partite = ultimoTurno.getPartite();
-							if (partite != null && partite.length == 1){ //Possibile finale
-								Partita possibileFinale = partite[0];
-								Set<GiocatoreDTO> possibiliFinalisti = possibileFinale.getGiocatori();
-								for (GiocatoreDTO possibileFinalista: possibiliFinalisti){
-									Integer posizionePossibileFinalista = possibileFinale.getPosizione(possibileFinalista);
-									Integer posizioneGiocatoreInClassifica = null;
-									for (RigaClassifica rigaClassifica: giocatoriInClassifica){
-										if (rigaClassifica.getIdGiocatore().equals(possibileFinalista.getId())){
-											posizioneGiocatoreInClassifica = rigaClassifica.getPosizioneGiocatore();
-											break;
-										}
-									}
-									if (posizioneGiocatoreInClassifica != null){
-										if (posizionePossibileFinalista != posizioneGiocatoreInClassifica){
-											result.add(new ExcelValidatorMessages(Scheda.CLASSIFICA_RIDOTTA
-													, "Il giocatore con ID "+possibileFinalista.getId()+" sembrerebbe aver disputato una Finale ed essere arrivato "+posizionePossibileFinalista+"° ma in classifica risulta "+posizioneGiocatoreInClassifica+"°. Confermi che il "+nomeUltimoTurno+" non è una Finale?", Severity.WARNING));
-										}
-									}else{
-										result.add(new ExcelValidatorMessages(Scheda.CLASSIFICA_RIDOTTA, "Non è presente il giocatore con ID "+possibileFinalista.getId()));
-									}
-								}
-							}
-						}
+						checkPossibileFinale(schedaTorneo, excelAccess, giocatoriInClassifica, result);
 					}
 				}
 			}
@@ -507,5 +481,36 @@ public class ExcelValidator {
 		excelAccess.closeFileExcel();
 		
 		return result;
+	}
+
+	
+	private static void checkPossibileFinale(SchedaTorneo schedaTorneo, ExcelAccess excelAccess, List<RigaClassifica> giocatoriInClassifica, List<ExcelValidatorMessages> result){
+		String nomeUltimoTurno = ExcelAccess.getNomeTurno(schedaTorneo.getNumeroTurni());
+		SchedaTurno ultimoTurno = excelAccess.leggiSchedaTurno(nomeUltimoTurno);
+		if (ultimoTurno != null){
+			Partita[] partite = ultimoTurno.getPartite();
+			if (partite != null && partite.length == 1){ //Possibile finale
+				Partita possibileFinale = partite[0];
+				Set<GiocatoreDTO> possibiliFinalisti = possibileFinale.getGiocatori();
+				for (GiocatoreDTO possibileFinalista: possibiliFinalisti){
+					Integer posizionePossibileFinalista = possibileFinale.getPosizione(possibileFinalista);
+					Integer posizioneGiocatoreInClassifica = null;
+					for (RigaClassifica rigaClassifica: giocatoriInClassifica){
+						if (rigaClassifica.getIdGiocatore().equals(possibileFinalista.getId())){
+							posizioneGiocatoreInClassifica = rigaClassifica.getPosizioneGiocatore();
+							break;
+						}
+					}
+					if (posizioneGiocatoreInClassifica != null){
+						if (posizionePossibileFinalista != posizioneGiocatoreInClassifica){
+							result.add(new ExcelValidatorMessages(Scheda.CLASSIFICA_RIDOTTA
+									, "Il giocatore con ID "+possibileFinalista.getId()+" sembrerebbe aver disputato una Finale ed essere arrivato "+posizionePossibileFinalista+"° ma in classifica risulta "+posizioneGiocatoreInClassifica+"°. Confermi che il "+nomeUltimoTurno+" non è una Finale?", Severity.WARNING));
+						}
+					}else{
+						result.add(new ExcelValidatorMessages(Scheda.CLASSIFICA_RIDOTTA, "Non è presente il giocatore con ID "+possibileFinalista.getId()));
+					}
+				}
+			}
+		}
 	}
 }

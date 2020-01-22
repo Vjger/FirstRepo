@@ -30,6 +30,10 @@ public class TorneiUtils {
 		}
 		return players;
 	}	
+
+	public static boolean isGiocatorePartecipante(List<GiocatoreDTO> partecipanti, GiocatoreDTO giocatore){
+		return partecipanti.contains(giocatore);
+	}	
 	
 	public static boolean isPartecipante(List<ScorePlayer> scorePlayers, GiocatoreDTO giocatore){
 		List<GiocatoreDTO> partecipanti = fromScorePlayersToPlayers(scorePlayers);
