@@ -1506,9 +1506,9 @@ public class Sorteggiatore {
 				}
 				semifinalisti.add(giocatore);
 			}
-		}else if (
-			(primoConDuevittorieESolitario && secondoConDuevittorieESolitario && primoNonRitirato && secondoNonRitirato)
-			|| partecipanti.size() < 16
+		}else if (tipoTorneo == TipoTorneo.RadunoNazionale 
+				||(primoConDuevittorieESolitario && secondoConDuevittorieESolitario && primoNonRitirato && secondoNonRitirato)
+			    || partecipanti.size() < 16
 			){
 			MyLogger.getLogger().info("Due semifinali");
 			if (partecipanti.size() <= 9){
@@ -1517,10 +1517,14 @@ public class Sorteggiatore {
 			}
 			for (int i = 2; i <=9; i++){
 				GiocatoreDTO giocatore = partecipanti.get(i).getGiocatore();
-				if (i <= 5){ 
+				if (i <= 3){
 					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA1);
-				}else{
+				}else if (i > 3 && i<=5){
 					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA2);
+				}else if (i > 5 && i<=7){
+					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA3);
+				}else{
+					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA4);
 				}
 				semifinalisti.add(giocatore);
 			}
