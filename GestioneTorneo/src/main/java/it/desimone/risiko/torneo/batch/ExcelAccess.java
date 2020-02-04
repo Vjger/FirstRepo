@@ -14,6 +14,7 @@ import it.desimone.risiko.torneo.scorecomparator.ScoreCampionatoComparator;
 import it.desimone.risiko.torneo.scorecomparator.ScoreNazionaleRisikoComparator;
 import it.desimone.risiko.torneo.scorecomparator.ScoreQualificazioniNazionaleComparator;
 import it.desimone.risiko.torneo.scorecomparator.ScoreRadunoComparator;
+import it.desimone.risiko.torneo.scorecomparator.ScoreRadunoNazionale2020Comparator;
 import it.desimone.risiko.torneo.scorecomparator.ScoreSemifinalistiRadunoComparator;
 import it.desimone.risiko.torneo.scorecomparator.ScoreTorneoOpenComparator;
 import it.desimone.risiko.torneo.scoreplayer.ScorePlayer;
@@ -47,7 +48,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -992,19 +992,19 @@ public class ExcelAccess{
 		CellUtil.createCell(intestazione,  indexCell++, "Cognome",styleIntestazione);
 		CellUtil.createCell(intestazione,  indexCell++, "Nick",styleIntestazione);
 		CellUtil.createCell(intestazione,  indexCell++, "Club o Famiglia",styleIntestazione);
-		if (tipoTorneo != TipoTorneo.MasterRisiko2015 && tipoTorneo != TipoTorneo.MasterRisiko){
+//		if (tipoTorneo != TipoTorneo.MasterRisiko2015 && tipoTorneo != TipoTorneo.MasterRisiko){
 			for (int i = 1; ; i++){
 				Partita[] partiteTurnoi = loadPartite(i,false,tipoTorneo);
 				if (partiteTurnoi == null){break;}
 				CellUtil.createCell(intestazione,  indexCell++, "pt"+i,styleIntestazione);
 			}
-		}else{
-			for (int i = 1; i <= 3; i++){
-				Partita[] partiteTurnoi = loadPartite(i,false,tipoTorneo);
-				if (partiteTurnoi == null){break;}
-				CellUtil.createCell(intestazione,  indexCell++, "pt"+i,styleIntestazione);
-			}
-		}
+//		}else{
+//			for (int i = 1; i <= 3; i++){
+//				Partita[] partiteTurnoi = loadPartite(i,false,tipoTorneo);
+//				if (partiteTurnoi == null){break;}
+//				CellUtil.createCell(intestazione,  indexCell++, "pt"+i,styleIntestazione);
+//			}
+//		}
 		CellUtil.createCell(intestazione,  indexCell++, "v_tot",styleIntestazione);
 		CellUtil.createCell(intestazione,  indexCell++, "pt_tot",styleIntestazione);
 		CellUtil.createCell(intestazione,  indexCell++, "id",styleIntestazione);
@@ -1023,11 +1023,13 @@ public class ExcelAccess{
 			break;
 		case RadunoNazionale:
 		case RadunoNazionale_con_quarti:
-			scores = getClassificaRaduno(false);
+			//scores = getClassificaRaduno(false);
+			scores = getClassificaRadunoNazionale2020(false, true);
 			break;
 		case MasterRisiko2015:
 		case MasterRisiko:
-			scores = getClassificaQualificazioniNazionale(false, true);
+			//scores = getClassificaQualificazioniNazionale(false, true);
+			scores = getClassificaMaster2020(false, true);
 			break;
 		case Open:
 		case SantEufemia:
@@ -1546,6 +1548,122 @@ public class ExcelAccess{
 	}
 	
 
+	public List<ScorePlayer> getClassificaMaster2020(boolean partecipanti, boolean compreseSemifinali){
+		List<ScorePlayer> scores = new ArrayList<ScorePlayer>();
+		List<GiocatoreDTO>giocatori = getListaGiocatori(partecipanti);
+		//Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi(false);
+		List<Partita[]> listaPartiteTotali = new ArrayList<Partita[]>();
+		int numeroTurniDisputati = 0;
+		int numeroTurniDaConsiderare = 2;
+		//if (compreseSemifinali) numeroTurniDaConsiderare++;
+		if (compreseSemifinali) numeroTurniDaConsiderare = numeroTurniDaConsiderare +2;
+		for (int i = 1; i <=numeroTurniDaConsiderare ; i++){
+			Partita[] partiteTurnoi = loadPartite(i,true,TipoTorneo.MasterRisiko);
+			if (partiteTurnoi == null){break;}
+			numeroTurniDisputati++;
+			listaPartiteTotali.add(partiteTurnoi);
+		}
+		
+		TorneiUtils.checksPartiteConPiuVincitori(listaPartiteTotali);
+		
+		Partita[] partiteGiocatore = null;
+		for (GiocatoreDTO giocatore: giocatori){
+			//partiteGiocatore = new Partita[listaPartiteTotali.size()];
+			partiteGiocatore = new Partita[numeroTurniDisputati];
+			int indexTurno = 0;
+			short numeroPartiteDisputate = 0;
+			for (Partita[] partite: listaPartiteTotali){
+				partiteGiocatore[indexTurno++] = inspectPartite(partite, giocatore);
+				if (partiteGiocatore[indexTurno-1] != null){numeroPartiteDisputate++;}
+			}
+			if (compreseSemifinali || numeroTurniDisputati == 1 || numeroPartiteDisputate >=2){
+				ScorePlayer scorePlayer = new ScorePlayerQualificazioniNazionale(giocatore,partiteGiocatore);
+				scores.add(scorePlayer);
+			}
+		}
+		Collections.sort(scores, new ScoreQualificazioniNazionaleComparator());
+
+		Partita[] finali = loadPartite(4, false, TipoTorneo.MasterRisiko);
+		if (compreseSemifinali && finali != null && finali.length > 0){
+			List<List<GiocatoreDTO>> listaFinalisti = new ArrayList<List<GiocatoreDTO>>(); 
+			int numeroFinalistiMassimo = 0;
+			for (Partita finale: finali){
+				List<GiocatoreDTO> giocatoriFinale = new ArrayList<GiocatoreDTO>(finale.getGiocatoriOrdinatiPerPunteggio());
+				listaFinalisti.add(giocatoriFinale);
+				numeroFinalistiMassimo = Math.max(giocatoriFinale.size(), numeroFinalistiMassimo);
+			}
+			int index = 0;
+			for (int indexGiocatori = 0; indexGiocatori < numeroFinalistiMassimo; indexGiocatori++){
+				for (List<GiocatoreDTO> finalisti: listaFinalisti){
+					if (indexGiocatori < finalisti.size()){
+						GiocatoreDTO finalista = finalisti.get(indexGiocatori);
+						aggiornaClassificaConFinalisti(scores, finalista, index++, indexGiocatori+1);
+					}
+				}
+			}
+		}
+		scores = ScorePlayerClassificator.scorePlayerPositioner(scores, new ScoreQualificazioniNazionaleComparator());
+		return scores;
+	}
+	
+	public List<ScorePlayer> getClassificaRadunoNazionale2020(boolean partecipanti, boolean compreseSemifinali){
+		List<ScorePlayer> scores = new ArrayList<ScorePlayer>();
+		List<GiocatoreDTO>giocatori = getListaGiocatori(partecipanti);
+		//Set<GiocatoreDTO> giocatori = getPartecipantiEffettivi(false);
+		List<Partita[]> listaPartiteTotali = new ArrayList<Partita[]>();
+		int numeroTurniDisputati = 0;
+		int numeroTurniDaConsiderare = 2;
+		//if (compreseSemifinali) numeroTurniDaConsiderare++;
+		if (compreseSemifinali) numeroTurniDaConsiderare = numeroTurniDaConsiderare +2;
+		for (int i = 1; i <=numeroTurniDaConsiderare ; i++){
+			Partita[] partiteTurnoi = loadPartite(i,true,TipoTorneo.RadunoNazionale);
+			if (partiteTurnoi == null){break;}
+			numeroTurniDisputati++;
+			listaPartiteTotali.add(partiteTurnoi);
+		}
+		
+		TorneiUtils.checksPartiteConPiuVincitori(listaPartiteTotali);
+		
+		Partita[] partiteGiocatore = null;
+		for (GiocatoreDTO giocatore: giocatori){
+			//partiteGiocatore = new Partita[listaPartiteTotali.size()];
+			partiteGiocatore = new Partita[numeroTurniDisputati];
+			int indexTurno = 0;
+			short numeroPartiteDisputate = 0;
+			for (Partita[] partite: listaPartiteTotali){
+				partiteGiocatore[indexTurno++] = inspectPartite(partite, giocatore);
+				if (partiteGiocatore[indexTurno-1] != null){numeroPartiteDisputate++;}
+			}
+			if (compreseSemifinali || numeroTurniDisputati == 1 || numeroPartiteDisputate >=2){
+				ScorePlayer scorePlayer = new ScorePlayerRaduno(giocatore,partiteGiocatore);
+				scores.add(scorePlayer);
+			}
+		}
+		Collections.sort(scores, new ScoreRadunoNazionale2020Comparator());
+
+		Partita[] finali = loadPartite(4, false, TipoTorneo.RadunoNazionale);
+		if (compreseSemifinali && finali != null && finali.length > 0){
+			List<List<GiocatoreDTO>> listaFinalisti = new ArrayList<List<GiocatoreDTO>>(); 
+			int numeroFinalistiMassimo = 0;
+			for (Partita finale: finali){
+				List<GiocatoreDTO> giocatoriFinale = new ArrayList<GiocatoreDTO>(finale.getGiocatoriOrdinatiPerPunteggio());
+				listaFinalisti.add(giocatoriFinale);
+				numeroFinalistiMassimo = Math.max(giocatoriFinale.size(), numeroFinalistiMassimo);
+			}
+			int index = 0;
+			for (int indexGiocatori = 0; indexGiocatori < numeroFinalistiMassimo; indexGiocatori++){
+				for (List<GiocatoreDTO> finalisti: listaFinalisti){
+					if (indexGiocatori < finalisti.size()){
+						GiocatoreDTO finalista = finalisti.get(indexGiocatori);
+						aggiornaClassificaConFinalisti(scores, finalista, index++, indexGiocatori+1);
+					}
+				}
+			}
+		}
+		scores = ScorePlayerClassificator.scorePlayerPositioner(scores, new ScoreRadunoNazionale2020Comparator());
+		return scores;
+	}
+	
 	private void aggiornaClassificaConFinalisti(List<ScorePlayer> scores, GiocatoreDTO finalista, int posizione, int posizioneClassifica){
 		Iterator<ScorePlayer> iterator = scores.iterator();
 		while (iterator.hasNext()){

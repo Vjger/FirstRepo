@@ -970,8 +970,8 @@ public class Sorteggiatore {
 		List<ScorePlayer> partecipanti = null;
 		List<ScorePlayer> scores = null;
 		if (tipoTorneo == TipoTorneo.MasterRisiko){
-			scores = excelAccess.getClassificaQualificazioniNazionale(false, false);
-			partecipanti = excelAccess.getClassificaQualificazioniNazionale(true, false);
+			scores = excelAccess.getClassificaMaster2020(false, false);
+			partecipanti = excelAccess.getClassificaMaster2020(true, false);
 		}else if (tipoTorneo == TipoTorneo.RadunoNazionale){
 			scores = excelAccess.getClassificaRadunoAlSecondoTurno(false);
 			partecipanti = excelAccess.getClassificaRadunoAlSecondoTurno(true);
@@ -1448,8 +1448,8 @@ public class Sorteggiatore {
 		List<ScorePlayer> scores = null;
 		List<ScorePlayer> partecipanti = null;
 		if (tipoTorneo == TipoTorneo.MasterRisiko){
-			scores  = excelAccess.getClassificaQualificazioniNazionale(false, false);
-			partecipanti = excelAccess.getClassificaQualificazioniNazionale(true, false);
+			scores  = excelAccess.getClassificaMaster2020(false, false);
+			partecipanti = excelAccess.getClassificaMaster2020(true, false);
 		}else if (tipoTorneo == TipoTorneo.RadunoNazionale){
 			scores  = excelAccess.getClassificaRadunoAlSecondoTurno(false);
 			partecipanti = excelAccess.getClassificaRadunoAlSecondoTurno(true);
@@ -1557,7 +1557,7 @@ public class Sorteggiatore {
 		List<ScorePlayer> partecipanti = null;
 		
 		if (tipoTorneo == TipoTorneo.MasterRisiko){
-			partecipanti = excelAccess.getClassificaQualificazioniNazionale(true, false);
+			partecipanti = excelAccess.getClassificaMaster2020(true, false);
 		}else if (tipoTorneo == TipoTorneo.RadunoNazionale){
 			partecipanti = excelAccess.getClassificaRadunoAlSecondoTurno(true);
 		}
@@ -1655,7 +1655,10 @@ public class Sorteggiatore {
 					Partita[] partitaDiSemifinale = GeneratoreTavoliNew.generaPartite(semifinale, null, TipoTavoli.DA_4_ED_EVENTUALMENTE_DA_5, priorita);
 					semifinali.addAll(Arrays.asList(partitaDiSemifinale));
 				}
-				partiteTurno = semifinali.toArray(new Partita[semifinali.size()]);				
+				partiteTurno = semifinali.toArray(new Partita[semifinali.size()]);		
+				for (int index = 0; index < partiteTurno.length; index++){
+					partiteTurno[index].setNumeroTavolo(index+1);
+				}
 			}
 			break;
 		case 4:
@@ -1682,6 +1685,7 @@ public class Sorteggiatore {
 						Partita[] semifinaliStessoGruppo = Arrays.copyOfRange(semifinali, indexArray -1, indexArray+3);
 						Partita finaleGruppo = estrazioneFinaliMasterORaduni(excelAccess, semifinaliStessoGruppo, TipoTorneo.MasterRisiko);
 						partiteTurno[indexFinale -1] = finaleGruppo;
+						partiteTurno[indexFinale -1].setNumeroTavolo(indexFinale);
 					}
 				}
 			}
@@ -1699,7 +1703,7 @@ public class Sorteggiatore {
 		List<ScorePlayer> partecipanti = null;
 		switch (tipoTorneo) {
 		case MasterRisiko:
-			partecipanti = excelAccess.getClassificaQualificazioniNazionale(true, false);
+			partecipanti = excelAccess.getClassificaMaster2020(true, false);
 			break;
 		case RadunoNazionale:
 			partecipanti = excelAccess.getClassificaRadunoAlSecondoTurno(true);
@@ -1745,7 +1749,7 @@ public class Sorteggiatore {
 		//2) rimangono in gioco almeno 10 giocatori (nella vita non si sa mai) 
 		boolean result = false;
 		Set<GiocatoreDTO> scoresTutti = excelAccess.getPartecipantiEffettivi();
-		List<ScorePlayer> scoresPartecipanti = excelAccess.getClassificaQualificazioniNazionale(true, false);
+		List<ScorePlayer> scoresPartecipanti = excelAccess.getClassificaMaster2020(true, false);
 		result = scoresTutti.size() <= SOGLIE_PER_MASTER.get(0) && scoresPartecipanti.size() >= 10;
 		
 		return result;
