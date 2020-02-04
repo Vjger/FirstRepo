@@ -105,7 +105,7 @@ public class ExcelGSheetsBridge {
 		for (int index = 0; index < partecipanti.size(); index++){
 			GiocatoreDTO giocatore = partecipanti.get(index);
 			AnagraficaGiocatoreRidottaRow anagraficaGiocatoreRidottaRow = new AnagraficaGiocatoreRidottaRow();
-			if (giocatore.getDataDiNascita() != null){
+			if (giocatore.getDataDiNascita() != null && !giocatore.isAnonimo()){
 				anagraficaGiocatoreRidottaRow.setNome(giocatore.getNome().trim());
 				anagraficaGiocatoreRidottaRow.setCognome(giocatore.getCognome().trim());
 				//anagraficaGiocatoreRidottaRow.setEmail(giocatore.getEmail().trim());
@@ -121,7 +121,7 @@ public class ExcelGSheetsBridge {
 			}
 			anagraficaGiocatoreRidottaRow.setUpdateTime(dfUpdateTime.format(now));
 			AnagraficaGiocatoreRow anagraficaGiocatoreRow = new AnagraficaGiocatoreRow();
-			if (giocatore.getDataDiNascita() != null){
+			if (giocatore.getDataDiNascita() != null && !giocatore.isAnonimo()){
 				anagraficaGiocatoreRow.setNome(giocatore.getNome().trim());
 				anagraficaGiocatoreRow.setCognome(giocatore.getCognome().trim());
 			}else if (giocatore.getIdNazionale() != null){

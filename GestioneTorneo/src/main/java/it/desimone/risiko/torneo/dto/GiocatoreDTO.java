@@ -86,6 +86,11 @@ public class GiocatoreDTO implements Comparable{
 		return stessoNome && stessoCognome && (stessaDataDiNascita || stessoIdNazionale); //stessaMail;
 	}
 
+	public boolean isAnonimo(){
+		boolean result = nome != null && nome.equalsIgnoreCase(ANONIMO.getNome()) && cognome != null && cognome.equalsIgnoreCase(ANONIMO.getCognome());
+		return result;
+	}
+	
 	public int hashCode(){
 		return id;
 	}

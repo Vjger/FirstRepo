@@ -417,7 +417,7 @@ public class GSheetsInterface {
     	for (AnagraficaGiocatoreRidottaRow sheetRow: sheetRows){
     		List<Object> rigaRicerca = null;
     		if (sheetRow.getId() != null && StringUtils.isNullOrEmpty(sheetRow.getDataDiNascita())){ //Se viene comunque impostata la data di nascita essa prevale sull'indicazione dell'ID
-    			rigaRicerca = Arrays.asList(new Object[]{sheetRow.getId()});
+    			rigaRicerca = Arrays.asList(new Object[]{sheetRow.getId()!=0?sheetRow.getId():""+sheetRow.getId()}); //La FILTER funziona sullo zero solo se Stringa
     		}else{
     			rigaRicerca = Arrays.asList(new Object[]{sheetRow.getNome().trim(), sheetRow.getCognome().trim(), sheetRow.getDataDiNascita().trim()});
     		}
