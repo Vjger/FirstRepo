@@ -1485,7 +1485,7 @@ public class Sorteggiatore {
 		if (
 			primoConDuevittorieESolitario 
 		 && primoNonRitirato 
-		 && secondoInClassifica.getNumeroVittorie() != 2 
+		 //&& secondoInClassifica.getNumeroVittorie() != 2 
 		 && tipoTorneo == TipoTorneo.MasterRisiko
 		 ){
 			MyLogger.getLogger().info("Tre semifinali");
