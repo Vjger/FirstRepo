@@ -1,6 +1,9 @@
 package it.desimone.gsheetsaccess.htmlpublisher;
 
 import it.desimone.ftputils.AlterVistaUtil;
+import it.desimone.gsheetsaccess.analyzer.ClubAnalysis;
+import it.desimone.gsheetsaccess.analyzer.ClubAnalysis.ClubPlayerData;
+import it.desimone.gsheetsaccess.analyzer.TournamentsAnalyzer;
 import it.desimone.gsheetsaccess.common.Configurator;
 import it.desimone.gsheetsaccess.common.Configurator.Environment;
 import it.desimone.gsheetsaccess.common.ResourceWorking;
@@ -95,7 +98,11 @@ public class HtmlPublisher {
 	public static void main(String[] args) {
 		MyLogger.setConsoleLogLevel(Level.INFO);
 		Configurator.loadConfiguration(Environment.PRODUCTION);
-		publish(false);
+		File folderTabelliniClub = new File(FOLDER_PATH+File.separator+"TABELLINI_CLUB");
+		String year = "2019";
+		List<TorneoPubblicato> torneiPubblicati = TorneiUtils.caricamentoTornei(year);
+		ClubAnalysis clubAnalysis = TournamentsAnalyzer.elaboraPartecipazioniTornei(year, torneiPubblicati);
+		tabelliniClubPublisher(clubAnalysis, year, folderTabelliniClub);
 	}
 
 	public static void publish(boolean withUpload) {
@@ -290,6 +297,56 @@ public class HtmlPublisher {
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			}
+		}
+	}
+	
+	public static void tabelliniClubPublisher(ClubAnalysis clubAnalysis, String year, File folderTabelliniClub){
+
+		MyLogger.getLogger().info("Inizio scrittura file");
+	    Properties p = new Properties();
+	    p.setProperty("input.encoding", "UTF-8");
+	    p.setProperty("resource.loader.file.path", ResourceWorking.velocityTemplatePath());
+	    Velocity.init( p );
+
+		VelocityContext context = new VelocityContext();
+
+		context.put( "year", year );
+		context.put( "styleGenerator", StyleGenerator.class);
+		context.put( "Capitalize", Capitalize.class);
+		context.put( "htmlPublisher", HtmlPublisher.class);
+
+		Template template = null;
+
+		try{
+		  template = Velocity.getTemplate("TabellinoClub.vm", "UTF-8");
+		}catch( ResourceNotFoundException rnfe ){
+			MyLogger.getLogger().severe(rnfe.getMessage());
+		}catch( ParseErrorException pee ){
+			MyLogger.getLogger().severe(pee.getMessage());
+		}catch( MethodInvocationException mie ){
+			MyLogger.getLogger().severe(mie.getMessage());
+		}catch( Exception e ){
+			MyLogger.getLogger().severe(e.getMessage());
+		}
+
+		for (String club: clubAnalysis.getClubs()){
+			List<ClubPlayerData> clubPlayersData = clubAnalysis.getPlayerDataByClub(club);
+			context.put( "clubPlayersData", clubPlayersData);
+			File tabellinoClubHtml = new File(folderTabelliniClub, "Tabellino"+getTorneoPage(club)+"_"+year+".html");
+			FileWriter writer = null;
+			try {
+				writer = new FileWriter(tabellinoClubHtml);
+				template.merge( context, writer );
+			} catch (IOException e) {
+				MyLogger.getLogger().severe(e.getMessage());
+			}finally{
+				try {
+					writer.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	}

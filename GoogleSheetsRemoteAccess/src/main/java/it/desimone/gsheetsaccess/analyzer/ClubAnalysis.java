@@ -15,7 +15,7 @@ public class ClubAnalysis {
 
 	private Map<String, List<ClubPlayerData>> clubData = new HashMap<String, List<ClubPlayerData>>();
 	
-	class ClubPlayerData{
+	public class ClubPlayerData{
 		private AnagraficaGiocatoreRow anagraficaGiocatoreRow;
 		private Set<TorneoPubblicato> torneiDisputati = new HashSet<TorneoPubblicato>();
 		
@@ -127,6 +127,10 @@ public class ClubAnalysis {
 		clubPlayerData.sort(getComparatorClubPlayerData());
 		
 		return clubPlayerData;
+	}
+
+	public Set<String> getClubs(){
+		return clubData.keySet();
 	}
 	
 }
