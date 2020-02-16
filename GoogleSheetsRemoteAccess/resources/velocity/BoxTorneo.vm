@@ -1,6 +1,7 @@
 				<div class="table100 ver1 m-b-20" style="width: 100px; height: 100px">
 
 					<div class="table100-head">
+					<!--
 						<table>
 							<thead>
 							<tr class="head">
@@ -8,8 +9,9 @@
 								</tr>
 							</thead>
 						</table>
+					-->
 					</div>
-
+	<!--
 					<div class="table100-body js-pscroll">
 						<table>
 							<tbody>
@@ -19,4 +21,5 @@
 							</tbody>
 						</table>
 					</div>
+   -->
 				</div>

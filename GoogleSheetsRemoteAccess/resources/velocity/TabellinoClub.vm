@@ -21,12 +21,13 @@
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="../css/util.css">
 	<link rel="stylesheet" type="text/css" href="../css/main.css">
+	<link rel="stylesheet" type="text/css" href="../css/buttons.css">	
 <!--===============================================================================================-->
 </head>
 <body>
 	
-	<div class="limiterTorneo">
-		<div class="container-table100">
+	<div class="limiterTorneo" style="width: 1800px;">
+		<div class="container-table100" style="width: 1800px;">
 			<table>
 			<tr><td> <!-- riga intestazione -->
 			<table class="table10 ver1" width="98%"">
@@ -40,16 +41,48 @@
 			<tr><td> 
 			<div class="wrap-220">
 				<table> <!-- tabella giocatori -->
+				<thead>
+					<tr class="head" style="background-color: #E81E1E; color: white;">
+						<th class="column10" style="font-weight: bold; text-align: center;">ID nazionale</th>
+						<th class="column10" style="font-weight: bold; text-align: left;">Nome e Cognome</th>
+					</tr>
+				</thead>
+				<tbody>
 				#foreach( $clubPlayerData in $clubPlayersData )
-				<tr>
-					<td>$clubPlayerData.anagraficaGiocatoreRow.id</td>
-					<td>$Capitalize.capitalize($clubPlayerData.anagraficaGiocatoreRow.nome) $Capitalize.capitalize($clubPlayerData.anagraficaGiocatoreRow.cognome)</td>
+					#if ($foreach.count % 2 == 1)
+					<tr class="body" style="background-color: #cc0000; color: white;">
+					#else
+					<tr class="body" style="background-color: #E81E1E; color: white;">
+					#end
+					<td style="font-weight: bold; text-align: center;">$clubPlayerData.anagraficaGiocatoreRow.id</td>
+					<td style="font-weight: bold; text-align: left;">$Capitalize.capitalize($clubPlayerData.anagraficaGiocatoreRow.nome) $Capitalize.capitalize($clubPlayerData.anagraficaGiocatoreRow.cognome)</td>
 							#foreach( $torneoDisputato in $clubPlayerData.torneiDisputati )
 							#set ($urlTorneo = $htmlPublisher.getTorneoPage($torneoDisputato.torneoRow.idTorneo)+".html" )
-							<td class="column10"><a style="color: inherit; cursor: pointer;"  href="../TORNEI/$urlTorneo" target="_blank">#parse("BoxTorneo.vm")</a></td>
+							<td class="column10">
+							#*
+								<a style="color: inherit; cursor: pointer;"  href="../TORNEI/$urlTorneo" target="_blank">#parse("BoxTorneo.vm")</a>
+							*#
+								<div class="torneoButton" style="$styleGenerator.getStyle($torneoDisputato.torneoRow.tipoTorneo);">
+									<a style="color: inherit; cursor: pointer;"  href="../TORNEI/$urlTorneo" target="_blank">
+										<u>
+										$torneoDisputato.torneoRow.endDate
+										</u>
+										<br/>
+										<i>
+										$Capitalize.capitalize($torneoDisputato.torneoRow.nomeTorneo)
+										<i>
+										<br/>
+										<b>
+										12°
+										</b>
+
+									</a>
+								</div>
+							</td>
 							#end
 				</tr>
 				#end
+				</tbody>
 				</table>
 			</div>
 			</td></tr>		
