@@ -58,6 +58,7 @@ public class HtmlPublisher {
 		private File ranking;
 		private File listaTornei;
 		private List<File> tornei;
+		private List<File> tabelliniClub;
 		private List<ScorePlayer> tabellini;
 		
 		public FilesToPublish(String year){
@@ -93,16 +94,23 @@ public class HtmlPublisher {
 		public void setTabellini(List<ScorePlayer> tabellini) {
 			this.tabellini = tabellini;
 		}
+		public List<File> getTabelliniClub() {
+			return tabelliniClub;
+		}
+		public void setTabelliniClub(List<File> tabelliniClub) {
+			this.tabelliniClub = tabelliniClub;
+		}
 	}
 	
 	public static void main(String[] args) {
 		MyLogger.setConsoleLogLevel(Level.INFO);
 		Configurator.loadConfiguration(Environment.PRODUCTION);
-		File folderTabelliniClub = new File(FOLDER_PATH+File.separator+"TABELLINI_CLUB");
-		String year = "2019";
-		List<TorneoPubblicato> torneiPubblicati = TorneiUtils.caricamentoTornei(year);
-		ClubAnalysis clubAnalysis = TournamentsAnalyzer.elaboraPartecipazioniTornei(year, torneiPubblicati);
-		tabelliniClubPublisher(clubAnalysis, year, folderTabelliniClub);
+//		File folderTabelliniClub = new File(FOLDER_PATH+File.separator+"TABELLINI_CLUB");
+//		String year = "2019";
+//		List<TorneoPubblicato> torneiPubblicati = TorneiUtils.caricamentoTornei(year);
+//		ClubAnalysis clubAnalysis = TournamentsAnalyzer.elaboraPartecipazioniTornei(year, torneiPubblicati);
+//		tabelliniClubPublisher(clubAnalysis, year, folderTabelliniClub);
+		publish(false);
 	}
 
 	public static void publish(boolean withUpload) {
@@ -127,7 +135,7 @@ public class HtmlPublisher {
 		
 			if (withUpload){
 				try{
-					uploadFiles(fileToPublish.getRanking(), fileToPublish.getListaTornei(), fileToPublish.getTornei());
+					uploadFiles(fileToPublish.getRanking(), fileToPublish.getListaTornei(), fileToPublish.getTornei(), fileToPublish.getTabelliniClub());
 					if (maxDate != null){
 						ResourceWorking.setLastTournamentDate(fileToPublish.getYear(), lastUpdateTimeFormat.format(maxDate));
 					}
@@ -185,6 +193,10 @@ public class HtmlPublisher {
 		File folderTornei = new File(FOLDER_PATH+File.separator+"TORNEI");
 		List<File> torneiHtml = torneiPublisher(year, torneiPubblicati, folderTornei);
 		
+		File folderTabelliniClub = new File(FOLDER_PATH+File.separator+"TABELLINI_CLUB");
+		ClubAnalysis clubAnalysis = TournamentsAnalyzer.elaboraPartecipazioniTornei(year, torneiPubblicati);
+		List<File> tabelliniClub = tabelliniClubPublisher(clubAnalysis, year, folderTabelliniClub);
+		
 		MyLogger.getLogger().info("Fine elaborazione");
 		
 		FilesToPublish filesToPublish = new FilesToPublish(year);
@@ -192,6 +204,7 @@ public class HtmlPublisher {
 		filesToPublish.setRanking(ranking);
 		filesToPublish.setTornei(torneiHtml);
 		filesToPublish.setTabellini(tabellini);
+		filesToPublish.setTabelliniClub(tabelliniClub);
 		
 		return filesToPublish;
 	}
@@ -301,7 +314,7 @@ public class HtmlPublisher {
 		}
 	}
 	
-	public static void tabelliniClubPublisher(ClubAnalysis clubAnalysis, String year, File folderTabelliniClub){
+	public static List<File> tabelliniClubPublisher(ClubAnalysis clubAnalysis, String year, File folderTabelliniClub){
 
 		MyLogger.getLogger().info("Inizio scrittura file");
 	    Properties p = new Properties();
@@ -330,10 +343,16 @@ public class HtmlPublisher {
 			MyLogger.getLogger().severe(e.getMessage());
 		}
 
+		List<File> result = new ArrayList<File>();
 		for (String club: clubAnalysis.getClubs()){
 			List<ClubPlayerData> clubPlayersData = clubAnalysis.getPlayerDataByClub(club);
+			int maxSize = clubPlayersData.get(0).getTorneiDisputati().size();
+			int width = 200+(Math.min(1600, maxSize*160));
 			context.put( "clubPlayersData", clubPlayersData);
+			context.put( "club", club);
+			context.put( "width", width);
 			File tabellinoClubHtml = new File(folderTabelliniClub, "Tabellino"+getTorneoPage(club)+"_"+year+".html");
+			result.add(tabellinoClubHtml);
 			FileWriter writer = null;
 			try {
 				writer = new FileWriter(tabellinoClubHtml);
@@ -349,6 +368,7 @@ public class HtmlPublisher {
 				}
 			}
 		}
+		return result;
 	}
 	
 	public static List<File> torneiPublisher(String year, List<TorneoPubblicato> torneiPubblicati, File folderTornei){
@@ -558,8 +578,9 @@ public class HtmlPublisher {
 		AlterVistaUtil.uploadInRoot(Collections.singletonList(ranking));
 	}
 	
-	private static void uploadFiles(File ranking, File listaTornei, List<File> torneiHtml) throws IOException{
+	private static void uploadFiles(File ranking, File listaTornei, List<File> torneiHtml,  List<File> tabelliniPerClub) throws IOException{
 		AlterVistaUtil.uploadInTornei(torneiHtml);
+		AlterVistaUtil.uploadInTabelliniPerClub(tabelliniPerClub);
 		AlterVistaUtil.uploadInRoot(Collections.singletonList(listaTornei));
 		AlterVistaUtil.uploadInRoot(Collections.singletonList(ranking));
 	}

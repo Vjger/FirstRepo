@@ -158,8 +158,9 @@
 											<tbody>
 											#foreach( $tabellinoPlayer in $scorePlayer.tabelliniPlayer )
 											#set ($urlTorneo = $htmlPublisher.getTorneoPage($tabellinoPlayer.torneo.torneoRow.idTorneo)+".html" )
+											#set ($urlTabellinoClub = "Tabellino"+$htmlPublisher.getTorneoPage($tabellinoPlayer.torneo.torneoRow.organizzatore)+"_"+$year+".html" )
 											<tr class="body">
-												<td class="column10" style="$styleGenerator.getStyle($tabellinoPlayer.torneo.torneoRow.tipoTorneo)"><img src="images/loghi/rcu/${tabellinoPlayer.torneo.torneoRow.organizzatore} (Custom).png" title="$tabellinoPlayer.torneo.torneoRow.organizzatore" alt="$tabellinoPlayer.torneo.torneoRow.organizzatore"></td>
+												<td class="column10" style="$styleGenerator.getStyle($tabellinoPlayer.torneo.torneoRow.tipoTorneo)"><a style="color: inherit; cursor: pointer;"  href="TABELLINI_CLUB/$urlTabellinoClub" target="_blank"><img src="images/loghi/rcu/${tabellinoPlayer.torneo.torneoRow.organizzatore} (Custom).png" title="$tabellinoPlayer.torneo.torneoRow.organizzatore" alt="$tabellinoPlayer.torneo.torneoRow.organizzatore"></a></td>
 												<td class="column10" style="$styleGenerator.getStyle($tabellinoPlayer.torneo.torneoRow.tipoTorneo)"><a style="color: inherit; cursor: pointer;"  href="TORNEI/$urlTorneo" target="_blank">$tabellinoPlayer.torneo.torneoRow.nomeTorneo</a></td>
 												<td class="column10" style="$styleGenerator.getStyle($tabellinoPlayer.torneo.torneoRow.tipoTorneo)">$tabellinoPlayer.torneo.torneoRow.startDate</td>
 												<td class="column10" style="$styleGenerator.getStyle($tabellinoPlayer.torneo.torneoRow.tipoTorneo)">$tabellinoPlayer.torneo.torneoRow.endDate</td>

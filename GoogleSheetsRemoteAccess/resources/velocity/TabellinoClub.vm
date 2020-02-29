@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-	<title>$torneo.torneoRow.tipoTorneo organizzato da $torneo.torneoRow.organizzatore il $torneo.torneoRow.startDate</title>
+	<title>Tabellino $club per il $year</title>
 
 	<meta charset="UTF-8">
 
@@ -26,15 +26,17 @@
 </head>
 <body>
 	
-	<div class="limiterTorneo" style="width: 1800px;">
-		<div class="container-table100" style="width: 1800px;">
+	<div class="limiterTorneo" style="width: ${width}px;">
+		<div class="container-table100" style="width: ${width}px;">
 			<table>
 			<tr><td> <!-- riga intestazione -->
 			<table class="table10 ver1" width="98%"">
 				<tr>
-					<td rowspan="2"><a href="../index.html"><img src="../images/icons/home.png"></a></td>
-					<td></td>
-					<td rowspan="2"><img src="../images/loghi/rcu/loghi100px_vert/${torneo.torneoRow.organizzatore}.png" title="$torneo.torneoRow.organizzatore" alt="$torneo.torneoRow.organizzatore"></td>					
+					<td width="5%"></td>
+					<td width="30%" rowspan="2" style="text-align: left;"><a href="../index.html"><img src="../images/icons/home.png"></a></td>
+					<td width="30%" style="text-align: center;"><div class="tournamentsYearButton">$year</div></td>
+					<td width="30%" rowspan="2" style="text-align: right;"><img src="../images/loghi/rcu/loghi100px_vert/${club}.png" title="$club" alt="$club"></td>
+					<td width="5%"></td>
 				</tr>
 			</table>
 			</td></tr>		
@@ -43,16 +45,17 @@
 				<table> <!-- tabella giocatori -->
 				<thead>
 					<tr class="head" style="background-color: #E81E1E; color: white;">
-						<th class="column10" style="font-weight: bold; text-align: center;">ID nazionale</th>
+						<th class="column10" style="font-weight: bold; text-align: center;">ID Nazionale</th>
 						<th class="column10" style="font-weight: bold; text-align: left;">Nome e Cognome</th>
+						<th colspan="100" class="column10" style="font-weight: bold; text-align: center;">TORNEI</th>
 					</tr>
 				</thead>
 				<tbody>
 				#foreach( $clubPlayerData in $clubPlayersData )
 					#if ($foreach.count % 2 == 1)
-					<tr class="body" style="background-color: #cc0000; color: white;">
+					<tr class="body" style="background-color: #c0c0c0;">
 					#else
-					<tr class="body" style="background-color: #E81E1E; color: white;">
+					<tr class="body" style="background-color: #E0E0E0;">
 					#end
 					<td style="font-weight: bold; text-align: center;">$clubPlayerData.anagraficaGiocatoreRow.id</td>
 					<td style="font-weight: bold; text-align: left;">$Capitalize.capitalize($clubPlayerData.anagraficaGiocatoreRow.nome) $Capitalize.capitalize($clubPlayerData.anagraficaGiocatoreRow.cognome)</td>
@@ -72,10 +75,11 @@
 										$Capitalize.capitalize($torneoDisputato.torneoRow.nomeTorneo)
 										<i>
 										<br/>
-										<b>
-										12°
-										</b>
-
+										#if ($clubPlayerData.getPosizione($torneoDisputato))
+											<b>
+											$clubPlayerData.getPosizione($torneoDisputato)°
+											</b>
+										#end
 									</a>
 								</div>
 							</td>

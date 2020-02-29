@@ -2,6 +2,7 @@ package it.desimone.gsheetsaccess.analyzer;
 
 import it.desimone.gsheetsaccess.dto.TorneoPubblicato;
 import it.desimone.gsheetsaccess.gsheets.dto.AnagraficaGiocatoreRow;
+import it.desimone.gsheetsaccess.gsheets.dto.ClassificheRow;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -39,6 +40,21 @@ public class ClubAnalysis {
 		public void addTorneoDisputato(TorneoPubblicato torneoDisputato) {
 			this.torneiDisputati.add(torneoDisputato);
 		}
+		public Integer getPosizione(TorneoPubblicato torneoPubblicato){
+			Integer posizione = null;
+			if (torneoPubblicato.isConcluso()){
+				if (torneoPubblicato.getClassifica() != null && !torneoPubblicato.getClassifica().isEmpty()){
+					for (ClassificheRow classificheRow: torneoPubblicato.getClassifica()){
+						if (classificheRow.getIdGiocatore().equals(anagraficaGiocatoreRow.getId())){
+							posizione = classificheRow.getPosizione();
+							break;
+						}
+					}
+				}
+			}
+			return posizione;
+		}
+		
 		@Override
 		public int hashCode() {
 			final int prime = 31;
@@ -106,6 +122,7 @@ public class ClubAnalysis {
 				clubPlayerData = new ClubPlayerData(anagraficheGiocatoriRow.get(indexAnagrafica));
 				listClubPlayerData.add(clubPlayerData);
 			}
+			
 			clubPlayerData.addTorneoDisputato(torneoPubblicato);
 		}
 		clubData.put(organizzatore, listClubPlayerData);

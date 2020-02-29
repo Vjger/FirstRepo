@@ -18,8 +18,6 @@ import it.desimone.risiko.torneo.dto.SchedaTorneo.TipoTorneo;
 import it.desimone.utils.Capitalize;
 import it.desimone.utils.MyLogger;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -551,8 +549,8 @@ public class TorneiUtils {
 			buffer.append(torneoRow.getOrganizzatore());
 			buffer.append(" - ");
 			buffer.append(torneoRow.getNomeTorneo());
-			buffer.append(" - ");
-			buffer.append(TipoTorneo.parseTipoTorneo(torneoRow.getTipoTorneo()).getAcronimo());
+//			buffer.append(" - ");
+//			buffer.append(TipoTorneo.parseTipoTorneo(torneoRow.getTipoTorneo()).getAcronimo());
 		}
 		buffer.append(";");
 		if (lTab1.size() >=2){
@@ -561,8 +559,8 @@ public class TorneiUtils {
 			buffer.append(torneoRow.getOrganizzatore());
 			buffer.append(" - ");
 			buffer.append(torneoRow.getNomeTorneo());
-			buffer.append(" - ");
-			buffer.append(TipoTorneo.parseTipoTorneo(torneoRow.getTipoTorneo()).getAcronimo());
+//			buffer.append(" - ");
+//			buffer.append(TipoTorneo.parseTipoTorneo(torneoRow.getTipoTorneo()).getAcronimo());
 		}
 		buffer.append(";");
 		if (lTab1.size() >=3){
@@ -571,8 +569,8 @@ public class TorneiUtils {
 			buffer.append(torneoRow.getOrganizzatore());
 			buffer.append(" - ");
 			buffer.append(torneoRow.getNomeTorneo());
-			buffer.append(" - ");
-			buffer.append(TipoTorneo.parseTipoTorneo(torneoRow.getTipoTorneo()).getAcronimo());
+//			buffer.append(" - ");
+//			buffer.append(TipoTorneo.parseTipoTorneo(torneoRow.getTipoTorneo()).getAcronimo());
 		}
 		buffer.append("\n");
 		return buffer.toString();

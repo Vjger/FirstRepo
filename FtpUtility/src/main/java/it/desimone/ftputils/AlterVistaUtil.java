@@ -42,4 +42,13 @@ public class AlterVistaUtil {
 			client.close();
 		}
 	}
+	public static void uploadInTabelliniPerClub(List<File> files) throws IOException{
+		for (File file: files){
+			FtpClient client = new FtpClient(HOST, 21, USERNAME, PASSWORD);
+			client.open();
+			client.changeDirectory(ROOT);
+			client.uploadFiles("TABELLINI_CLUB", Collections.singletonList(file));
+			client.close();
+		}
+	}
 }

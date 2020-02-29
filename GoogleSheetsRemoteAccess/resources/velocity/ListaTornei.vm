@@ -82,8 +82,9 @@
 							#foreach( $torneo in $tornei )
 								#set( $stileCella = $styleGenerator.getStyle($torneo.torneoRow.tipoTorneo))
 								#set ($urlTorneo = $htmlPublisher.getTorneoPage($torneo.torneoRow.idTorneo)+".html" )
+								#set ($urlTabellinoClub = "Tabellino"+$htmlPublisher.getTorneoPage($torneo.torneoRow.organizzatore)+"_"+$year+".html" )
 								<tr class="body" name="club_$htmlPublisher.getTorneoPage($torneo.torneoRow.organizzatore)">
-									<td class="column10" style="$stileCella"><img src="images/loghi/rcu/${torneo.torneoRow.organizzatore} (Custom).png" title="$torneo.torneoRow.organizzatore" alt="$torneo.torneoRow.organizzatore"></td>
+									<td class="column10" style="$stileCella"><a style="color: inherit; cursor: pointer;"  href="TABELLINI_CLUB/$urlTabellinoClub" target="_blank"><img src="images/loghi/rcu/${torneo.torneoRow.organizzatore} (Custom).png" title="$torneo.torneoRow.organizzatore" alt="$torneo.torneoRow.organizzatore"></a></td>
 									<td class="column10" style="$stileCella"><a style="color: inherit; cursor: pointer;"  href="TORNEI/$urlTorneo" target="_blank">$torneo.torneoRow.nomeTorneo</a></td>
 									<td class="column10" style="$stileCella">$torneo.torneoRow.sede</td>
 									<td class="column10" style="$stileCella">$torneo.torneoRow.startDate</td>
