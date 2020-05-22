@@ -6,6 +6,7 @@ import it.desimone.rd3analyzer.azioni.GiocoTris;
 import it.desimone.rd3analyzer.azioni.Invasione;
 import it.desimone.rd3analyzer.azioni.RicezioneCarta;
 import it.desimone.rd3analyzer.azioni.Rinforzo;
+import it.desimone.rd3analyzer.azioni.Sdadata;
 import it.desimone.rd3analyzer.azioni.Spostamento;
 import it.desimone.rd3analyzer.azioni.TempoRimasto;
 import it.desimone.utils.MyLogger;
@@ -18,6 +19,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -109,7 +111,7 @@ public class Analizzatore {
 	private static void popolaPartitaConRisultati(Partita partita, Element tabellaPartita){
 		Elements players = tabellaPartita.getElementsByTag("tr");
 
-		Map<String,Integer> risultati = new HashMap<String,Integer>();
+		Map<String,Integer> risultati = new LinkedHashMap<String,Integer>();
 		List<Giocatore> giocatori = new ArrayList<Giocatore>();
 		short turno = 0;
 		for (Element player: players){
@@ -212,7 +214,7 @@ public class Analizzatore {
 		azioniPartita.addAll(piazzamentoIniziale);
 		for (int indexLog = 1; indexLog < righeLog.size(); indexLog++){
 
-			MyLogger.getLogger().finest("[Riga] - "+indexLog+" "+righeLog.get(indexLog).toString());
+			//MyLogger.getLogger().finest("[Riga] - "+indexLog+" "+righeLog.get(indexLog).toString());
 			RigaLog rigaLog = elaboraRiga(righeLog.get(indexLog));
 
 			try{
@@ -330,6 +332,8 @@ public class Analizzatore {
 			azioni.add(generaGiocoTris(rigaLog));
 		}else if (azioneLog.startsWith("Tempo")){
 			azioni.add(generaTempoRimasto(rigaLog));
+		}else if (azioneLog.startsWith("Sdadata")){
+			azioni.add(generaSdadata(rigaLog));
 		}
 		return azioni;
 	}
@@ -543,6 +547,31 @@ public class Analizzatore {
 		tempoRimasto.setSecondiRimasti(secondiRimasti);
 		
 		return tempoRimasto;
+	}
+	
+	private static Sdadata generaSdadata(RigaLog rigaLog){
+		String azioneLog = rigaLog.getAzioneLog();
+		int indexChiusura = azioneLog.indexOf("chiusura al ");
+		int indexSdadata = azioneLog.indexOf("dadi: ");
+		
+		String chiusuraLog = azioneLog.substring(indexChiusura+"chiusura al ".length(), indexChiusura+"chiusura al ".length()+1).trim();
+		String sdadataLog = null;
+		if (indexSdadata >= 0){ //Potrebbe non esserci stata sdadata per numero di stati conquistati.
+			sdadataLog = azioneLog.substring(indexSdadata+"dadi: ".length(), indexSdadata+"dadi: ".length()+2).trim();
+		}
+
+		Short dadiChiusura = Short.valueOf(chiusuraLog);
+		Short dadiSdadata = null;
+		
+		if (sdadataLog != null){
+			dadiSdadata = Short.valueOf(sdadataLog);
+		}
+		
+		Sdadata sdadata = new Sdadata(rigaLog);
+		sdadata.setChiusura(dadiChiusura);
+		sdadata.setSdadata(dadiSdadata);
+		
+		return sdadata;
 	}
 }
 

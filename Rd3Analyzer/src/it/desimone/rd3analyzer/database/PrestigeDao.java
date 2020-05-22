@@ -88,7 +88,7 @@ public class PrestigeDao {
 			}
 			preparedStatement.setLong(index, partita.getIdPartita());
 			righeAggiornate = preparedStatement.executeUpdate();	
-			//MyLogger.getLogger().finest("Esecuzione di "+query+"\nRighe Aggiornate: "+righeAggiornate);
+			MyLogger.getLogger().finest("Esecuzione di "+query+"\nRighe Aggiornate: "+righeAggiornate);
 		}finally{
 			if (preparedStatement != null) preparedStatement.close();
 		}

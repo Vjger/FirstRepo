@@ -9,4 +9,5 @@ public enum TipoAzione {
 		,GIOCO_TRIS
 		,RICEZIONE_CARTA
 		,TEMPO_RIMASTO
+		,SDADATA
 }

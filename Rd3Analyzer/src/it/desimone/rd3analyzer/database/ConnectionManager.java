@@ -1,6 +1,5 @@
 package it.desimone.rd3analyzer.database;
 
-import it.desimone.rd3analyzer.Partita;
 import it.desimone.utils.Configurator;
 import it.desimone.utils.MyLogger;
 
@@ -10,9 +9,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import org.sqlite.SQLiteConfig;
-import org.sqlite.SQLiteOpenMode;
 
 public class ConnectionManager {
 	
@@ -41,7 +37,6 @@ public class ConnectionManager {
 					MyLogger.getLogger().severe("ClassNotFoundException: "+e.getMessage());
 					throw new RuntimeException(e);
 				}
-
 			}
 		} catch (SQLException e) {
 			MyLogger.getLogger().severe("SQLException: "+e.getMessage());
