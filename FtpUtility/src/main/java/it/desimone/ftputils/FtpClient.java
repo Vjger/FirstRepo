@@ -45,6 +45,10 @@ public class FtpClient {
 	            throw new IOException("Exception in connecting to FTP Server");
 	        }
 	 
+	        ftp.setActivePortRange(1,1);
+	        ftp.setPassiveNatWorkaround(false);
+	        ftp.enterLocalPassiveMode(); 
+	        
 	        ftp.login(user, password);
 	    }
 
