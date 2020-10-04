@@ -14,6 +14,8 @@ import it.desimone.utils.Configurator;
 import it.desimone.utils.MyException;
 import it.desimone.utils.MyLogger;
 
+import java.math.BigDecimal;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -1482,19 +1484,18 @@ public class Sorteggiatore {
 		MyLogger.getLogger().info("Numero Vittorie Secondo in Classifica: "+secondoInClassifica.getNumeroVittorie());
 		MyLogger.getLogger().info("Numero partecipanti: "+partecipanti.size());
 		
-		if (
-			primoConDuevittorieESolitario 
-		 && primoNonRitirato 
-		 //&& secondoInClassifica.getNumeroVittorie() != 2 
-		 && tipoTorneo == TipoTorneo.MasterRisiko
-		 ){
+		//TODO Devono essere presi solo quelli che hanno giocato due partite per il calcolo della soglia
+		int numeroSemifinali = calcoloNumeroSemifinaliMicroMaster(primoInClassifica.getPunteggioB(false), secondoInClassifica.getPunteggioB(false), terzoInClassifica.getPunteggioB(false), primoNonRitirato, secondoNonRitirato, primoInClassifica.getNumeroVittorie(), secondoInClassifica.getNumeroVittorie());
+		
+		switch (numeroSemifinali) {
+		case 3:
 			MyLogger.getLogger().info("Tre semifinali");
-			if (scores.size() <= 12){
-				MyLogger.getLogger().severe("Impossibile elaborare le semifinali; meno di 13 giocatori: "+scores.size());
-				throw new MyException("Impossibile elaborare le semifinali; meno di 13 giocatori: "+scores.size());
+			if (partecipanti.size() <= 12){
+				MyLogger.getLogger().severe("Impossibile elaborare le semifinali; meno di 13 giocatori: "+partecipanti.size());
+				throw new MyException("Impossibile elaborare le semifinali; meno di 13 giocatori: "+partecipanti.size());
 			}
 			for (int i = 1; i <=12; i++){
-				GiocatoreDTO giocatore = scores.get(i).getGiocatore();
+				GiocatoreDTO giocatore = partecipanti.get(i).getGiocatore();
 				if (i <= 3){ //suddivisione in 4 fasce di 3 giocatori
 					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA1);
 				}else if (i > 3 && i<=6){
@@ -1506,10 +1507,8 @@ public class Sorteggiatore {
 				}
 				semifinalisti.add(giocatore);
 			}
-		}else if (tipoTorneo == TipoTorneo.RadunoNazionale 
-				||(primoConDuevittorieESolitario && secondoConDuevittorieESolitario && primoNonRitirato && secondoNonRitirato)
-			    || partecipanti.size() < 16
-			){
+			break;
+		case 2:
 			MyLogger.getLogger().info("Due semifinali");
 			if (partecipanti.size() <= 9){
 				MyLogger.getLogger().severe("Impossibile elaborare le semifinali; meno di 10 giocatori: "+partecipanti.size());
@@ -1528,7 +1527,8 @@ public class Sorteggiatore {
 				}
 				semifinalisti.add(giocatore);
 			}
-		}else{
+			break;
+		case 4:
 			MyLogger.getLogger().info("Quattro semifinali");
 			if (partecipanti.size() < 16){
 				MyLogger.getLogger().severe("Impossibile elaborare le semifinali; meno di 16 giocatori: "+partecipanti.size());
@@ -1547,10 +1547,101 @@ public class Sorteggiatore {
 				}
 				semifinalisti.add(giocatore);
 			}
+			break;
+		default:
+			break;
 		}
+		
+//		if (
+//			primoConDuevittorieESolitario 
+//		 && primoNonRitirato 
+//		 //&& secondoInClassifica.getNumeroVittorie() != 2 
+//		 && tipoTorneo == TipoTorneo.MasterRisiko
+//		 ){
+//			MyLogger.getLogger().info("Tre semifinali");
+//			if (scores.size() <= 12){
+//				MyLogger.getLogger().severe("Impossibile elaborare le semifinali; meno di 13 giocatori: "+scores.size());
+//				throw new MyException("Impossibile elaborare le semifinali; meno di 13 giocatori: "+scores.size());
+//			}
+//			for (int i = 1; i <=12; i++){
+//				GiocatoreDTO giocatore = scores.get(i).getGiocatore();
+//				if (i <= 3){ //suddivisione in 4 fasce di 3 giocatori
+//					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA1);
+//				}else if (i > 3 && i<=6){
+//					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA2);
+//				}else if (i > 6 && i<=9){
+//					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA3);
+//				}else{
+//					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA4);
+//				}
+//				semifinalisti.add(giocatore);
+//			}
+//		}else if (tipoTorneo == TipoTorneo.RadunoNazionale 
+//				||(primoConDuevittorieESolitario && secondoConDuevittorieESolitario && primoNonRitirato && secondoNonRitirato)
+//			    || partecipanti.size() < 16
+//			){
+//			MyLogger.getLogger().info("Due semifinali");
+//			if (partecipanti.size() <= 9){
+//				MyLogger.getLogger().severe("Impossibile elaborare le semifinali; meno di 10 giocatori: "+partecipanti.size());
+//				throw new MyException("Impossibile elaborare le semifinali; meno di 10 giocatori: "+partecipanti.size());
+//			}
+//			for (int i = 2; i <=9; i++){
+//				GiocatoreDTO giocatore = partecipanti.get(i).getGiocatore();
+//				if (i <= 3){
+//					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA1);
+//				}else if (i > 3 && i<=5){
+//					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA2);
+//				}else if (i > 5 && i<=7){
+//					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA3);
+//				}else{
+//					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA4);
+//				}
+//				semifinalisti.add(giocatore);
+//			}
+//		}else{
+//			MyLogger.getLogger().info("Quattro semifinali");
+//			if (partecipanti.size() < 16){
+//				MyLogger.getLogger().severe("Impossibile elaborare le semifinali; meno di 16 giocatori: "+partecipanti.size());
+//				throw new MyException("Impossibile elaborare le semifinali; meno di 16 giocatori: "+partecipanti.size());
+//			}
+//			for (int i = 0; i < 16; i++){ //suddivisione in 4 fasce di 4 giocatori
+//				GiocatoreDTO giocatore = partecipanti.get(i).getGiocatore();
+//				if (i <= 3){
+//					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA1);
+//				}else if (i > 3 && i<=7){
+//					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA2);
+//				}else if (i > 7 && i<=11){
+//					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA3);
+//				}else{
+//					giocatore.setRegioneProvenienza(RegioniLoader.FASCIA4);
+//				}
+//				semifinalisti.add(giocatore);
+//			}
+//		}
 		return semifinalisti;
 	}
 	
+	private static int calcoloNumeroSemifinaliMicroMaster(BigDecimal punteggioPrimo
+												, BigDecimal punteggioSecondo
+												, BigDecimal punteggioTerzo
+												, boolean primoNonRitirato
+												, boolean secondoNonRitirato
+												, int numeroVittoriePrimo
+												, int numeroVittorieSecondo){
+		int result = 2;
+		
+		boolean pariMeritoTraSecondoETerzo = punteggioSecondo.compareTo(punteggioTerzo) == 0;
+		boolean soloIlPrimoConDueVittorie = numeroVittoriePrimo == 2 && numeroVittorieSecondo < 2;
+		boolean pariMeritoTraPrimoSecondoETerzo = punteggioSecondo.compareTo(punteggioPrimo) == 0 && pariMeritoTraSecondoETerzo;
+		
+		if (pariMeritoTraPrimoSecondoETerzo || numeroVittoriePrimo < 2 || !primoNonRitirato || !secondoNonRitirato){
+			result = 4;
+		}else if (soloIlPrimoConDueVittorie || pariMeritoTraSecondoETerzo){
+			result = 3;
+		}
+			
+		return result;
+	}
 	
 	private static List<List<GiocatoreDTO>> estraiSemifinalistiHigherMasterORaduni(ExcelAccess excelAccess, TipoTorneo tipoTorneo){
 		Set<GiocatoreDTO> scoresTutti = excelAccess.getPartecipantiEffettivi();
@@ -1748,7 +1839,7 @@ public class Sorteggiatore {
 		//1) numero dei giocatori che hanno disputato 2 partite è sulla soglia o sotto
 		//2) rimangono in gioco almeno 10 giocatori (nella vita non si sa mai) 
 		boolean result = false;
-		Set<GiocatoreDTO> scoresTutti = excelAccess.getPartecipantiEffettivi();
+		Set<GiocatoreDTO> scoresTutti = excelAccess.getPartecipantiEffettiviConNPartite(2);
 		List<ScorePlayer> scoresPartecipanti = excelAccess.getClassificaMaster2020(true, false);
 		result = scoresTutti.size() <= SOGLIE_PER_MASTER.get(0) && scoresPartecipanti.size() >= 10;
 		

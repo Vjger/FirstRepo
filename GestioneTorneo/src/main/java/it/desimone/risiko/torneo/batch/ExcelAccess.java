@@ -53,6 +53,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -821,6 +822,39 @@ public class ExcelAccess{
 				}
 			}else{
 				break;
+			}
+		}
+		return partecipantiEffettivi;
+	}
+	
+	public Set<GiocatoreDTO> getPartecipantiEffettiviConNPartite(Integer numeroPartite){
+		Map<GiocatoreDTO, Integer> mappaPartecipantiEffettivi = new HashMap<GiocatoreDTO, Integer>();
+		for(int numeroTurno = 1; numeroTurno <= numeroPartite; numeroTurno++){
+			Partita[] partite = loadPartite(numeroTurno, true, null);
+			if (partite != null){
+				for (Partita partita: partite){
+					if (partita != null){
+						Set<GiocatoreDTO> giocatori = partita.getGiocatori();
+						for (GiocatoreDTO giocatore: giocatori){
+							if (mappaPartecipantiEffettivi.containsKey(giocatore)){
+								Integer turniGiocati = mappaPartecipantiEffettivi.get(giocatore);
+								turniGiocati++;
+								mappaPartecipantiEffettivi.put(giocatore, turniGiocati);
+							}else{
+								mappaPartecipantiEffettivi.put(giocatore, 1);
+							}
+						}
+					}
+				}
+			}else{
+				break;
+			}
+		}
+		Set<GiocatoreDTO> partecipantiEffettivi = new HashSet<GiocatoreDTO>();
+		Set<Map.Entry<GiocatoreDTO, Integer>> entries = mappaPartecipantiEffettivi.entrySet(); 
+		for (Map.Entry<GiocatoreDTO, Integer> entry: entries){
+			if (entry.getValue() == numeroPartite){
+				partecipantiEffettivi.add(entry.getKey());
 			}
 		}
 		return partecipantiEffettivi;
