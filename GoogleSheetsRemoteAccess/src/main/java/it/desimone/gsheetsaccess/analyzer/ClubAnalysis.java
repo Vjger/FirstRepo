@@ -146,6 +146,14 @@ public class ClubAnalysis {
 		return clubPlayerData;
 	}
 
+	public void selectByClub(Set<String> clubsToSave){
+		Set<String> clubs = clubData.keySet();
+		clubs.removeAll(clubsToSave);
+		for (String club: clubs){
+			clubData.remove(club);
+		}
+	}
+	
 	public Set<String> getClubs(){
 		return clubData.keySet();
 	}

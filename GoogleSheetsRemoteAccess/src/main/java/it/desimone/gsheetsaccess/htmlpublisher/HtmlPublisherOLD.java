@@ -39,6 +39,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 
+import org.apache.commons.collections4.map.HashedMap;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
@@ -46,10 +47,13 @@ import org.apache.velocity.exception.MethodInvocationException;
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
 
-public class HtmlPublisher {
+public class HtmlPublisherOLD {
 	
 	public static final String FOLDER_PATH = ResourceWorking.htmlPagesPath();
 	public static final DateFormat lastUpdateTimeFormat = new SimpleDateFormat("dd/MM/yyyyHHmmss");
+	
+	private static Date maxDate = null;
+	private static List<Integer> years;
 
 	public static class FilesToPublish{
 		
@@ -104,14 +108,12 @@ public class HtmlPublisher {
 	public static class TournamentsToPublish{
 		private List<TorneoPubblicato> torneiPubblicati;
 		private List<TorneoPubblicato> torneiDaMettereOnline;
-		private Date maxDate;
 		
 		public TournamentsToPublish(List<TorneoPubblicato> torneiPubblicati,
-				List<TorneoPubblicato> torneiDaMettereOnline, Date maxDate) {
+				List<TorneoPubblicato> torneiDaMettereOnline) {
 			super();
 			this.torneiPubblicati = torneiPubblicati;
 			this.torneiDaMettereOnline = torneiDaMettereOnline;
-			this.maxDate = maxDate;
 		}
 		public List<TorneoPubblicato> getTorneiPubblicati() {
 			return torneiPubblicati;
@@ -125,15 +127,6 @@ public class HtmlPublisher {
 		public void setTorneiDaMettereOnline(
 				List<TorneoPubblicato> torneiDaMettereOnline) {
 			this.torneiDaMettereOnline = torneiDaMettereOnline;
-		}
-		public Date getMaxDate() {
-			return maxDate;
-		}
-		public void setMaxDate(Date maxDate) {
-			this.maxDate = maxDate;
-		}
-		public boolean isEmpty(){
-			return torneiDaMettereOnline == null || torneiDaMettereOnline.isEmpty();
 		}
 	}
 	
@@ -151,22 +144,15 @@ public class HtmlPublisher {
 	public static void publish(boolean withUpload) {
 		MyLogger.getLogger().info("Inizio elaborazione");
 		
-		Map<Integer, TournamentsToPublish> newToPublish = publishingAnalyzer();
-		Set<Integer> years = newToPublish.keySet();
-		
+		years = Configurator.getTorneiYears();
 		List<FilesToPublish> fileDaPubblicare = new ArrayList<FilesToPublish>();
 		for (Integer year: years){
-			TournamentsToPublish tournamentsToPublishByYear = newToPublish.get(year);
-			if (!tournamentsToPublishByYear.isEmpty()){
-				MyLogger.getLogger().info("INIZIO Elaborazione Tornei del "+year);
-				
-				FilesToPublish filesToPublish = publishPerYear(year.toString(), tournamentsToPublishByYear);
-				fileDaPubblicare.add(filesToPublish);
-				
-				ResourceWorking.setLastTournamentDate(year.toString(), lastUpdateTimeFormat.format(tournamentsToPublishByYear.getMaxDate()));
-				
-				MyLogger.getLogger().info("FINE Elaborazione Tornei del "+year);
-			}
+			MyLogger.getLogger().info("INIZIO Elaborazione Tornei del "+year);
+			
+			FilesToPublish filesToPublish = publishPerYear(year.toString());
+			fileDaPubblicare.add(filesToPublish);
+			
+			MyLogger.getLogger().info("FINE Elaborazione Tornei del "+year);
 		}
 		
 		File doppioniSospetti = new File(FOLDER_PATH, "anagraficheDaVerificare.html");
@@ -178,6 +164,9 @@ public class HtmlPublisher {
 			if (withUpload){
 				try{
 					uploadFiles(fileToPublish.getRanking(), fileToPublish.getListaTornei(), fileToPublish.getTornei(), fileToPublish.getTabelliniClub());
+					if (maxDate != null){
+						ResourceWorking.setLastTournamentDate(fileToPublish.getYear(), lastUpdateTimeFormat.format(maxDate));
+					}
 				}catch(IOException ioe){
 					MyLogger.getLogger().severe("Errore nel ftp dei file: "+ioe.getMessage());
 				}
@@ -195,11 +184,11 @@ public class HtmlPublisher {
 	}
 	
 	
-	public static FilesToPublish publishPerYear(String year, TournamentsToPublish tournamentsToPublishByYear) {
+	public static FilesToPublish publishPerYear(String year) {
 		MyLogger.getLogger().info("Inizio elaborazione");
 		
 		MyLogger.getLogger().info("Inizio estrazione tornei pubblicati");
-		List<TorneoPubblicato> torneiPubblicati = tournamentsToPublishByYear.getTorneiPubblicati();
+		List<TorneoPubblicato> torneiPubblicati = TorneiUtils.caricamentoTornei(year);
 	
 		Collections.sort(torneiPubblicati, new Comparator<TorneoPubblicato>() {
 
@@ -230,10 +219,10 @@ public class HtmlPublisher {
 		File ranking = new File(FOLDER_PATH,"ranking"+year+".html");
 		rankingPublisher(tabellini, ranking, year, rankingData);
 		File folderTornei = new File(FOLDER_PATH+File.separator+"TORNEI");
-		List<File> torneiHtml = torneiPublisher(year, tournamentsToPublishByYear.getTorneiDaMettereOnline(), folderTornei);
+		List<File> torneiHtml = torneiPublisher(year, torneiPubblicati, folderTornei);
 		
 		File folderTabelliniClub = new File(FOLDER_PATH+File.separator+"TABELLINI_CLUB");
-		ClubAnalysis clubAnalysis = TournamentsAnalyzer.elaboraPartecipazioniTornei(year, torneiPubblicati, tournamentsToPublishByYear.getTorneiDaMettereOnline());
+		ClubAnalysis clubAnalysis = TournamentsAnalyzer.elaboraPartecipazioniTornei(year, torneiPubblicati);
 		List<File> tabelliniClub = tabelliniClubPublisher(clubAnalysis, year, folderTabelliniClub);
 		
 		MyLogger.getLogger().info("Fine elaborazione");
@@ -248,9 +237,10 @@ public class HtmlPublisher {
 		return filesToPublish;
 	}
 
+	//TODO costruire una struttura che selezioni i soli tornei nuovi da pubblicare, gli anni da pubblicare, i tabellini da pubblicare
 	public static Map<Integer, TournamentsToPublish> publishingAnalyzer(){
 		
-		Map<Integer, TournamentsToPublish> result = new HashMap<Integer, HtmlPublisher.TournamentsToPublish>();
+		Map<Integer, TournamentsToPublish> result = new HashMap<Integer, HtmlPublisherOLD.TournamentsToPublish>();
 		
 		List<Integer> years = Configurator.getTorneiYears();
 		
@@ -267,7 +257,6 @@ public class HtmlPublisher {
 					MyLogger.getLogger().severe("Errore nel parsing della data di ultima elaborazione per l'anno "+year +" sulla stringa "+lastDateString+": "+e.getMessage() );
 				}
 			}
-			Date maxDate = null;
 			List<TorneoPubblicato> torneiDaMettereOnline = new ArrayList<TorneoPubblicato>();
 			for (TorneoPubblicato torneo: torneiPubblicati){
 				MyLogger.getLogger().info("Inizio elaborazione torneo "+torneo.getIdTorneo());
@@ -275,15 +264,12 @@ public class HtmlPublisher {
 					Date updateTime = ExcelGSheetsBridge.dfUpdateTime.parse(torneo.getTorneoRow().getUpdateTime());
 					if (lastDate == null || updateTime.after(lastDate)){
 						torneiDaMettereOnline.add(torneo);
-						if (maxDate == null || maxDate.before(updateTime)){
-							maxDate = updateTime;
-						}
 					}
 				} catch (ParseException e) {
 					MyLogger.getLogger().severe("Errore nel parsing della data di update per l'anno "+year +" del torneo con id "+torneo.getTorneoRow().getIdTorneo()+" sulla stringa "+torneo.getTorneoRow().getUpdateTime()+": "+e.getMessage() );
 				}
 			}
-			TournamentsToPublish tournamentsToPublish = new TournamentsToPublish(torneiPubblicati, torneiDaMettereOnline, maxDate);
+			TournamentsToPublish tournamentsToPublish = new TournamentsToPublish(torneiPubblicati, torneiDaMettereOnline);
 			result.put(year, tournamentsToPublish);
 		}
 		return result;
@@ -356,7 +342,7 @@ public class HtmlPublisher {
 		VelocityContext context = new VelocityContext();
 
 		context.put( "year", year );
-		context.put( "years", Configurator.getTorneiYears() );
+		context.put( "years", years );
 		context.put( "mappaSoglieTipoTorneo", rankingData.getMappaSoglieTipoTorneo() );
 		context.put( "mappaConteggiTipoTorneo", rankingData.getMappaConteggiTipoTorneo() );
 		context.put( "TipoTorneo", TipoTorneo.class );
@@ -364,7 +350,7 @@ public class HtmlPublisher {
 		context.put( "scorePlayers", tabellini );
 		context.put( "styleGenerator", StyleGenerator.class);
 		context.put( "Capitalize", Capitalize.class);
-		context.put( "htmlPublisher", HtmlPublisher.class);
+		context.put( "htmlPublisher", HtmlPublisherOLD.class);
 
 		Template template = null;
 
@@ -409,7 +395,7 @@ public class HtmlPublisher {
 		context.put( "year", year );
 		context.put( "styleGenerator", StyleGenerator.class);
 		context.put( "Capitalize", Capitalize.class);
-		context.put( "htmlPublisher", HtmlPublisher.class);
+		context.put( "htmlPublisher", HtmlPublisherOLD.class);
 
 		Template template = null;
 
@@ -482,10 +468,22 @@ public class HtmlPublisher {
 			MyLogger.getLogger().severe(e.getMessage());
 		}
 
-
+		String lastDateString = ResourceWorking.getLastTournamentDate(year);
+		Date lastDate = null;
+		if (lastDateString != null && !lastDateString.trim().isEmpty()){
+			try {
+				lastDate = lastUpdateTimeFormat.parse(lastDateString);
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		List<File> result = new ArrayList<File>();
 		for (TorneoPubblicato torneo: torneiPubblicati){
 			MyLogger.getLogger().info("Inizio elaborazione torneo "+torneo.getIdTorneo());
+			try {
+				Date updateTime = ExcelGSheetsBridge.dfUpdateTime.parse(torneo.getTorneoRow().getUpdateTime());
+				if (lastDate == null || updateTime.after(lastDate)){
 					context.put( "torneo", torneo );
 					context.put( "styleGenerator", StyleGenerator.class);
 				
@@ -495,6 +493,9 @@ public class HtmlPublisher {
 						writer = new FileWriter(torneoHtml);
 						template.merge( context, writer );
 						result.add(torneoHtml);
+						if (maxDate == null || maxDate.before(updateTime)){
+							maxDate = updateTime;
+						}
 					} catch (IOException e) {
 						MyLogger.getLogger().severe(e.getMessage());
 					}finally{
@@ -505,7 +506,11 @@ public class HtmlPublisher {
 							e.printStackTrace();
 						}
 					}
-
+				}
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return result;
 	}
@@ -543,11 +548,11 @@ public class HtmlPublisher {
 		}
 
 		context.put( "year", year );
-		context.put( "years", Configurator.getTorneiYears() );
+		context.put( "years", years );
 		context.put( "tornei", torneiPubblicati );
 		context.put( "clubs", clubs );
 		context.put( "styleGenerator", StyleGenerator.class);
-		context.put( "htmlPublisher", HtmlPublisher.class);
+		context.put( "htmlPublisher", HtmlPublisherOLD.class);
 	
 		
 		FileWriter writer = null;
@@ -600,7 +605,7 @@ public class HtmlPublisher {
 			context.put( "scorePlayers", tabelliniSospetti );
 			context.put( "styleGenerator", StyleGenerator.class);
 			context.put( "Capitalize", Capitalize.class);
-			context.put( "htmlPublisher", HtmlPublisher.class);
+			context.put( "htmlPublisher", HtmlPublisherOLD.class);
 
 			Template template = null;
 
