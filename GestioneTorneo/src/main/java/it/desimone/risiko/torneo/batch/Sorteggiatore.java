@@ -15,7 +15,6 @@ import it.desimone.utils.MyException;
 import it.desimone.utils.MyLogger;
 
 import java.math.BigDecimal;
-import java.time.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -207,7 +206,7 @@ public class Sorteggiatore {
 			partiteTurno = GeneratoreTavoliNew.generaPartite(giocatoriPartecipanti, partitePrecedenti, TipoTavoli.DA_4_ED_EVENTUALMENTE_DA_5, priorita);
 			break;
 		case 3:
-			if (isLowestRaduno(excelAccess)){
+			if (isLowestMasterORaduno(excelAccess)){
 				List<GiocatoreDTO> semifinalisti = estraiSemifinalistiLowestMasterORaduni(excelAccess, TipoTorneo.RadunoNazionale);
 				MyLogger.getLogger().finest("Semifinalisti: "+semifinalisti.toString());
 				priorita.add(PrioritaSorteggio.IMPEDITO_STESSO_CLUB);
@@ -1484,7 +1483,6 @@ public class Sorteggiatore {
 		MyLogger.getLogger().info("Numero Vittorie Secondo in Classifica: "+secondoInClassifica.getNumeroVittorie());
 		MyLogger.getLogger().info("Numero partecipanti: "+partecipanti.size());
 		
-		//TODO Devono essere presi solo quelli che hanno giocato due partite per il calcolo della soglia
 		int numeroSemifinali = calcoloNumeroSemifinaliMicroMaster(primoInClassifica.getPunteggioB(false), secondoInClassifica.getPunteggioB(false), terzoInClassifica.getPunteggioB(false), primoNonRitirato, secondoNonRitirato, primoInClassifica.getNumeroVittorie(), secondoInClassifica.getNumeroVittorie());
 		
 		switch (numeroSemifinali) {
@@ -1644,7 +1642,7 @@ public class Sorteggiatore {
 	}
 	
 	private static List<List<GiocatoreDTO>> estraiSemifinalistiHigherMasterORaduni(ExcelAccess excelAccess, TipoTorneo tipoTorneo){
-		Set<GiocatoreDTO> scoresTutti = excelAccess.getPartecipantiEffettivi();
+		Set<GiocatoreDTO> scoresTutti = excelAccess.getPartecipantiEffettiviConNPartite(2);
 		List<ScorePlayer> partecipanti = null;
 		
 		if (tipoTorneo == TipoTorneo.MasterRisiko){
@@ -1730,7 +1728,7 @@ public class Sorteggiatore {
 			partiteTurno = GeneratoreTavoliNew.generaPartite(giocatoriPartecipanti, partitePrecedenti, TipoTavoli.DA_4_ED_EVENTUALMENTE_DA_5, priorita);
 			break;
 		case 3:
-			if (isLowestMaster(excelAccess)){
+			if (isLowestMasterORaduno(excelAccess)){
 				List<GiocatoreDTO> semifinalisti = estraiSemifinalistiLowestMasterORaduni(excelAccess, TipoTorneo.MasterRisiko);
 				MyLogger.getLogger().finest("Semifinalisti: "+semifinalisti.toString());
 				priorita.add(PrioritaSorteggio.IMPEDITO_STESSO_CLUB);
@@ -1834,7 +1832,7 @@ public class Sorteggiatore {
 		return finale;
 	}
 	
-	private static boolean isLowestMaster(ExcelAccess excelAccess){
+	private static boolean isLowestMasterORaduno(ExcelAccess excelAccess){
 		//Si devono verificare 2 condizioni: 
 		//1) numero dei giocatori che hanno disputato 2 partite è sulla soglia o sotto
 		//2) rimangono in gioco almeno 10 giocatori (nella vita non si sa mai) 
