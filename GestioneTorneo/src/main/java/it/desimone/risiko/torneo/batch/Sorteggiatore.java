@@ -206,7 +206,7 @@ public class Sorteggiatore {
 			partiteTurno = GeneratoreTavoliNew.generaPartite(giocatoriPartecipanti, partitePrecedenti, TipoTavoli.DA_4_ED_EVENTUALMENTE_DA_5, priorita);
 			break;
 		case 3:
-			if (isLowestMasterORaduno(excelAccess)){
+			if (isLowestRaduno(excelAccess)){
 				List<GiocatoreDTO> semifinalisti = estraiSemifinalistiLowestMasterORaduni(excelAccess, TipoTorneo.RadunoNazionale);
 				MyLogger.getLogger().finest("Semifinalisti: "+semifinalisti.toString());
 				priorita.add(PrioritaSorteggio.IMPEDITO_STESSO_CLUB);
@@ -269,7 +269,7 @@ public class Sorteggiatore {
 		//1) numero dei giocatori che hanno disputato 2 partite è sulla soglia o sotto
 		//2) rimangono in gioco almeno 10 giocatori (nella vita non si sa mai) 
 		boolean result = false;
-		Set<GiocatoreDTO> scoresTutti = excelAccess.getPartecipantiEffettivi();
+		Set<GiocatoreDTO> scoresTutti = excelAccess.getPartecipantiTurnoN(2);
 		List<ScorePlayer> scoresPartecipanti = excelAccess.getClassificaRadunoAlSecondoTurno(true);
 		result = scoresTutti.size() <= SOGLIE_PER_RADUNI.get(0) && scoresPartecipanti.size() >= 10;
 		
@@ -1843,7 +1843,7 @@ public class Sorteggiatore {
 		
 		return result;
 	}
-	
+
 	private static Partita[] getPartiteSorteggiateNazionaleRisiko(ExcelAccess excelAccess, int numeroTurno){
 		MyLogger.getLogger().entering("Sorteggiatore", "getPartiteSorteggiateNazionaleRisiko");
 		Partita[] partiteTurno = null;

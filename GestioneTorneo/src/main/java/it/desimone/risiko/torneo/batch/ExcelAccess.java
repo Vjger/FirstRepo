@@ -860,6 +860,20 @@ public class ExcelAccess{
 		return partecipantiEffettivi;
 	}
 	
+	public Set<GiocatoreDTO> getPartecipantiTurnoN(Integer numeroTurno){
+		Set<GiocatoreDTO> partecipantiEffettivi = new HashSet<GiocatoreDTO>();
+		Partita[] partite = loadPartite(numeroTurno, true, null);
+		if (partite != null){
+			for (Partita partita: partite){
+				if (partita != null){
+					Set<GiocatoreDTO> giocatori = partita.getGiocatori();
+					partecipantiEffettivi.addAll(giocatori);
+				}
+			}
+		}
+		return partecipantiEffettivi;
+	}
+	
 	public Set<GiocatoreDTO> getPartecipantiEffettivi(boolean withGhost){
 		Set<GiocatoreDTO> result = getPartecipantiEffettivi();
 		if (result != null && !withGhost){
@@ -1281,8 +1295,10 @@ public class ExcelAccess{
 			for (Partita[] partite: listaPartiteTotali){
 				partiteGiocatore[indexTurno++] = inspectPartite(partite, giocatore);
 			}
-			ScorePlayer scorePlayer = new ScorePlayerRaduno(giocatore,partiteGiocatore);
-			scores.add(scorePlayer);
+			if (partiteGiocatore[1] != null){//Introdotta novità nel 2020 in base alla quale solo chi ha giocato il 2° turno può andare in semifinale
+				ScorePlayer scorePlayer = new ScorePlayerRaduno(giocatore,partiteGiocatore);
+				scores.add(scorePlayer);
+			}
 		}
 		//Collections.sort(scores, new ScoreRadunoComparator());
 		scores = ScorePlayerClassificator.scorePlayerSorter(scores, new ScoreRadunoComparator());
