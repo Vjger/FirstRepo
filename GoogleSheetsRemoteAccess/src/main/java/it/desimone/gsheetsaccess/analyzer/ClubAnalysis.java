@@ -147,7 +147,7 @@ public class ClubAnalysis {
 	}
 
 	public void selectByClub(Set<String> clubsToSave){
-		Set<String> clubs = clubData.keySet();
+		Set<String> clubs = new HashSet<String>(clubData.keySet());
 		clubs.removeAll(clubsToSave);
 		for (String club: clubs){
 			clubData.remove(club);
