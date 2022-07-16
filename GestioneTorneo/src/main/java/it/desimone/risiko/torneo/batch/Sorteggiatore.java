@@ -1871,19 +1871,63 @@ public class Sorteggiatore {
 			partiteTurno = GeneratoreTavoliNew.generaPartite(giocatoriPartecipanti, partitePrecedenti, TipoTavoli.DA_4_ED_EVENTUALMENTE_DA_5, priorita);
 			break;
 		case 3:
-			List<ScorePlayer> classificaAlTerzoTurno = excelAccess.getClassificaNazionaleRisiko();
-			partiteTurno = TavoliVuotiCreator.genera(TipoTavoli.DA_4_ED_EVENTUALMENTE_DA_5, classificaAlTerzoTurno.size());
-			for (int index = 0; index < classificaAlTerzoTurno.size(); index++){
-				int resto = index % 4;
-				ScorePlayer scorePlayer = classificaAlTerzoTurno.get(index);
-				partiteTurno[resto].addGiocatore(scorePlayer.getGiocatore(), 0F);
+//			List<ScorePlayer> classificaAlTerzoTurno = excelAccess.getClassificaNazionaleRisiko();
+//			partiteTurno = TavoliVuotiCreator.genera(TipoTavoli.DA_4_ED_EVENTUALMENTE_DA_5, classificaAlTerzoTurno.size());
+//			for (int index = 0; index < classificaAlTerzoTurno.size(); index++){
+//				int resto = index % 4;
+//				ScorePlayer scorePlayer = classificaAlTerzoTurno.get(index);
+//				partiteTurno[resto].addGiocatore(scorePlayer.getGiocatore(), 0F);
+//			}
+			listaPartitePrecedenti = new ArrayList<Partita>();
+			for (int i = 1; i < numeroTurno; i++){
+				Partita[] partiteTurnoi = excelAccess.loadPartite(i,false,TipoTorneo.NazionaleRisiKo);
+				if (partiteTurnoi == null){
+					MyLogger.getLogger().severe("E' stato richiesto il sorteggio per il turno "+numeroTurno+" ma non esiste il turno "+i);
+					throw new MyException("E' stato richiesto il sorteggio per il turno "+numeroTurno+" ma non esiste il turno "+i);
+				}
+				listaPartitePrecedenti.addAll(Arrays.asList(partiteTurnoi));
 			}
+			
+			partitePrecedenti = listaPartitePrecedenti.toArray(new Partita[0]);
+			priorita.add(PrioritaSorteggio.MINIMIZZAZIONE_SCONTRI_DIRETTI);
+			partiteTurno = GeneratoreTavoliNew.generaPartite(giocatoriPartecipanti, partitePrecedenti, TipoTavoli.DA_4_ED_EVENTUALMENTE_DA_5, priorita);
 			MyLogger.getLogger().fine(""+partiteTurno.length);
 			break;
 		}	
 		MyLogger.getLogger().exiting("Sorteggiatore", "getPartiteSorteggiateNazionaleRisiko", ArrayUtils.fromPartiteToString(partiteTurno));
 		return partiteTurno;
 	}
+	
+	private static Partita[] getPartiteSorteggiateNazionaleRisikoSperimentale(ExcelAccess excelAccess, int numeroTurno){
+		MyLogger.getLogger().entering("Sorteggiatore", "getPartiteSorteggiateNazionaleRisikoSperimentale");
+		Partita[] partiteTurno = null;
+		List<GiocatoreDTO> giocatoriPartecipanti = excelAccess.getListaGiocatori(true);
+		List<PrioritaSorteggio> priorita = new ArrayList<PrioritaSorteggio>();
+		switch (numeroTurno) {
+		case 1:
+			partiteTurno = GeneratoreTavoliNew.generaPartite(giocatoriPartecipanti, null, TipoTavoli.DA_4_ED_EVENTUALMENTE_DA_5, priorita);
+			break;
+		case 2:
+		case 3:
+			List<Partita> listaPartitePrecedenti = new ArrayList<Partita>();
+			for (int i = 1; i < numeroTurno; i++){
+				Partita[] partiteTurnoi = excelAccess.loadPartite(i,false,TipoTorneo.NazionaleRisiKo);
+				if (partiteTurnoi == null){
+					MyLogger.getLogger().severe("E' stato richiesto il sorteggio per il turno "+numeroTurno+" ma non esiste il turno "+i);
+					throw new MyException("E' stato richiesto il sorteggio per il turno "+numeroTurno+" ma non esiste il turno "+i);
+				}
+				listaPartitePrecedenti.addAll(Arrays.asList(partiteTurnoi));
+			}
+			
+			Partita[] partitePrecedenti = listaPartitePrecedenti.toArray(new Partita[0]);
+			priorita.add(PrioritaSorteggio.MINIMIZZAZIONE_SCONTRI_DIRETTI);
+			partiteTurno = GeneratoreTavoliNew.generaPartite(giocatoriPartecipanti, partitePrecedenti, TipoTavoli.DA_4_ED_EVENTUALMENTE_DA_5, priorita);
+			break;
+		}	
+		MyLogger.getLogger().exiting("Sorteggiatore", "getPartiteSorteggiateNazionaleRisikoSperimentale", ArrayUtils.fromPartiteToString(partiteTurno));
+		return partiteTurno;
+	}
+	
 	
 	private static Partita[] getPartiteSorteggiateTorneoGufo(ExcelAccess excelAccess, int numeroTurno){
 		MyLogger.getLogger().entering("Sorteggiatore", "getPartiteSorteggiateTorneoGufo");

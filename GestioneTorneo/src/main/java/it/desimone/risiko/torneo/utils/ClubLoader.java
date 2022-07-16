@@ -9,7 +9,7 @@ public class ClubLoader {
 	private final static java.util.List<ClubDTO> clubs = new java.util.ArrayList<ClubDTO>();
 	
 	public final static ClubDTO I_FEDERICIANI = new ClubDTO("BA","BARI [I Federiciani]");
-	public final static ClubDTO TORRE_MAGICA = new ClubDTO("BA","BARLETTA [La Torre Magica]");
+	public final static ClubDTO TORRE_MAGICA = new ClubDTO("BT","BARLETTA [La Torre Magica]");
 	public final static ClubDTO LE_MURA = new ClubDTO("BG","BERGAMO [Le Mura]");	
 	public final static ClubDTO ASINELLI = new ClubDTO("BO","BOLOGNA [Club degli Asinelli]");
 	public final static ClubDTO PHOENIX = new ClubDTO("BZ","BOLZANO [Phoenix]");	
@@ -51,6 +51,8 @@ public class ClubLoader {
 	public final static ClubDTO I_SATANELLI = new ClubDTO("FG", "FOGGIA [I Satanelli]");
 	public final static ClubDTO LE_ARMATE = new ClubDTO("AG", "LICATA [Le Armate]");
 	public final static ClubDTO I_BALUARDI = new ClubDTO("LU", "LUCCA [I Baluardi]");
+	public final static ClubDTO CESENATICO = new ClubDTO("FC", "CESENATICO [I Corsari]");
+	public final static ClubDTO CALTANISSETTA = new ClubDTO("CL", "CALTANISSETTA [Eclettica]");
 
 
 	static{
@@ -96,6 +98,8 @@ public class ClubLoader {
 		clubs.add(I_SATANELLI);
 		clubs.add(I_BALUARDI);
 		clubs.add(LE_ARMATE);
+		clubs.add(CESENATICO);
+		clubs.add(CALTANISSETTA);
 	}
 	
 	public static List<ClubDTO> getClubs(){

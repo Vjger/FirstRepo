@@ -254,7 +254,7 @@ public class ExcelValidator {
 				RigaClassifica rigaClassificaSonda = new RigaClassifica();
 				for (GiocatoreDTO partecipante: partecipantiEffettivi){
 					rigaClassificaSonda.setIdGiocatore(partecipante.getId());
-					if (!giocatoriInClassifica.contains(rigaClassificaSonda)){
+					if (!giocatoriInClassifica.contains(rigaClassificaSonda) && !partecipante.equals(GiocatoreDTO.FITTIZIO)){
 						result.add(new ExcelValidatorMessages(Scheda.CLASSIFICA_RIDOTTA, "Il giocatore con l'ID "+rigaClassificaSonda.getIdGiocatore()+" non risulta in classifica nonostante abbia giocato almeno una partita. Confermi che è stato squalificato?", Severity.WARNING));
 					}
 				}
