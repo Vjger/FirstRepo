@@ -67,12 +67,15 @@ public class GDriveUtils {
 			String spreadSheetIdAnagrafiche = Configurator.getAnagraficaRidottaSheetId();
 			String backupsFolderId = Configurator.getBackupsFolderId();
 			String suffix = "_"+new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-			GoogleDriveAccess googleDriveAccess = new GoogleDriveAccess();
-
-			File backupFileTornei = googleDriveAccess.copyFileToNewFolder(spreadSheetIdTornei, backupsFolderId, suffix);
-			MyLogger.getLogger().info("Backup di "+backupFileTornei.getId()+" - "+backupFileTornei.getName());
-			File backupFileAnagrafiche = googleDriveAccess.copyFileToNewFolder(spreadSheetIdAnagrafiche, backupsFolderId, suffix);
-			MyLogger.getLogger().info("Backup di "+backupFileAnagrafiche.getId()+" - "+backupFileAnagrafiche.getName());
+			
+			if (spreadSheetIdTornei != null && spreadSheetIdAnagrafiche != null){
+				GoogleDriveAccess googleDriveAccess = new GoogleDriveAccess();
+	
+				File backupFileTornei = googleDriveAccess.copyFileToNewFolder(spreadSheetIdTornei, backupsFolderId, suffix);
+				MyLogger.getLogger().info("Backup di "+backupFileTornei.getId()+" - "+backupFileTornei.getName());
+				File backupFileAnagrafiche = googleDriveAccess.copyFileToNewFolder(spreadSheetIdAnagrafiche, backupsFolderId, suffix);
+				MyLogger.getLogger().info("Backup di "+backupFileAnagrafiche.getId()+" - "+backupFileAnagrafiche.getName());
+			}
 		}catch(Exception e){
 			MyLogger.getLogger().severe("Errore backup "+e.getMessage());
 			throw e;

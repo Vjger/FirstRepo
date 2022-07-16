@@ -1,7 +1,7 @@
 
     		@echo on
 
-    		java -jar GoogleSheetsRemoteAccess.jar
+    		java -jar -Dfile.encoding=UTF-8 GoogleSheetsRemoteAccess.jar
 			
 			pause
     	

@@ -13,6 +13,7 @@ import org.apache.commons.net.PrintCommandListener;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
+import org.apache.commons.net.ftp.FTPSClient;
 
 public class FtpClient {
 
@@ -47,7 +48,31 @@ public class FtpClient {
 	 
 	        ftp.setActivePortRange(1,1);
 	        ftp.setPassiveNatWorkaround(false);
-	        ftp.enterLocalPassiveMode(); 
+	        ftp.enterLocalPassiveMode();
+	        
+	        ftp.login(user, password);
+	    }
+	    
+	    public void openSSH() throws IOException {
+	        ftp = new FTPSClient();
+	 
+	        ftp.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out)));
+	 
+	        ftp.connect(server, port);
+	        int reply = ftp.getReplyCode();
+	        if (!FTPReply.isPositiveCompletion(reply)) {
+	            ftp.disconnect();
+	            throw new IOException("Exception in connecting to FTP Server");
+	        }
+	 
+	        ftp.setActivePortRange(1,1);
+	        ftp.setPassiveNatWorkaround(false);
+	        ftp.enterLocalPassiveMode();
+	        
+	     // Set protection buffer size
+	        ((FTPSClient) ftp).execPBSZ(0);
+	        // set data channel protection to private
+	        ((FTPSClient) ftp).execPROT("P");
 	        
 	        ftp.login(user, password);
 	    }
