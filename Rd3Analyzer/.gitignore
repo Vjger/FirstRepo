@@ -1,3 +1,7 @@
+/target
 /bin
 /.settings
 /log
+/resources
+.gitignore
+.project

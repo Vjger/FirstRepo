@@ -28,7 +28,7 @@
     <target name="compile">
         <mkdir dir="${save.dir}/classes"/>
   	
-        <javac srcdir="${workspace.dir}\Rd3Analyzer\src"  destdir="${save.dir}/classes" classpathref="classpathlib" debug="on" fork="yes" executable="${jdk.home}">
+        <javac srcdir="${workspace.dir}\Rd3Analyzer\src"  destdir="${save.dir}/classes" classpathref="classpathlib" debug="on" fork="yes" executable="${jdk.home}" encoding="Cp1252">
         	<exclude name="it\desimone\rd3analyzer\AnalizzatorePrestigious.java"/>
         	<exclude name="it\desimone\rd3analyzer\RankingPrestigious.java"/>
         	<exclude name="it\desimone\rd3analyzer\RD3Analyzer.java"/>
@@ -38,6 +38,7 @@
         	<exclude name="it\desimone\rd3analyzer\database\*.java"/>
         	<exclude name="it\desimone\rd3analyzer\main\Console.java"/>
         	<exclude name="it\desimone\rd3analyzer\main\LoaderMassivoStorico.java"/>
+        	<exclude name="it\desimone\rd3analyzer\main\LoaderMassivoStoricoByIdList.java"/>
         	<exclude name="it\desimone\rd3analyzer\main\LoaderSchede.java"/>
         	<exclude name="it\desimone\rd3analyzer\main\ShutdownHook.java"/>
         	<exclude name="it\desimone\rd3analyzer\main\Starter.java"/>
@@ -45,6 +46,8 @@
         	<exclude name="it\desimone\rd3analyzer\main\ThreadTorneoRanking.java"/>
         	<exclude name="it\desimone\rd3analyzer\main\TorneoRanking.java"/>
         	<exclude name="it\desimone\rd3analyzer\main\Console.java"/>
+        	<exclude name="it\desimone\rd3analyzer\main\LoaderByIdPartita.java"/>
+        	<exclude name="it\desimone\rd3analyzer\service\PartiteService.java"/>
         	<exclude name="it\desimone\rd3analyzer\ui\panels\examples\*.java"/>
         </javac>  	
     </target>
