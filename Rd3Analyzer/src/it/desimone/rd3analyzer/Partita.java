@@ -227,6 +227,7 @@ public class Partita implements Serializable{
 		String descrizione = idPartita.toString();
 		descrizione += " "+Utils.DATA_INIZIO.format(dataDiInizio)+" Vinta da "+vincitore;
 		descrizione += "\n" + risultati; 
+		descrizione += "\n" + azioniLog; 
 //		Set<String> giocatori = risultati.keySet();
 //		for (String giocatore: giocatori){
 //			descrizione += "\t"+giocatore;

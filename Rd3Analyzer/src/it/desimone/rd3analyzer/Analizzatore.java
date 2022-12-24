@@ -13,8 +13,11 @@ import it.desimone.utils.MyLogger;
 import it.desimone.utils.Utils;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -38,19 +41,33 @@ public class Analizzatore {
 	
 	private static final String NO_LOG_DATA = "no log data";
 	private static final String PARTITA_NON_TERMINATA = "partita non terminata";
+	private static final String FINE_PARTITA = "fine partita";
 	
 	public static void main (String[] args) throws IOException, ParseException{
 		//Partita partita = elaboraPartita("1717233", false);
-		Partita partita = elaboraPartita("1717131", false);
-		List<Azione> azioni = partita.getAzioniLog();
-		for (Azione azione: azioni){
-			System.out.println(azione);
-		}
+//		Partita partita = elaboraPartita("1717131", false);
+//		List<Azione> azioni = partita.getAzioniLog();
+//		for (Azione azione: azioni){
+//			System.out.println(azione);
+//		}
+
+		byte[] citaByte = new byte[]{63, 105, 116, 97};
+		String cita = new String(citaByte);	
+		
+		StringBuilder buffer = new StringBuilder();
+		buffer.append("(\\?)");
+		buffer.append("ita");
+
+		String toReplace = buffer.toString();
+		String testo = "blablabla"+cita+"opsopsops";
+		
+		System.out.println(testo);
+		System.out.println(testo.replaceAll(toReplace, "CITA"));
 	}
 	
 	public static Partita elaboraPartita(String idPartita, boolean soloRisultati) throws IOException, ParseException{
-		
-		MyLogger.getLogger().finest("INIZIO elaborazione della partita "+idPartita);
+
+		MyLogger.getLogger().finer("INIZIO elaborazione della partita "+idPartita);
 		
 		Connection connection = Jsoup.connect(SITE_PARTITA+idPartita);
 		connection = connection.timeout(0);
@@ -60,11 +77,18 @@ public class Analizzatore {
 			connection = connection.maxBodySize(0);
 		}
 		Document doc = connection.get();
+		//Document doc = Jsoup.parse(new URL(SITE_PARTITA+idPartita).openStream(), "utf-8", SITE_PARTITA+idPartita);
 		Element body = doc.body();
 		
 		Element sectionPrincipale = body.getElementById("contents");
 		String testoProprio = sectionPrincipale.ownText();
-		if (testoProprio != null && (testoProprio.trim().toLowerCase().contains(NO_LOG_DATA) || testoProprio.trim().toLowerCase().contains(PARTITA_NON_TERMINATA))){
+		if (testoProprio != null 
+			&& (
+				testoProprio.trim().toLowerCase().contains(NO_LOG_DATA) 
+			 || testoProprio.trim().toLowerCase().contains(PARTITA_NON_TERMINATA)
+			 || !sectionPrincipale.text().toLowerCase().contains(FINE_PARTITA)
+			   )
+			){
 			MyLogger.getLogger().finest("Partita "+idPartita+" scartata: "+testoProprio);
 			return null;
 		}
@@ -102,7 +126,8 @@ public class Analizzatore {
 			popolaPartitaConLog(partita, tabellaLog);
 		}	
 
-		MyLogger.getLogger().finest("FINE elaborazione della partita "+idPartita);
+		MyLogger.getLogger().finest(partita.toString());
+		MyLogger.getLogger().finer("FINE elaborazione della partita "+idPartita);
 		
 		return partita;
 	}
@@ -201,7 +226,7 @@ public class Analizzatore {
 
 	}
 	
-	private static void popolaPartitaConLog(Partita partita, Element tabellaLog){
+	private static void popolaPartitaConLog(Partita partita, Element tabellaLog) throws UnsupportedEncodingException{
 		Elements righeLog = tabellaLog.getElementsByTag("tr");
 		
 		//La prima riga rappresenta il piazzamento iniziale fatto dal programma
@@ -232,6 +257,8 @@ public class Analizzatore {
 	
 	
 	private static RigaLog elaboraPrimaRiga(Element rigaElement){
+		byte[] citaByte = new byte[]{63, 105, 116, 97};
+		String cita = new String(citaByte);	
 		Elements elementsLog = rigaElement.getElementsByTag("td");
 		if (elementsLog.size() != 4){
 			throw new RuntimeException("La riga del log non ha 4 colonne: <<"+elementsLog.size()+">> "+elementsLog);
@@ -240,11 +267,14 @@ public class Analizzatore {
 		rigaLog.setIdLog(elementsLog.get(0).text().trim());
 		rigaLog.setTimeLog(elementsLog.get(1).text().trim());
 		rigaLog.setColoreLog(elementsLog.get(2).text().trim());
-		rigaLog.setAzioneLog(elementsLog.get(3).html());
+		StringBuilder buffer = new StringBuilder();
+		buffer.append("(\\)");
+		buffer.append(cita);
+		rigaLog.setAzioneLog(elementsLog.get(3).html()/*.replaceAll("&ugrave;","ù").replaceAll(buffer.toString(), "Čita")*/);
 		return rigaLog;
 	}	
 	
-	private static List<Rinforzo> elaboraPiazzamentoIniziale(RigaLog rigaLog){
+	private static List<Rinforzo> elaboraPiazzamentoIniziale(RigaLog rigaLog) throws UnsupportedEncodingException{
 		List<Rinforzo> rinforziIniziali = new ArrayList<Rinforzo>();
 
 		String[] piazzamentiIniziali = rigaLog.getAzioneLog().split("<br />");
@@ -254,10 +284,14 @@ public class Analizzatore {
 			int indexBoldInizio = piazzamentoIniziale.indexOf("<b>");
 			int indexBoldFine = piazzamentoIniziale.indexOf("</b>");
 			
-			String nomeTerritorio = piazzamentoIniziale.substring(0, indexArmate).trim().replace("&ugrave;","�");
+			String nomeTerritorio = piazzamentoIniziale.substring(0, indexArmate).trim();
 			String colore = piazzamentoIniziale.substring(indexBoldInizio+3, indexBoldFine).trim();
 
 			Territorio territorio = Territorio.getTerritorioByDescrizione(nomeTerritorio);
+			if (territorio == null){
+				MyLogger.getLogger().severe(new Boolean(rigaLog.getAzioneLog().contains("?ita")).toString());
+				MyLogger.getLogger().severe("ERRORE nel parsing del territorio ["+nomeTerritorio+" - "+Arrays.toString(nomeTerritorio.getBytes())+"]; Riga di log completa: "+rigaLog);
+			}
 			
 			Rinforzo rinforzo = new Rinforzo(rigaLog);
 			rinforzo.setGiocatoreCheAgisce(ColoreGiocatore.getColoreByDescrizione(colore));
@@ -279,7 +313,7 @@ public class Analizzatore {
 		rigaLog.setIdLog(elementsLog.get(0).text().trim());
 		rigaLog.setTimeLog(elementsLog.get(1).text().trim());
 		rigaLog.setColoreLog(elementsLog.get(2).text().trim());
-		rigaLog.setAzioneLog(elementsLog.get(3).text().trim());
+		rigaLog.setAzioneLog(elementsLog.get(3).text().trim()/*.replace("&ugrave;","ù").replace("?ita", "Čita")*/);
 		return rigaLog;
 	}	
 	
@@ -315,7 +349,7 @@ public class Analizzatore {
 		String azioneLog = rigaLog.getAzioneLog();
 		
 		if (azioneLog.startsWith("Rinforza")){	
-			List<String> righeRinforzo = getRigheAzioni(azioneLog,"Rinforza"); //necessario perch� quando piazza il server scrive i rinforzi nella stessa riga
+			List<String> righeRinforzo = getRigheAzioni(azioneLog,"Rinforza"); //necessario perch� quando piazza il server scrive i rinforzi nella stessa riga
 			for (String rigaRinforzo: righeRinforzo){
 				Rinforzo rinforzo = generaRinforzo(rigaLog, rigaRinforzo);
 				azioni.add(rinforzo);

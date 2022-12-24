@@ -17,7 +17,7 @@ public class ConnectionManager {
 	
 	private ConnectionManager(){}
 	public static synchronized Connection getConnection(){
-		lock.lock();
+		//lock.lock();
 		try {
 			if (connection == null || connection.isClosed()){
 			    try {
@@ -52,6 +52,7 @@ public class ConnectionManager {
 		    try {
 				String pathDB = Configurator.getPathDB();
 				conn = DriverManager.getConnection("jdbc:sqlite:"+pathDB);
+				conn.setAutoCommit(false);
 			} catch (SQLException e) {
 				MyLogger.getLogger().severe("SQLException: "+e.getMessage());
 				throw new RuntimeException(e);
@@ -73,7 +74,7 @@ public class ConnectionManager {
 			MyLogger.getLogger().severe("SQLException: "+e.getMessage());
 			throw new RuntimeException(e);
 		} finally{
-			lock.unlock();
+			//lock.unlock();
 		}
 	}
 	

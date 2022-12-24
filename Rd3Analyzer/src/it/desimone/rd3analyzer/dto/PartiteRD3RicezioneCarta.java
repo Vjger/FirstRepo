@@ -11,7 +11,7 @@ public class PartiteRD3RicezioneCarta extends PartiteRD3CommonData{
 		this.logId = ricezioneCarta.getLogId();
 		this.coloreGiocatore = ricezioneCarta.getGiocatoreCheAgisce().getColore();
 		this.time = ricezioneCarta.getTime();
-		this.cartaRicevuta = ricezioneCarta.getCartaRicevuta().getNomeTerritorio();
+		this.cartaRicevuta = ricezioneCarta.getCartaRicevuta() != null ? ricezioneCarta.getCartaRicevuta().getNomeTerritorio() : null;
 	}
 
 	public String getCartaRicevuta() {

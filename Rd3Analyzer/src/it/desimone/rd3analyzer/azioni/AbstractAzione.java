@@ -49,5 +49,11 @@ public abstract class AbstractAzione implements Azione {
 	@Override
 	public abstract TipoAzione getTipoAzione();
 
+	@Override
+	public String toString() {
+		return "AbstractAzione [coloreGiocatore=" + coloreGiocatore
+				+ ", logId=" + logId + ", time=" + time + "]";
+	}
+
 
 }

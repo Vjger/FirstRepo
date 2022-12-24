@@ -6,10 +6,8 @@ public class ReplayStarter {
 
 	public static final String VERSIONE = "ReplayRD3 0.9";
 	
-	public static void main(String[] args) {
-		
+	public static void main(String[] args) {	
 		StarterReplayFrame replayFrame = new StarterReplayFrame();
-
 	}
 	
 

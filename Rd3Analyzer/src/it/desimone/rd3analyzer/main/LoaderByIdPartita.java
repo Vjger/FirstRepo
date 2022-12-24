@@ -14,13 +14,13 @@ import java.util.logging.Level;
 public class LoaderByIdPartita {
 
 	public static void main(String[] args) {
-		MyLogger.getLogger().setLevel(Level.INFO);
+		MyLogger.getLogger().setLevel(Level.FINEST);
 		// TODO Auto-generated method stub
-		saveMatch("4136548");
+		saveMatch("4036261");
 	}
 
 	public static void saveMatch(String idPartita){
-		MyLogger.getLogger().info("[BEGIN] "+idPartita);
+		MyLogger.getLogger().fine("[BEGIN] "+idPartita);
 		
 		PartiteDao partiteDao = new PartiteDao();
 		PartiteService partiteService = new PartiteService();	
@@ -38,7 +38,7 @@ public class LoaderByIdPartita {
 					}
 				}else{
 					//MyLogger.getLogger().severe("Partita "+partitaGiocatore+" scartata per assenza della scheda");
-					throw new IllegalStateException("Partita "+idPartita+" scartata per assenza della scheda");
+					throw new IllegalStateException("Partita "+idPartita+" scartata per assenza della scheda o scheda incompleta");
 				}
 			} catch (IOException ioe) {
 				MyLogger.getLogger().severe("IOException per la Partita "+idPartita+": "+ioe.getMessage());
@@ -58,7 +58,7 @@ public class LoaderByIdPartita {
 				erroriImportDao.inserisciErrore(idPartitaL, e);
 			}
 
-		MyLogger.getLogger().info("[END] "+idPartita);
+		MyLogger.getLogger().fine("[END] "+idPartita);
 	}
 	
 	

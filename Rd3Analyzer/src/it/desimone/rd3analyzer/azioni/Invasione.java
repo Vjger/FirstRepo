@@ -44,7 +44,7 @@ public class Invasione extends AbstractAzione {
 	
 	@Override
 	public String toString() {
-		return "Il giocatore "+getGiocatoreCheAgisce()+" ha invaso da "+territorioInvasore+" a "+territorioInvaso+" con "+numeroDiArmateInvasori+" armate";
+		return super.toString()+"\nIl giocatore "+getGiocatoreCheAgisce()+" ha invaso da "+territorioInvasore+" a "+territorioInvaso+" con "+numeroDiArmateInvasori+" armate";
 	}
 
 }

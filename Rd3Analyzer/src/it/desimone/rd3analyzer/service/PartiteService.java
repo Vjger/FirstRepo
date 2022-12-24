@@ -100,6 +100,8 @@ public class PartiteService {
 	private void inserisciDettaglioPartita(Connection connection, Partita partita){
 		if (partita.getAzioniLog() != null && !partita.getAzioniLog().isEmpty()){
 			for (Azione azione: partita.getAzioniLog()){
+				MyLogger.getLogger().finest(azione.toString());
+				
 				PartiteRD3AttacchiDAO partiteRD3AttacchiDAO = new PartiteRD3AttacchiDAO(connection);
 				PartiteRD3GiocoTrisDAO partiteRD3GiocoTrisDAO = new PartiteRD3GiocoTrisDAO(connection);
 				PartiteRD3InvasioneDAO partiteRD3InvasioneDAO = new PartiteRD3InvasioneDAO(connection);
@@ -108,42 +110,47 @@ public class PartiteService {
 				PartiteRD3SpostamentoDAO partiteRD3SpostamentoDAO = new PartiteRD3SpostamentoDAO(connection);
 				PartiteRD3TempoRimastoDAO partiteRD3TempoRimastoDAO = new PartiteRD3TempoRimastoDAO(connection);
 				PartiteRD3SdadataDAO partiteRD3SdadataDAO = new PartiteRD3SdadataDAO(connection);
-				switch (azione.getTipoAzione()) {
-				case ATTACCO:
-					PartiteRD3Attacchi partiteRD3Attacchi = new PartiteRD3Attacchi(partita.getIdPartita(), (Attacco)azione);
-					partiteRD3AttacchiDAO.inserisciPartita(partiteRD3Attacchi);
-					break;
-				case GIOCO_TRIS:
-					PartiteRD3GiocoTris partiteRD3GiocoTris = new PartiteRD3GiocoTris(partita.getIdPartita(), (GiocoTris)azione);
-					partiteRD3GiocoTrisDAO.inserisciPartita(partiteRD3GiocoTris);
-					break;
-				case INVASIONE:
-					PartiteRD3Invasione partiteRD3Invasione = new PartiteRD3Invasione(partita.getIdPartita(), (Invasione)azione);
-					partiteRD3InvasioneDAO.inserisciPartita(partiteRD3Invasione);
-					break;		
-				case RICEZIONE_CARTA:
-					PartiteRD3RicezioneCarta partiteRD3RicezioneCarta = new PartiteRD3RicezioneCarta(partita.getIdPartita(), (RicezioneCarta)azione);
-					partiteRD3RicezioneCartaDAO.inserisciPartita(partiteRD3RicezioneCarta);
-					break;		
-				case RINFORZO:
-					PartiteRD3Rinforzi partiteRD3Rinforzi = new PartiteRD3Rinforzi(partita.getIdPartita(), (Rinforzo)azione);
-					partiteRD3RinforziDAO.inserisciPartita(partiteRD3Rinforzi);
-					break;
-				case SPOSTAMENTO:
-					PartiteRD3Spostamento partiteRD3Spostamento = new PartiteRD3Spostamento(partita.getIdPartita(), (Spostamento)azione);
-					partiteRD3SpostamentoDAO.inserisciPartita(partiteRD3Spostamento);
-					break;		
-				case TEMPO_RIMASTO:
-					PartiteRD3TempoRimasto partiteRD3TempoRimasto = new PartiteRD3TempoRimasto(partita.getIdPartita(), (TempoRimasto)azione);
-					partiteRD3TempoRimastoDAO.inserisciPartita(partiteRD3TempoRimasto);
-					break;			
-				case SDADATA:
-					PartiteRD3Sdadata partiteRD3Sdadata = new PartiteRD3Sdadata(partita.getIdPartita(), (Sdadata)azione);
-					partiteRD3SdadataDAO.inserisciPartita(partiteRD3Sdadata);
-					break;
-				default:
-					break;
-				}			
+				try{
+					switch (azione.getTipoAzione()) {
+					case ATTACCO:
+						PartiteRD3Attacchi partiteRD3Attacchi = new PartiteRD3Attacchi(partita.getIdPartita(), (Attacco)azione);
+						partiteRD3AttacchiDAO.inserisciPartita(partiteRD3Attacchi);
+						break;
+					case GIOCO_TRIS:
+						PartiteRD3GiocoTris partiteRD3GiocoTris = new PartiteRD3GiocoTris(partita.getIdPartita(), (GiocoTris)azione);
+						partiteRD3GiocoTrisDAO.inserisciPartita(partiteRD3GiocoTris);
+						break;
+					case INVASIONE:
+						PartiteRD3Invasione partiteRD3Invasione = new PartiteRD3Invasione(partita.getIdPartita(), (Invasione)azione);
+						partiteRD3InvasioneDAO.inserisciPartita(partiteRD3Invasione);
+						break;		
+					case RICEZIONE_CARTA:
+						PartiteRD3RicezioneCarta partiteRD3RicezioneCarta = new PartiteRD3RicezioneCarta(partita.getIdPartita(), (RicezioneCarta)azione);
+						partiteRD3RicezioneCartaDAO.inserisciPartita(partiteRD3RicezioneCarta);
+						break;		
+					case RINFORZO:
+						PartiteRD3Rinforzi partiteRD3Rinforzi = new PartiteRD3Rinforzi(partita.getIdPartita(), (Rinforzo)azione);
+						partiteRD3RinforziDAO.inserisciPartita(partiteRD3Rinforzi);
+						break;
+					case SPOSTAMENTO:
+						PartiteRD3Spostamento partiteRD3Spostamento = new PartiteRD3Spostamento(partita.getIdPartita(), (Spostamento)azione);
+						partiteRD3SpostamentoDAO.inserisciPartita(partiteRD3Spostamento);
+						break;		
+					case TEMPO_RIMASTO:
+						PartiteRD3TempoRimasto partiteRD3TempoRimasto = new PartiteRD3TempoRimasto(partita.getIdPartita(), (TempoRimasto)azione);
+						partiteRD3TempoRimastoDAO.inserisciPartita(partiteRD3TempoRimasto);
+						break;			
+					case SDADATA:
+						PartiteRD3Sdadata partiteRD3Sdadata = new PartiteRD3Sdadata(partita.getIdPartita(), (Sdadata)azione);
+						partiteRD3SdadataDAO.inserisciPartita(partiteRD3Sdadata);
+						break;
+					default:
+						break;
+					}	
+				}catch(Exception e){
+					MyLogger.getLogger().severe(azione.toString()+" "+e.getMessage());
+					throw new RuntimeException(e);
+				}
 			}
 		}
 	}
@@ -151,6 +158,8 @@ public class PartiteService {
 	private void aggiornaDettaglioPartita(Connection connection, Partita partita){
 		if (partita.getAzioniLog() != null && !partita.getAzioniLog().isEmpty()){
 			for (Azione azione: partita.getAzioniLog()){
+				MyLogger.getLogger().finest(azione.toString());
+				
 				PartiteRD3AttacchiDAO partiteRD3AttacchiDAO = new PartiteRD3AttacchiDAO(connection);
 				PartiteRD3GiocoTrisDAO partiteRD3GiocoTrisDAO = new PartiteRD3GiocoTrisDAO(connection);
 				PartiteRD3InvasioneDAO partiteRD3InvasioneDAO = new PartiteRD3InvasioneDAO(connection);
@@ -159,42 +168,50 @@ public class PartiteService {
 				PartiteRD3SpostamentoDAO partiteRD3SpostamentoDAO = new PartiteRD3SpostamentoDAO(connection);
 				PartiteRD3TempoRimastoDAO partiteRD3TempoRimastoDAO = new PartiteRD3TempoRimastoDAO(connection);
 				PartiteRD3SdadataDAO partiteRD3SdadataDAO = new PartiteRD3SdadataDAO(connection);
-				switch (azione.getTipoAzione()) {
-				case ATTACCO:
-					PartiteRD3Attacchi partiteRD3Attacchi = new PartiteRD3Attacchi(partita.getIdPartita(), (Attacco)azione);
-					partiteRD3AttacchiDAO.updatePartita(partiteRD3Attacchi);
-					break;
-				case GIOCO_TRIS:
-					PartiteRD3GiocoTris partiteRD3GiocoTris = new PartiteRD3GiocoTris(partita.getIdPartita(), (GiocoTris)azione);
-					partiteRD3GiocoTrisDAO.updatePartita(partiteRD3GiocoTris);
-					break;
-				case INVASIONE:
-					PartiteRD3Invasione partiteRD3Invasione = new PartiteRD3Invasione(partita.getIdPartita(), (Invasione)azione);
-					partiteRD3InvasioneDAO.updatePartita(partiteRD3Invasione);
-					break;		
-				case RICEZIONE_CARTA:
-					PartiteRD3RicezioneCarta partiteRD3RicezioneCarta = new PartiteRD3RicezioneCarta(partita.getIdPartita(), (RicezioneCarta)azione);
-					partiteRD3RicezioneCartaDAO.updatePartita(partiteRD3RicezioneCarta);
-					break;		
-				case RINFORZO:
-					PartiteRD3Rinforzi partiteRD3Rinforzi = new PartiteRD3Rinforzi(partita.getIdPartita(), (Rinforzo)azione);
-					partiteRD3RinforziDAO.updatePartita(partiteRD3Rinforzi);
-					break;
-				case SPOSTAMENTO:
-					PartiteRD3Spostamento partiteRD3Spostamento = new PartiteRD3Spostamento(partita.getIdPartita(), (Spostamento)azione);
-					partiteRD3SpostamentoDAO.updatePartita(partiteRD3Spostamento);
-					break;		
-				case TEMPO_RIMASTO:
-					PartiteRD3TempoRimasto partiteRD3TempoRimasto = new PartiteRD3TempoRimasto(partita.getIdPartita(), (TempoRimasto)azione);
-					partiteRD3TempoRimastoDAO.updatePartita(partiteRD3TempoRimasto);
-					break;			
-				case SDADATA:
-					PartiteRD3Sdadata partiteRD3Sdadata = new PartiteRD3Sdadata(partita.getIdPartita(), (Sdadata)azione);
-					partiteRD3SdadataDAO.updatePartita(partiteRD3Sdadata);
-					break;
-				default:
-					break;
-				}			
+				try{
+					switch (azione.getTipoAzione()) {
+					case ATTACCO:
+						PartiteRD3Attacchi partiteRD3Attacchi = new PartiteRD3Attacchi(partita.getIdPartita(), (Attacco)azione);
+						partiteRD3AttacchiDAO.updatePartita(partiteRD3Attacchi);
+						break;
+					case GIOCO_TRIS:
+						PartiteRD3GiocoTris partiteRD3GiocoTris = new PartiteRD3GiocoTris(partita.getIdPartita(), (GiocoTris)azione);
+						partiteRD3GiocoTrisDAO.updatePartita(partiteRD3GiocoTris);
+						break;
+					case INVASIONE:
+						PartiteRD3Invasione partiteRD3Invasione = new PartiteRD3Invasione(partita.getIdPartita(), (Invasione)azione);
+						partiteRD3InvasioneDAO.updatePartita(partiteRD3Invasione);
+						break;		
+					case RICEZIONE_CARTA:
+						PartiteRD3RicezioneCarta partiteRD3RicezioneCarta = new PartiteRD3RicezioneCarta(partita.getIdPartita(), (RicezioneCarta)azione);
+						int righeAggiornate = partiteRD3RicezioneCartaDAO.updatePartita(partiteRD3RicezioneCarta);
+						if (righeAggiornate == 0){
+							partiteRD3RicezioneCartaDAO.inserisciPartita(partiteRD3RicezioneCarta);
+						}
+						break;		
+					case RINFORZO:
+						PartiteRD3Rinforzi partiteRD3Rinforzi = new PartiteRD3Rinforzi(partita.getIdPartita(), (Rinforzo)azione);
+						partiteRD3RinforziDAO.updatePartita(partiteRD3Rinforzi);
+						break;
+					case SPOSTAMENTO:
+						PartiteRD3Spostamento partiteRD3Spostamento = new PartiteRD3Spostamento(partita.getIdPartita(), (Spostamento)azione);
+						partiteRD3SpostamentoDAO.updatePartita(partiteRD3Spostamento);
+						break;		
+					case TEMPO_RIMASTO:
+						PartiteRD3TempoRimasto partiteRD3TempoRimasto = new PartiteRD3TempoRimasto(partita.getIdPartita(), (TempoRimasto)azione);
+						partiteRD3TempoRimastoDAO.updatePartita(partiteRD3TempoRimasto);
+						break;			
+					case SDADATA:
+						PartiteRD3Sdadata partiteRD3Sdadata = new PartiteRD3Sdadata(partita.getIdPartita(), (Sdadata)azione);
+						partiteRD3SdadataDAO.updatePartita(partiteRD3Sdadata);
+						break;
+					default:
+						break;
+					}	
+				}catch(Exception e){
+					MyLogger.getLogger().severe(azione.toString()+" "+e.getMessage());
+					throw new RuntimeException(e);
+				}
 			}
 		}
 	}

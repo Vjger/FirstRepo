@@ -35,7 +35,7 @@ public class GiocoTris extends AbstractAzione {
 	
 	@Override
 	public String toString() {
-		return "Il giocatore "+getGiocatoreCheAgisce()+" ha giocato un tris di "+valoreTris+" armate con le seguenti carte: "+trisToString();
+		return super.toString()+"\nIl giocatore "+getGiocatoreCheAgisce()+" ha giocato un tris di "+valoreTris+" armate con le seguenti carte: "+trisToString();
 	}
 
 	private String trisToString(){

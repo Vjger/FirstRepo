@@ -68,14 +68,20 @@ public enum Territorio {
 	}
 
 	public static Territorio getTerritorioByDescrizione(String nomeTerritorio){
-	   if (nomeTerritorio != null) {
-	      for (Territorio t : Territorio.values()) {
-	        if (nomeTerritorio.equalsIgnoreCase(t.nomeTerritorio)) {
-	          return t;
-	        }
-	      }
-	    }
-	    return null;
+		if (nomeTerritorio != null) {
+			if (nomeTerritorio.startsWith(CITA.nomeTerritorio.substring(0, 3))){
+				return CITA;
+			}else if (nomeTerritorio.startsWith(PERU.nomeTerritorio.substring(0, 3))){
+				return PERU;
+			}else{
+				for (Territorio t : Territorio.values()) {
+					if (nomeTerritorio.equalsIgnoreCase(t.nomeTerritorio)) {
+						return t;
+					}
+				}
+			}
+		}
+		return null;
 	}
 	
 	public static Territorio getTerritorioBySigla(String sigla){

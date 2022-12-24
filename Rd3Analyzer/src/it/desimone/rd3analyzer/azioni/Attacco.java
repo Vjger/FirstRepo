@@ -56,7 +56,7 @@ public class Attacco extends AbstractAzione {
 
 	@Override
 	public String toString() {
-		return "Il giocatore "+getGiocatoreCheAgisce()+" ha attaccato da "+territorioAttaccante+" a "+territorioAttaccato+". Risultato dadi: "+dadiToString(dadiAttacco)+" "+dadiToString(dadiDifesa);
+		return super.toString()+"\nIl giocatore "+getGiocatoreCheAgisce()+" ha attaccato da "+territorioAttaccante+" a "+territorioAttaccato+". Risultato dadi: "+dadiToString(dadiAttacco)+" "+dadiToString(dadiDifesa);
 	}
 
 	private String dadiToString(Byte[] dadi){

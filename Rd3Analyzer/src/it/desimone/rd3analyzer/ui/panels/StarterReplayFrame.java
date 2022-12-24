@@ -236,12 +236,24 @@ public class StarterReplayFrame extends JFrame {
 						
 					} catch (IOException e) {
 						MyLogger.getLogger().severe("IOException: "+e.getMessage());
+						StackTraceElement[] stacks = e.getStackTrace();
+						for (StackTraceElement stack: stacks){
+							MyLogger.getLogger().severe(stack.toString());
+						}
 						JOptionPane.showMessageDialog(startPanel, e.getMessage());
 					} catch (ParseException e) {
 						MyLogger.getLogger().severe("ParseException: "+e.getMessage());
+						StackTraceElement[] stacks = e.getStackTrace();
+						for (StackTraceElement stack: stacks){
+							MyLogger.getLogger().severe(stack.toString());
+						}
 						JOptionPane.showMessageDialog(startPanel, e.getMessage());
 					} catch (Exception e) {
 						MyLogger.getLogger().severe(e.getClass().getName()+" "+e.getMessage());
+						StackTraceElement[] stacks = e.getStackTrace();
+						for (StackTraceElement stack: stacks){
+							MyLogger.getLogger().severe(stack.toString());
+						}
 						JOptionPane.showMessageDialog(startPanel, e.getMessage());
 					}	
 
@@ -263,6 +275,8 @@ public class StarterReplayFrame extends JFrame {
 		List<AzioneVsTabellone> azioniVsTabellone = new ArrayList<AzioneVsTabellone>();
 		
 		for (Azione azione: azioniLog){	
+			
+			MyLogger.getLogger().finest("Elaborazione dell'azione \n"+azione.toString());
 
 			if (disposizioneInizialeCompletata){		
 				ColoreGiocatore giocatoreCheAgisce = azione.getGiocatoreCheAgisce();

@@ -30,4 +30,6 @@ public class RigaLog{
 	public void setAzioneLog(String azioneLog) {
 		this.azioneLog = azioneLog;
 	}
+	
+	public String toString(){return idLog+"\t"+timeLog+"\t"+coloreLog+"\t"+azioneLog;}
 }

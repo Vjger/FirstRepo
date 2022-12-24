@@ -35,7 +35,7 @@ public class Rinforzo extends AbstractAzione {
 
 	@Override
 	public String toString() {
-		return "Il giocatore "+getGiocatoreCheAgisce()+" ha rinforzato "+territorioRinforzato+" con "+numeroDiRinforzi+" armate";
+		return super.toString()+"\nIl giocatore "+getGiocatoreCheAgisce()+" ha rinforzato "+territorioRinforzato+" con "+numeroDiRinforzi+" armate";
 	}
 
 	

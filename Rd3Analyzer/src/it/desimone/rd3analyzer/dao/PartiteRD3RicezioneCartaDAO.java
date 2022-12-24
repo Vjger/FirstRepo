@@ -6,6 +6,7 @@ import it.desimone.utils.MyLogger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 
 public class PartiteRD3RicezioneCartaDAO extends AbstractDAO {
 
@@ -36,7 +37,11 @@ public class PartiteRD3RicezioneCartaDAO extends AbstractDAO {
 			preparedStatement.setInt(2, partita.getLogId());
 			preparedStatement.setString(3, partita.getColoreGiocatore());
 			preparedStatement.setString(4, partita.getTime());
-			preparedStatement.setString(5, partita.getCartaRicevuta());
+			if (partita.getCartaRicevuta() != null){
+				preparedStatement.setString(5, partita.getCartaRicevuta());
+			}else{
+				preparedStatement.setNull(5, Types.NVARCHAR);
+			}
 			
 			righeInserite = preparedStatement.executeUpdate();
 			//MyLogger.getLogger().finest("Esecuzione di "+INSERT+"\nRighe Inserite: "+righeInserite);			
@@ -73,7 +78,7 @@ public class PartiteRD3RicezioneCartaDAO extends AbstractDAO {
 	public int updatePartita(PartiteRD3RicezioneCarta partita){
 		//MyLogger.getLogger().finest("[BEGIN]: "+partita);
 		boolean psOpened = false;
-		int righeInserite = 0;
+		int righeAggiornate = 0;
 		PreparedStatement preparedStatement = null;
 		try {						
 			preparedStatement = connection.prepareStatement(UPDATE);
@@ -81,11 +86,15 @@ public class PartiteRD3RicezioneCartaDAO extends AbstractDAO {
 
 			preparedStatement.setString(1, partita.getColoreGiocatore());
 			preparedStatement.setString(2, partita.getTime());
-			preparedStatement.setString(3, partita.getCartaRicevuta());
+			if (partita.getCartaRicevuta() != null){
+				preparedStatement.setString(3, partita.getCartaRicevuta());
+			}else{
+				preparedStatement.setNull(3, Types.NVARCHAR);
+			}
 			preparedStatement.setLong(4, partita.getIdPartita());
 			preparedStatement.setInt(5, partita.getLogId());
 			
-			righeInserite = preparedStatement.executeUpdate();
+			righeAggiornate = preparedStatement.executeUpdate();
 			//MyLogger.getLogger().finest("Esecuzione di "+INSERT+"\nRighe Inserite: "+righeInserite);			
 
 		} catch (SQLException e) {
@@ -114,7 +123,7 @@ public class PartiteRD3RicezioneCartaDAO extends AbstractDAO {
 			}
 		}
 		//MyLogger.getLogger().finest("[END]");
-		return righeInserite;
+		return righeAggiornate;
 	}
 	
 

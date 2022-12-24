@@ -34,7 +34,7 @@ public class TempoRimasto extends AbstractAzione {
 	
 	@Override
 	public String toString() {
-		return "Al giocatore "+getGiocatoreCheAgisce()+" son rimasti "+minutiRimasti+" minuti e "+secondiRimasti+" secondi";
+		return super.toString()+"\nAl giocatore "+getGiocatoreCheAgisce()+" son rimasti "+minutiRimasti+" minuti e "+secondiRimasti+" secondi";
 	}
 	
 }

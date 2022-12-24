@@ -26,6 +26,6 @@ public class RicezioneCarta extends AbstractAzione {
 	
 	@Override
 	public String toString() {
-		return "Il giocatore "+getGiocatoreCheAgisce()+" ha ricevuto la carta "+cartaRicevuta;
+		return super.toString()+"\nIl giocatore "+getGiocatoreCheAgisce()+" ha ricevuto la carta "+cartaRicevuta;
 	}
 }

@@ -44,7 +44,7 @@ public class Spostamento extends AbstractAzione {
 	
 	@Override
 	public String toString() {
-		return "Il giocatore "+getGiocatoreCheAgisce()+" ha spostato "+numeroDiArmateSpostate+" armate da "+territorioDiProvenienza+" a "+territorioDiArrivo;
+		return super.toString()+"\nIl giocatore "+getGiocatoreCheAgisce()+" ha spostato "+numeroDiArmateSpostate+" armate da "+territorioDiProvenienza+" a "+territorioDiArrivo;
 	}
 	
 }

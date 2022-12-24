@@ -34,7 +34,7 @@ public class Sdadata extends AbstractAzione {
 
 	@Override
 	public String toString() {
-		return "Sdadata [chiusura=" + chiusura + ", sdadata=" + sdadata + "]";
+		return super.toString()+"\nSdadata [chiusura=" + chiusura + ", sdadata=" + sdadata + "]";
 	}
 	
 }
