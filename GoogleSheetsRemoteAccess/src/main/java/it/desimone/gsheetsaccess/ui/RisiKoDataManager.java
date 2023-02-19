@@ -15,7 +15,11 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -180,8 +184,8 @@ public class RisiKoDataManager extends JFrame {
             	String year = annoRif.getText();
             	if (idGiocatoreDaTxt == null || idGiocatoreDaTxt.trim().length() == 0 || idGiocatoreATxt == null || idGiocatoreATxt.trim().length() == 0){
             		JOptionPane.showMessageDialog(null, "Indicare gli ID dei giocatori di partenza ed arrivo");
-            	}else if (year == null || year.trim().length() == 0){
-                	JOptionPane.showMessageDialog(null, "Indicare l'anno del Torneo su cui agire");
+//            	}else if (year == null || year.trim().length() == 0){
+//                	JOptionPane.showMessageDialog(null, "Indicare l'anno del Torneo su cui agire");
             	}else{
             		Integer idGiocatoreDaInt, idGiocatoreAInt;
             		try{
@@ -277,44 +281,65 @@ public class RisiKoDataManager extends JFrame {
         thread.start();
     }
     
-    private void confirmMerge(final Integer idGiocatoreDa, final Integer idGiocatoreA, final String year) {
+    private void confirmMerge(final Integer idGiocatoreDa, final Integer idGiocatoreA, final String anno) {
         MyLogger.setConsoleLogLevel(Level.INFO);
-        TabellinoGiocatore[] torneiGiocati = TorneiUtils.getTabelliniPlayer(idGiocatoreDa, idGiocatoreA, year); 
-        StringBuilder buffer = new StringBuilder();
-        buffer.append("Il giocatore "+torneiGiocati[0].getAnagraficaRidottaGiocatoreRowFrom()+" ha giocato i seguenti tornei \n");
-        Set<String> torneiFrom = new TreeSet<String>();
-        if (torneiGiocati[0].getTorneiGiocati() != null){
-//	        for (PartitaRow partita: torneiGiocati[0].getPartiteGiocate()){
-//	        	torneiFrom.add(partita.getIdTorneo());
-//	        }
-//	        for (String torneoFrom: torneiFrom){
-//	        	buffer.append(torneoFrom+"\n");
-//	        }
-        	for (TorneiRow torneoRow: torneiGiocati[0].getTorneiGiocati()){
-        		buffer.append(torneoRow.getIdTorneo()+"\n");
+        Collection<String> years = null;
+        if (anno != null && anno.trim().length() > 0){
+        	years = Collections.singletonList(anno.trim());
+        }else{
+        	List<Integer> anniTorneo = Configurator.getTorneiYears();
+        	years = new ArrayList<String>();
+        	for (Integer year: anniTorneo){
+        		years.add(year.toString());
         	}
         }
-        buffer.append("Il giocatore "+torneiGiocati[1].getAnagraficaRidottaGiocatoreRowFrom()+" ha giocato i seguenti tornei \n");
-        Set<String> torneiTo = new TreeSet<String>();
-        if (torneiGiocati[1].getTorneiGiocati() != null){
-        	for (TorneiRow torneoRow: torneiGiocati[1].getTorneiGiocati()){
-        		buffer.append(torneoRow.getIdTorneo()+"\n");
-        	}
+        StringBuilder buffer = new StringBuilder(); 
+        for (String year: years){
+	        TabellinoGiocatore[] torneiGiocati = TorneiUtils.getTabelliniPlayer(idGiocatoreDa, idGiocatoreA, year); 
+	        buffer.append("Il giocatore "+torneiGiocati[0].getAnagraficaRidottaGiocatoreRowFrom()+" ha giocato i seguenti tornei nell'anno "+year+"\n");
+	        Set<String> torneiFrom = new TreeSet<String>();
+	        if (torneiGiocati[0].getTorneiGiocati() != null){
+	//	        for (PartitaRow partita: torneiGiocati[0].getPartiteGiocate()){
+	//	        	torneiFrom.add(partita.getIdTorneo());
+	//	        }
+	//	        for (String torneoFrom: torneiFrom){
+	//	        	buffer.append(torneoFrom+"\n");
+	//	        }
+	        	for (TorneiRow torneoRow: torneiGiocati[0].getTorneiGiocati()){
+	        		buffer.append(torneoRow.getIdTorneo()+"\n");
+	        	}
+	        }
+	        buffer.append("Il giocatore "+torneiGiocati[1].getAnagraficaRidottaGiocatoreRowFrom()+" ha giocato i seguenti tornei nell'anno "+year+"\n");
+	        Set<String> torneiTo = new TreeSet<String>();
+	        if (torneiGiocati[1].getTorneiGiocati() != null){
+	        	for (TorneiRow torneoRow: torneiGiocati[1].getTorneiGiocati()){
+	        		buffer.append(torneoRow.getIdTorneo()+"\n");
+	        	}
+	        }
         }
         buffer.append("\n Confermi il merge dei dati dal giocatore con id ["+idGiocatoreDa+"] a quello con id ["+idGiocatoreA+"]?");
         
         int response = JOptionPane.showConfirmDialog(null, buffer.toString(), "Conferma merge", JOptionPane.YES_NO_OPTION);
         
         if (response == JOptionPane.OK_OPTION){
-        	mergeGiocatore(idGiocatoreDa, idGiocatoreA, year);
+        	mergeGiocatore(idGiocatoreDa, idGiocatoreA, anno);
         }
     }
     
-    private void mergeGiocatore(final Integer idGiocatoreDa, final Integer idGiocatoreA, final String year) {
+    private void mergeGiocatore(final Integer idGiocatoreDa, final Integer idGiocatoreA, final String anno) {
         Thread thread = new Thread(new Runnable() {
             public void run() {
             	MyLogger.setConsoleLogLevel(Level.INFO);
-            	TorneiUtils.mergePlayer(idGiocatoreDa, idGiocatoreA, year);            }
+            	if (anno != null && anno.trim().length() > 0){
+            		TorneiUtils.mergePlayer(idGiocatoreDa, idGiocatoreA, anno);            
+	            }else{
+                	List<Integer> anniTorneo = Configurator.getTorneiYears();
+                	for (Integer year: anniTorneo){
+                		TorneiUtils.mergePlayer(idGiocatoreDa, idGiocatoreA, year.toString());  
+                	}
+	            }
+            	TorneiUtils.deletePlayer(idGiocatoreDa);
+	        }
         });
         thread.start();
     }

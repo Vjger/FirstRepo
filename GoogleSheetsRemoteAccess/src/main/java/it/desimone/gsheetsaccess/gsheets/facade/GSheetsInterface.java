@@ -578,9 +578,10 @@ public class GSheetsInterface {
 //				}catch(NumberFormatException ne){
 //					MyLogger.getLogger().info("Not found: "+valueQuery);
 //				}
-				
-				SheetRow row = sheetRows.get(index);
-				row.setData(queryResponse);
+				if (queryResponse != null && !queryResponse.isEmpty() && !queryResponse.get(0).equals(NOT_AVAILABLE)){
+					SheetRow row = sheetRows.get(index);
+					row.setData(queryResponse);
+				}
 				index++;
 			}
 		}
@@ -636,6 +637,79 @@ public class GSheetsInterface {
 		MyLogger.getLogger().exiting("GSheetsInterface", "findAnagraficheByKey");
 		return sheetRows;
 	}
+	
+	public static List<SheetRow> leggiAnagraficheByKey(String spreadSheetId, List<SheetRow> sheetRows) throws IOException{
+		MyLogger.getLogger().entering("GSheetsInterface", "leggiAnagraficheByKey");
+		
+    	List<ValueRange> data = new ArrayList<ValueRange>();
+
+    	String sheetNameDataAnalysis = AbstractSheetRow.SHEET_DATA_ANALYSIS_NAME;
+    	
+		List<List<Object>> values = new ArrayList<List<Object>>();
+    	int indexStartingRow = 1;
+    	int numeroRiga = indexStartingRow;
+		String rangeRicerca = sheetNameDataAnalysis+"!A"+indexStartingRow+":B"+(indexStartingRow+sheetRows.size()-1);
+    	for (SheetRow sheetRow: sheetRows){
+			List<Object> rigaRicerca = Arrays.asList(new Object[]{((AnagraficaGiocatoreRow) sheetRow).getId(), getQueryAnagrafica(numeroRiga)});
+			values.add(rigaRicerca);
+			numeroRiga++;
+    	}
+		data.add(new ValueRange().setRange(rangeRicerca).setValues(values));
+    	Integer updatedRows = getGoogleSheetsInstance().updateRows(spreadSheetId, data, true);
+		String columnLetterNumRows = toAlphabetic(sheetRows.get(0).getSheetRowNumberColPosition()+1);
+		List<String> ranges = Collections.singletonList(AbstractSheetRow.SHEET_DATA_ANALYSIS_NAME+"!"+"B"+indexStartingRow+":"+columnLetterNumRows+(indexStartingRow+sheetRows.size()-1));
+		
+		List<List<Object>> queryResponses = getGoogleSheetsInstance().leggiSheet(spreadSheetId, ranges);
+		
+		if (queryResponses != null && !queryResponses.isEmpty()){
+			int index = 0;
+			for (List<Object> queryResponse: queryResponses){
+				if (queryResponse != null && !queryResponse.isEmpty() && !queryResponse.get(0).equals(NOT_AVAILABLE)){
+					Object o1 = queryResponse.get(1);
+					if (o1 != null){
+						String valueQuery = (String)o1;
+						((AnagraficaGiocatoreRow) sheetRows.get(index)).setNome(valueQuery);
+					}
+					Object o2 = queryResponse.get(2);
+					if (o2 != null){
+						String valueQuery = (String)o2;
+						((AnagraficaGiocatoreRow) sheetRows.get(index)).setCognome(valueQuery);
+					}
+					Object o3 = queryResponse.get(3);
+					if (o3 != null){
+						String valueQuery = (String)o3;
+						((AnagraficaGiocatoreRow) sheetRows.get(index)).setUltimoClub(valueQuery);
+					}
+					Object o4 = queryResponse.get(4);
+					if (o4 != null){
+						String valueQuery = (String)o4;
+						((AnagraficaGiocatoreRow) sheetRows.get(index)).setIdUltimoTorneo(valueQuery);
+					}
+					Object o5 = queryResponse.get(5);
+					if (o5 != null){
+						String valueQuery = (String)o5;
+						((AnagraficaGiocatoreRow) sheetRows.get(index)).setUpdateTime(valueQuery);
+					}
+					Object o6 = queryResponse.get(6);
+					if (o6 != null){
+						String valueQuery = (String)o6;
+						try{
+							Integer numRow = Integer.valueOf(valueQuery);
+							sheetRows.get(index).setSheetRowNumber(numRow);
+						}catch(NumberFormatException ne){
+							MyLogger.getLogger().info("Not found: "+valueQuery);
+						}
+					}
+				}
+				index++;
+			}
+		}
+
+		getGoogleSheetsInstance().clearRows(spreadSheetId, Collections.singletonList(rangeRicerca));
+		MyLogger.getLogger().exiting("GSheetsInterface", "leggiAnagraficheByKey");
+		return sheetRows;
+	}
+	
 	
 	private static String getQueryTorneo(String idTorneo){
 		StringBuilder buffer = new StringBuilder();

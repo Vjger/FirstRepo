@@ -138,7 +138,7 @@ private static Environment environment;
 	public static String getTorneiSheetId(String year){
 		String folderId = ((String)properties.get("spreadSheetIdTornei"+year));
 		if (folderId != null) folderId = folderId.trim();
-		MyLogger.getLogger().finest("ID Tornei:<<"+folderId+">>");
+		MyLogger.getLogger().finest("ID Tornei per l'anno "+year+":<<"+folderId+">>");
 		return folderId;
 	}
 	

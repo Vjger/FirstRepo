@@ -72,6 +72,8 @@ public class PublisherActions {
 		result.append("L'elaborazione del report [");
 		result.append(reportDriveData.getFileName());
 		result.append("] è avvenuta regolarmente ed ora i dati del report sono disponibili nel database centrale");
+		result.append("\n");
+		result.append("Si raccomanda di verificare la corrispondenza del report sulle pagine web e l'eventuale generazione di doppioni anagrafici");
 		return result.toString();
 	}
 	

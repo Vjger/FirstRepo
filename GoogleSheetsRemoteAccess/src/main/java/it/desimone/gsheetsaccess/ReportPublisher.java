@@ -211,7 +211,7 @@ public class ReportPublisher {
 			}
 			if (!anagraficheDaAggiornare.isEmpty()){
 				List<SheetRow> anagraficheDaAggiornareRowFound = GSheetsInterface.findAnagraficheByKey(spreadSheetIdTornei, anagraficheDaAggiornare);
-				Iterator<SheetRow> iterator = anagraficheDaAggiornare.iterator();
+				Iterator<SheetRow> iterator = anagraficheDaAggiornareRowFound.iterator();
 				while (iterator.hasNext()){
 					SheetRow anagraficaIpoteticamenteDaAggiornare = iterator.next();
 					if (anagraficaIpoteticamenteDaAggiornare.getSheetRowNumber() == null){

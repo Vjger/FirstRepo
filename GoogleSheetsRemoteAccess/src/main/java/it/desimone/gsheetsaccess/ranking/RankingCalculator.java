@@ -67,7 +67,12 @@ public class RankingCalculator {
 						giaPresente = false;
 						scorePlayer = scorePlayerSonda;
 						int indexAnagrafica = anagraficheGiocatoriRow.indexOf(anagraficaSonda);
-						scorePlayer.setAnagraficaGiocatore(anagraficheGiocatoriRow.get(indexAnagrafica));
+						try{
+							scorePlayer.setAnagraficaGiocatore(anagraficheGiocatoriRow.get(indexAnagrafica));
+						}catch(RuntimeException e){
+							MyLogger.getLogger().severe("Problemi con la ricerca in anagrafica del giocatore con id "+idPartecipante+" nel torneo "+torneoPubblicato.getIdTorneo());
+							throw e;
+						}
 					}
 					TorneiRow torneoRow = torneoPubblicato.getTorneoRow();
 					for (PartitaRow partitaRow: torneoPubblicato.getPartite()){

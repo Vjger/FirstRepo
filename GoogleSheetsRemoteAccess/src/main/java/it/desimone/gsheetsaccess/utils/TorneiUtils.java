@@ -32,6 +32,57 @@ import org.apache.xmlbeans.impl.common.Levenshtein;
 
 public class TorneiUtils {
 
+	private static final Integer LEVENSHTEIN_LIMIT = 4;
+	
+	static class FalsiPositivi{
+		private Integer primo;
+		private Integer secondo;
+		public FalsiPositivi(Integer primo, Integer secondo) {
+			super();
+			this.primo = primo;
+			this.secondo = secondo;
+		}
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((primo == null) ? 0 : primo.hashCode());
+			result = prime * result
+					+ ((secondo == null) ? 0 : secondo.hashCode());
+			return result;
+		}
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			FalsiPositivi other = (FalsiPositivi) obj;
+			if (primo == null) {
+				if (other.primo != null)
+					return false;
+			} else if (!primo.equals(other.primo))
+				return false;
+			if (secondo == null) {
+				if (other.secondo != null)
+					return false;
+			} else if (!secondo.equals(other.secondo))
+				return false;
+			return true;
+		}
+
+
+	}
+	
+	private static List<FalsiPositivi> falsiPositivi = new ArrayList<TorneiUtils.FalsiPositivi>();
+	static{
+		falsiPositivi.add(new TorneiUtils.FalsiPositivi(233, 1211)); //Alessio Boni - Alessio Bini
+		falsiPositivi.add(new TorneiUtils.FalsiPositivi(330, 648)); //Stefano Bracci - Stefano Bianchi
+		falsiPositivi.add(new TorneiUtils.FalsiPositivi(719, 2010)); //Gianluca Maconi - Gianluca Marconi
+		falsiPositivi.add(new TorneiUtils.FalsiPositivi(1413, 1674)); //Riccardo Vada - Riccardo Duca
+	}
 	
 	public static AnagraficaGiocatoreRow findAnagraficaById(List<AnagraficaGiocatoreRow> anagrafiche, Integer id){
 		if (anagrafiche == null || id == null) return null;
@@ -221,7 +272,7 @@ public class TorneiUtils {
 	}
 	
 	public static void mergePlayer(Integer idPlayerFrom, Integer idPlayerTo, String year){
-		MyLogger.getLogger().info("Inizio merge dati da giocatore con id ["+idPlayerFrom+"] a giocatore con id ["+idPlayerTo+"]");
+		MyLogger.getLogger().info("Inizio merge dati da giocatore con id ["+idPlayerFrom+"] a giocatore con id ["+idPlayerTo+"] per l'anno ["+year+"]");
 		
 		try {
 			String spreadSheetIdTornei = Configurator.getTorneiSheetId(year);
@@ -272,21 +323,66 @@ public class TorneiUtils {
 			GSheetsInterface.updateRows(spreadSheetIdTornei, PartitaRow.SHEET_PARTITE_NAME, righePartiteGiocatore, true);
 			MyLogger.getLogger().info("Sostituito nelle righe partita il giocatore con ID ["+idPlayerFrom+"] con quello con ID ["+idPlayerTo+"]");
 			
-			//INizio cancellazione giocatore
+			//Il giocatore va cancellato solo se nello stesso anno esiste anche il suo clone. Altrimenti va sostituito con il clone "buono"
+			//INizio cancellazione/update giocatore
 			SheetRow anagraficaGiocatoreRowFrom = new AnagraficaGiocatoreRow();
 			((AnagraficaGiocatoreRow)anagraficaGiocatoreRowFrom).setId(idPlayerFrom);
-			List<SheetRow> anagraficheDaCancellareRowFound = GSheetsInterface.findAnagraficheByKey(spreadSheetIdTornei, Collections.singletonList(anagraficaGiocatoreRowFrom));
+//			List<SheetRow> anagraficheDaCancellareRowFound = GSheetsInterface.findAnagraficheByKey(spreadSheetIdTornei, Collections.singletonList(anagraficaGiocatoreRowFrom));
+			List<SheetRow> anagraficheDaCancellareRowFound = GSheetsInterface.leggiAnagraficheByKey(spreadSheetIdTornei, Collections.singletonList(anagraficaGiocatoreRowFrom));
 			
-			if (anagraficheDaCancellareRowFound != null && !anagraficheDaCancellareRowFound.isEmpty()){
-				List<Integer> rowNumberGiocatoreFrom = new ArrayList<Integer>();
-				rowNumberGiocatoreFrom.add(anagraficheDaCancellareRowFound.get(0).getSheetRowNumber());
-				GSheetsInterface.deleteRowsByNumRow(spreadSheetIdTornei, AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME, rowNumberGiocatoreFrom);
-				MyLogger.getLogger().info("Cancellato il giocatore con ID ["+idPlayerFrom+"] dal foglio Tornei");
+			if (anagraficheDaCancellareRowFound != null && !anagraficheDaCancellareRowFound.isEmpty() && anagraficheDaCancellareRowFound.get(0).getSheetRowNumber() != null){
+				SheetRow anagraficaGiocatoreRowTo = new AnagraficaGiocatoreRow();
+				((AnagraficaGiocatoreRow)anagraficaGiocatoreRowTo).setId(idPlayerTo);
+				List<SheetRow> anagraficheDaVerificareRowFound = GSheetsInterface.findAnagraficheByKey(spreadSheetIdTornei, Collections.singletonList(anagraficaGiocatoreRowTo));
+				if (anagraficheDaVerificareRowFound != null && !anagraficheDaVerificareRowFound.isEmpty() && anagraficheDaVerificareRowFound.get(0).getSheetRowNumber() != null){
+					List<Integer> rowNumberGiocatoreFrom = new ArrayList<Integer>();
+					AnagraficaGiocatoreRow anagraficaDaCancellare = (AnagraficaGiocatoreRow) anagraficheDaCancellareRowFound.get(0);
+					rowNumberGiocatoreFrom.add(anagraficaDaCancellare.getSheetRowNumber());
+					GSheetsInterface.deleteRowsByNumRow(spreadSheetIdTornei, AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME, rowNumberGiocatoreFrom);
+					MyLogger.getLogger().info("Cancellato il giocatore con ID ["+idPlayerFrom+"] dal foglio Tornei "+year);
+				}else{
+					for (SheetRow anagraficaRow: anagraficheDaCancellareRowFound){
+						AnagraficaGiocatoreRow anagraficaDaAggiornare = (AnagraficaGiocatoreRow) anagraficaRow;
+						anagraficaDaAggiornare.setId(idPlayerTo);
+						//Devo trovare la ridotta per recuperare nome e cognome
+						AnagraficaGiocatoreRidottaRow anagraficaGiocatoreRidottaRow = new AnagraficaGiocatoreRidottaRow();
+						anagraficaGiocatoreRidottaRow.setId(idPlayerTo);
+						List<AnagraficaGiocatoreRidottaRow> anagraficheRidotteDaCopiareRowFound = GSheetsInterface.findAnagraficheRidotteById2(spreadSheetAnagraficaRidotta, Collections.singletonList(anagraficaGiocatoreRidottaRow));
+						
+						if (anagraficheRidotteDaCopiareRowFound != null && !anagraficheRidotteDaCopiareRowFound.isEmpty()){
+							anagraficaDaAggiornare.setNome(anagraficheRidotteDaCopiareRowFound.get(0).getNome());
+							anagraficaDaAggiornare.setCognome(anagraficheRidotteDaCopiareRowFound.get(0).getCognome());
+						}
+						
+						GSheetsInterface.updateRows(spreadSheetIdTornei, AnagraficaGiocatoreRow.SHEET_GIOCATORI_NAME, anagraficheDaCancellareRowFound, true);
+					}
+					
+					MyLogger.getLogger().info("Aggiornato il giocatore con ID ["+idPlayerFrom+"] verso l'ID ["+idPlayerTo+"] nel foglio Tornei "+year);
+				}
 			}
 			
-			SheetRow anagraficaRidottaGiocatoreRowFrom = new AnagraficaGiocatoreRidottaRow();
-			((AnagraficaGiocatoreRidottaRow)anagraficaRidottaGiocatoreRowFrom).setId(idPlayerFrom);
-			List<SheetRow> anagraficheRidotteDaCancellareRowFound = GSheetsInterface.findAnagraficheByKey(spreadSheetAnagraficaRidotta, Collections.singletonList(anagraficaGiocatoreRowFrom));
+//			SheetRow anagraficaRidottaGiocatoreRowFrom = new AnagraficaGiocatoreRidottaRow();
+//			((AnagraficaGiocatoreRidottaRow)anagraficaRidottaGiocatoreRowFrom).setId(idPlayerFrom);
+//			List<SheetRow> anagraficheRidotteDaCancellareRowFound = GSheetsInterface.findAnagraficheByKey(spreadSheetAnagraficaRidotta, Collections.singletonList(anagraficaGiocatoreRowFrom));
+//			
+//			if (anagraficheRidotteDaCancellareRowFound != null && !anagraficheRidotteDaCancellareRowFound.isEmpty()){
+//				List<Integer> rowNumberGiocatoreFrom = new ArrayList<Integer>();
+//				rowNumberGiocatoreFrom.add(anagraficheRidotteDaCancellareRowFound.get(0).getSheetRowNumber());
+//				GSheetsInterface.deleteRowsByNumRow(spreadSheetAnagraficaRidotta, AnagraficaGiocatoreRidottaRow.SHEET_ANAGRAFICA_NAME, rowNumberGiocatoreFrom);
+//				MyLogger.getLogger().info("Cancellato il giocatore con ID ["+idPlayerFrom+"] dal foglio Anagrafica Ridotta");
+//			}
+			
+		}catch(Exception e){
+			MyLogger.getLogger().severe("Errore accedendo ai dati "+e.getMessage());
+		}
+	}
+	
+	public static void deletePlayer(Integer idPlayerFrom){
+		try{
+			String spreadSheetAnagraficaRidotta = Configurator.getAnagraficaRidottaSheetId();
+			AnagraficaGiocatoreRidottaRow anagraficaGiocatoreRidottaRow = new AnagraficaGiocatoreRidottaRow();
+			anagraficaGiocatoreRidottaRow.setId(idPlayerFrom);
+			List<AnagraficaGiocatoreRidottaRow> anagraficheRidotteDaCancellareRowFound = GSheetsInterface.findAnagraficheRidotteById2(spreadSheetAnagraficaRidotta, Collections.singletonList(anagraficaGiocatoreRidottaRow));
 			
 			if (anagraficheRidotteDaCancellareRowFound != null && !anagraficheRidotteDaCancellareRowFound.isEmpty()){
 				List<Integer> rowNumberGiocatoreFrom = new ArrayList<Integer>();
@@ -294,12 +390,10 @@ public class TorneiUtils {
 				GSheetsInterface.deleteRowsByNumRow(spreadSheetAnagraficaRidotta, AnagraficaGiocatoreRidottaRow.SHEET_ANAGRAFICA_NAME, rowNumberGiocatoreFrom);
 				MyLogger.getLogger().info("Cancellato il giocatore con ID ["+idPlayerFrom+"] dal foglio Anagrafica Ridotta");
 			}
-			
 		}catch(Exception e){
 			MyLogger.getLogger().severe("Errore accedendo ai dati "+e.getMessage());
 		}
 	}
-	
 		
 	public static void deleteTorneo(String idTorneo, String year){
 		MyLogger.getLogger().info("INIZIO Cancellazione del torneo ["+idTorneo+"]");
@@ -479,7 +573,7 @@ public class TorneiUtils {
 					String stringJ = (anagJ.getNome()+anagJ.getCognome()).toLowerCase()+anagJ.getDataDiNascita();
 					int indexL = Levenshtein.distance(stringI, stringJ);
 					//int indexLV = it.desimone.gsheetsaccess.utils.Levenshtein.calculateFast(stringI, stringJ);
-					if (indexL <= 4){
+					if (indexL <= LEVENSHTEIN_LIMIT && isNotFalsePositive(anagI, anagJ)){
 						cloni[indexCloni][0] = anagI;
 						cloni[indexCloni][1] = anagJ;
 						cloni[indexCloni][2] = indexL;
@@ -502,6 +596,11 @@ public class TorneiUtils {
 		return cloniSingoli;
 	}
 	
+	private static boolean isNotFalsePositive(AnagraficaGiocatoreRidottaRow anagI, AnagraficaGiocatoreRidottaRow anagJ) {
+		FalsiPositivi check = new FalsiPositivi(anagI.getId(), anagJ.getId());
+		return !falsiPositivi.contains(check);
+	}
+
 	public static void printScorePlayers(String year){
 		List<TorneoPubblicato> torneiPubblicati = TorneiUtils.caricamentoTornei(year);
 		List<ScorePlayer> tabellini = RankingCalculator.elaboraTabellini(year, torneiPubblicati, null);
