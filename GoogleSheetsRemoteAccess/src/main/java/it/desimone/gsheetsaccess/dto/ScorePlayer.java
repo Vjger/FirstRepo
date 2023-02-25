@@ -7,6 +7,7 @@ import it.desimone.risiko.torneo.dto.SchedaTorneo.TipoTorneo;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -133,6 +134,12 @@ public class ScorePlayer implements Comparable<ScorePlayer>{
 			int result = thisIdTorneo.compareTo(otherIdTorneo);
 			return result;
 		}
+		@Override
+		public String toString() {
+			return "TabellinoPlayer [torneo=" + torneo
+					+ ", posizioneRaggiunta=" + posizioneRaggiunta
+					+ ", scoreRanking=" + scoreRanking + "]";
+		}
 		
 		
 	}
@@ -140,6 +147,10 @@ public class ScorePlayer implements Comparable<ScorePlayer>{
 	public void addTabellinoPlayer(TorneoPubblicato torneo, Integer posizioneRaggiunta, BigDecimal scoreRanking){
 		TabellinoPlayer tabellinoPlayer = new TabellinoPlayer(torneo, posizioneRaggiunta, scoreRanking);
 		tabelliniPlayer.add(tabellinoPlayer);
+	}
+	
+	public void addTabelliniPlayer(Collection<TabellinoPlayer> tabelliniPlayer){
+		this.tabelliniPlayer.addAll(tabelliniPlayer);
 	}
 	
 	public static class TabellinoPerTipoTorneo{

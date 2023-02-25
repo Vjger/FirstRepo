@@ -184,7 +184,8 @@ public class HtmlPublisher {
 			}
 		}
 		//doppioniSospetti(allTabellini, doppioniSospetti);
-		doppioniSospetti(overallTabellini(), doppioniSospetti);
+		//doppioniSospetti(overallTabellini(), doppioniSospetti);
+		doppioniSospetti(TorneiUtils.getOverallTabellini(), doppioniSospetti);
 		if (withUpload){
 			try {
 				AlterVistaUtil.uploadInRoot(Collections.singletonList(doppioniSospetti));
@@ -193,18 +194,6 @@ public class HtmlPublisher {
 			}
 		}
 		MyLogger.getLogger().info("Fine elaborazione");
-	}
-	
-	private static List<ScorePlayer> overallTabellini(){
-		List<ScorePlayer> allTabellini = new ArrayList<ScorePlayer>();
-		List<Integer> years = Configurator.getTorneiYears();
-		
-		for (Integer year: years){
-			List<TorneoPubblicato> torneiPubblicati = TorneiUtils.caricamentoTornei(year.toString());
-			List<ScorePlayer> tabelliniAnnuali = RankingCalculator.elaboraTabellini(year.toString(), torneiPubblicati, null);
-			allTabellini.addAll(tabelliniAnnuali);
-		}
-		return allTabellini;
 	}
 	
 	public static FilesToPublish publishPerYear(String year, TournamentsToPublish tournamentsToPublishByYear) {

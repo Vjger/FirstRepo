@@ -113,6 +113,11 @@ public class TorneoPubblicato {
 		
 		return concluso;
 	}
+
+	@Override
+	public String toString() {
+		return "TorneoPubblicato [" + torneoRow.getIdTorneo() + "]";
+	}
 	
 	
 }

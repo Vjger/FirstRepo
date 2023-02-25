@@ -601,11 +601,12 @@ public class TorneiUtils {
 		return !falsiPositivi.contains(check);
 	}
 
-	public static void printScorePlayers(String year){
-		List<TorneoPubblicato> torneiPubblicati = TorneiUtils.caricamentoTornei(year);
-		List<ScorePlayer> tabellini = RankingCalculator.elaboraTabellini(year, torneiPubblicati, null);
-		
-		tabellini.sort(new Comparator<ScorePlayer>() {
+	public static void printScorePlayers(/*String year*/){
+//		List<TorneoPubblicato> torneiPubblicati = TorneiUtils.caricamentoTornei(year);
+//		List<ScorePlayer> tabellini = RankingCalculator.elaboraTabellini(year, torneiPubblicati, null);
+//	
+		List<ScorePlayer> allTabellini = getOverallTabellini();
+		allTabellini.sort(new Comparator<ScorePlayer>() {
 
 			@Override
 			public int compare(ScorePlayer o1, ScorePlayer o2) {
@@ -620,7 +621,7 @@ public class TorneiUtils {
 		
 		try{
 			out = new PrintWriter("C:\\Users\\mds\\Desktop\\ScorePlayer.csv","UTF-8");
-			for (ScorePlayer scorePlayer: tabellini){
+			for (ScorePlayer scorePlayer: allTabellini){
 				String line = buildLine(scorePlayer);
 				out.write(line);
 			}
@@ -630,6 +631,26 @@ public class TorneiUtils {
 			out.close();
 		}
 
+	}
+	
+	public static List<ScorePlayer> getOverallTabellini(){
+		List<ScorePlayer> allTabellini = new ArrayList<ScorePlayer>();
+		List<Integer> years = Configurator.getTorneiYears();
+		
+		for (Integer year: years){
+			List<TorneoPubblicato> torneiPubblicati = TorneiUtils.caricamentoTornei(year.toString());
+			List<ScorePlayer> tabelliniAnnuali = RankingCalculator.elaboraTabellini(year.toString(), torneiPubblicati, null);
+			for (ScorePlayer scorePlayer: tabelliniAnnuali){
+				if (allTabellini.contains(scorePlayer)){
+					Integer index = allTabellini.indexOf(scorePlayer);
+					ScorePlayer scorePlayerFound = allTabellini.get(index);
+					scorePlayerFound.addTabelliniPlayer(scorePlayer.getTabelliniPlayer());
+				}else{
+					allTabellini.add(scorePlayer);
+				}
+			}
+		}
+		return allTabellini;
 	}
 	
 	private static String buildLine(ScorePlayer scorePlayer){

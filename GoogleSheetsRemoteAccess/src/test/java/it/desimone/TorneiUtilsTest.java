@@ -21,9 +21,8 @@ public class TorneiUtilsTest {
 //		for (AnagraficaGiocatoreRidottaRow orfano: orfani){
 //			MyLogger.getLogger().info(orfano.toString());
 //		}
-		
-		TorneiUtils.printScorePlayers("2019");
-		
+		TorneiUtils.printScorePlayers();
+	
 		System.out.println("END");
 	}
 
