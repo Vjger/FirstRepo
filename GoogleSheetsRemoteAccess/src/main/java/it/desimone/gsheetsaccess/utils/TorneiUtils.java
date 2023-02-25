@@ -620,7 +620,7 @@ public class TorneiUtils {
 		PrintWriter out = null;
 		
 		try{
-			out = new PrintWriter("C:\\Users\\mds\\Desktop\\ScorePlayer.csv","UTF-8");
+			out = new PrintWriter("C:\\Users\\mds\\Desktop\\ScorePlayer.csv","ISO-8859-1");
 			for (ScorePlayer scorePlayer: allTabellini){
 				String line = buildLine(scorePlayer);
 				out.write(line);
