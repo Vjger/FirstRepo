@@ -4,7 +4,7 @@
 
   <groupId>it.desimone</groupId>
   <artifactId>GestioneTorneo</artifactId>
-  <version>2.2.3</version>
+  <version>2.3.0</version>
   <packaging>jar</packaging>
 
   <name>GestioneTorneo</name>
@@ -183,14 +183,14 @@
     	<artifactId>poi-ooxml-schemas</artifactId> 	
     	<version>3.17</version>
 	</dependency>
-    
+   
     <dependency>
     	<groupId>com.itextpdf</groupId>
     	<artifactId>itextpdf</artifactId>
     	<version>5.1.1</version>
 	</dependency>
-	
-	  <dependency>
+
+  <dependency>
      <groupId>com.google.api-client</groupId>
      <artifactId>google-api-client</artifactId>
      <version>1.23.0</version>

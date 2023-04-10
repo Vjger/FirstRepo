@@ -12,6 +12,8 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import com.itextpdf.text.log.SysoLogger;
+
 public class FileUtils {
 
     public static boolean zippaFile(File[] files, String targetName){
@@ -64,7 +66,11 @@ public class FileUtils {
     		ZipEntry ze;
     		while((ze=zis.getNextEntry())!=null){
     			if (ze.getName().equals(targetName)){
-    				result = new File(targetName);
+    				String fileName = targetName;
+    				if (fileName.contains("/")){
+    					fileName = targetName.substring(targetName.indexOf("/")+1);
+    				}
+    				result = new File(fileName);
     				InputStream is = zipFile.getInputStream(ze);
     				int BUFFER = 2048;
     				int count;
@@ -121,8 +127,23 @@ public class FileUtils {
     
     
     public static void main (String[] args){
-    	File zipFile = new File("C:\\Users\\Marco\\Desktop\\Risiko!\\Sorteggio Tavoli New\\GestioneRaduno.jar");
-    	estraiDaZip(zipFile, null);
+    	File file = new File("C:\\GIT Repositories\\FirstRepo\\GestioneTorneo\\resources\\resources.zip");
+    	try {
+    		FileInputStream fis = new FileInputStream(file);
+    		ZipFile zipFile = new ZipFile(file);
+    		ZipInputStream zis = new ZipInputStream(fis);
+    		ZipEntry ze;
+    		while((ze=zis.getNextEntry())!=null){
+    			System.out.println(ze.getName());
+    			zis.closeEntry();
+    		}
+    		zis.close();
+
+    	} catch (FileNotFoundException e) {
+    		e.printStackTrace();
+    	} catch (IOException e) {
+    		e.printStackTrace();
+    	}
     }
 	
 }

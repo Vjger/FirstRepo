@@ -19,7 +19,8 @@ public class AlterVistaUtil {
 //	private static final String PASSWORD = "Ar44Q6hjgtdm";
 	
 	private static final String ROOT = "/forum.egcommunity.it/risikolive";
-	private static final String HOST = "94.237.88.138";
+	//private static final String HOST = "94.237.88.138"; //Server prima del 12/03/2023
+	private static final String HOST = "149.62.186.21";
 	private static final String USERNAME = "ftp_egcommunity";
 	private static final String PASSWORD = "forum_ftp_2013";
 	

@@ -143,4 +143,31 @@ private volatile static Properties properties = new Properties();
 			MyLogger.getLogger().severe("Errore nel save del memorizzaCredenziali:<<"+memorizzaCredenziali+">>");
 		}
 	}
+	
+	public static Boolean getStampaRidotta(){
+		String stampaRidotta = ((String)properties.get("stampaRidotta"));
+		Boolean result = Boolean.TRUE;
+		if (stampaRidotta != null) stampaRidotta = stampaRidotta.trim();
+		try{
+			result = Boolean.valueOf(stampaRidotta);
+			MyLogger.getLogger().finest("stampaRidotta:<<"+stampaRidotta+">>");
+		}catch(Exception e){
+			MyLogger.getLogger().severe("Errore nel parsing del stampaRidotta:<<"+stampaRidotta+">>");
+		}
+		return result;
+	}
+	
+	public static void setStampaRidotta(Boolean stampaRidotta){
+		FileOutputStream out = null; 
+
+		try{
+			out = new FileOutputStream(new File(PATH_CONFIGURATION+File.separator+CONFIG_FILE));
+			properties.setProperty("stampaRidotta", stampaRidotta.toString());
+			properties.store(out, null);
+			out.close();
+			MyLogger.getLogger().finest("stampaRidotta:<<"+stampaRidotta+">>");
+		}catch(Exception e){
+			MyLogger.getLogger().severe("Errore nel save del stampaRidotta:<<"+stampaRidotta+">>");
+		}
+	}
 }

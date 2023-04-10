@@ -47,6 +47,7 @@ public class OptionsMenu extends JMenu {
 	
 	private JCheckBoxMenuItem vincitoriUniciCheckBoxMenuItem;
 	private JCheckBoxMenuItem memorizzaCredenzialiCheckBoxMenuItem;
+	private JCheckBoxMenuItem stampaRidottaCheckBoxMenuItem;
 	
 	public OptionsMenu(){
 		super("Opzioni");
@@ -136,6 +137,13 @@ public class OptionsMenu extends JMenu {
 		}
 		this.add(memorizzaCredenzialiCheckBoxMenuItem);
 		
+		stampaRidottaCheckBoxMenuItem = new JCheckBoxMenuItem("Stampa Ridotta");
+		stampaRidottaCheckBoxMenuItem.addItemListener(getStampaRidottaListener());
+		if (Configurator.getStampaRidotta()){
+			stampaRidottaCheckBoxMenuItem.doClick();
+		}
+		this.add(stampaRidottaCheckBoxMenuItem);
+		
 	}
 
 	private ActionListener getLogLevelListener(final Level level, final String handler){
@@ -174,5 +182,15 @@ public class OptionsMenu extends JMenu {
 				}
 			};
 		return checkMemorizzaCredenzialiListener;
+	}
+	
+	private ItemListener getStampaRidottaListener(){
+		ItemListener checkStampaRidottaListener = new ItemListener(){
+				public void itemStateChanged(ItemEvent e){
+					Boolean stampaRidotta = e.getStateChange() == ItemEvent.SELECTED;
+					Configurator.setStampaRidotta(stampaRidotta);
+				}
+			};
+		return checkStampaRidottaListener;
 	}
 }

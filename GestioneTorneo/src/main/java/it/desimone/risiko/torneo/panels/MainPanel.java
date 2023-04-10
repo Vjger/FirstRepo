@@ -200,7 +200,7 @@ public class MainPanel extends JFrame implements ActionListener {
 						String pdfFileName = excelPrefix+"_"+numeroTurno+".pdf";
 						PdfUtils pdfUtils = new PdfUtils();
 						pdfUtils.openDocument(pdfFileName);
-						pdfUtils.stampaPartiteRisiko(partiteTurno, String.valueOf(numeroTurno));
+						pdfUtils.stampaPartiteRisiko(partiteTurno, String.valueOf(numeroTurno), excelAccess.leggiSchedaTorneo());
 						pdfUtils.closeDocument();
 					}
 					if (getTipoTorneo() == TipoTorneo.TorneoASquadre){

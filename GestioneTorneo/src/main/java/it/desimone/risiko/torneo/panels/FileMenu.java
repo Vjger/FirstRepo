@@ -8,6 +8,7 @@ import it.desimone.risiko.torneo.batch.ExcelValidator.ExcelValidatorMessages;
 import it.desimone.risiko.torneo.batch.RadGester;
 import it.desimone.risiko.torneo.dto.GiocatoreDTO;
 import it.desimone.risiko.torneo.dto.Partita;
+import it.desimone.risiko.torneo.dto.SchedaTorneo;
 import it.desimone.risiko.torneo.utils.PdfUtils;
 import it.desimone.risiko.torneo.utils.TipoTorneo;
 import it.desimone.utils.MyException;
@@ -179,8 +180,9 @@ public class FileMenu extends JMenu {
 								pdfUtils.closeDocument();
 								break;
 							}else{
-								pdfUtils.stampaPartiteRisiko(partiteTurnoi, String.valueOf(i));
+								pdfUtils.stampaPartiteRisiko(partiteTurnoi, String.valueOf(i), excelAccess.leggiSchedaTorneo());
 								i++;
+								pdfUtils.newPageDocument();
 							}
 						}
 						excelAccess.closeFileExcel();

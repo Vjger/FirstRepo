@@ -29,6 +29,8 @@ public class ExcelGSheetsBridge {
 	public static final DateFormat dfDateTorneo = new SimpleDateFormat("dd/MM/yyyy");
 	public static final DateFormat dfUpdateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 	
+	private static String[][] charMapToReplace = {{"é","è"},{"’", "'"}};
+	
 	public static TorneiRow getTorneoRowByTorneo(Torneo torneo){
 		if (torneo == null || torneo.getSchedaTorneo() == null){
 			return null;
@@ -104,6 +106,8 @@ public class ExcelGSheetsBridge {
 		Date now = new Date();
 		for (int index = 0; index < partecipanti.size(); index++){
 			GiocatoreDTO giocatore = partecipanti.get(index);
+			giocatore.setNome(replacedString(giocatore.getNome()));
+			giocatore.setCognome(replacedString(giocatore.getCognome()));
 			AnagraficaGiocatoreRidottaRow anagraficaGiocatoreRidottaRow = new AnagraficaGiocatoreRidottaRow();
 			if (giocatore.getDataDiNascita() != null && !giocatore.isAnonimo()){
 				anagraficaGiocatoreRidottaRow.setNome(giocatore.getNome().trim());
@@ -141,6 +145,17 @@ public class ExcelGSheetsBridge {
 		}
 		MyLogger.getLogger().exiting("ExcelGSheetsBridge", "getAnagraficheRowByTorneo");
 		return result;
+	}
+	
+	private static String replacedString(String toReplace){
+		String replaced = null;
+		if (toReplace != null){
+			replaced = toReplace;
+			for (String[] charToReplace: charMapToReplace){
+				replaced = replaced.replaceAll(charToReplace[0], charToReplace[1]);
+			}
+		}
+		return replaced;
 	}
 	
 	public static List<SheetRow> getPartiteRowByTorneo(Torneo torneo, Map<Integer, Integer> idPlayersMap){

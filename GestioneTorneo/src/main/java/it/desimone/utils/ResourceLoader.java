@@ -211,7 +211,40 @@ public class ResourceLoader {
 			}
 			MyLogger.getLogger().finer("file immagine: "+(result==null?"0":result.length+" byte"));
 		}else{
-			MyLogger.getLogger().severe("Non ï¿½ stato trovato il file "+immagineRisiko);
+			MyLogger.getLogger().severe("Non è stato trovato il file "+immagineRisiko);
+		}
+		return result;
+	}
+	
+	
+	public byte[] getImmagineLogo(String clubName){
+		byte[] result = null;
+		String pathImage = "loghi50px_vert/"+clubName+".png";
+		File immagineRisiko = FileUtils.estraiDaZip(ZIPFILE, pathImage);
+		if (immagineRisiko != null && immagineRisiko.exists()){
+			immagineRisiko.deleteOnExit();
+			InputStream is;
+			try {
+				is = new FileInputStream(immagineRisiko);
+				byte [] buff = new byte [1024];
+				ByteArrayOutputStream out = new ByteArrayOutputStream();
+				int n;
+				while( (n = is.read(buff, 0, buff.length))!= -1){
+					out.write(buff, 0 , n);
+				}
+				is.close();
+				out.close();
+				result = out.toByteArray();
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			MyLogger.getLogger().finer("file immagine: "+(result==null?"0":result.length+" byte"));
+		}else{
+			MyLogger.getLogger().severe("Non è stato trovato il file "+pathImage);
 		}
 		return result;
 	}
