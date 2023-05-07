@@ -42,6 +42,11 @@
 			}
 		}
 	}
+	function changeYear(){
+	  var myselect = document.getElementById("selectYear");
+  		var url = myselect.options[myselect.selectedIndex].value;
+		document.location.href = url;
+	}
 	</script>
 		
 	<div class="limiter">
@@ -50,10 +55,19 @@
 				<div class="table100 ver1 m-b-110" style="width: 1200px; padding-top: 5px;">
 						<div>
 							<a href="index.html"><img src="images/icons/home.png"></a>
+							<!--
 							#foreach( $year in $years )
 								#set ($urlListaTornei = "listaTornei"+$year+".html")
 								<a href="$urlListaTornei" class="tournamentsYearButton">$year</a>
 							#end
+							-->
+							<select id="selectYear" onChange="changeYear()">
+								#foreach( $anno in $years )
+									#set ($urlListaTornei = "listaTornei"+$anno+".html")
+									<option value="$urlListaTornei" #if ($anno == $year)selected#end>$anno</option>
+								#end
+							</select> 
+							<span style="float: right; font-size: 12px;">Ultimo aggiornamento: $data</span>							
 						</div>
 						<div style="text-align: center;"><img src="images/loghi/tornei_360x171.png"><div class="yearButton">$year</div></div>
 						<table>

@@ -366,6 +366,7 @@ public class HtmlPublisher {
 		context.put( "styleGenerator", StyleGenerator.class);
 		context.put( "Capitalize", Capitalize.class);
 		context.put( "htmlPublisher", HtmlPublisher.class);
+		context.put( "data", new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()));
 
 		Template template = null;
 
@@ -429,7 +430,13 @@ public class HtmlPublisher {
 		List<File> result = new ArrayList<File>();
 		for (String club: clubAnalysis.getClubs()){
 			List<ClubPlayerData> clubPlayersData = clubAnalysis.getPlayerDataByClub(club);
-			int maxSize = clubPlayersData.get(0).getTorneiDisputati().size();
+			int maxSize = 0;
+			try{
+				maxSize = clubPlayersData.get(0).getTorneiDisputati().size();
+			} catch (IndexOutOfBoundsException e) {
+				MyLogger.getLogger().severe(e.getMessage()+"anno: "+year+ "club: "+club);
+				throw e;
+			}
 			int width = 200+(Math.min(1600, maxSize*160));
 			context.put( "clubPlayersData", clubPlayersData);
 			context.put( "club", club);
@@ -549,7 +556,7 @@ public class HtmlPublisher {
 		context.put( "clubs", clubs );
 		context.put( "styleGenerator", StyleGenerator.class);
 		context.put( "htmlPublisher", HtmlPublisher.class);
-	
+		context.put( "data", new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()));
 		
 		FileWriter writer = null;
 		try {

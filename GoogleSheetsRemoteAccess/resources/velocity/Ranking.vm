@@ -36,6 +36,12 @@
 			document.getElementById("plusminus"+numeroRiga).src='images/icons/plus.png';
 		  }
 		}
+		
+		function changeYear(){
+	  		var myselect = document.getElementById("selectYear");
+  			var url = myselect.options[myselect.selectedIndex].value;
+			document.location.href = url;
+		}
 	</script>
 	
 	<div class="limiter">
@@ -44,10 +50,19 @@
 				<div class="table100 ver1 m-b-110" style="padding-top: 5px;">
 						<div><a href="index.html"><img src="images/icons/home.png"></a>
 							<a href="anagraficheDaVerificare.html"><img src="images/icons/cloni.png" title="anagrafiche da verificare"></a>
+<!--							
 							#foreach( $year in $years )
 								#set ($urlRanking = "ranking"+$year+".html")
 								<a href="$urlRanking" class="rankingYearButton">$year</a>
 							#end						
+-->
+							<select id="selectYear" onChange="changeYear()">
+								#foreach( $anno in $years )
+									#set ($urlRanking = "ranking"+$anno+".html")
+									<option value="$urlRanking" #if ($anno == $year)selected#end>$anno</option>
+								#end
+							</select> 
+							<span style="float: right; font-size: 12px;">Ultimo aggiornamento: $data</span>	
 						</div>
 						<div style="text-align: center;"><img src="images/loghi/ranking_360x171.png"><div class="yearButton">$year</div></div>
 						<table>
