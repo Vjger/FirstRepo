@@ -83,7 +83,7 @@ public class GiocatoreDTO implements Comparable{
 		//boolean stessaMail = (this.email == null && giocatore.getEmail() == null) || (this.email != null && giocatore.getEmail() != null && this.email.trim().equalsIgnoreCase(giocatore.getEmail().trim()));
 		boolean stessaDataDiNascita = (this.dataDiNascita == null && giocatore.getDataDiNascita() == null) || (this.dataDiNascita != null && giocatore.getDataDiNascita() != null && this.dataDiNascita.equals(giocatore.getDataDiNascita()));
 		boolean stessoIdNazionale = (this.idNazionale == null && giocatore.getIdNazionale() == null) || (this.idNazionale != null && giocatore.getIdNazionale() != null && this.idNazionale.equals(giocatore.getIdNazionale()));
-		return stessoNome && stessoCognome && (stessaDataDiNascita || stessoIdNazionale); //stessaMail;
+		return stessoNome && stessoCognome && stessaDataDiNascita; //stessaMail;
 	}
 
 	public boolean isAnonimo(){
