@@ -82,6 +82,7 @@ public class TorneiUtils {
 		falsiPositivi.add(new TorneiUtils.FalsiPositivi(330, 648)); //Stefano Bracci - Stefano Bianchi
 		falsiPositivi.add(new TorneiUtils.FalsiPositivi(719, 2010)); //Gianluca Maconi - Gianluca Marconi
 		falsiPositivi.add(new TorneiUtils.FalsiPositivi(1413, 1674)); //Riccardo Vada - Riccardo Duca
+		falsiPositivi.add(new TorneiUtils.FalsiPositivi(497, 2362)); //Antonio Condorelli - Antonio Condorelli
 	}
 	
 	public static AnagraficaGiocatoreRow findAnagraficaById(List<AnagraficaGiocatoreRow> anagrafiche, Integer id){
