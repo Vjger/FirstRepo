@@ -613,7 +613,8 @@ public class HtmlPublisher {
 			Template template = null;
 
 			try{
-			  template = Velocity.getTemplate("TabellinoGiocatore.vm", "UTF-8");
+			  //template = Velocity.getTemplate("TabellinoGiocatore.vm", "UTF-8");
+			  template = Velocity.getTemplate("PresuntiDoppioni.vm", "UTF-8");
 			}catch( ResourceNotFoundException rnfe ){
 				MyLogger.getLogger().severe(rnfe.getMessage());
 			}catch( ParseErrorException pee ){

@@ -53,7 +53,7 @@ public class ClubLoader {
 	public final static ClubDTO I_BALUARDI = new ClubDTO("LU", "LUCCA [I Baluardi]");
 	public final static ClubDTO CESENATICO = new ClubDTO("FC", "CESENATICO [I Corsari]");
 	public final static ClubDTO CALTANISSETTA = new ClubDTO("CL", "CALTANISSETTA [Eclettica]");
-
+	public final static ClubDTO RISIKARE = new ClubDTO("BT","BARLETTA [Risik'Aré]");
 
 	static{
 		clubs.add(I_FEDERICIANI);
