@@ -117,6 +117,30 @@
 		          </execution>
 		        </executions>
 		     </plugin>
+		     
+			<plugin>
+			    <artifactId>maven-antrun-plugin</artifactId>
+			    <version>1.8</version>
+			    <executions>
+			        <execution>
+			            <phase>initialize</phase>
+			            <configuration>
+			                <target>
+								<echo message="Creating working directories..."/>
+			                    <mkdir dir="${project.output}/working" />
+			               		<mkdir dir="${project.output}/working/tmp" />
+			               		<mkdir dir="${project.output}/working/done" />
+			               		<mkdir dir="${project.output}/working/error" />
+			               		<mkdir dir="${project.output}/working/htmlpages" />
+			               		<mkdir dir="${project.output}/working/htmlpublisher" />
+			                </target>
+			            </configuration>
+			            <goals>
+			                <goal>run</goal>
+			            </goals>
+			        </execution>
+			    </executions>
+			</plugin>		     
 		</plugins>
 	</build>
 	
