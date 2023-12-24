@@ -148,7 +148,11 @@
 									<td class="column10">$scorePlayer.getTabellinoTorneiOpen().scoreRanking</td>
 									<td class="column10">$scorePlayer.getTabellinoTorneiTorneiInterclub().numeroTorneiDisputati</td>
 									<td class="column10">$scorePlayer.getTabellinoTorneiTorneiInterclub().scoreRanking</td>		
+									<!--
 									<td class="column10">$scorePlayer.getTabellinoCampionatiPeriodici().numeroTorneiDisputati</td>
+									-->
+									<td class="column10">$scorePlayer.getTabellinoCampionatiPeriodici().numeroTorneiDisputatiEValevoliPerRanking</td>
+
 									<td class="column10">$scorePlayer.getTabellinoCampionatiPeriodici().scoreRanking</td>								
 									<td class="column10">$scorePlayer.tabelliniPlayer.size()</td>
 									<td class="column10">$scorePlayer.partiteGiocate</td>

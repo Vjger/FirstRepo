@@ -630,6 +630,8 @@ public class GeneratoreTavoliNew {
 			
 			MatchAnomali matchAnomaliUP = MatchAnalyzer.calcolaConfrontiClubAnomali(Arrays.asList(partite), AnomaliaConfrontiClub.UP);
 			Map<ClubDTO, Map<ClubDTO, Integer>> confrontiAnomaliUP = matchAnomaliUP.getMatchClubVsClubAnomali();	
+			
+			MyLogger.getLogger().info("Confronti Anomali UP "+confrontiAnomaliUP);
 
 			for (ClubDTO club: confrontiAnomaliUP.keySet()){//Andrebbe fatto solo sui club sicuramente in gioco nel turno in linea
 				Map<ClubDTO, Integer> scontriDiretti = confrontiAnomaliUP.get(club);
@@ -678,6 +680,8 @@ public class GeneratoreTavoliNew {
 			
 			MatchAnomali matchAnomaliDOWN = MatchAnalyzer.calcolaConfrontiClubAnomali(Arrays.asList(partite), AnomaliaConfrontiClub.DOWN);
 			Map<ClubDTO, Map<ClubDTO, Integer>> confrontiAnomaliDOWN = matchAnomaliDOWN.getMatchClubVsClubAnomali();	
+			
+			MyLogger.getLogger().info("Confronti Anomali DOWN "+confrontiAnomaliUP);
 
 			for (ClubDTO club: confrontiAnomaliDOWN.keySet()){//Andrebbe fatto solo sui club sicuramente in gioco nel turno in linea
 				Map<ClubDTO, Integer> scontriDiretti = confrontiAnomaliDOWN.get(club);

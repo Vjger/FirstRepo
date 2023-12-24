@@ -1,5 +1,6 @@
 package it.desimone.gsheetsaccess.dto;
 
+import it.desimone.gsheetsaccess.dto.ScorePlayer.TabellinoPerTipoTorneo.DatiTabellinoPerTipoTorneo;
 import it.desimone.gsheetsaccess.gsheets.dto.AnagraficaGiocatoreRow;
 import it.desimone.risiko.torneo.dto.SchedaTorneo;
 import it.desimone.risiko.torneo.dto.SchedaTorneo.TipoTorneo;
@@ -157,6 +158,51 @@ public class ScorePlayer implements Comparable<ScorePlayer>{
 		private Integer numeroTorneiDisputati = 0;
 		private List<BigDecimal> scoreRankings = new ArrayList<BigDecimal>();
 		private BigDecimal scoreRanking = BigDecimal.ZERO;
+		private Integer torneiValevoliPerRanking;
+		
+		private List<DatiTabellinoPerTipoTorneo> datiTabellinoPerTipoTorneo = new ArrayList<DatiTabellinoPerTipoTorneo>();
+		
+		public static class DatiTabellinoPerTipoTorneo implements Comparable<DatiTabellinoPerTipoTorneo>{
+			private Integer partiteGiocate;
+			private Integer numeroTurniTornei;
+			private BigDecimal scoreRanking;
+			
+			
+			public DatiTabellinoPerTipoTorneo(Integer partiteGiocate,
+					Integer numeroTurniTornei, BigDecimal scoreRanking) {
+				super();
+				this.partiteGiocate = partiteGiocate;
+				this.numeroTurniTornei = numeroTurniTornei;
+				this.scoreRanking = scoreRanking;
+			}
+			public Integer getPartiteGiocate() {
+				return partiteGiocate;
+			}
+			public void setPartiteGiocate(Integer partiteGiocate) {
+				this.partiteGiocate = partiteGiocate;
+			}
+			public Integer getNumeroTurniTornei() {
+				return numeroTurniTornei;
+			}
+			public void setNumeroTurniTornei(Integer numeroTurniTornei) {
+				this.numeroTurniTornei = numeroTurniTornei;
+			}
+			public BigDecimal getScoreRanking() {
+				return scoreRanking;
+			}
+			public void setScoreRanking(BigDecimal scoreRanking) {
+				this.scoreRanking = scoreRanking;
+			}
+			@Override
+			public int compareTo(DatiTabellinoPerTipoTorneo o) {
+				int compare = 0;
+				if (scoreRanking != null){
+					compare = scoreRanking.compareTo(o.getScoreRanking());
+				}
+				return compare;
+			}
+			
+		}
 		
 		public TabellinoPerTipoTorneo(Integer numeroTorneiDisputati,
 				BigDecimal scoreRanking) {
@@ -187,6 +233,24 @@ public class ScorePlayer implements Comparable<ScorePlayer>{
 		public List<BigDecimal> getScoreRankings() {
 			return scoreRankings;
 		}
+		public List<DatiTabellinoPerTipoTorneo> getDatiTabellinoPerTipoTorneo() {
+			return datiTabellinoPerTipoTorneo;
+		}
+		public void setDatiTabellinoPerTipoTorneo(
+				List<DatiTabellinoPerTipoTorneo> datiTabellinoPerTipoTorneo) {
+			this.datiTabellinoPerTipoTorneo = datiTabellinoPerTipoTorneo;
+		}
+		public Integer getTorneiValevoliPerRanking() {
+			return torneiValevoliPerRanking;
+		}
+		public void setTorneiValevoliPerRanking(Integer torneiValevoliPerRanking) {
+			this.torneiValevoliPerRanking = torneiValevoliPerRanking;
+		}
+		
+		public String getNumeroTorneiDisputatiEValevoliPerRanking() {
+			return ""+numeroTorneiDisputati+" ("+torneiValevoliPerRanking+")";
+		}
+		
 	}
 
 	public void addTabellinoPerTipoTorneo(BigDecimal scoreRanking, TipoTorneo tipoTorneo){
@@ -198,6 +262,22 @@ public class ScorePlayer implements Comparable<ScorePlayer>{
 			tabellinoPerTipoTorneo.addScoreRanking(scoreRanking);
 		}
 		tabelliniPerTipoTorneo.put(tipoTorneo, tabellinoPerTipoTorneo);
+	}
+	
+
+	public void addTabellinoPerTipoTorneo(BigDecimal scoreRanking, TipoTorneo tipoTorneo, Integer partiteGiocate, Integer numeroTurni) {
+		TabellinoPerTipoTorneo tabellinoPerTipoTorneo = tabelliniPerTipoTorneo.get(tipoTorneo);
+		if (tabellinoPerTipoTorneo == null){
+			tabellinoPerTipoTorneo = new TabellinoPerTipoTorneo(1, scoreRanking);
+		}else{
+			tabellinoPerTipoTorneo.addNumeroTorneiDisputati();
+			tabellinoPerTipoTorneo.addScoreRanking(scoreRanking);
+		}
+		List<DatiTabellinoPerTipoTorneo> datiTabellinoPerTipoTorneo = tabellinoPerTipoTorneo.getDatiTabellinoPerTipoTorneo();
+		DatiTabellinoPerTipoTorneo datoTabellinoPerTipoTorneo = new DatiTabellinoPerTipoTorneo(partiteGiocate, numeroTurni, scoreRanking);
+		datiTabellinoPerTipoTorneo.add(datoTabellinoPerTipoTorneo);
+		tabelliniPerTipoTorneo.put(tipoTorneo, tabellinoPerTipoTorneo);
+		
 	}
 	
 	public TabellinoPerTipoTorneo getTabellino(TipoTorneo tipoTorneo){
@@ -297,6 +377,7 @@ public class ScorePlayer implements Comparable<ScorePlayer>{
 		}
 		return compare;
 	}
+
 
 	
 	

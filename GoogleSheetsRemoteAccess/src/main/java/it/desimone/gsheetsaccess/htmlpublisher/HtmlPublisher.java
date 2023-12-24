@@ -149,7 +149,7 @@ public class HtmlPublisher {
 	}
 
 	public static void publish(boolean withUpload) {
-		MyLogger.getLogger().info("Inizio elaborazione");
+		MyLogger.getLogger().info("INIZIO elaborazione");
 		
 		Map<Integer, TournamentsToPublish> newToPublish = publishingAnalyzer();
 		Set<Integer> years = newToPublish.keySet();
@@ -169,7 +169,7 @@ public class HtmlPublisher {
 			}
 		}
 		
-		File doppioniSospetti = new File(FOLDER_PATH, "anagraficheDaVerificare.html");
+		File doppioniSospetti = new File(FOLDER_PATH, SitePages.DOPPIONI);
 		List<ScorePlayer> allTabellini = new ArrayList<ScorePlayer>();
 		for (FilesToPublish fileToPublish: fileDaPubblicare){
 			
@@ -237,7 +237,7 @@ public class HtmlPublisher {
 		ClubAnalysis clubAnalysis = TournamentsAnalyzer.elaboraPartecipazioniTornei(year, torneiPubblicati, tournamentsToPublishByYear.getTorneiDaMettereOnline());
 		List<File> tabelliniClub = tabelliniClubPublisher(clubAnalysis, year, folderTabelliniClub);
 		
-		MyLogger.getLogger().info("Fine elaborazione");
+		MyLogger.getLogger().info("FINE elaborazione");
 		
 		FilesToPublish filesToPublish = new FilesToPublish(year);
 		filesToPublish.setListaTornei(listaTornei);

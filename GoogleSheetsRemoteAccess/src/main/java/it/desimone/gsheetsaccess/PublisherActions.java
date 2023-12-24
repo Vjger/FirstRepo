@@ -6,6 +6,7 @@ import it.desimone.gsheetsaccess.common.GDriveUtils;
 import it.desimone.gsheetsaccess.gdrive.file.ReportDriveData;
 import it.desimone.gsheetsaccess.googleaccess.GmailAccess;
 import it.desimone.gsheetsaccess.gsheets.dto.ReportElaborazioneRow;
+import it.desimone.gsheetsaccess.htmlpublisher.SitePages;
 import it.desimone.risiko.torneo.batch.ExcelValidator.ExcelValidatorMessages;
 import it.desimone.utils.MyException;
 import it.desimone.utils.MyLogger;
@@ -74,6 +75,7 @@ public class PublisherActions {
 		result.append("] è avvenuta regolarmente ed ora i dati del report sono disponibili nel database centrale");
 		result.append("\n");
 		result.append("Si raccomanda di verificare la corrispondenza del report sulle pagine web e l'eventuale generazione di doppioni anagrafici");
+		result.append("al seguente indirizzo: "+SitePages.DOPPIONI_URL);
 		return result.toString();
 	}
 	
