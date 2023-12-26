@@ -10,6 +10,8 @@ import it.desimone.gsheetsaccess.gsheets.dto.ClassificheRow;
 import it.desimone.gsheetsaccess.gsheets.dto.PartitaRow;
 import it.desimone.gsheetsaccess.gsheets.dto.TorneiRow;
 import it.desimone.gsheetsaccess.ranking.RankingThresholds.Thresholds;
+import it.desimone.gsheetsaccess.ranking.RankingThresholdsNew.ThresholdsNew;
+import it.desimone.gsheetsaccess.ranking.RankingThresholdsNew.ThresholdsNew.ThresholdParameter;
 import it.desimone.gsheetsaccess.utils.TorneiUtils;
 import it.desimone.risiko.torneo.dto.SchedaTorneo.TipoTorneo;
 import it.desimone.utils.MyLogger;
@@ -306,6 +308,148 @@ public class RankingCalculator {
 		rankingData.setMappaSoglieTipoTorneo(mappaSoglieTipoTorneo);
 		rankingData.setTabellini(tabellini);
 		return rankingData;
+	}
+	
+	private static RankingData filtraTabelliniNew2(String year, List<TorneoPubblicato> torneiPubblicati, List<ScorePlayer> tabellini){
+		RankingData rankingData = new RankingData();
+		//Calcolare le soglie
+		RankingThresholdsNew rankingThresholds = RankingBuilderNew.getRankingThreshold(year);
+		MyLogger.getLogger().info("Soglie ranking per l'anno "+year+": "+rankingThresholds);
+		
+		Set<TipoTorneo> managedTournamentsType = rankingThresholds.getManagedTournamentsType();
+
+		ConteggiTornei conteggioTornei = determinaConteggioTornei(year, torneiPubblicati, rankingThresholds);
+
+		MyLogger.getLogger().info("Contatori Tornei valevoli per Ranking: "+conteggioTornei);
+		Map<TipoTorneo, Integer> mappaSoglieTipoTorneo = new HashMap<TipoTorneo, Integer>();
+		for (TipoTorneo tipoTorneo: managedTournamentsType){
+			ThresholdsNew threshold = rankingThresholds.getThresholds(tipoTorneo);
+			Integer torneiDisputati = conteggioTornei.getNumeroTorneiDisputati(tipoTorneo);
+			Integer turniDisputati = conteggioTornei.getNumeroTurniDisputati(tipoTorneo);
+			Integer numeroTorneiMinimo = threshold.getMinTournaments();
+			BigDecimal percentualeMassimaTornei = threshold.getMaxPercentage();
+			BigDecimal numeroTorneiMassimoPerPercentuale = null;
+			Integer numeroTorneiMassimo = null;
+			if (percentualeMassimaTornei != null){
+				numeroTorneiMassimoPerPercentuale = new BigDecimal(torneiDisputati).multiply(percentualeMassimaTornei).divide(new BigDecimal(100));
+				numeroTorneiMassimo = numeroTorneiMassimoPerPercentuale.toBigInteger().intValue();
+			}
+			if (numeroTorneiMinimo != null && numeroTorneiMassimo != null) {
+				mappaSoglieTipoTorneo.put(tipoTorneo, Math.max(numeroTorneiMinimo, numeroTorneiMassimo));
+			}
+		}
+		MyLogger.getLogger().info("Soglie ranking per l'anno "+year+" in base ai tornei disputati: "+mappaSoglieTipoTorneo);
+		
+		//Ricalcolare i tabellini in base alle soglie
+		
+		for (ScorePlayer tabellino: tabellini){
+			BigDecimal ranking = BigDecimal.ZERO;
+			
+			for (TipoTorneo tipoTorneo: managedTournamentsType){
+			
+				TabellinoPerTipoTorneo tabellinoPerTipoTorneo = tabellino.getTabellino(tipoTorneo);
+				List<DatiTabellinoPerTipoTorneo> listaDatiTabellinoPerTipoTorneo = tabellinoPerTipoTorneo.getDatiTabellinoPerTipoTorneo();
+				Collections.sort(listaDatiTabellinoPerTipoTorneo);
+				Collections.reverse(listaDatiTabellinoPerTipoTorneo);
+				
+				ThresholdsNew threshold = rankingThresholds.getThresholds(tipoTorneo);
+				List<ThresholdParameter> criteria = threshold.getCriteria();			
+
+				Integer soglia = mappaSoglieTipoTorneo.get(tipoTorneo);
+				for (DatiTabellinoPerTipoTorneo datiTabellinoPerTipoTorneo: listaDatiTabellinoPerTipoTorneo) {
+					boolean hasMinimuNumberTablesIfManaged = RankingScorer.hasMinimuNumberTablesIfManaged(year, tipoTorneo, datiTabellinoPerTipoTorneo.getNumeroTurniTornei());
+					for (ThresholdParameter crit: criteria) {
+
+						switch (crit) {
+						case MAX_NUM_OF_TOURNAMENTS_BY_MIN_TOURNAMENTS_AND_MAX_PERCENTAGE:
+							
+							break;
+
+						default:
+							break;
+						}
+					}
+				}
+				
+	
+				
+
+
+				BigDecimal rankingPerTipoTorneo = BigDecimal.ZERO;
+				Integer torneiValevoliPerRanking = 0;
+				if (tipoTorneo != TipoTorneo.CAMPIONATO){
+					for (int index = 1; index <= Math.min(soglia, datiTabellinoPerTipoTorneo.size()); index++){
+						rankingPerTipoTorneo = rankingPerTipoTorneo.add(datiTabellinoPerTipoTorneo.get(index -1).getScoreRanking());
+						torneiValevoliPerRanking++;
+					}
+				}else{
+					int roundCounter = 0;
+					
+					Iterator<DatiTabellinoPerTipoTorneo> iterator = datiTabellinoPerTipoTorneo.iterator();
+					while(iterator.hasNext() && roundCounter < soglia){
+						DatiTabellinoPerTipoTorneo datoTabellinoPerTipoTorneo = iterator.next();
+						roundCounter += datoTabellinoPerTipoTorneo.getNumeroTurniTornei(); 
+						//Modificare qui se invece di contare i turni dei tornei si vogliono contare i turni giocati
+						//roundCounter += datoTabellinoPerTipoTorneo.getPartiteGiocate();
+						rankingPerTipoTorneo = rankingPerTipoTorneo.add(datoTabellinoPerTipoTorneo.getScoreRanking());
+						torneiValevoliPerRanking++;
+					}
+				}
+				tabellinoPerTipoTorneo.setScoreRanking(rankingPerTipoTorneo);
+				tabellinoPerTipoTorneo.setTorneiValevoliPerRanking(torneiValevoliPerRanking);
+				ranking = ranking.add(rankingPerTipoTorneo);
+			}
+			tabellino.setScoreRanking(ranking);
+		}
+		
+		//Riordinare i tabellini
+		Collections.sort(tabellini, new Comparator() {
+			public int compare(final Object o1, final Object o2) {
+				int compare = 0;
+				ScorePlayer scorePlayer1 = (ScorePlayer) o1;
+				ScorePlayer scorePlayer2 = (ScorePlayer) o2; 
+				if (scorePlayer2 != null){
+					compare = scorePlayer2.getScoreRanking().compareTo(scorePlayer1.getScoreRanking());
+				}
+				return compare;
+			}
+		});
+		
+		Map<TipoTorneo, Integer> mappaConteggiTipoTorneo = new HashMap<TipoTorneo, Integer>();
+		for (TipoTorneo tipoTorneo: managedTournamentsType){
+			mappaConteggiTipoTorneo.put(tipoTorneo, 0);
+		}
+		for (TorneoPubblicato torneoPubblicato: torneiPubblicati){
+			if (torneoPubblicato.isConcluso() && torneoPubblicato.getClassifica() != null && !torneoPubblicato.getClassifica().isEmpty()){
+				TipoTorneo tipoTorneo = TipoTorneo.parseTipoTorneo(torneoPubblicato.getTorneoRow().getTipoTorneo());
+				if (mappaConteggiTipoTorneo.containsKey(tipoTorneo) && RankingScorer.hasMinimuNumberTables(year, tipoTorneo, torneoPubblicato.getTorneoRow().getNumeroTavoli())){
+					Integer counter = mappaConteggiTipoTorneo.get(tipoTorneo);
+					mappaConteggiTipoTorneo.put(tipoTorneo, ++counter);
+				}
+			}
+		}
+		
+		rankingData.setMappaConteggiTipoTorneo(mappaConteggiTipoTorneo);
+		rankingData.setMappaSoglieTipoTorneo(mappaSoglieTipoTorneo);
+		rankingData.setTabellini(tabellini);
+		return rankingData;
+	}
+	
+	private static ConteggiTornei determinaConteggioTornei(String year, List<TorneoPubblicato> torneiPubblicati, RankingThresholdsNew rankingThresholds) {
+		ConteggiTornei conteggioTornei = new ConteggiTornei();
+		Set<TipoTorneo> managedTournamentsType = rankingThresholds.getManagedTournamentsType();
+		for (TorneoPubblicato torneoPubblicato: torneiPubblicati){
+			if (torneoPubblicato.isConcluso() && torneoPubblicato.getClassifica() != null && !torneoPubblicato.getClassifica().isEmpty()){
+				TipoTorneo tipoTorneo = TipoTorneo.parseTipoTorneo(torneoPubblicato.getTorneoRow().getTipoTorneo());
+				if (managedTournamentsType.contains(tipoTorneo) 
+				&& RankingScorer.hasMinimuNumberTablesIfManaged(year, tipoTorneo, torneoPubblicato.getTorneoRow().getNumeroTavoli())
+				){
+					conteggioTornei.addOneToTorneiDisputati(tipoTorneo);
+					conteggioTornei.addToTurniDisputati(tipoTorneo, torneoPubblicato.getTorneoRow().getNumeroTurni());
+				}
+			}
+		}
+		return conteggioTornei;
 	}
 	
 //	public static void calculate(String year) throws IOException{

@@ -1,6 +1,8 @@
 package it.desimone.gsheetsaccess.ranking;
 
 import it.desimone.gsheetsaccess.ranking.RankingThresholds.Thresholds;
+import it.desimone.gsheetsaccess.ranking.RankingThresholdsNew.ThresholdsNew;
+import it.desimone.gsheetsaccess.ranking.RankingThresholdsNew.ThresholdsNew.ThresholdParameter;
 import it.desimone.risiko.torneo.dto.SchedaTorneo.TipoTorneo;
 
 import java.math.BigDecimal;
@@ -32,6 +34,21 @@ public class RankingScorer {
 		if (thresholds != null){
 			result = numeroTavoli >= thresholds.getMinTables();
 		}
+		return result;
+	}
+	
+	public static boolean hasMinimuNumberTablesIfManaged(String year, TipoTorneo tipoTorneo, int numeroTavoli){
+		boolean result = true;
+		RankingThresholdsNew rankingThresholds = RankingBuilderNew.getRankingThreshold(year);
+		ThresholdsNew thresholds = rankingThresholds.getThresholds(tipoTorneo);
+		if (thresholds != null && thresholds.getCriteria().contains(ThresholdParameter.MIN_NUM_OF_TABLES_IN_TOURNAMENT)){
+			result = numeroTavoli >= thresholds.getMinTables();
+		}
+		return result;
+	}
+	
+	public static boolean hasMinimuNumberTables(String year, int numeroTavoli, int numeroMinimoTavoli){
+		boolean	result = numeroTavoli >= numeroMinimoTavoli;
 		return result;
 	}
 	
