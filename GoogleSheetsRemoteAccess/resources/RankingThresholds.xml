@@ -87,7 +87,7 @@
           <it.desimone.gsheetsaccess.ranking.RankingThresholds_-Thresholds>
             <minTables>6</minTables>
             <minTournaments>1</minTournaments>
-            <maxPercentage>50</maxPercentage>
+            <maxPercentage>100</maxPercentage>
           </it.desimone.gsheetsaccess.ranking.RankingThresholds_-Thresholds>
         </entry>
       </sogliePerTipoTorneo>
