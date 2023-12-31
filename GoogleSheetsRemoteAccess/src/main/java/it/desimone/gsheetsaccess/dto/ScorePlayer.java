@@ -248,7 +248,11 @@ public class ScorePlayer implements Comparable<ScorePlayer>{
 		}
 		
 		public String getNumeroTorneiDisputatiEValevoliPerRanking() {
-			return ""+numeroTorneiDisputati+" ("+torneiValevoliPerRanking+")";
+			String result = ""+numeroTorneiDisputati;
+			if (torneiValevoliPerRanking != null){
+				result += " ("+torneiValevoliPerRanking+")";
+			}
+			return result;
 		}
 		
 	}

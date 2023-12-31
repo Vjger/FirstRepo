@@ -658,7 +658,7 @@ public class HtmlPublisher {
 	}
 	
 	public static String getTorneoPage(String idTorneo){
-		return idTorneo.replaceAll("\\s+", "").replaceAll("\\[", "_").replaceAll("\\]", "_").replaceAll("!", "");
+		return idTorneo.replaceAll("\\s+", "").replaceAll("\\[", "_").replaceAll("\\]", "_").replaceAll("!", "").replaceAll("'", "").replaceAll("é", "e").replaceAll("è", "e");
 	}
 	
 }

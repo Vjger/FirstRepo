@@ -44,8 +44,8 @@ public class RankingCalculator {
 
 	public static RankingData elaboraRanking(String year, List<TorneoPubblicato> torneiPubblicati, List<Integer> whiteList){
 		List<ScorePlayer> tabellini = elaboraTabellini(year, torneiPubblicati, whiteList);
-		//RankingData rankingData = filtraTabellini(year, torneiPubblicati, tabellini);
-		RankingData rankingData = filtraTabelliniNew(year, torneiPubblicati, tabellini);
+		RankingData rankingData = filtraTabellini(year, torneiPubblicati, tabellini);
+		//RankingData rankingData = filtraTabelliniNew(year, torneiPubblicati, tabellini);
 		
 		return rankingData;
 	}
@@ -377,24 +377,24 @@ public class RankingCalculator {
 
 				BigDecimal rankingPerTipoTorneo = BigDecimal.ZERO;
 				Integer torneiValevoliPerRanking = 0;
-				if (tipoTorneo != TipoTorneo.CAMPIONATO){
-					for (int index = 1; index <= Math.min(soglia, datiTabellinoPerTipoTorneo.size()); index++){
-						rankingPerTipoTorneo = rankingPerTipoTorneo.add(datiTabellinoPerTipoTorneo.get(index -1).getScoreRanking());
-						torneiValevoliPerRanking++;
-					}
-				}else{
-					int roundCounter = 0;
-					
-					Iterator<DatiTabellinoPerTipoTorneo> iterator = datiTabellinoPerTipoTorneo.iterator();
-					while(iterator.hasNext() && roundCounter < soglia){
-						DatiTabellinoPerTipoTorneo datoTabellinoPerTipoTorneo = iterator.next();
-						roundCounter += datoTabellinoPerTipoTorneo.getNumeroTurniTornei(); 
-						//Modificare qui se invece di contare i turni dei tornei si vogliono contare i turni giocati
-						//roundCounter += datoTabellinoPerTipoTorneo.getPartiteGiocate();
-						rankingPerTipoTorneo = rankingPerTipoTorneo.add(datoTabellinoPerTipoTorneo.getScoreRanking());
-						torneiValevoliPerRanking++;
-					}
-				}
+//				if (tipoTorneo != TipoTorneo.CAMPIONATO){
+//					for (int index = 1; index <= Math.min(soglia, datiTabellinoPerTipoTorneo.size()); index++){
+//						rankingPerTipoTorneo = rankingPerTipoTorneo.add(datiTabellinoPerTipoTorneo.get(index -1).getScoreRanking());
+//						torneiValevoliPerRanking++;
+//					}
+//				}else{
+//					int roundCounter = 0;
+//					
+//					Iterator<DatiTabellinoPerTipoTorneo> iterator = datiTabellinoPerTipoTorneo.iterator();
+//					while(iterator.hasNext() && roundCounter < soglia){
+//						DatiTabellinoPerTipoTorneo datoTabellinoPerTipoTorneo = iterator.next();
+//						roundCounter += datoTabellinoPerTipoTorneo.getNumeroTurniTornei(); 
+//						//Modificare qui se invece di contare i turni dei tornei si vogliono contare i turni giocati
+//						//roundCounter += datoTabellinoPerTipoTorneo.getPartiteGiocate();
+//						rankingPerTipoTorneo = rankingPerTipoTorneo.add(datoTabellinoPerTipoTorneo.getScoreRanking());
+//						torneiValevoliPerRanking++;
+//					}
+//				}
 				tabellinoPerTipoTorneo.setScoreRanking(rankingPerTipoTorneo);
 				tabellinoPerTipoTorneo.setTorneiValevoliPerRanking(torneiValevoliPerRanking);
 				ranking = ranking.add(rankingPerTipoTorneo);
