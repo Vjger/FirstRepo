@@ -2,7 +2,6 @@ package it.desimone.gsheetsaccess.ranking;
 
 import it.desimone.gsheetsaccess.dto.ScorePlayer;
 import it.desimone.gsheetsaccess.dto.ScorePlayer.TabellinoPerTipoTorneo;
-import it.desimone.gsheetsaccess.dto.ScorePlayer.TabellinoPlayer;
 import it.desimone.gsheetsaccess.dto.ScorePlayer.TabellinoPerTipoTorneo.DatiTabellinoPerTipoTorneo;
 import it.desimone.gsheetsaccess.dto.TorneoPubblicato;
 import it.desimone.gsheetsaccess.gsheets.dto.AnagraficaGiocatoreRow;
@@ -21,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -44,8 +42,9 @@ public class RankingCalculator {
 
 	public static RankingData elaboraRanking(String year, List<TorneoPubblicato> torneiPubblicati, List<Integer> whiteList){
 		List<ScorePlayer> tabellini = elaboraTabellini(year, torneiPubblicati, whiteList);
-		RankingData rankingData = filtraTabellini(year, torneiPubblicati, tabellini);
+		//RankingData rankingData = filtraTabellini(year, torneiPubblicati, tabellini);
 		//RankingData rankingData = filtraTabelliniNew(year, torneiPubblicati, tabellini);
+		RankingData rankingData = filtraTabelliniNew2(year, torneiPubblicati, tabellini);
 		
 		return rankingData;
 	}
@@ -346,7 +345,11 @@ public class RankingCalculator {
 			BigDecimal ranking = BigDecimal.ZERO;
 			
 			for (TipoTorneo tipoTorneo: managedTournamentsType){
-			
+				BigDecimal rankingPerTipoTorneo = BigDecimal.ZERO;
+				Integer torneiValevoliPerRanking = 0;
+				Integer roundCounter = 0;
+				Integer matchCounter = 0;
+				
 				TabellinoPerTipoTorneo tabellinoPerTipoTorneo = tabellino.getTabellino(tipoTorneo);
 				List<DatiTabellinoPerTipoTorneo> listaDatiTabellinoPerTipoTorneo = tabellinoPerTipoTorneo.getDatiTabellinoPerTipoTorneo();
 				Collections.sort(listaDatiTabellinoPerTipoTorneo);
@@ -357,44 +360,36 @@ public class RankingCalculator {
 
 				Integer soglia = mappaSoglieTipoTorneo.get(tipoTorneo);
 				for (DatiTabellinoPerTipoTorneo datiTabellinoPerTipoTorneo: listaDatiTabellinoPerTipoTorneo) {
-					boolean hasMinimuNumberTablesIfManaged = RankingScorer.hasMinimuNumberTablesIfManaged(year, tipoTorneo, datiTabellinoPerTipoTorneo.getNumeroTurniTornei());
+				
+					RankingValidator rankingValidator = RankingValidator.getInstance();
 					for (ThresholdParameter crit: criteria) {
-
 						switch (crit) {
+						//Non si riesce in questa fase a gestire il numero minimo di tavoli che è una caratteristica del torneo e non del giocatore ma, ad ogni modo il punteggio ranking sarà sempre zero.
+						//TODO Si dovrebbe gestire però,perchè se un un torneo non è valido allora non dovrebbe nemmeno rientrare nei conteggi del numero di tornei e del numero di turni
+//						case MIN_NUM_OF_TABLES_IN_TOURNAMENT:
+//							rankingValidator.validMinimuNumberTablesIfManaged(datiTabellinoPerTipoTorneo.getNumeroTurniTornei(), threshold.getMinTables());
+//							break;
 						case MAX_NUM_OF_TOURNAMENTS_BY_MIN_TOURNAMENTS_AND_MAX_PERCENTAGE:
-							
+							rankingValidator.validMaxNumOfTournamentsByMinTournamentsAndMaxPercentage(torneiValevoliPerRanking, soglia);
 							break;
-
+						case MAX_NUM_OF_ROUNDS_BY_TOURNAMENT:
+							rankingValidator.validMaxNumOfTournamentsByMinTournamentsAndMaxPercentage(roundCounter, threshold.getMaxNumOfRoundsByTournament());
+							break;
+						case MAX_NUM_OF_ROUNDS_PLAYED_EFFECTIVELY:
+							rankingValidator.validByMaxNumOfRoundsPlayedEffectively(matchCounter, threshold.getMaxNumOfRoundsPlayedEffectively());
+							break;							
 						default:
 							break;
 						}
 					}
+					if (rankingValidator.isValid()) {
+						torneiValevoliPerRanking++;
+						
+						roundCounter += datiTabellinoPerTipoTorneo.getNumeroTurniTornei(); 
+						matchCounter += datiTabellinoPerTipoTorneo.getPartiteGiocate();
+						rankingPerTipoTorneo = rankingPerTipoTorneo.add(datiTabellinoPerTipoTorneo.getScoreRanking());
+					}
 				}
-				
-	
-				
-
-
-				BigDecimal rankingPerTipoTorneo = BigDecimal.ZERO;
-				Integer torneiValevoliPerRanking = 0;
-//				if (tipoTorneo != TipoTorneo.CAMPIONATO){
-//					for (int index = 1; index <= Math.min(soglia, datiTabellinoPerTipoTorneo.size()); index++){
-//						rankingPerTipoTorneo = rankingPerTipoTorneo.add(datiTabellinoPerTipoTorneo.get(index -1).getScoreRanking());
-//						torneiValevoliPerRanking++;
-//					}
-//				}else{
-//					int roundCounter = 0;
-//					
-//					Iterator<DatiTabellinoPerTipoTorneo> iterator = datiTabellinoPerTipoTorneo.iterator();
-//					while(iterator.hasNext() && roundCounter < soglia){
-//						DatiTabellinoPerTipoTorneo datoTabellinoPerTipoTorneo = iterator.next();
-//						roundCounter += datoTabellinoPerTipoTorneo.getNumeroTurniTornei(); 
-//						//Modificare qui se invece di contare i turni dei tornei si vogliono contare i turni giocati
-//						//roundCounter += datoTabellinoPerTipoTorneo.getPartiteGiocate();
-//						rankingPerTipoTorneo = rankingPerTipoTorneo.add(datoTabellinoPerTipoTorneo.getScoreRanking());
-//						torneiValevoliPerRanking++;
-//					}
-//				}
 				tabellinoPerTipoTorneo.setScoreRanking(rankingPerTipoTorneo);
 				tabellinoPerTipoTorneo.setTorneiValevoliPerRanking(torneiValevoliPerRanking);
 				ranking = ranking.add(rankingPerTipoTorneo);
@@ -422,7 +417,7 @@ public class RankingCalculator {
 		for (TorneoPubblicato torneoPubblicato: torneiPubblicati){
 			if (torneoPubblicato.isConcluso() && torneoPubblicato.getClassifica() != null && !torneoPubblicato.getClassifica().isEmpty()){
 				TipoTorneo tipoTorneo = TipoTorneo.parseTipoTorneo(torneoPubblicato.getTorneoRow().getTipoTorneo());
-				if (mappaConteggiTipoTorneo.containsKey(tipoTorneo) && RankingScorer.hasMinimuNumberTables(year, tipoTorneo, torneoPubblicato.getTorneoRow().getNumeroTavoli())){
+				if (mappaConteggiTipoTorneo.containsKey(tipoTorneo) && RankingScorer.hasMinimuNumberTablesIfManaged(year, tipoTorneo, torneoPubblicato.getTorneoRow().getNumeroTavoli())){
 					Integer counter = mappaConteggiTipoTorneo.get(tipoTorneo);
 					mappaConteggiTipoTorneo.put(tipoTorneo, ++counter);
 				}

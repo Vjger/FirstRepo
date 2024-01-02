@@ -1,6 +1,5 @@
 package it.desimone.gsheetsaccess.ranking;
 
-import it.desimone.gsheetsaccess.ranking.RankingThresholds.Thresholds;
 import it.desimone.gsheetsaccess.ranking.RankingThresholdsNew.ThresholdsNew.ThresholdParameter;
 import it.desimone.risiko.torneo.dto.SchedaTorneo.TipoTorneo;
 
@@ -30,13 +29,15 @@ public class RankingThresholdsNew {
 		private Integer minTournaments;
 		private BigDecimal maxPercentage;
 		private Integer maxNumOfRoundsByTournament;
+		private Integer maxNumOfRoundsPlayedEffectively;
 		private List<ThresholdParameter> criteria;
-		public ThresholdsNew(Integer minTables, Integer minTournaments, BigDecimal maxPercentage, Integer maxNumOfRoundsByTournament, List<ThresholdParameter> criteria) {
+		public ThresholdsNew(Integer minTables, Integer minTournaments, BigDecimal maxPercentage, Integer maxNumOfRoundsByTournament, Integer maxNumOfRoundsPlayedEffectively, List<ThresholdParameter> criteria) {
 			super();
 			this.minTables = minTables;
 			this.minTournaments = minTournaments;
 			this.maxPercentage = maxPercentage;
 			this.maxNumOfRoundsByTournament = maxNumOfRoundsByTournament;
+			this.maxNumOfRoundsPlayedEffectively = maxNumOfRoundsPlayedEffectively;
 			this.criteria = criteria;
 		}
 		
@@ -67,6 +68,14 @@ public class RankingThresholdsNew {
 			this.maxNumOfRoundsByTournament = maxNumOfRoundsByTournament;
 		}
 
+		public Integer getMaxNumOfRoundsPlayedEffectively() {
+			return maxNumOfRoundsPlayedEffectively;
+		}
+
+		public void setMaxNumOfRoundsPlayedEffectively(Integer maxNumOfRoundsPlayedEffectively) {
+			this.maxNumOfRoundsPlayedEffectively = maxNumOfRoundsPlayedEffectively;
+		}
+
 		public List<ThresholdParameter> getCriteria() {
 			return criteria;
 		}
@@ -77,12 +86,12 @@ public class RankingThresholdsNew {
 
 		@Override
 		public String toString() {
-			return "ThresholdsNew [minTables=" + minTables
-					+ ", minTournaments=" + minTournaments + ", maxPercentage="
-					+ maxPercentage + ", maxNumOfRoundsByTournament="
-					+ maxNumOfRoundsByTournament + ", criteria=" + criteria
+			return "ThresholdsNew [minTables=" + minTables + ", minTournaments=" + minTournaments + ", maxPercentage="
+					+ maxPercentage + ", maxNumOfRoundsByTournament=" + maxNumOfRoundsByTournament
+					+ ", maxNumOfRoundsPlayedEffectively=" + maxNumOfRoundsPlayedEffectively + ", criteria=" + criteria
 					+ "]";
 		}
+
 
 	}
 	public void addThresholds(TipoTorneo tipoTorneo, ThresholdsNew thresholds){
@@ -106,19 +115,19 @@ public class RankingThresholdsNew {
 		
 		RankingThresholdsNew rankingThresholds2023 = new RankingThresholdsNew();
 		List<ThresholdParameter> l1 = Arrays.asList(new ThresholdParameter[]{ThresholdParameter.MIN_NUM_OF_TABLES_IN_TOURNAMENT, ThresholdParameter.MAX_NUM_OF_TOURNAMENTS_BY_MIN_TOURNAMENTS_AND_MAX_PERCENTAGE});
-		rankingThresholds2023.addThresholds(TipoTorneo.CAMPIONATO, new ThresholdsNew(6,1, new BigDecimal(100), null, l1));
-		rankingThresholds2023.addThresholds(TipoTorneo.INTERCLUB, new ThresholdsNew(6,1, new BigDecimal(33.3), null, l1));
-		rankingThresholds2023.addThresholds(TipoTorneo.OPEN, new ThresholdsNew(6,3, new BigDecimal(13.5), null, l1));
-		rankingThresholds2023.addThresholds(TipoTorneo.MASTER, new ThresholdsNew(15,1, new BigDecimal(30), null, l1));
-		rankingThresholds2023.addThresholds(TipoTorneo.RADUNO_NAZIONALE, new ThresholdsNew(6,1, new BigDecimal(33.3), null, l1));
+		rankingThresholds2023.addThresholds(TipoTorneo.CAMPIONATO, new ThresholdsNew(6,1, new BigDecimal(100), null, null, l1));
+		rankingThresholds2023.addThresholds(TipoTorneo.INTERCLUB, new ThresholdsNew(6,1, new BigDecimal(33.3), null, null, l1));
+		rankingThresholds2023.addThresholds(TipoTorneo.OPEN, new ThresholdsNew(6,3, new BigDecimal(13.5), null, null, l1));
+		rankingThresholds2023.addThresholds(TipoTorneo.MASTER, new ThresholdsNew(15,1, new BigDecimal(30), null, null, l1));
+		rankingThresholds2023.addThresholds(TipoTorneo.RADUNO_NAZIONALE, new ThresholdsNew(6,1, new BigDecimal(33.3), null, null, l1));
 		mappingScorers.put("2023", rankingThresholds2023);
 		RankingThresholdsNew rankingThresholds2024 = new RankingThresholdsNew();
 		List<ThresholdParameter> l2 = Arrays.asList(new ThresholdParameter[]{ThresholdParameter.MIN_NUM_OF_TABLES_IN_TOURNAMENT, ThresholdParameter.MAX_NUM_OF_ROUNDS_BY_TOURNAMENT});
-		rankingThresholds2024.addThresholds(TipoTorneo.CAMPIONATO, new ThresholdsNew(6,1, new BigDecimal(100), 45, l2));
-		rankingThresholds2024.addThresholds(TipoTorneo.INTERCLUB, new ThresholdsNew(6,1, new BigDecimal(33.3), null, l1));
-		rankingThresholds2024.addThresholds(TipoTorneo.OPEN, new ThresholdsNew(6,3, new BigDecimal(13.5), null, l1));
-		rankingThresholds2024.addThresholds(TipoTorneo.MASTER, new ThresholdsNew(15,1, new BigDecimal(30), null, l1));
-		rankingThresholds2024.addThresholds(TipoTorneo.RADUNO_NAZIONALE, new ThresholdsNew(6,1, new BigDecimal(33.3), null, l1));
+		rankingThresholds2024.addThresholds(TipoTorneo.CAMPIONATO, new ThresholdsNew(6,1, new BigDecimal(100), 45, null, l2));
+		rankingThresholds2024.addThresholds(TipoTorneo.INTERCLUB, new ThresholdsNew(6,1, new BigDecimal(33.3), null, null, l1));
+		rankingThresholds2024.addThresholds(TipoTorneo.OPEN, new ThresholdsNew(6,3, new BigDecimal(13.5), null, null, l1));
+		rankingThresholds2024.addThresholds(TipoTorneo.MASTER, new ThresholdsNew(15,1, new BigDecimal(30), null, null, l1));
+		rankingThresholds2024.addThresholds(TipoTorneo.RADUNO_NAZIONALE, new ThresholdsNew(6,1, new BigDecimal(33.3), null, null, l1));
 		mappingScorers.put("2024", rankingThresholds2024);
 		XStream xStream = new XStream();
 		String thresholds = xStream.toXML(mappingScorers);

@@ -15,7 +15,8 @@ public class RankingScorer {
 		BigDecimal score = BigDecimal.ZERO;
 		BigDecimal b = BigDecimal.ONE;
 		
-		if (hasMinimuNumberTables(year, tipoTorneo, numeroTavoli)){
+		//if (hasMinimuNumberTables(year, tipoTorneo, numeroTavoli)){
+		if (hasMinimuNumberTablesIfManaged(year, tipoTorneo, numeroTavoli)){			
 			BigDecimal VT = a(posizioneNelTorneo).multiply(new BigDecimal(100).add(b.multiply(new BigDecimal(numeroTavoli)))).multiply(classe(tipoTorneo, numeroTurni));
 	
 			if (posizioneNelTorneo == 1){
