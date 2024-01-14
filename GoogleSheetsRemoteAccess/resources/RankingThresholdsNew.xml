@@ -1,19 +1,84 @@
 <tree-map>
   <entry>
-    <string>2022</string>
+    <string>2019</string>
     <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew>
       <sogliePerTipoTorneo>
         <entry>
           <it.desimone.risiko.torneo.dto.SchedaTorneo_-TipoTorneo>MASTER</it.desimone.risiko.torneo.dto.SchedaTorneo_-TipoTorneo>
           <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew>
-            <minTables>15</minTables>
+            <minTables>1</minTables>
+            <minTournaments>1</minTournaments>
+            <maxPercentage>100</maxPercentage>
+            <criteria>
+              <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MIN_NUM_OF_TABLES_IN_TOURNAMENT</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
+              <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MAX_NUM_OF_TOURNAMENTS_BY_MIN_TOURNAMENTS_AND_MAX_PERCENTAGE</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
+            </criteria>
+          </it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew>
+        </entry>
+        <entry>
+          <it.desimone.risiko.torneo.dto.SchedaTorneo_-TipoTorneo>RADUNO_NAZIONALE</it.desimone.risiko.torneo.dto.SchedaTorneo_-TipoTorneo>
+          <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew>
+            <minTables>1</minTables>
+            <minTournaments>1</minTournaments>
+            <maxPercentage>100</maxPercentage>
+            <criteria>
+              <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MIN_NUM_OF_TABLES_IN_TOURNAMENT</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
+              <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MAX_NUM_OF_TOURNAMENTS_BY_MIN_TOURNAMENTS_AND_MAX_PERCENTAGE</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
+            </criteria>
+          </it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew>
+        </entry>
+        <entry>
+          <it.desimone.risiko.torneo.dto.SchedaTorneo_-TipoTorneo>CAMPIONATO</it.desimone.risiko.torneo.dto.SchedaTorneo_-TipoTorneo>
+          <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew>
+            <minTables>1</minTables>
+            <minTournaments>1</minTournaments>
+            <maxPercentage>100</maxPercentage>
+            <criteria>
+              <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MIN_NUM_OF_TABLES_IN_TOURNAMENT</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
+              <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MAX_NUM_OF_TOURNAMENTS_BY_MIN_TOURNAMENTS_AND_MAX_PERCENTAGE</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
+            </criteria>
+          </it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew>
+        </entry>
+        <entry>
+          <it.desimone.risiko.torneo.dto.SchedaTorneo_-TipoTorneo>INTERCLUB</it.desimone.risiko.torneo.dto.SchedaTorneo_-TipoTorneo>
+          <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew>
+            <minTables>1</minTables>
+            <minTournaments>1</minTournaments>
+            <maxPercentage>100</maxPercentage>
+            <criteria>
+              <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MIN_NUM_OF_TABLES_IN_TOURNAMENT</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
+              <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MAX_NUM_OF_TOURNAMENTS_BY_MIN_TOURNAMENTS_AND_MAX_PERCENTAGE</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
+            </criteria>
+          </it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew>
+        </entry>
+        <entry>
+          <it.desimone.risiko.torneo.dto.SchedaTorneo_-TipoTorneo>OPEN</it.desimone.risiko.torneo.dto.SchedaTorneo_-TipoTorneo>
+          <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew>
+            <minTables>1</minTables>
+            <minTournaments>1</minTournaments>
+            <maxPercentage>100</maxPercentage>
+            <criteria>
+              <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MIN_NUM_OF_TABLES_IN_TOURNAMENT</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
+              <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MAX_NUM_OF_TOURNAMENTS_BY_MIN_TOURNAMENTS_AND_MAX_PERCENTAGE</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
+            </criteria>
+          </it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew>
+        </entry>
+      </sogliePerTipoTorneo>
+    </it.desimone.gsheetsaccess.ranking.RankingThresholdsNew>
+  </entry>
+  <entry>
+    <string>2020</string>
+    <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew>
+      <sogliePerTipoTorneo>
+        <entry>
+          <it.desimone.risiko.torneo.dto.SchedaTorneo_-TipoTorneo>MASTER</it.desimone.risiko.torneo.dto.SchedaTorneo_-TipoTorneo>
+          <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew>
+            <minTables>6</minTables>
             <minTournaments>1</minTournaments>
             <maxPercentage>30</maxPercentage>
-            <criteria class="java.util.Arrays$ArrayList">
-              <a class="it.desimone.gsheetsaccess.ranking.RankingThresholdsNew$ThresholdsNew$ThresholdParameter-array">
-                <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MIN_NUM_OF_TABLES_IN_TOURNAMENT</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
-                <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MAX_NUM_OF_TOURNAMENTS_BY_MIN_TOURNAMENTS_AND_MAX_PERCENTAGE</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
-              </a>
+            <criteria>
+              <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MIN_NUM_OF_TABLES_IN_TOURNAMENT</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
+              <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MAX_NUM_OF_TOURNAMENTS_BY_MIN_TOURNAMENTS_AND_MAX_PERCENTAGE</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
             </criteria>
           </it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew>
         </entry>
@@ -23,7 +88,10 @@
             <minTables>6</minTables>
             <minTournaments>1</minTournaments>
             <maxPercentage>33.3</maxPercentage>
-            <criteria class="java.util.Arrays$ArrayList" reference="../../../entry/it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew/criteria"/>
+            <criteria>
+              <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MIN_NUM_OF_TABLES_IN_TOURNAMENT</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
+              <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MAX_NUM_OF_TOURNAMENTS_BY_MIN_TOURNAMENTS_AND_MAX_PERCENTAGE</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
+            </criteria>
           </it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew>
         </entry>
         <entry>
@@ -32,7 +100,10 @@
             <minTables>6</minTables>
             <minTournaments>1</minTournaments>
             <maxPercentage>100</maxPercentage>
-            <criteria class="java.util.Arrays$ArrayList" reference="../../../entry/it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew/criteria"/>
+            <criteria>
+              <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MIN_NUM_OF_TABLES_IN_TOURNAMENT</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
+              <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MAX_NUM_OF_TOURNAMENTS_BY_MIN_TOURNAMENTS_AND_MAX_PERCENTAGE</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
+            </criteria>
           </it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew>
         </entry>
         <entry>
@@ -41,7 +112,10 @@
             <minTables>6</minTables>
             <minTournaments>1</minTournaments>
             <maxPercentage>33.3</maxPercentage>
-            <criteria class="java.util.Arrays$ArrayList" reference="../../../entry/it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew/criteria"/>
+            <criteria>
+              <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MIN_NUM_OF_TABLES_IN_TOURNAMENT</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
+              <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MAX_NUM_OF_TOURNAMENTS_BY_MIN_TOURNAMENTS_AND_MAX_PERCENTAGE</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
+            </criteria>
           </it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew>
         </entry>
         <entry>
@@ -50,23 +124,29 @@
             <minTables>6</minTables>
             <minTournaments>3</minTournaments>
             <maxPercentage>13.5</maxPercentage>
-            <criteria class="java.util.Arrays$ArrayList" reference="../../../entry/it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew/criteria"/>
+            <criteria>
+              <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MIN_NUM_OF_TABLES_IN_TOURNAMENT</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
+              <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MAX_NUM_OF_TOURNAMENTS_BY_MIN_TOURNAMENTS_AND_MAX_PERCENTAGE</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
+            </criteria>
           </it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew>
         </entry>
       </sogliePerTipoTorneo>
     </it.desimone.gsheetsaccess.ranking.RankingThresholdsNew>
   </entry>
   <entry>
-    <string>2023</string>
+    <string>2024</string>
     <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew>
       <sogliePerTipoTorneo>
         <entry>
           <it.desimone.risiko.torneo.dto.SchedaTorneo_-TipoTorneo>MASTER</it.desimone.risiko.torneo.dto.SchedaTorneo_-TipoTorneo>
           <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew>
-            <minTables>15</minTables>
+            <minTables>6</minTables>
             <minTournaments>1</minTournaments>
             <maxPercentage>30</maxPercentage>
-            <criteria class="java.util.Arrays$ArrayList" reference="../../../../../../entry/it.desimone.gsheetsaccess.ranking.RankingThresholdsNew/sogliePerTipoTorneo/entry/it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew/criteria"/>
+            <criteria>
+              <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MIN_NUM_OF_TABLES_IN_TOURNAMENT</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
+              <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MAX_NUM_OF_TOURNAMENTS_BY_MIN_TOURNAMENTS_AND_MAX_PERCENTAGE</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
+            </criteria>
           </it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew>
         </entry>
         <entry>
@@ -75,7 +155,10 @@
             <minTables>6</minTables>
             <minTournaments>1</minTournaments>
             <maxPercentage>33.3</maxPercentage>
-            <criteria class="java.util.Arrays$ArrayList" reference="../../../../../../entry/it.desimone.gsheetsaccess.ranking.RankingThresholdsNew/sogliePerTipoTorneo/entry/it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew/criteria"/>
+            <criteria>
+              <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MIN_NUM_OF_TABLES_IN_TOURNAMENT</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
+              <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MAX_NUM_OF_TOURNAMENTS_BY_MIN_TOURNAMENTS_AND_MAX_PERCENTAGE</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
+            </criteria>
           </it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew>
         </entry>
         <entry>
@@ -85,11 +168,9 @@
             <minTournaments>1</minTournaments>
             <maxPercentage>100</maxPercentage>
             <maxNumOfRoundsByTournament>45</maxNumOfRoundsByTournament>
-            <criteria class="java.util.Arrays$ArrayList">
-              <a class="it.desimone.gsheetsaccess.ranking.RankingThresholdsNew$ThresholdsNew$ThresholdParameter-array">
-                <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MIN_NUM_OF_TABLES_IN_TOURNAMENT</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
-                <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MAX_NUM_OF_ROUNDS_BY_TOURNAMENT</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
-              </a>
+            <criteria>
+              <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MIN_NUM_OF_TABLES_IN_TOURNAMENT</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
+              <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MAX_NUM_OF_ROUNDS_BY_TOURNAMENT</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
             </criteria>
           </it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew>
         </entry>
@@ -99,7 +180,10 @@
             <minTables>6</minTables>
             <minTournaments>1</minTournaments>
             <maxPercentage>33.3</maxPercentage>
-            <criteria class="java.util.Arrays$ArrayList" reference="../../../../../../entry/it.desimone.gsheetsaccess.ranking.RankingThresholdsNew/sogliePerTipoTorneo/entry/it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew/criteria"/>
+            <criteria>
+              <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MIN_NUM_OF_TABLES_IN_TOURNAMENT</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
+              <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MAX_NUM_OF_TOURNAMENTS_BY_MIN_TOURNAMENTS_AND_MAX_PERCENTAGE</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
+            </criteria>
           </it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew>
         </entry>
         <entry>
@@ -108,10 +192,13 @@
             <minTables>6</minTables>
             <minTournaments>3</minTournaments>
             <maxPercentage>13.5</maxPercentage>
-            <criteria class="java.util.Arrays$ArrayList" reference="../../../../../../entry/it.desimone.gsheetsaccess.ranking.RankingThresholdsNew/sogliePerTipoTorneo/entry/it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew/criteria"/>
+            <criteria>
+              <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MIN_NUM_OF_TABLES_IN_TOURNAMENT</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
+              <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MAX_NUM_OF_TOURNAMENTS_BY_MIN_TOURNAMENTS_AND_MAX_PERCENTAGE</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
+            </criteria>
           </it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew>
         </entry>
       </sogliePerTipoTorneo>
     </it.desimone.gsheetsaccess.ranking.RankingThresholdsNew>
-  </entry>
+  </entry>  
 </tree-map>

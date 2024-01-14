@@ -356,7 +356,8 @@ public class RankingCalculator {
 				Collections.reverse(listaDatiTabellinoPerTipoTorneo);
 				
 				ThresholdsNew threshold = rankingThresholds.getThresholds(tipoTorneo);
-				List<ThresholdParameter> criteria = threshold.getCriteria();			
+				//List<ThresholdParameter> criteria = threshold.getCriteria();	
+				ThresholdParameter[] criteria = threshold.getCriteria();	
 
 				Integer soglia = mappaSoglieTipoTorneo.get(tipoTorneo);
 				for (DatiTabellinoPerTipoTorneo datiTabellinoPerTipoTorneo: listaDatiTabellinoPerTipoTorneo) {
