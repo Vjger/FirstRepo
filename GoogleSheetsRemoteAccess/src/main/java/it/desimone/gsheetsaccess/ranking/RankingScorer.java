@@ -42,7 +42,7 @@ public class RankingScorer {
 		boolean result = true;
 		RankingThresholdsNew rankingThresholds = RankingBuilderNew.getRankingThreshold(year);
 		ThresholdsNew thresholds = rankingThresholds.getThresholds(tipoTorneo);
-		if (thresholds != null && thresholds.getCriteria().contains(ThresholdParameter.MIN_NUM_OF_TABLES_IN_TOURNAMENT)){
+		if (thresholds != null && thresholds.containsCriterion(ThresholdParameter.MIN_NUM_OF_TABLES_IN_TOURNAMENT)){
 			result = numeroTavoli >= thresholds.getMinTables();
 		}
 		return result;
