@@ -32,7 +32,7 @@ import org.apache.xmlbeans.impl.common.Levenshtein;
 
 public class TorneiUtils {
 
-	private static final Integer LEVENSHTEIN_LIMIT = 4;
+	private static final Integer LEVENSHTEIN_LIMIT = 5;
 	
 	static class FalsiPositivi{
 		private Integer primo;
