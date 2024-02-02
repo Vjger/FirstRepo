@@ -1,6 +1,7 @@
 package it.desimone.gsheetsaccess.analyzer;
 
 import it.desimone.gsheetsaccess.analyzer.ClubAnalysis.ClubPlayerData;
+import it.desimone.gsheetsaccess.dto.ScorePlayer;
 import it.desimone.gsheetsaccess.dto.TorneoPubblicato;
 import it.desimone.gsheetsaccess.gsheets.dto.AnagraficaGiocatoreRow;
 import it.desimone.gsheetsaccess.utils.TorneiUtils;
@@ -38,6 +39,21 @@ public class TournamentsAnalyzer {
 		ClubAnalysis clubAnalysis = new ClubAnalysis();
 		for (TorneoPubblicato torneoPubblicato: torneiPubblicati){
 			clubAnalysis.populateData(torneoPubblicato, anagraficheGiocatoriRow);
+		}
+		
+		Set<String> clubNuoviTornei = new HashSet<String>();
+		for (TorneoPubblicato torneo: torneidaMettereOnline){
+			clubNuoviTornei.add(torneo.getTorneoRow().getOrganizzatore());
+		}
+		clubAnalysis.selectByClub(clubNuoviTornei);
+		return clubAnalysis;
+	}
+	
+	public static ClubAnalysis elaboraPartecipazioniTornei(String year, List<TorneoPubblicato> torneiPubblicati, List<TorneoPubblicato> torneidaMettereOnline, List<ScorePlayer> tabellini){
+		List<AnagraficaGiocatoreRow> anagraficheGiocatoriRow = TorneiUtils.getAllAnagraficheGiocatori(year);
+		ClubAnalysis clubAnalysis = new ClubAnalysis();
+		for (TorneoPubblicato torneoPubblicato: torneiPubblicati){
+			clubAnalysis.populateData(torneoPubblicato, anagraficheGiocatoriRow, tabellini);
 		}
 		
 		Set<String> clubNuoviTornei = new HashSet<String>();

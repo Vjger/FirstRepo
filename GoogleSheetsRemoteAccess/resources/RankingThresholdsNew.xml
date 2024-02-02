@@ -84,7 +84,7 @@
             <minTables>6</minTables>
             <minTournaments>1</minTournaments>
             <maxPercentage>100</maxPercentage>
-            <maxNumOfRoundsByTournament>45</maxNumOfRoundsByTournament>
+            <maxNumOfRoundsByTournament>42</maxNumOfRoundsByTournament>
             <criteria class="java.util.Arrays$ArrayList">
               <a class="it.desimone.gsheetsaccess.ranking.RankingThresholdsNew$ThresholdsNew$ThresholdParameter-array">
                 <it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>MIN_NUM_OF_TABLES_IN_TOURNAMENT</it.desimone.gsheetsaccess.ranking.RankingThresholdsNew_-ThresholdsNew_-ThresholdParameter>
