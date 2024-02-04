@@ -13,6 +13,8 @@ import it.desimone.gsheetsaccess.gsheets.dto.SheetRowFactory.SheetRowType;
 import it.desimone.gsheetsaccess.gsheets.dto.TabellinoGiocatore;
 import it.desimone.gsheetsaccess.gsheets.dto.TorneiRow;
 import it.desimone.gsheetsaccess.gsheets.facade.GSheetsInterface;
+import it.desimone.gsheetsaccess.htmlpublisher.FalsePositiveData;
+import it.desimone.gsheetsaccess.ranking.BlackListData;
 import it.desimone.gsheetsaccess.ranking.RankingCalculator;
 import it.desimone.risiko.torneo.dto.SchedaTorneo.TipoTorneo;
 import it.desimone.utils.Capitalize;
@@ -32,7 +34,7 @@ import org.apache.xmlbeans.impl.common.Levenshtein;
 
 public class TorneiUtils {
 
-	private static final Integer LEVENSHTEIN_LIMIT = 5;
+	private static final Integer LEVENSHTEIN_LIMIT = 4;
 	
 	static class FalsiPositivi{
 		private Integer primo;
@@ -598,8 +600,10 @@ public class TorneiUtils {
 	}
 	
 	private static boolean isNotFalsePositive(AnagraficaGiocatoreRidottaRow anagI, AnagraficaGiocatoreRidottaRow anagJ) {
-		FalsiPositivi check = new FalsiPositivi(anagI.getId(), anagJ.getId());
-		return !falsiPositivi.contains(check);
+//		FalsiPositivi check = new FalsiPositivi(anagI.getId(), anagJ.getId());
+//		return !falsiPositivi.contains(check);
+		FalsePositiveData falsePositiveData = FalsePositiveData.getInstance();
+		return !falsePositiveData.areFalsePositive(anagI.getId(), anagJ.getId());
 	}
 
 	public static void printScorePlayers(/*String year*/){
@@ -640,7 +644,7 @@ public class TorneiUtils {
 		
 		for (Integer year: years){
 			List<TorneoPubblicato> torneiPubblicati = TorneiUtils.caricamentoTornei(year.toString());
-			List<ScorePlayer> tabelliniAnnuali = RankingCalculator.elaboraTabellini(year.toString(), torneiPubblicati, null);
+			List<ScorePlayer> tabelliniAnnuali = RankingCalculator.elaboraTabellini(year.toString(), torneiPubblicati, null, BlackListData.getInstance());
 			for (ScorePlayer scorePlayer: tabelliniAnnuali){
 				if (allTabellini.contains(scorePlayer)){
 					Integer index = allTabellini.indexOf(scorePlayer);

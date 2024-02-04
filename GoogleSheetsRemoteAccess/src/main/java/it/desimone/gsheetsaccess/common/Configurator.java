@@ -110,6 +110,13 @@ private static Environment environment;
 		MyLogger.getLogger().finest("ID Anagrafica Ridotta:<<"+folderId+">>");
 		return folderId;
 	}
+	
+	public static String getBlackListSheetId(){
+		String folderId = ((String)properties.get("spreadSheetIdBlacklist"));
+		if (folderId != null) folderId = folderId.trim();
+		MyLogger.getLogger().finest("ID BlackList:<<"+folderId+">>");
+		return folderId;
+	}
 
 	public static List<String> getTorneiSheetIds(){
 		Integer startingYear = 2019;

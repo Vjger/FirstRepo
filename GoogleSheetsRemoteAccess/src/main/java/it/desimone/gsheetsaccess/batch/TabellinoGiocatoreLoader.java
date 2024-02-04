@@ -57,7 +57,7 @@ public class TabellinoGiocatoreLoader {
 		if (ids != null){
 			
 			List<TorneoPubblicato> torneiPubblicati = TorneiUtils.caricamentoTornei(year);
-			List<ScorePlayer> tabellini = RankingCalculator.elaboraTabellini(year, torneiPubblicati, ids);
+			List<ScorePlayer> tabellini = RankingCalculator.elaboraTabellini(year, torneiPubblicati, ids, null);
 			
 			Collections.sort(tabellini, new Comparator<ScorePlayer>() {
 				@Override

@@ -13,6 +13,7 @@ import it.desimone.gsheetsaccess.ranking.RankingThresholdsNew.ThresholdsNew;
 import it.desimone.gsheetsaccess.ranking.RankingThresholdsNew.ThresholdsNew.ThresholdParameter;
 import it.desimone.gsheetsaccess.utils.TorneiUtils;
 import it.desimone.risiko.torneo.dto.SchedaTorneo.TipoTorneo;
+import it.desimone.utils.DateUtils;
 import it.desimone.utils.MyLogger;
 
 import java.math.BigDecimal;
@@ -24,6 +25,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.commons.collections4.CollectionUtils;
 
 public class RankingCalculator {
 	
@@ -40,8 +43,9 @@ public class RankingCalculator {
 //		MyLogger.getLogger().info("END");
 //	}
 
-	public static RankingData elaboraRanking(String year, List<TorneoPubblicato> torneiPubblicati, List<Integer> whiteList){
-		List<ScorePlayer> tabellini = elaboraTabellini(year, torneiPubblicati, whiteList);
+	public static RankingData elaboraRanking(String year, List<TorneoPubblicato> torneiPubblicati, List<Integer> selectedPlayers){
+		BlackListData blackListData = BlackListData.getInstance();
+		List<ScorePlayer> tabellini = elaboraTabellini(year, torneiPubblicati, selectedPlayers, blackListData);
 		//RankingData rankingData = filtraTabellini(year, torneiPubblicati, tabellini);
 		//RankingData rankingData = filtraTabelliniNew(year, torneiPubblicati, tabellini);
 		RankingData rankingData = filtraTabelliniNew2(year, torneiPubblicati, tabellini);
@@ -49,7 +53,7 @@ public class RankingCalculator {
 		return rankingData;
 	}
 	
-	public static List<ScorePlayer> elaboraTabellini(String year, List<TorneoPubblicato> torneiPubblicati, List<Integer> whiteList){
+	public static List<ScorePlayer> elaboraTabellini(String year, List<TorneoPubblicato> torneiPubblicati, List<Integer> selectedPlayers, BlackListData blackListData){
 		List<ScorePlayer> result = null;
 		
 		if (torneiPubblicati != null && !torneiPubblicati.isEmpty()){
@@ -58,7 +62,10 @@ public class RankingCalculator {
 			for (TorneoPubblicato torneoPubblicato: torneiPubblicati){
 				Set<Integer> idPartecipanti = torneoPubblicato.getIdPartecipanti();
 				for (Integer idPartecipante: idPartecipanti){
-					if (idPartecipante <=0 || (whiteList != null && !whiteList.isEmpty() && !whiteList.contains(idPartecipante))){ //Si tolgono anonimi e ghost
+					if (idPartecipante <=0 
+						|| (CollectionUtils.isNotEmpty(selectedPlayers) && !selectedPlayers.contains(idPartecipante))
+						|| (blackListData != null && blackListData.isForbiddenPlayer(idPartecipante, year))
+						){ //Si tolgono anonimi ghost e blacklist
 						continue;
 					}
 					ScorePlayer scorePlayer = null;
@@ -80,6 +87,12 @@ public class RankingCalculator {
 						}
 					}
 					TorneiRow torneoRow = torneoPubblicato.getTorneoRow();
+					
+					//Esclusione degli squalificati: non si incrementa la ranking nè si aggiorna il tabellino.
+					if (blackListData != null && blackListData.isDisqualifiedPlayer(idPartecipante, DateUtils.parseItalianDate(torneoRow.getStartDate()), DateUtils.parseItalianDate(torneoRow.getEndDate()))){
+						continue;
+					}
+					
 					for (PartitaRow partitaRow: torneoPubblicato.getPartite()){
 						if (TorneiUtils.haPartecipato(partitaRow, idPartecipante)){
 							scorePlayer.addPartiteGiocate();

@@ -3,10 +3,12 @@ package it.desimone.gsheetsaccess.ranking;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 public class BlackListPlayer {
 
 	private int idAnagrafica;
-	private List<Integer> forbiddenYears;
+	private List<String> forbiddenYears;
 	private Date startExclusion;
 	private Date endExclusion;
 	public int getIdAnagrafica() {
@@ -15,10 +17,10 @@ public class BlackListPlayer {
 	public void setIdAnagrafica(int idAnagrafica) {
 		this.idAnagrafica = idAnagrafica;
 	}
-	public List<Integer> getForbiddenYears() {
+	public List<String> getForbiddenYears() {
 		return forbiddenYears;
 	}
-	public void setForbiddenYears(List<Integer> forbiddenYears) {
+	public void setForbiddenYears(List<String> forbiddenYears) {
 		this.forbiddenYears = forbiddenYears;
 	}
 	public Date getStartExclusion() {
@@ -34,11 +36,20 @@ public class BlackListPlayer {
 		this.endExclusion = endExclusion;
 	}
 
-	public boolean isForbiddenYear(int year){
-		return forbiddenYears != null && forbiddenYears.contains(year);
+	public boolean isForbiddenYear(String year){
+		return (CollectionUtils.isNotEmpty(forbiddenYears) && forbiddenYears.contains(year)) || (CollectionUtils.isEmpty(forbiddenYears) && startExclusion == null);
 	}
 	
 	public boolean isExcludedPeriod(Date start, Date end){
-		return startExclusion != null && endExclusion != null && (start.after(endExclusion) || end.before(startExclusion));
+		if (startExclusion == null || start == null) return false;
+		return (!start.before(startExclusion) && (end == null || endExclusion == null || !endExclusion.before(end)))
+				|| (start.before(startExclusion) && (end == null || !end.before(startExclusion)));
 	}
+	@Override
+	public String toString() {
+		return "BlackListPlayer [idAnagrafica=" + idAnagrafica + ", forbiddenYears=" + forbiddenYears
+				+ ", startExclusion=" + startExclusion + ", endExclusion=" + endExclusion + "]";
+	}
+	
+	
 }
