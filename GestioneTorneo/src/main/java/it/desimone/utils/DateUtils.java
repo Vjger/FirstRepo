@@ -28,4 +28,16 @@ public class DateUtils {
 			df.format(date);
 		}
 	}
+	
+	public static Date parseItalianDate(String data) {
+		Date result = null;
+		try {
+			if (!StringUtils.isNullOrEmpty(data)) {
+				result = df.parse(data);
+			}
+		}catch(Exception e) {
+			MyLogger.getLogger().severe(e.getMessage());
+		}
+		return result;
+	}
 }

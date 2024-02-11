@@ -234,7 +234,8 @@ public class HtmlPublisher {
 		List<File> torneiHtml = torneiPublisher(year, tournamentsToPublishByYear.getTorneiDaMettereOnline(), folderTornei);
 		
 		File folderTabelliniClub = new File(FOLDER_PATH+File.separator+"TABELLINI_CLUB");
-		ClubAnalysis clubAnalysis = TournamentsAnalyzer.elaboraPartecipazioniTornei(year, torneiPubblicati, tournamentsToPublishByYear.getTorneiDaMettereOnline());
+		//ClubAnalysis clubAnalysis = TournamentsAnalyzer.elaboraPartecipazioniTornei(year, torneiPubblicati, tournamentsToPublishByYear.getTorneiDaMettereOnline());
+		ClubAnalysis clubAnalysis = TournamentsAnalyzer.elaboraPartecipazioniTornei(year, torneiPubblicati, tournamentsToPublishByYear.getTorneiDaMettereOnline(), tabellini);
 		List<File> tabelliniClub = tabelliniClubPublisher(clubAnalysis, year, folderTabelliniClub);
 		
 		MyLogger.getLogger().info("FINE elaborazione");
@@ -416,7 +417,7 @@ public class HtmlPublisher {
 		Template template = null;
 
 		try{
-		  template = Velocity.getTemplate("TabellinoClub.vm", "UTF-8");
+		  template = Velocity.getTemplate("TabellinoClub2.vm", "UTF-8");
 		}catch( ResourceNotFoundException rnfe ){
 			MyLogger.getLogger().severe(rnfe.getMessage());
 		}catch( ParseErrorException pee ){
