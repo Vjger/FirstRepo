@@ -54,6 +54,7 @@ public class ClubLoader {
 	public final static ClubDTO CESENATICO = new ClubDTO("FC", "CESENATICO [I Corsari]");
 	public final static ClubDTO CALTANISSETTA = new ClubDTO("CL", "CALTANISSETTA [Eclettica]");
 	public final static ClubDTO RISIKARE = new ClubDTO("BT","BARLETTA [Risik'Aré]");
+	public final static ClubDTO I_PALLADIANI = new ClubDTO("VI","Vicenza [I Palladiani]");
 
 	static{
 		clubs.add(I_FEDERICIANI);
@@ -100,6 +101,8 @@ public class ClubLoader {
 		clubs.add(LE_ARMATE);
 		clubs.add(CESENATICO);
 		clubs.add(CALTANISSETTA);
+		clubs.add(RISIKARE);
+		clubs.add(I_PALLADIANI);
 	}
 	
 	public static List<ClubDTO> getClubs(){
