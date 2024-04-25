@@ -16,7 +16,7 @@ import javax.swing.JOptionPane;
 
 public class HelpMenu extends JMenu {
 	
-	public static final String VERSIONE = "2.3.1";
+	public static final String VERSIONE = "2.3.4";
 	
 	private JMenuItem menuHelp= new JMenuItem("Help");
 	private JMenuItem menuXls= new JMenuItem("Nuovo xls");
@@ -118,7 +118,7 @@ public class HelpMenu extends JMenu {
 		/* Gestione degli eventi sul menù About */
 		 ActionListener listAbout = new ActionListener(){
 			public void actionPerformed (ActionEvent e){
-				JOptionPane.showMessageDialog(menuAbout,"GestioneRaduno "+VERSIONE+"\n\n\n Sviluppato da Marco De Simone \n\n\n vjger69@gmail.com");
+				JOptionPane.showMessageDialog(menuAbout,"GestioneTorneo "+VERSIONE+"\n\n\n Sviluppato da Marco De Simone \n\n\n vjger69@gmail.com");
 			}	
 		 };
 		 return listAbout;
