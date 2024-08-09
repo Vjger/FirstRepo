@@ -9,6 +9,7 @@ import it.desimone.gsheetsaccess.gsheets.dto.PartitaRow;
 import it.desimone.gsheetsaccess.gsheets.dto.SheetRow;
 import it.desimone.gsheetsaccess.gsheets.dto.SheetRowFactory;
 import it.desimone.gsheetsaccess.gsheets.dto.TorneiRow;
+import it.desimone.gsheetsaccess.htmlpublisher.LastUpdateData;
 import it.desimone.utils.MyLogger;
 import it.desimone.utils.StringUtils;
 
@@ -122,6 +123,18 @@ public class GSheetsInterface {
 		return result;
 	}
 	
+	public static Integer findNumLastUpdateByYear(String spreadSheetId, String sheetName, String year) throws IOException{
+		MyLogger.getLogger().entering("GSheetsInterface", "findNumLastUpdateByYear");
+		Integer result = null;
+		String query = getQueryLastUpdate(year);
+		List<Integer> numRows = findNumRowsByYear(spreadSheetId, query);
+		if (numRows != null){
+			result = numRows.get(0);
+		}
+		MyLogger.getLogger().exiting("GSheetsInterface", "findNumLastUpdateByYear");
+		return result;
+	}
+	
 	public static SheetRow findTorneoRowByIdTorneo(String spreadSheetId, String sheetName, SheetRow sheetRow) throws IOException{
 		String query = getQueryTorneo(((TorneiRow) sheetRow).getIdTorneo());
 		SheetRow result = findTorneoByIdTorneo(spreadSheetId, sheetRow, query);
@@ -161,6 +174,42 @@ public class GSheetsInterface {
     	Integer updatedRows = getGoogleSheetsInstance().updateRows(spreadSheetId, data, true);
 		String columnLetterNumRows = toAlphabetic(sheetRow.getSheetRowNumberColPosition());
 		List<String> ranges = Collections.singletonList(AbstractSheetRow.SHEET_DATA_ANALYSIS_NAME+"!"+columnLetterNumRows+":"+columnLetterNumRows);
+		
+		List<List<Object>> queryResponses = getGoogleSheetsInstance().leggiSheet(spreadSheetId, ranges);
+		
+		List<Integer> numRows = null;
+		if (queryResponses != null && !queryResponses.isEmpty()){
+			numRows = new ArrayList<Integer>();
+			for (List<Object> queryResponse: queryResponses){
+				String valueQuery = (String)queryResponse.get(0);
+				try{
+					Integer numRow = Integer.valueOf(valueQuery);
+					numRows.add(numRow);
+				}catch(NumberFormatException ne){
+					MyLogger.getLogger().info("Not found: "+valueQuery);
+				}
+			}
+		}
+
+		getGoogleSheetsInstance().clearRows(spreadSheetId, Collections.singletonList(rangeRicerca));
+		return numRows;
+	}
+	
+	private static List<Integer> findNumRowsByYear(String spreadSheetId, String query) throws IOException{
+    	List<ValueRange> data = new ArrayList<ValueRange>();
+
+    	String sheetNameDataAnalysis = AbstractSheetRow.SHEET_DATA_ANALYSIS_NAME;
+    	
+		List<List<Object>> values = new ArrayList<List<Object>>();
+
+		String rangeRicerca = sheetNameDataAnalysis+"!A1:A1";
+
+		List<Object> rigaFormula = Arrays.asList(new Object[]{query});
+		values.add(rigaFormula);
+		
+		data.add(new ValueRange().setRange(rangeRicerca).setValues(values));
+    	Integer updatedRows = getGoogleSheetsInstance().updateRows(spreadSheetId, data, true);
+		List<String> ranges = Collections.singletonList(AbstractSheetRow.SHEET_DATA_ANALYSIS_NAME+"!C:C");
 		
 		List<List<Object>> queryResponses = getGoogleSheetsInstance().leggiSheet(spreadSheetId, ranges);
 		
@@ -794,6 +843,16 @@ public class GSheetsInterface {
 	private static String getQueryAnagraficaRidotta2(Integer numeroRiga){
 		//String query = "=QUERY(ANAGRAFICA!A2:E;ʺSELECT A WHERE upper(B) = upper('ʺ&A"+numeroRiga+"&ʺ') AND upper(C) = upper('ʺ&B"+numeroRiga+"&ʺ') AND upper(D) = upper('ʺ&C"+numeroRiga+"&ʺ')ʺ; -1)";
 		return "=FILTER(ANAGRAFICA!A2:F; upper(ANAGRAFICA!A2:A) = upper(A"+numeroRiga+"))";
+	}
+	
+	private static String getQueryLastUpdate(String year){
+		StringBuilder buffer = new StringBuilder();
+		buffer.append("=FILTER(");
+		buffer.append(LastUpdateData.LAST_UPDATE_SHEET + "!A2:B");
+		buffer.append(LastUpdateData.LAST_UPDATE_SHEET + "!A2:A = ");
+		buffer.append("\""+year+"\"");
+		buffer.append(")");
+		return buffer.toString();
 	}
 	
 	public static SheetRow findSheetRowByLineNumber(String spreadSheetId, String sheetName, SheetRow sheetRow) throws IOException{
