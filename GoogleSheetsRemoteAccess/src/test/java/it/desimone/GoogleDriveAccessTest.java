@@ -10,8 +10,10 @@ import java.util.logging.Level;
 
 import com.google.api.client.http.FileContent;
 import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.Drive.Files.Delete;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
+import com.google.api.services.drive.model.PermissionList;
 
 public class GoogleDriveAccessTest extends GoogleDriveAccess{
 
@@ -26,7 +28,7 @@ public class GoogleDriveAccessTest extends GoogleDriveAccess{
 	public static void testGetFiles() throws IOException {
 
 		//String fileId = "1ThWk8Z8n8Tr9JztAtlzw3C2mthbyPy8G";
-		String fileId = "1TCMe2yZchgnBMeLiVbvD_AwDhSL-AOKP";
+		String fileId = "1cxnawgeqgKZR7cDrTgDQNx_4Ui_TeklA";
 		String fileName = "2018-06-CAMPIONATO-RISIKO-VICTORIAN-MONKEY";
 		
 		GoogleDriveAccessTest gt = new GoogleDriveAccessTest();
@@ -35,9 +37,31 @@ public class GoogleDriveAccessTest extends GoogleDriveAccess{
 		List<File> files = fileList.getFiles();
 		if (files != null){
 			MyLogger.getLogger().info("Trovati "+files.size()+" nel folder "+folder.getName());
+			StringBuilder buffer = new StringBuilder();
 			for (File file: files){
 				MyLogger.getLogger().info("Name ["+file.getName()+"] id ["+file.getId()+"] Original fileName ["+file.getOriginalFilename()+"] file extension ["+file.getFileExtension()+"] full file extension ["+file.getFullFileExtension()+"]");
-				//MyLogger.getLogger().info(file.toString());
+				MyLogger.getLogger().info(file.toString());
+				buffer.append(file.getExplicitlyTrashed()+"\n");
+				buffer.append(file.getIsAppAuthorized()+"\n");
+				buffer.append(file.getAppProperties()+"\n");
+				buffer.append(file.getLastModifyingUser()+"\n");
+				buffer.append(file.getModifiedByMe()+"\n");
+				buffer.append(file.getOwnedByMe()+"\n");
+				buffer.append(file.getOwners()+"\n");
+				buffer.append(file.getProperties()+"\n");
+				buffer.append(file.getShared()+"\n");
+				buffer.append(file.getSharingUser()+"\n");
+				buffer.append(file.getTrashed()+"\n");
+				buffer.append(file.getTrashingUser()+"\n");
+				MyLogger.getLogger().info(buffer.toString());
+				
+				PermissionList pl = gt.getFolderPermissionList(file.getId());
+				MyLogger.getLogger().info(pl.toPrettyString());
+				
+				/*
+				 * Delete delete = gt.getDriveService().files().delete(file.getId());
+				 * delete.execute();
+				 */
 			}
 		}
 		

@@ -10,6 +10,7 @@ public class SheetRowFactory {
 		,Classifica
 		,ReportElaborazione
 		,Ranking
+		,LastUpdate
 	}
 	
 	public static String getSheetName(SheetRowType sheetRowType){
@@ -35,6 +36,9 @@ public class SheetRowFactory {
 			break;		
 		case Ranking:
 			result = RankingRow.SHEET_NAME;
+			break;
+		case LastUpdate:
+			result = LastUpdateRow.SHEET_LAST_UPDATE_NAME;
 			break;
 		default:
 			throw new IllegalArgumentException("Valore non previsto: "+sheetRowType);
@@ -66,6 +70,9 @@ public class SheetRowFactory {
 			break;		
 		case Ranking:
 			result = new RankingRow();
+			break;
+		case LastUpdate:
+			result = new LastUpdateRow();
 			break;
 		default:
 			throw new IllegalArgumentException("Valore non previsto: "+sheetRowType);

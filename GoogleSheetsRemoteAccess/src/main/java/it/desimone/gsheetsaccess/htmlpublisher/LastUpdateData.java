@@ -1,16 +1,22 @@
 package it.desimone.gsheetsaccess.htmlpublisher;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections4.CollectionUtils;
 
 import it.desimone.gsheetsaccess.common.Configurator;
 import it.desimone.gsheetsaccess.googleaccess.GoogleSheetsAccess;
+import it.desimone.gsheetsaccess.gsheets.dto.LastUpdateRow;
+import it.desimone.gsheetsaccess.gsheets.facade.ExcelGSheetsBridge;
+import it.desimone.gsheetsaccess.utils.TorneiUtils;
 import it.desimone.utils.MyLogger;
 
 public class LastUpdateData {
@@ -18,8 +24,9 @@ public class LastUpdateData {
 	public static final String LAST_UPDATE_SHEET = "LAST_UPDATE";
 	private Map<Integer, Date> lastUpdateMap;
 	private static LastUpdateData instance;
+	private List<LastUpdateRow> lastUpdateRows;
 	
-	private LastUpdateData () {}
+	//private LastUpdateData () {}
 	
 	public static LastUpdateData getInstance() {
 		if (instance == null) {	
@@ -31,7 +38,8 @@ public class LastUpdateData {
 					Map<Integer, Date> lum = new HashMap<Integer, Date>();
 					for (List<Object> row: rows) {
 						Integer anno =  Integer.parseInt((String)row.get(0));
-						Date lastUpdateDate =  (Date)row.get(1);
+						String lastUpdateDateString = (String)row.get(1);
+						Date lastUpdateDate =  ExcelGSheetsBridge.dfUpdateTime.parse(lastUpdateDateString);
 		
 						lum.put(anno, lastUpdateDate);
 					}
@@ -47,6 +55,9 @@ public class LastUpdateData {
 		return instance;
 	}
 
+	public LastUpdateData() {
+		readLastUpdateRows();
+	}
 	public Map<Integer, Date> getLastUpdateMap() {
 		return lastUpdateMap;
 	}
@@ -57,5 +68,33 @@ public class LastUpdateData {
 
 	public Date getLastTournamentDate(Integer year){
 		return lastUpdateMap.get(year);
+	}
+	
+	public void readLastUpdateRows() {
+		lastUpdateRows = TorneiUtils.getAllLastUpdateRow();
+	}
+	
+	public LastUpdateRow getLastUpdateRow(Integer year){
+		LastUpdateRow result = null;
+		Stream<LastUpdateRow> stream = lastUpdateRows.stream();
+		Optional<LastUpdateRow> lastUpdateRow = stream.filter(lur -> lur.getAnnoRiferimento().equals(year)).findFirst();
+		if (lastUpdateRow.isPresent()) {
+			result = lastUpdateRow.get();
+		}
+		return result;
+	}
+	
+	public Date getLastTournamentDateByUpdateRow(Integer year){
+		Date result = null;
+		LastUpdateRow lastUpdateRow = getLastUpdateRow(year);
+		if (lastUpdateRow != null) {
+			try {
+				result = ExcelGSheetsBridge.dfUpdateTime.parse(lastUpdateRow.getLastElaboration());
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return result;
 	}
 }

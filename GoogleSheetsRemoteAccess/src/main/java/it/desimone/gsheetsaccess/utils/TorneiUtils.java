@@ -7,6 +7,7 @@ import it.desimone.gsheetsaccess.dto.TorneoPubblicato;
 import it.desimone.gsheetsaccess.gsheets.dto.AnagraficaGiocatoreRidottaRow;
 import it.desimone.gsheetsaccess.gsheets.dto.AnagraficaGiocatoreRow;
 import it.desimone.gsheetsaccess.gsheets.dto.ClassificheRow;
+import it.desimone.gsheetsaccess.gsheets.dto.LastUpdateRow;
 import it.desimone.gsheetsaccess.gsheets.dto.PartitaRow;
 import it.desimone.gsheetsaccess.gsheets.dto.SheetRow;
 import it.desimone.gsheetsaccess.gsheets.dto.SheetRowFactory.SheetRowType;
@@ -203,6 +204,30 @@ public class TorneiUtils {
 			MyLogger.getLogger().severe("Eccezione: "+ioe.getMessage());
 		}	
 		return result;
+	}
+	
+	public static List<LastUpdateRow> getAllLastUpdateRow(){
+		String spreadSheetLastUpdate = Configurator.getBlackListSheetId();
+		List<LastUpdateRow> result = null;
+		try{
+			result = GSheetsInterface.getAllRows(spreadSheetLastUpdate, SheetRowType.LastUpdate);
+		}catch(IOException ioe){
+			MyLogger.getLogger().severe("Eccezione: "+ioe.getMessage());
+		}	
+		return result;
+	}
+	
+	public static void insertOrUpdateLastUpdateRow(LastUpdateRow lastUpdateRow){
+		String spreadSheetLastUpdate = Configurator.getBlackListSheetId();
+		try{
+			if (lastUpdateRow.getSheetRowNumber() == null) {
+				GSheetsInterface.appendRows(spreadSheetLastUpdate, LastUpdateRow.SHEET_LAST_UPDATE_NAME, Collections.singletonList(lastUpdateRow));
+			}else {
+				Integer updated = GSheetsInterface.updateRows(spreadSheetLastUpdate, LastUpdateRow.SHEET_LAST_UPDATE_NAME, Collections.singletonList(lastUpdateRow), false);
+			}
+		}catch(IOException ioe){
+			MyLogger.getLogger().severe("Eccezione: "+ioe.getMessage());
+		}	
 	}
 	
 	public static boolean haPartecipato(PartitaRow partitaRow, Integer idPlayer){

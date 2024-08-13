@@ -12,6 +12,7 @@ import it.desimone.gsheetsaccess.dto.TorneoPubblicato;
 import it.desimone.gsheetsaccess.gsheets.dto.AnagraficaGiocatoreRidottaRow;
 import it.desimone.gsheetsaccess.gsheets.dto.AnagraficaGiocatoreRow;
 import it.desimone.gsheetsaccess.gsheets.dto.ClassificheRow;
+import it.desimone.gsheetsaccess.gsheets.dto.LastUpdateRow;
 import it.desimone.gsheetsaccess.gsheets.dto.PartitaRow;
 import it.desimone.gsheetsaccess.gsheets.facade.ExcelGSheetsBridge;
 import it.desimone.gsheetsaccess.ranking.RankingCalculator;
@@ -105,6 +106,7 @@ public class HtmlPublisher {
 		private List<TorneoPubblicato> torneiPubblicati;
 		private List<TorneoPubblicato> torneiDaMettereOnline;
 		private Date maxDate;
+		private LastUpdateRow lastUpdateRow;
 		
 		public TournamentsToPublish(List<TorneoPubblicato> torneiPubblicati,
 				List<TorneoPubblicato> torneiDaMettereOnline, Date maxDate) {
@@ -112,6 +114,11 @@ public class HtmlPublisher {
 			this.torneiPubblicati = torneiPubblicati;
 			this.torneiDaMettereOnline = torneiDaMettereOnline;
 			this.maxDate = maxDate;
+		}
+		public TournamentsToPublish(List<TorneoPubblicato> torneiPubblicati,
+				List<TorneoPubblicato> torneiDaMettereOnline, Date maxDate, LastUpdateRow lastUpdateRow) {
+			this(torneiPubblicati, torneiDaMettereOnline, maxDate);
+			this.lastUpdateRow = lastUpdateRow;
 		}
 		public List<TorneoPubblicato> getTorneiPubblicati() {
 			return torneiPubblicati;
@@ -131,6 +138,12 @@ public class HtmlPublisher {
 		}
 		public void setMaxDate(Date maxDate) {
 			this.maxDate = maxDate;
+		}
+		public LastUpdateRow getLastUpdateRow() {
+			return lastUpdateRow;
+		}
+		public void setLastUpdateRow(LastUpdateRow lastUpdateRow) {
+			this.lastUpdateRow = lastUpdateRow;
 		}
 		public boolean isEmpty(){
 			return torneiDaMettereOnline == null || torneiDaMettereOnline.isEmpty();
@@ -164,6 +177,13 @@ public class HtmlPublisher {
 				fileDaPubblicare.add(filesToPublish);
 				
 				ResourceWorking.setLastTournamentDate(year.toString(), lastUpdateTimeFormat.format(tournamentsToPublishByYear.getMaxDate()));
+				LastUpdateRow lastUpdateRow = tournamentsToPublishByYear.getLastUpdateRow();
+				if (lastUpdateRow == null) {
+					lastUpdateRow = new LastUpdateRow();
+					lastUpdateRow.setAnnoRiferimento(year);
+				}
+				lastUpdateRow.setLastElaboration(ExcelGSheetsBridge.dfUpdateTime.format(tournamentsToPublishByYear.getMaxDate()));
+				TorneiUtils.insertOrUpdateLastUpdateRow(lastUpdateRow);
 				
 				MyLogger.getLogger().info("FINE Elaborazione Tornei del "+year);
 			}
@@ -256,19 +276,24 @@ public class HtmlPublisher {
 		
 		List<Integer> years = Configurator.getTorneiYears();
 		
+		//LastUpdateData lastUpdateData = LastUpdateData.getInstance(); 
+		LastUpdateData lastUpdateData = new LastUpdateData(); 
 		for (Integer year: years){
 			MyLogger.getLogger().info("Inizio estrazione tornei pubblicati");
 			List<TorneoPubblicato> torneiPubblicati = TorneiUtils.caricamentoTornei(year.toString());
 			
 			String lastDateString = ResourceWorking.getLastTournamentDate(year.toString());
-			Date lastDate = null;
+			Date lastDateOLD = null;
 			if (lastDateString != null && !lastDateString.trim().isEmpty()){
 				try {
-					lastDate = lastUpdateTimeFormat.parse(lastDateString);
+					lastDateOLD = lastUpdateTimeFormat.parse(lastDateString);
 				} catch (ParseException e) {
 					MyLogger.getLogger().severe("Errore nel parsing della data di ultima elaborazione per l'anno "+year +" sulla stringa "+lastDateString+": "+e.getMessage() );
 				}
 			}
+			//Date lastDate = lastUpdateData.getLastTournamentDate(year);
+			Date lastDate = lastUpdateData.getLastTournamentDateByUpdateRow(year);
+			
 			Date maxDate = null;
 			List<TorneoPubblicato> torneiDaMettereOnline = new ArrayList<TorneoPubblicato>();
 			for (TorneoPubblicato torneo: torneiPubblicati){
@@ -285,7 +310,8 @@ public class HtmlPublisher {
 					MyLogger.getLogger().severe("Errore nel parsing della data di update per l'anno "+year +" del torneo con id "+torneo.getTorneoRow().getIdTorneo()+" sulla stringa "+torneo.getTorneoRow().getUpdateTime()+": "+e.getMessage() );
 				}
 			}
-			TournamentsToPublish tournamentsToPublish = new TournamentsToPublish(torneiPubblicati, torneiDaMettereOnline, maxDate);
+			//TournamentsToPublish tournamentsToPublish = new TournamentsToPublish(torneiPubblicati, torneiDaMettereOnline, maxDate);
+			TournamentsToPublish tournamentsToPublish = new TournamentsToPublish(torneiPubblicati, torneiDaMettereOnline, maxDate, lastUpdateData.getLastUpdateRow(year));
 			result.put(year, tournamentsToPublish);
 		}
 		return result;
