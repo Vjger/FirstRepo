@@ -27,16 +27,18 @@ public class AlterVistaUtil {
 	public static void main(String[] args) throws IOException {
 		System.out.println("START");
 		FtpClient client = new FtpClient(HOST, 21, USERNAME, PASSWORD);
-		client.openSSH();
+		//client.openSSH();
+		client.open();
 		
-		File torneo = new File("C:\\Users\\mds\\Desktop\\GoogleSheetsRemoteAccess 1.3\\working\\htmlPages\\index.html");
+		File torneo = new File("C:\\Users\\linda\\Desktop\\GoogleSheetsRemoteAccess 1.6\\working\\htmlpages\\TORNEI\\20240723-CATANIA_IlVulcano_.html");
 		try{
-			client.uploadFiles(ROOT, Collections.singletonList(torneo));
-			Collection<String> files = client.listFiles(ROOT);
-			
-			for (String file: files){
-				System.out.println(file);
-			}
+			client.changeDirectory(ROOT);
+			client.uploadFiles("TORNEI", Collections.singletonList(torneo));
+//			Collection<String> files = client.listFiles(ROOT);
+//			
+//			for (String file: files){
+//				System.out.println(file);
+//			}
 		}catch(Throwable t){
 			t.printStackTrace();
 		}
@@ -46,8 +48,8 @@ public class AlterVistaUtil {
 
 	public static void uploadInRoot(List<File> files)  throws IOException{
 		FtpClient client = new FtpClient(HOST, 21, USERNAME, PASSWORD);
-			//client.open();//Altervista
-			client.openSSH();//EG
+			client.open();//Altervista
+			//client.openSSH();//EG
 			client.uploadFiles(ROOT, files);
 			client.close();
 
@@ -55,8 +57,8 @@ public class AlterVistaUtil {
 	public static void uploadInTornei(List<File> files) throws IOException{
 		for (File file: files){
 			FtpClient client = new FtpClient(HOST, 21, USERNAME, PASSWORD);
-			//client.open();//Altervista
-			client.openSSH();//EG
+			client.open();//Altervista
+			//client.openSSH();//EG
 			client.changeDirectory(ROOT);
 			client.uploadFiles("TORNEI", Collections.singletonList(file));
 			client.close();
@@ -65,8 +67,8 @@ public class AlterVistaUtil {
 	public static void uploadInTabelliniPerClub(List<File> files) throws IOException{
 		for (File file: files){
 			FtpClient client = new FtpClient(HOST, 21, USERNAME, PASSWORD);
-			//client.open();//Altervista
-			client.openSSH();//EG
+			client.open();//Altervista
+			//client.openSSH();//EG
 			client.changeDirectory(ROOT);
 			client.uploadFiles("TABELLINI_CLUB", Collections.singletonList(file));
 			client.close();
