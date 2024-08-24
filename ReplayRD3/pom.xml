@@ -57,7 +57,7 @@
 			                <addClasspath>true</addClasspath>
 			                <classpathPrefix>libs/</classpathPrefix>
 			                <mainClass>
-			                    it.desimone.rd3analyzer.main.ReplayStarter
+			                    it.desimone.replayrd3.main.ReplayStarter
 			                </mainClass>
 			            </manifest>
 			        </archive>
