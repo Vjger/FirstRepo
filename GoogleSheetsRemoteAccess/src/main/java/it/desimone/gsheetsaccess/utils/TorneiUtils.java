@@ -223,7 +223,7 @@ public class TorneiUtils {
 			if (lastUpdateRow.getSheetRowNumber() == null) {
 				GSheetsInterface.appendRows(spreadSheetLastUpdate, LastUpdateRow.SHEET_LAST_UPDATE_NAME, Collections.singletonList(lastUpdateRow));
 			}else {
-				Integer updated = GSheetsInterface.updateRows(spreadSheetLastUpdate, LastUpdateRow.SHEET_LAST_UPDATE_NAME, Collections.singletonList(lastUpdateRow), false);
+				Integer updated = GSheetsInterface.updateRows(spreadSheetLastUpdate, LastUpdateRow.SHEET_LAST_UPDATE_NAME, Collections.singletonList(lastUpdateRow), true);
 			}
 		}catch(IOException ioe){
 			MyLogger.getLogger().severe("Eccezione: "+ioe.getMessage());
