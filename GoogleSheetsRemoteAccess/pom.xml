@@ -132,6 +132,8 @@
 			               		<mkdir dir="${project.output}/working/done" />
 			               		<mkdir dir="${project.output}/working/error" />
 			               		<mkdir dir="${project.output}/working/htmlpages" />
+			               		<mkdir dir="${project.output}/working/htmlpages/TORNEI" />
+			               		<mkdir dir="${project.output}/working/htmlpages/TABELLINI_CLUB" />
 			               		<mkdir dir="${project.output}/working/htmlpublisher" />
 			                </target>
 			            </configuration>
