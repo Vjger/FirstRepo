@@ -1697,7 +1697,7 @@ public class Sorteggiatore {
 	}
 	
 	private static Partita[] getPartiteSorteggiateMasterRisiko2020(ExcelAccess excelAccess, int numeroTurno){
-		MyLogger.getLogger().entering("Sorteggiatore", "getPartiteSorteggiateMasterRisiko2016");
+		MyLogger.getLogger().entering("Sorteggiatore", "getPartiteSorteggiateMasterRisiko2020");
 		Partita[] partiteTurno = null;
 		List<GiocatoreDTO> giocatoriPartecipanti = excelAccess.getListaGiocatori(true);
 		List<PrioritaSorteggio> priorita = new ArrayList<PrioritaSorteggio>();
@@ -1783,7 +1783,7 @@ public class Sorteggiatore {
 			MyLogger.getLogger().severe("Turno per il tipo di Torneo Qualificazioni Risiko non previsto: "+numeroTurno);
 			throw new MyException("Turno per il tipo di Torneo Qualificazioni Risiko non previsto: "+numeroTurno);
 		}	
-		MyLogger.getLogger().exiting("Sorteggiatore", "getPartiteSorteggiateMasterRisiko2016", ArrayUtils.fromPartiteToString(partiteTurno));
+		MyLogger.getLogger().exiting("Sorteggiatore", "getPartiteSorteggiateMasterRisiko2020", ArrayUtils.fromPartiteToString(partiteTurno));
 		return partiteTurno;
 	}
 	
