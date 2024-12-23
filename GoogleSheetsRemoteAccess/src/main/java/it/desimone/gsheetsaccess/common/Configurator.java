@@ -194,4 +194,11 @@ private static Environment environment;
 		MyLogger.getLogger().finest("ID Template Tornei:<<"+folderId+">>");
 		return folderId;
 	}
+	
+	public static String getConfigurationSheetId(){
+		String sheetId = ((String)properties.get("configurationSpreadSheetId"));
+		if (sheetId != null) sheetId = sheetId.trim();
+		MyLogger.getLogger().finest("configurationSpreadSheetId:<<"+sheetId+">>");
+		return sheetId;
+	}
 }

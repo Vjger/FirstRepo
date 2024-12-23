@@ -11,6 +11,7 @@ public class BlackListPlayer {
 	private List<String> forbiddenYears;
 	private Date startExclusion;
 	private Date endExclusion;
+	private String exclusionFromRankingMatter;
 	public int getIdAnagrafica() {
 		return idAnagrafica;
 	}
@@ -36,6 +37,12 @@ public class BlackListPlayer {
 		this.endExclusion = endExclusion;
 	}
 
+	public String getExclusionFromRankingMatter() {
+		return exclusionFromRankingMatter;
+	}
+	public void setExclusionFromRankingMatter(String exclusionFromRankingMatter) {
+		this.exclusionFromRankingMatter = exclusionFromRankingMatter;
+	}
 	public boolean isForbiddenYear(String year){
 		return (CollectionUtils.isNotEmpty(forbiddenYears) && forbiddenYears.contains(year)) || (CollectionUtils.isEmpty(forbiddenYears) && startExclusion == null);
 	}
@@ -48,8 +55,10 @@ public class BlackListPlayer {
 	@Override
 	public String toString() {
 		return "BlackListPlayer [idAnagrafica=" + idAnagrafica + ", forbiddenYears=" + forbiddenYears
-				+ ", startExclusion=" + startExclusion + ", endExclusion=" + endExclusion + "]";
+				+ ", startExclusion=" + startExclusion + ", endExclusion=" + endExclusion
+				+ ", exclusionFromRankingMatter=" + exclusionFromRankingMatter + "]";
 	}
+
 	
 	
 }
