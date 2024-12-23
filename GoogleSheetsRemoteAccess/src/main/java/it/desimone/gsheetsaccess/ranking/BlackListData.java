@@ -49,6 +49,9 @@ public class BlackListData {
 						if (StringUtils.isNotEmpty(dataFineEsclusione)) {
 							blackListPlayer.setEndExclusion(DateUtils.parseItalianDate(dataFineEsclusione));
 						}
+						if (row.size() >4) {
+							blackListPlayer.setExclusionFromRankingMatter((String) row.get(4));
+						}
 						blp.add(blackListPlayer);
 					}
 					instance.setBlackListPlayers(blp);
