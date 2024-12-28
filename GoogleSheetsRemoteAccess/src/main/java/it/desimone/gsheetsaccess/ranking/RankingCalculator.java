@@ -17,9 +17,12 @@ import it.desimone.utils.DateUtils;
 import it.desimone.utils.MyLogger;
 
 import java.math.BigDecimal;
+import java.sql.Time;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -81,6 +84,11 @@ public class RankingCalculator {
 						int indexAnagrafica = anagraficheGiocatoriRow.indexOf(anagraficaSonda);
 						try{
 							scorePlayer.setAnagraficaGiocatore(anagraficheGiocatoriRow.get(indexAnagrafica));
+							Date now = Time.from(Instant.now());
+							if (blackListData != null && blackListData.isDisqualifiedPlayer(idPartecipante, now, now)){
+								scorePlayer.setSqualificato(true);
+								scorePlayer.setMotivazioneSqualifica(blackListData.getMotivazioneSqualifica(idPartecipante));
+							}
 						}catch(RuntimeException e){
 							MyLogger.getLogger().severe("Problemi con la ricerca in anagrafica del giocatore con id "+idPartecipante+" nel torneo "+torneoPubblicato.getIdTorneo());
 							throw e;

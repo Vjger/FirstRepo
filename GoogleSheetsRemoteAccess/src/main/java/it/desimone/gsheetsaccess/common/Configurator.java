@@ -1,30 +1,33 @@
 package it.desimone.gsheetsaccess.common;
 
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
+
+import it.desimone.gsheetsaccess.gsheets.dto.ConfigurationMapRow;
+import it.desimone.gsheetsaccess.gsheets.dto.SheetRow;
+import it.desimone.gsheetsaccess.gsheets.dto.SheetRowFactory.SheetRowType;
+import it.desimone.gsheetsaccess.gsheets.dto.TorneiSheetIdRow;
+import it.desimone.gsheetsaccess.gsheets.facade.GSheetsInterface;
 import it.desimone.utils.MyLogger;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-
 public class Configurator {
+
+	private static ConfigurationData configurationData = new ConfigurationData();
+	private Configurator() {}
 	
-public static final String ROOT = new File("").getAbsolutePath();
-public static final String PATH_CONFIGURATION = ROOT+File.separator+"configuration"; //ROOT+File.separator+"configuration";
-private static final String CONFIG_FILE_STAGE = "configurationStage.properties";	
-private static final String CONFIG_FILE_PROD = "configurationProd.properties";	
-private volatile static Properties properties = new Properties();
-
-private static Environment environment;
-
+	private static Environment environment;
+	
 	public enum Environment{
 		STAGE, PRODUCTION
 	}
-
-	static{
+	
+	static {
 		loadConfiguration(Environment.PRODUCTION);
 	}
 	
@@ -41,164 +44,130 @@ private static Environment environment;
 		}
 	}
 	
-	public static void loadConfiguration(Environment env){
-		String configFileName = null;
-		try {
-			switch (env) {
-			case STAGE:
-				configFileName = CONFIG_FILE_STAGE;
-				break;
-			case PRODUCTION:
-				configFileName = CONFIG_FILE_PROD;
-				break;
-			default:
-				break;
-			}
-			FileInputStream propertiesStream = new FileInputStream(new File(PATH_CONFIGURATION+File.separator+configFileName));
-			properties.load(propertiesStream);
-			environment = env;
-		} catch (IOException e) {
-			MyLogger.getLogger().severe("IOException nel caricamento del file di Properties: "+e.getMessage());
-		}
-	}
-	
-	
 	public static Environment getEnvironment(){
 		return environment;
 	}
 	
-	public static void setProperty(String key, String value){
-		String configFileName = null;
-		switch (environment) {
+	private static void loadPropertiesConfiguration(Environment env) {
+		switch (env) {
 		case STAGE:
-			configFileName = CONFIG_FILE_STAGE;
+			ConfiguratorProperties.loadConfiguration(ConfiguratorProperties.Environment.STAGE);
 			break;
 		case PRODUCTION:
-			configFileName = CONFIG_FILE_PROD;
+			ConfiguratorProperties.loadConfiguration(ConfiguratorProperties.Environment.PRODUCTION);
 			break;
 		default:
 			break;
 		}
-		FileOutputStream out = null; 
-		try{
-			out = new FileOutputStream(new File(PATH_CONFIGURATION+File.separator+configFileName));
-			properties.setProperty(key, value);
-			properties.store(out, null);
-			out.close();
-		}catch(Exception e){
-			e.printStackTrace();
-		}
+	}
+	
+	public static void loadConfiguration(Environment env) {
+		loadPropertiesConfiguration(env);
+		try {
+
+			List<ConfigurationMapRow> configurazioni = GSheetsInterface.getAllRows(ConfiguratorProperties.getConfigurationSheetId(), SheetRowType.ConfigurationMap);
+			if (CollectionUtils.isNotEmpty(configurazioni)) {
+				Map<String, String> mappaConfigurazioni = new HashMap<String, String>();
+				for (ConfigurationMapRow row: configurazioni) {
+					mappaConfigurazioni.put(row.getChiave(), row.getValore());
+				}
+				configurationData.setByConfigurationMap(mappaConfigurazioni);
+			}
+
+			List<TorneiSheetIdRow> torneiSheetId = GSheetsInterface.getAllRows(ConfiguratorProperties.getConfigurationSheetId(), SheetRowType.TorneiSheetId);
+			if (CollectionUtils.isNotEmpty(torneiSheetId)) {
+				Map<Integer, String> mappaTornei = new HashMap<Integer, String>();
+				for (TorneiSheetIdRow row: torneiSheetId) {
+					mappaTornei.put(Integer.valueOf(row.getAnnoTorneo()), row.getSheetIdTorneo());
+				}
+				configurationData.setTournamentsSheetId(mappaTornei);
+			}
+			environment = env;
+		} catch (IOException e) {
+			MyLogger.getLogger().severe("Errore nell'acquisizione della configurazione: "+e.getMessage());
+		} 
 	}
 	
 	public static String getRCUFolderId(){
-		String folderId = ((String)properties.get("rcuFolderId"));
+		String folderId = configurationData.getRcuFolderId();
 		if (folderId != null) folderId = folderId.trim();
 		MyLogger.getLogger().finest("ID RCU Folder:<<"+folderId+">>");
 		return folderId;
 	}
 	
-	public static String getAnagraficaRidottaSheetId(String year){
-		String folderId = ((String)properties.get("spreadSheetIdAnagraficaRidotta"+year));
-		if (folderId != null) folderId = folderId.trim();
-		MyLogger.getLogger().finest("ID Anagrafica Ridotta:<<"+folderId+">>");
-		return folderId;
-	}
-	
 	public static String getAnagraficaRidottaSheetId(){
-		String folderId = ((String)properties.get("spreadSheetIdAnagraficaRidotta"+2019));
+		String folderId = configurationData.getAnagraficaSheetId();
 		if (folderId != null) folderId = folderId.trim();
 		MyLogger.getLogger().finest("ID Anagrafica Ridotta:<<"+folderId+">>");
 		return folderId;
 	}
 	
 	public static String getBlackListSheetId(){
-		String folderId = ((String)properties.get("spreadSheetIdBlacklist"));
+		String folderId = configurationData.getPlayersDataSheetId();
 		if (folderId != null) folderId = folderId.trim();
 		MyLogger.getLogger().finest("ID BlackList:<<"+folderId+">>");
 		return folderId;
 	}
 
 	public static List<String> getTorneiSheetIds(){
-		Integer startingYear = 2019;
-		List<String> torneiSheetIds = new ArrayList<String>();
-		String torneoSheetId = getTorneiSheetId(startingYear.toString());
-		while (torneoSheetId != null){
-			torneiSheetIds.add(torneoSheetId);
-			startingYear++;
-			torneoSheetId = getTorneiSheetId(startingYear.toString());
-		}
+		List<String> torneiSheetIds = configurationData.getTournamentsSheetId().values().stream().collect(Collectors.toList());
 		return torneiSheetIds;
 	}
 	
 	public static List<Integer> getTorneiYears(){
-		Integer startingYear = 2019;
-		List<Integer> torneiYears = new ArrayList<Integer>();
-		String torneoSheetId = getTorneiSheetId(startingYear.toString());
-		while (torneoSheetId != null){
-			torneiYears.add(startingYear);
-			startingYear++;
-			torneoSheetId = getTorneiSheetId(startingYear.toString());
-		}
+		List<Integer> torneiYears = configurationData.getTournamentsSheetId().keySet().stream().collect(Collectors.toList());
 		return torneiYears;
 	}
 	
 	public static String getTorneiSheetId(String year){
-		String folderId = ((String)properties.get("spreadSheetIdTornei"+year));
+		String folderId = configurationData.getTournamentsSheetId().get(Integer.valueOf(year));
 		if (folderId != null) folderId = folderId.trim();
 		MyLogger.getLogger().finest("ID Tornei per l'anno "+year+":<<"+folderId+">>");
 		return folderId;
 	}
 	
-	public static void setTorneiSheetId(String year, String spreadSheetIdTornei){
-		setProperty("spreadSheetIdTornei"+year, spreadSheetIdTornei);
+	public static void setTorneiSheetId(String year, String spreadSheetIdTornei) throws IOException{
+		TorneiSheetIdRow sheetIdTorneiRow = new TorneiSheetIdRow();
+		sheetIdTorneiRow.setAnnoTorneo(year);
+		sheetIdTorneiRow.setSheetIdTorneo(spreadSheetIdTornei);
+		GSheetsInterface.appendRows(ConfiguratorProperties.getConfigurationSheetId(), TorneiSheetIdRow.SHEET_TORNEI_NAME, Collections.singletonList((SheetRow)sheetIdTorneiRow));
+		loadConfiguration(getEnvironment());
 	}
 		
 	public static String getDoneFolderId(){
-		String folderId = ((String)properties.get("DONEFolderId"));
+		String folderId = configurationData.getDoneFolderId();
 		if (folderId != null) folderId = folderId.trim();
 		MyLogger.getLogger().finest("DONE Folder Id:<<"+folderId+">>");
 		return folderId;
 	}
 	
 	public static String getErrorFolderId(){
-		String folderId = ((String)properties.get("ERRORFolderId"));
+		String folderId = configurationData.getErrorFolderId();
 		if (folderId != null) folderId = folderId.trim();
 		MyLogger.getLogger().finest("ERROR Folder Id:<<"+folderId+">>");
 		return folderId;
 	}
 	
 	public static String getReportElaborazioniSheetId(){
-		String sheetId = ((String)properties.get("spreadSheetIdReportElaborazioni"));
+		String sheetId = configurationData.getReportElaborazioniSheetId();
 		if (sheetId != null) sheetId = sheetId.trim();
 		MyLogger.getLogger().finest("ID Report Elaborazioni:<<"+sheetId+">>");
 		return sheetId;
 	}
-	
-	public static String getRankingSheetId(){
-		String sheetId = ((String)properties.get("spreadSheetIdRanking"));
-		if (sheetId != null) sheetId = sheetId.trim();
-		MyLogger.getLogger().finest("ID Ranking:<<"+sheetId+">>");
-		return sheetId;
-	}
 
 	public static String getBackupsFolderId(){
-		String sheetId = ((String)properties.get("backupsFolder"));
+		String sheetId = configurationData.getBackupsFolderId();
 		if (sheetId != null) sheetId = sheetId.trim();
 		MyLogger.getLogger().finest("Backups Folder:<<"+sheetId+">>");
 		return sheetId;
 	}
 	
 	public static String getTemplateTorneiSheetId(){
-		String folderId = ((String)properties.get("spreadSheetIdTemplateTornei"));
+		String folderId = configurationData.getTemplateTorneiId();
 		if (folderId != null) folderId = folderId.trim();
 		MyLogger.getLogger().finest("ID Template Tornei:<<"+folderId+">>");
 		return folderId;
 	}
 	
-	public static String getConfigurationSheetId(){
-		String sheetId = ((String)properties.get("configurationSpreadSheetId"));
-		if (sheetId != null) sheetId = sheetId.trim();
-		MyLogger.getLogger().finest("configurationSpreadSheetId:<<"+sheetId+">>");
-		return sheetId;
-	}
+	
 }

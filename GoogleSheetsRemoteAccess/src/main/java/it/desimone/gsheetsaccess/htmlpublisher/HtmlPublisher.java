@@ -5,7 +5,6 @@ import it.desimone.gsheetsaccess.analyzer.ClubAnalysis;
 import it.desimone.gsheetsaccess.analyzer.ClubAnalysis.ClubPlayerData;
 import it.desimone.gsheetsaccess.analyzer.TournamentsAnalyzer;
 import it.desimone.gsheetsaccess.common.Configurator;
-import it.desimone.gsheetsaccess.common.Configurator.Environment;
 import it.desimone.gsheetsaccess.common.ResourceWorking;
 import it.desimone.gsheetsaccess.dto.ScorePlayer;
 import it.desimone.gsheetsaccess.dto.TorneoPubblicato;
@@ -152,7 +151,7 @@ public class HtmlPublisher {
 	
 	public static void main(String[] args) {
 		MyLogger.setConsoleLogLevel(Level.INFO);
-		Configurator.loadConfiguration(Environment.PRODUCTION);
+		Configurator.loadConfiguration(Configurator.Environment.PRODUCTION);
 //		File folderTabelliniClub = new File(FOLDER_PATH+File.separator+"TABELLINI_CLUB");
 //		String year = "2019";
 //		List<TorneoPubblicato> torneiPubblicati = TorneiUtils.caricamentoTornei(year);
@@ -176,7 +175,7 @@ public class HtmlPublisher {
 				FilesToPublish filesToPublish = publishPerYear(year.toString(), tournamentsToPublishByYear);
 				fileDaPubblicare.add(filesToPublish);
 				
-				ResourceWorking.setLastTournamentDate(year.toString(), lastUpdateTimeFormat.format(tournamentsToPublishByYear.getMaxDate()));
+				//ResourceWorking.setLastTournamentDate(year.toString(), lastUpdateTimeFormat.format(tournamentsToPublishByYear.getMaxDate()));
 				LastUpdateRow lastUpdateRow = tournamentsToPublishByYear.getLastUpdateRow();
 				if (lastUpdateRow == null) {
 					lastUpdateRow = new LastUpdateRow();
@@ -279,25 +278,25 @@ public class HtmlPublisher {
 		//LastUpdateData lastUpdateData = LastUpdateData.getInstance(); 
 		LastUpdateData lastUpdateData = new LastUpdateData(); 
 		for (Integer year: years){
-			MyLogger.getLogger().info("Inizio estrazione tornei pubblicati");
+			MyLogger.getLogger().info("Inizio estrazione tornei pubblicati per l'anno "+year);
 			List<TorneoPubblicato> torneiPubblicati = TorneiUtils.caricamentoTornei(year.toString());
 			
-			String lastDateString = ResourceWorking.getLastTournamentDate(year.toString());
-			Date lastDateOLD = null;
-			if (lastDateString != null && !lastDateString.trim().isEmpty()){
-				try {
-					lastDateOLD = lastUpdateTimeFormat.parse(lastDateString);
-				} catch (ParseException e) {
-					MyLogger.getLogger().severe("Errore nel parsing della data di ultima elaborazione per l'anno "+year +" sulla stringa "+lastDateString+": "+e.getMessage() );
-				}
-			}
+//			String lastDateString = ResourceWorking.getLastTournamentDate(year.toString());
+//			Date lastDateOLD = null;
+//			if (lastDateString != null && !lastDateString.trim().isEmpty()){
+//				try {
+//					lastDateOLD = lastUpdateTimeFormat.parse(lastDateString);
+//				} catch (ParseException e) {
+//					MyLogger.getLogger().severe("Errore nel parsing della data di ultima elaborazione per l'anno "+year +" sulla stringa "+lastDateString+": "+e.getMessage() );
+//				}
+//			}
 			//Date lastDate = lastUpdateData.getLastTournamentDate(year);
 			Date lastDate = lastUpdateData.getLastTournamentDateByUpdateRow(year);
-			
+			MyLogger.getLogger().info("Ultima data pubblicazione per l'anno "+year+":"+lastDate);
 			Date maxDate = null;
 			List<TorneoPubblicato> torneiDaMettereOnline = new ArrayList<TorneoPubblicato>();
 			for (TorneoPubblicato torneo: torneiPubblicati){
-				MyLogger.getLogger().info("Inizio elaborazione torneo "+torneo.getIdTorneo());
+				MyLogger.getLogger().fine("Inizio elaborazione torneo "+torneo.getIdTorneo());
 				try {
 					Date updateTime = ExcelGSheetsBridge.dfUpdateTime.parse(torneo.getTorneoRow().getUpdateTime());
 					if (lastDate == null || updateTime.after(lastDate)){
@@ -312,6 +311,7 @@ public class HtmlPublisher {
 			}
 			//TournamentsToPublish tournamentsToPublish = new TournamentsToPublish(torneiPubblicati, torneiDaMettereOnline, maxDate);
 			TournamentsToPublish tournamentsToPublish = new TournamentsToPublish(torneiPubblicati, torneiDaMettereOnline, maxDate, lastUpdateData.getLastUpdateRow(year));
+			MyLogger.getLogger().info("Tornei da pubblicare per l'anno "+year+": "+tournamentsToPublish.torneiDaMettereOnline.size());
 			result.put(year, tournamentsToPublish);
 		}
 		return result;

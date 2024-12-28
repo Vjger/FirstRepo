@@ -13,6 +13,7 @@ public class ConfigurationData {
 	private String backupsFolderId;
 	private String templateTorneiId;
 	private String playersDataSheetId;
+	private String reportElaborazioniSheetId;
 	
 	public Map<Integer, String> getTournamentsSheetId() {
 		return tournamentsSheetId;
@@ -62,26 +63,40 @@ public class ConfigurationData {
 	public void setPlayersDataSheetId(String playersDataSheetId) {
 		this.playersDataSheetId = playersDataSheetId;
 	}
-	
+	public String getReportElaborazioniSheetId() {
+		return reportElaborazioniSheetId;
+	}
+	public void setReportElaborazioniSheetId(String reportElaborazioniSheetId) {
+		this.reportElaborazioniSheetId = reportElaborazioniSheetId;
+	}
 	public void setByConfigurationMap(Map<String, String> configurationMap) {
 		Set<String> parameterNames = configurationMap.keySet();
 		for (String parameterName: parameterNames) {
-			String paramenterValue = configurationMap.get(parameterName);
+			String parameterValue = configurationMap.get(parameterName);
 			switch (parameterName) {
 			case "PLAYERS_DATA_SHEET_ID":
-				setPlayersDataSheetId(paramenterValue);
+				setPlayersDataSheetId(parameterValue);
 				break;
 			case "RCU_FOLDER_ID":
-				setRcuFolderId(paramenterValue);
+				setRcuFolderId(parameterValue);
 				break;
 			case "ANAGRAFICA_SHEET_ID":
-				setAnagraficaSheetId(paramenterValue);
+				setAnagraficaSheetId(parameterValue);
 				break;				
 			case "DONE_FOLDER_ID":
-				setDoneFolderId(paramenterValue);
+				setDoneFolderId(parameterValue);
 				break;		
 			case "ERROR_FOLDER_ID":
-				setErrorFolderId(paramenterValue);
+				setErrorFolderId(parameterValue);
+				break;		
+			case "BACKUPS_FOLDER_ID":
+				setBackupsFolderId(parameterValue);
+				break;
+			case "TEMPLATE_TORNEI_ID":
+				setTemplateTorneiId(parameterValue);
+				break;
+			case "REPORT_ELABORAZIONI_SHEET_ID":
+				setReportElaborazioniSheetId(parameterValue);
 				break;					
 			default:
 				throw new IllegalArgumentException("Nome parametro non trovato: "+parameterName);

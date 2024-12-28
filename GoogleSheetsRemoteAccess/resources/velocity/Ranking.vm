@@ -130,10 +130,14 @@
 
 								#foreach( $scorePlayer in $scorePlayers )
 							
-								#if ($foreach.count % 2 == 1)
-								<tr class="body" style="background-color: #ffecb3; font-weight: bold;">
+								#if ($scorePlayer.isSqualificato())
+								<tr class="body" style="background-color: #95a5a6 ; font-weight: bold; text-decoration: line-through">
 								#else
-								<tr class="body" style="background-color: #ffdf80; font-weight: bold;">
+									#if ($foreach.count % 2 == 1)
+									<tr class="body" style="background-color: #ffecb3; font-weight: bold;">
+									#else
+									<tr class="body" style="background-color: #ffdf80; font-weight: bold;">
+									#end
 								#end
 									<td class="column10" onclick="toggle($scorePlayer.getAnagraficaGiocatore().getId())"><img id="plusminus$scorePlayer.getAnagraficaGiocatore().getId()" src="images/icons/plus.png" title="Espandi il tabellino"> </td>
 									<td class="column10">$foreach.count</td>

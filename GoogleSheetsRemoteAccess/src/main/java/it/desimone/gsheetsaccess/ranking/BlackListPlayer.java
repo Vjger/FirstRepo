@@ -2,6 +2,7 @@ package it.desimone.gsheetsaccess.ranking;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -46,7 +47,7 @@ public class BlackListPlayer {
 	public boolean isForbiddenYear(String year){
 		return (CollectionUtils.isNotEmpty(forbiddenYears) && forbiddenYears.contains(year)) || (CollectionUtils.isEmpty(forbiddenYears) && startExclusion == null);
 	}
-	
+
 	public boolean isExcludedPeriod(Date start, Date end){
 		if (startExclusion == null || start == null) return false;
 		return (!start.before(startExclusion) && (end == null || endExclusion == null || !endExclusion.before(end)))
@@ -57,6 +58,21 @@ public class BlackListPlayer {
 		return "BlackListPlayer [idAnagrafica=" + idAnagrafica + ", forbiddenYears=" + forbiddenYears
 				+ ", startExclusion=" + startExclusion + ", endExclusion=" + endExclusion
 				+ ", exclusionFromRankingMatter=" + exclusionFromRankingMatter + "]";
+	}
+	@Override
+	public int hashCode() {
+		return Objects.hash(idAnagrafica);
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		BlackListPlayer other = (BlackListPlayer) obj;
+		return idAnagrafica == other.idAnagrafica;
 	}
 
 	

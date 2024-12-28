@@ -5,7 +5,6 @@ import it.desimone.gsheetsaccess.analyzer.ClubAnalysis;
 import it.desimone.gsheetsaccess.analyzer.ClubAnalysis.ClubPlayerData;
 import it.desimone.gsheetsaccess.analyzer.TournamentsAnalyzer;
 import it.desimone.gsheetsaccess.common.Configurator;
-import it.desimone.gsheetsaccess.common.Configurator.Environment;
 import it.desimone.gsheetsaccess.common.ResourceWorking;
 import it.desimone.gsheetsaccess.dto.ScorePlayer;
 import it.desimone.gsheetsaccess.dto.TorneoPubblicato;
@@ -39,7 +38,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 
-import org.apache.commons.collections4.map.HashedMap;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
@@ -132,7 +130,7 @@ public class HtmlPublisherOLD {
 	
 	public static void main(String[] args) {
 		MyLogger.setConsoleLogLevel(Level.INFO);
-		Configurator.loadConfiguration(Environment.PRODUCTION);
+		Configurator.loadConfiguration(Configurator.Environment.PRODUCTION);
 //		File folderTabelliniClub = new File(FOLDER_PATH+File.separator+"TABELLINI_CLUB");
 //		String year = "2019";
 //		List<TorneoPubblicato> torneiPubblicati = TorneiUtils.caricamentoTornei(year);

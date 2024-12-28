@@ -11,6 +11,9 @@ public class SheetRowFactory {
 		,ReportElaborazione
 		,Ranking
 		,LastUpdate
+		,TorneiSheetId
+		,ConfigurationMap
+		,BlackList
 	}
 	
 	public static String getSheetName(SheetRowType sheetRowType){
@@ -40,6 +43,15 @@ public class SheetRowFactory {
 		case LastUpdate:
 			result = LastUpdateRow.SHEET_LAST_UPDATE_NAME;
 			break;
+		case TorneiSheetId:
+			result = TorneiSheetIdRow.SHEET_TORNEI_NAME;
+			break;
+		case ConfigurationMap:
+			result = ConfigurationMapRow.SHEET_CONFIGURAZIONI_NAME;
+			break;		
+		case BlackList:
+			result = BlackListRow.SHEET_BLACKLIST_NAME;
+			break;			
 		default:
 			throw new IllegalArgumentException("Valore non previsto: "+sheetRowType);
 		}
@@ -74,6 +86,15 @@ public class SheetRowFactory {
 		case LastUpdate:
 			result = new LastUpdateRow();
 			break;
+		case TorneiSheetId:
+			result = new TorneiSheetIdRow();
+			break;
+		case ConfigurationMap:
+			result = new ConfigurationMapRow();
+			break;	
+		case BlackList:
+			result = new BlackListRow();
+			break;			
 		default:
 			throw new IllegalArgumentException("Valore non previsto: "+sheetRowType);
 		}

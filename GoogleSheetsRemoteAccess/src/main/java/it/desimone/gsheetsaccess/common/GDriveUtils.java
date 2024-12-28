@@ -10,7 +10,6 @@ import java.util.logging.Level;
 
 import com.google.api.services.drive.model.File;
 
-import it.desimone.gsheetsaccess.common.Configurator.Environment;
 import it.desimone.gsheetsaccess.gdrive.file.ReportDriveData;
 import it.desimone.gsheetsaccess.googleaccess.GoogleDriveAccess;
 import it.desimone.utils.MyException;
@@ -120,7 +119,7 @@ public class GDriveUtils {
 	
 	public static void main(String[] args) throws Exception {
 		MyLogger.setConsoleLogLevel(Level.INFO);
-		Configurator.loadConfiguration(Environment.STAGE);
+		Configurator.loadConfiguration(Configurator.Environment.STAGE);
 		GDriveUtils.cloneTornei("2020");
 	}
 }

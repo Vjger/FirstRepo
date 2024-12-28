@@ -24,6 +24,8 @@ public class ScorePlayer implements Comparable<ScorePlayer>{
 	private Map<TipoTorneo, TabellinoPerTipoTorneo> tabelliniPerTipoTorneo = new HashMap<SchedaTorneo.TipoTorneo, ScorePlayer.TabellinoPerTipoTorneo>();
 	private Integer partiteGiocate = 0;
 	private Integer partiteVinte = 0;
+	private boolean squalificato = false;
+	private String motivazioneSqualifica;
 	
 	public ScorePlayer(AnagraficaGiocatoreRow anagraficaGiocatore) {
 		this.anagraficaGiocatore = anagraficaGiocatore;
@@ -372,6 +374,22 @@ public class ScorePlayer implements Comparable<ScorePlayer>{
 
 	public void setPartiteVinte(Integer partiteVinte) {
 		this.partiteVinte = partiteVinte;
+	}
+
+	public boolean isSqualificato() {
+		return squalificato;
+	}
+
+	public void setSqualificato(boolean squalificato) {
+		this.squalificato = squalificato;
+	}
+
+	public String getMotivazioneSqualifica() {
+		return motivazioneSqualifica;
+	}
+
+	public void setMotivazioneSqualifica(String motivazioneSqualifica) {
+		this.motivazioneSqualifica = motivazioneSqualifica;
 	}
 
 	public int compareTo(ScorePlayer o) {

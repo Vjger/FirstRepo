@@ -41,7 +41,7 @@ public class RisiKoDataManager extends JFrame {
     private JTextArea textArea;
     
     private JButton switchEnvironment = new JButton("Switch");
-    private JLabel environmentLabel = new JLabel(Configurator.getEnvironment().name());
+    private JLabel environmentLabel = new JLabel("UNDEFINED");
     private JButton buttonPublish = new JButton("Pubblica Tornei");
     private JButton buttonPublishHtml = new JButton("Pubblica Html");
     private JButton buttonDelete = new JButton("Elimina Torneo");
@@ -58,7 +58,12 @@ public class RisiKoDataManager extends JFrame {
      
     private PrintStream standardOut;
      
-    public RisiKoDataManager() {
+    
+    public JLabel getEnvironmentLabel() {
+		return this.environmentLabel;
+	}
+
+	public RisiKoDataManager() {
         super("RisiKo! Data Manager");
         
         setExtendedState(JFrame.MAXIMIZED_BOTH); 
@@ -350,7 +355,9 @@ public class RisiKoDataManager extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                new RisiKoDataManager().setVisible(true);
+            	RisiKoDataManager risiKoDataManager = new RisiKoDataManager();
+            	risiKoDataManager.setVisible(true);
+            	risiKoDataManager.getEnvironmentLabel().setText(Configurator.getEnvironment().name());
             }
         });
     }
