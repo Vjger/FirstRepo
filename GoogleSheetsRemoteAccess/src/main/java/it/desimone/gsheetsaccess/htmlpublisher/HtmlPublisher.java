@@ -39,6 +39,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
@@ -458,11 +459,13 @@ public class HtmlPublisher {
 		for (String club: clubAnalysis.getClubs()){
 			List<ClubPlayerData> clubPlayersData = clubAnalysis.getPlayerDataByClub(club);
 			int maxSize = 0;
-			try{
-				maxSize = clubPlayersData.get(0).getTorneiDisputati().size();
-			} catch (IndexOutOfBoundsException e) {
-				MyLogger.getLogger().severe(e.getMessage()+"anno: "+year+ "club: "+club);
-				throw e;
+			if (CollectionUtils.isNotEmpty(clubPlayersData)) {
+				try{
+					maxSize = clubPlayersData.get(0).getTorneiDisputati().size();
+				} catch (IndexOutOfBoundsException e) {
+					MyLogger.getLogger().severe(e.getMessage()+"anno: "+year+ "club: "+club);
+					throw e;
+				}
 			}
 			int width = 200+(Math.min(1600, maxSize*160));
 			context.put( "clubPlayersData", clubPlayersData);
