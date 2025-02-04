@@ -53,8 +53,11 @@ public class ClubLoader {
 	public final static ClubDTO I_BALUARDI = new ClubDTO("LU", "LUCCA [I Baluardi]");
 	public final static ClubDTO CESENATICO = new ClubDTO("FC", "CESENATICO [I Corsari]");
 	public final static ClubDTO CALTANISSETTA = new ClubDTO("CL", "CALTANISSETTA [Eclettica]");
-	public final static ClubDTO RISIKARE = new ClubDTO("BT","BARLETTA [Risik'Aré]");
+	public final static ClubDTO RISIKARE = new ClubDTO("BT","BARLETTA [RisikAré]");
 	public final static ClubDTO I_PALLADIANI = new ClubDTO("VI","Vicenza [I Palladiani]");
+	public final static ClubDTO QUARTU_SANT_ELENA = new ClubDTO("CA","Quartu Sant'Elena [Sardegna]");
+	public final static ClubDTO SESSA_AURUNCA = new ClubDTO("CS","Sessa Aurunca [Risiko Aurunco]");
+	public final static ClubDTO SIGNA = new ClubDTO("FI","Signa [Gli spettri dei colli]");
 
 	static{
 		clubs.add(I_FEDERICIANI);
@@ -103,6 +106,9 @@ public class ClubLoader {
 		clubs.add(CALTANISSETTA);
 		clubs.add(RISIKARE);
 		clubs.add(I_PALLADIANI);
+		clubs.add(QUARTU_SANT_ELENA);
+		clubs.add(SESSA_AURUNCA);
+		clubs.add(SIGNA);
 	}
 	
 	public static List<ClubDTO> getClubs(){
